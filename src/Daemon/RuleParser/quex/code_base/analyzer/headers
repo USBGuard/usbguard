@@ -1,0 +1,48 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                      */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
+#define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
+
+#include    <quex/code_base/aux-string>
+#include    <quex/code_base/analyzer/asserts>
+
+#include    <quex/code_base/definitions>
+
+#ifdef      __QUEX_OPTION_UNIT_TEST
+#   include <quex/code_base/test_environment/StrangeStream>
+#endif
+
+#include    <quex/code_base/buffer/Buffer>
+#include    <quex/code_base/buffer/BufferFiller>
+
+#include    <quex/code_base/MemoryManager>
+#include    <quex/code_base/analyzer/Mode>
+#
+#ifdef      __QUEX_OPTION_COUNTER
+#include    <quex/code_base/analyzer/Counter>
+#endif
+#ifdef      QUEX_OPTION_INCLUDE_STACK
+#   include <quex/code_base/analyzer/member/include-stack>
+#endif
+#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator>
+#endif
+#ifdef      QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/token/TokenQueue>
+#endif
+#ifdef      QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/analyzer/PostCategorizer>
+#endif
+
+#include    <quex/code_base/analyzer/member/basic>
+
+#include    <quex/code_base/analyzer/member/constructor>
+#include    <quex/code_base/analyzer/member/buffer-access>
+#include    <quex/code_base/analyzer/member/misc>
+#include    <quex/code_base/analyzer/member/navigation>
+#include    <quex/code_base/analyzer/member/mode-handling>
+#include    <quex/code_base/analyzer/member/token-receiving>
+#include    <quex/code_base/analyzer/member/token-sending>
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS */

@@ -1,0 +1,91 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+     typedef struct QUEX_NAME(BufferFiller_tag) {
+        /* PURPOSE: This is the interface that the buffer sees of the buffer filler. Its
+         *          task is to coordinate the filling of buffer content from a stream 
+         *          in the background. Some fillers may convert characters or filter.
+         *          All fillers must provide functions for the following pointers. The 
+         *          pointers are set with the function
+         *
+         *              BufferFiller_setup_functions(...) 
+         *
+         *          which shall be called in any '_construct' function of a filler. Note,
+         *          that filler types shall inherit this class. This means, that the first
+         *          element of the derived struct is to be of this type and best called 'base'.
+         *          For example, please, consider the 'plain' and 'iconv' implementations
+         *          in the correspondent sub directories.                                    */
+
+        /*************************************************************************************
+         ** NOTE: The 'InputHandle' is not located in this class, in order to avoid         **
+         **       the 'templating' of this class with respect to the InputHandle-type.      **
+         **       This templating would extend then to the buffer class etc.                **
+         *************************************************************************************/
+ 
+        /* -- 'Tell' returns the character index of the last character read. This corresponds   
+         *    to the character index of the last character that is currently in the buffer.  */
+        ptrdiff_t   (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
+
+        /* -- 'Seek' sets the input position for the next buffer-read-action.
+         *    NOTE: This differs from Buffer_seek(...) in the sense, that it only sets the
+         *          stream to a particular position given by a character index. Buffer_seek(..)
+         *          sets the _input_p to a particular position.                                      */
+        void        (*seek_character_index)(struct QUEX_NAME(BufferFiller_tag)*, 
+                                            const ptrdiff_t Index);
+
+        /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)      */
+        size_t      (*read_characters)(struct QUEX_NAME(BufferFiller_tag)*,
+                                       QUEX_TYPE_CHARACTER* memory, const size_t N);
+ 
+        /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
+         *    to lexeme end exceeds the buffer size.                                                 */
+        bool        (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
+
+        /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
+         *    pointer to BufferFiller, and requires a way to delete the whole object.            */ 
+        void        (*delete_self)(struct QUEX_NAME(BufferFiller_tag)*);
+
+    } QUEX_NAME(BufferFiller);
+
+    QUEX_INLINE void 
+    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
+                                            ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
+                                                                                 const ptrdiff_t),
+                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                                            QUEX_TYPE_CHARACTER*, const size_t),
+                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*));
+    TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
+    QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
+                                const char*    CharacterEncodingName,
+                                const size_t   TranslationBufferMemorySize);
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
+
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)*);
+
+    /* Helper function for buffer fillers trying to deal with strange streams or 
+     * dynamic length character encodings.                                             */
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)*  me,
+                                                                          const ptrdiff_t           ForwardN);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#if defined(__QUEX_OPTION_CONVERTER)
+#   include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#else
+#   include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER */

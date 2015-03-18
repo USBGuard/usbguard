@@ -1,0 +1,125 @@
+/* vim:set syntax=cpp:
+ * (C) 2007 Frank-Rene Schaefer */
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY
+#define __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY
+
+#if ! defined (__QUEX_OPTION_PLAIN_C)
+#include<cstdio>
+#include<iostream>
+#include<stdexcept> /* Standard C++ Exceptions*/
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    /* PURPOSE: The input policy provides a common interface for operations related  
+     *          to stream input. In particular, the C-Style 'FILE*' and the C++-Style  
+     *          'istream' types are directly supported. For new types of input, e.g.  
+     *          via TCP/IP over the internet or whatsoever, only a new policy has  
+     *          to be provided. The remaining framework still works the same.  
+     * NOTE: The input policy does not provide a way to open or close those interfaces.  
+     *       This is up to the user somewhere up in the hierarchie.                    */
+    template <class InputHandleT> struct InputPolicy;
+
+    template <>
+    struct InputPolicy<void*> { 
+        typedef long   stream_position;
+        typedef long   stream_offset;
+
+        /* The 'void' specialization is only a placeholder for direct memory access.
+         * Functions below are not to be called.                                       */
+        static long    tell(void* me)                         { (void)me; return -1L; }
+        static void    seek(void* me, long& Pos)              { (void)me; (void)Pos; __quex_assert(false); } 
+        static size_t  load_bytes(void*, void*, const size_t) { return (size_t)0; } 
+    };
+
+    template <>
+    struct InputPolicy<std::FILE*> { 
+        typedef long   stream_position;
+        typedef long   stream_offset;
+
+        static long    tell(std::FILE* me)            { return std::ftell(me); }
+        static void    seek(std::FILE* me, long& Pos) { std::fseek(me, Pos, SEEK_SET); }
+
+        static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
+        { 
+            return fread(buffer_position, 1, ByteNToRead, ih); 
+            /* Consider the following implementation 
+               -- unit tests should be implemented for all input policies.                   
+            const stream_position   position_before = ftell(ih);
+
+            const size_t Result = fread(buffer_position, 1, ByteNToRead, ih); 
+            if( feof(ih) && ! ferror(ih) ) {
+                clearerror(ih);
+                /-* A position can only be seeked, if it is valid. Interactive input streams
+                 -* may not return a valid stream position, because they have none.           *-/
+                if( position_before != (stream_position)-1 ) {
+                    fseek(position_before + (stream_offset)(Result));
+                }
+            }
+            */ 
+        }
+    };
+
+    template <class StdStreamType>
+    struct InputPolicy<StdStreamType*> { 
+        typedef typename StdStreamType::pos_type   stream_position;
+        typedef typename StdStreamType::off_type   stream_offset;
+
+        typedef typename StdStreamType::char_type  character_type;
+        static const size_t  CharacterSize = sizeof(typename StdStreamType::char_type);
+
+        static stream_position tell(StdStreamType* me) { 
+            return me->tellg() * CharacterSize; 
+        }
+        static void    seek(StdStreamType* me, const stream_position& Pos) { 
+            __quex_assert(Pos % CharacterSize == 0);
+            me->seekg(Pos / CharacterSize); 
+        }
+
+        static size_t  load_bytes(StdStreamType* me, void* buffer_position, const size_t ByteNToRead) 
+        { 
+            __quex_assert(CharacterSize != 0);
+            const stream_position   position_before = me->tellg();
+            /* NOTE: 'position_before == (stream_position)-1' indicated an error, i.e. 
+             *       there is no position that can be determined (e.g. user interaction streams. */
+            
+            me->read((character_type*)buffer_position, (std::streamsize)(ByteNToRead / CharacterSize));
+            
+            const size_t Result = (size_t)(me->gcount());
+
+            if( me->eof() && ! me->bad() ) {
+                me->clear();
+                /* A position can only be seeked, if it is valid. Interactive input streams
+                 * may not return a valid stream position, because they have none.           */
+                if( position_before != (stream_position)-1 ) {
+                    me->seekg(position_before + (stream_offset)(Result));
+                }
+            } else if( me->fail() ) {
+                throw std::runtime_error("Fatal error during stream reading.");
+            }
+
+            /* std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(me->tellg()), Result);*/
+            return Result * CharacterSize;
+        }
+    };
+#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS) \
+           InputPolicy<IH_TYPE*>::seek((IH), (POS))
+#   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE) \
+           InputPolicy<IH_TYPE*>::tell((IH))
+#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
+           InputPolicy<IH_TYPE*>::load_bytes((IH), (uint8_t*)(BUFFER), (BYTE_N))
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#else
+/* In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
+ * a FILE interface. */
+#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS) \
+    __QUEX_STD_fseek((IH), (POS), SEEK_SET)
+#   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE)      \
+    __QUEX_STD_ftell((IH))
+    /* NOTE: That cast to uint8_t* is essential to avoid a spurious overload!! */
+#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
+    __QUEX_STD_fread((uint8_t*)(BUFFER), 1, (BYTE_N), (IH))
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY */

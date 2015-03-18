@@ -1,0 +1,52 @@
+/* vim: set filetype=cpp:  -*- C++ -*-
+ *
+ * Declaration of converter functions which implement pure identity operations
+ * for 'char', and 'wchar_t': 
+ *
+ *    QUEX_NAME(identical_string)(...)  for string and buffer 
+ *    QUEX_NAME(identical_wstring)(...) for string and buffer 
+ *
+ * They exist mainly so that generalized code can be written in a homogenous
+ * manner with the other converter functions. See 'token/CDefault.qx' for example.
+ *
+ * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * => Thus, they are placed in the analyzer's namespace.
+ *
+ * (C) 2012 Frank-Rene Schaefer. 
+ *     ABSOLUTELY NO WARRANTY                                                */
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY) \
+    ||   defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED)
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY
+#endif
+
+#include <quex/code_base/converter_helper/common.h>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+QUEX_INLINE void
+QUEX_CONVERTER_STRING_DEF(identical, char)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                           const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                           char**                       drain_pp,  
+                                           const char*                  DrainEnd);
+
+#if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+QUEX_INLINE void
+QUEX_CONVERTER_STRING_DEF(identical, wchar)(const QUEX_TYPE_CHARACTER**  source_pp, 
+                                            const QUEX_TYPE_CHARACTER*   SourceEnd, 
+                                            wchar_t**                    drain_pp,  
+                                            const wchar_t*               DrainEnd);
+#endif
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+    QUEX_INLINE std::basic_string<char>
+    QUEX_CONVERTER_STRING_DEF(identical, char)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#   if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
+    QUEX_INLINE std::basic_string<wchar_t>
+    QUEX_CONVERTER_STRING_DEF(identical, wchar)(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+#   endif
+#endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__IDENTITY */

@@ -1,0 +1,21 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAVIGATION
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAVIGATION
+
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+/* Tell/Seek/Move on basis of character index */
+QUEX_INLINE size_t  QUEX_NAME(tell)(QUEX_TYPE_ANALYZER* me);
+QUEX_INLINE void    QUEX_NAME(seek)(QUEX_TYPE_ANALYZER* me, const size_t);
+QUEX_INLINE void    QUEX_NAME(seek_forward)(QUEX_TYPE_ANALYZER*  me, const size_t);
+QUEX_INLINE void    QUEX_NAME(seek_backward)(QUEX_TYPE_ANALYZER* me, const size_t);
+QUEX_INLINE void    QUEX_NAME(undo)(QUEX_TYPE_ANALYZER* me);
+QUEX_INLINE void    QUEX_NAME(undo_n)(QUEX_TYPE_ANALYZER* me, size_t DeltaN_Backward);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAVIGATION */

@@ -1,0 +1,40 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ *
+ * PURPOSE: Definition of handy macros that facilitate the common definition
+ *          of plain 'C' functions and elegant 'C++' templates. Note, that 
+ *          before including any other file, these macros have to be deactivated
+ *          by including <code_base/temporary_macros_off>. 
+ *
+ * NOTE: 'defines' were used instead of propper 'typedefs' because this allows
+ *       to define the relation without a existing type definition. By this means
+ *       one is discharged of the task of including all required headers. */
+#ifdef __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS
+#    error "File <template_macros_on> was included twice without including the correspondent\n" + \
+           "<template_macros_off> file."
+#endif
+#define __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS
+
+/* Allow 'undefining' again by inclusion of file  "temporary_macros_off" */
+#ifdef    __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS__OFF
+#   undef __QUEX_INCLUDE_INDICATOR__TEMPORARY_MACRO_DEFINITIONS__OFF
+#endif
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#    define TEMPLATIFIER(X, SOME_CLASS)         template <class SOME_CLASS> struct QUEX_NAME(X)
+#    define TEMPLATIFIER_END(X)                 /* empty */
+#    define TEMPLATE_IN(SOME_CLASS)             template <class SOME_CLASS> inline
+#    define STREAM_POSITION_TYPE(IH_TYPE)       typename InputPolicy<IH_TYPE*>::stream_position
+#    define STREAM_OFFSET_TYPE(IH_TYPE)         typename InputPolicy<IH_TYPE*>::stream_offset
+#    define TEMPLATED(X)                        QUEX_NAME(X)<InputHandleT>
+#else
+#    define TEMPLATIFIER(X, SOME_CLASS)         typedef struct QUEX_NAME(X ## _tag)
+#    define TEMPLATIFIER_END(X)                 QUEX_NAME(X)
+#    define TEMPLATE_IN(SOME_CLASS)             QUEX_INLINE
+#    define STREAM_POSITION_TYPE(IH_TYPE)       long
+#    define STREAM_OFFSET_TYPE(IH_TYPE)         long
+#    define InputHandleT                        FILE
+#    define TEMPLATED(X)                        QUEX_NAME(X)
+#endif
+
+
+

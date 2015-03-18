@@ -1,0 +1,70 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING
+
+#include <quex/code_base/token/TokenPolicy>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#define self (*this)
+
+#if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
+#   define self_token_p()        (self.token)
+#   define self_write_token_p()  (self.token)
+#else
+#   define self_token_p()        (self._token_queue.read_iterator)
+#   define self_write_token_p()  (self._token_queue.write_iterator)
+#endif
+
+#define self_send(ID)                         \
+        do {                                  \
+            __QUEX_ASSERT_SEND_ENTRY();       \
+            self_token_set_id(ID);            \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT(); \
+        } while ( 0 )
+
+#define self_send1(ID, Str)                                             \
+        do {                                                            \
+            __QUEX_ASSERT_SEND_ENTRY();                                 \
+            self_token_set_id(ID);                                      \
+            QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self,     \
+                                       (Str),                           \
+                                       (Str) + QUEX_NAME(strlen)(Str)); \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                           \
+        } while ( 0 )
+
+#define self_send2(ID, StrBegin, StrEnd)          \
+        do {                                      \
+            __QUEX_ASSERT_SEND_ENTRY();           \
+            self_token_set_id(ID);                                   \
+            QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self,  \
+                                       (StrBegin), (StrEnd));        \
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();                        \
+        } while ( 0 )
+
+#ifdef     QUEX_OPTION_TOKEN_REPETITION_SUPPORT
+#   define self_send_n(RepetitionN, ID)     \
+    do {                                                                  \
+         __quex_assert_msg(__QUEX_SETTING_TOKEN_ID_REPETITION_TEST(ID),   \
+            "send_send_n() applied to token id which was not mentioned\n" \
+            "in a 'repeated_token { ... }' section in the .qx file.");    \
+         self_token_set_id(ID);                                           \
+         __quex_assert(RepetitionN != 0);                                 \
+         QUEX_NAME_TOKEN(repetition_n_set)(self_write_token_p(), RepetitionN); \
+         QUEX_TOKEN_POLICY_PREPARE_NEXT();                                     \
+    } while ( 0 )
+#else
+#   define self_send_n(RepetitionN, ID) \
+    QUEX_ERROR_EXIT("\n" \
+    QUEX_SOURCE_POS() "Use of self_send_n() without repetition support.\n" \
+    QUEX_SOURCE_POS() "Define at least one id in 'repeated_token' section in the .qx file.")
+#endif
+
+#undef self
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_SENDING */
+

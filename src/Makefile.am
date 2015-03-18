@@ -1,0 +1,29 @@
+nobase_pkginclude_HEADERS=\
+	ThirdParty/cppformat/format.h \
+	ThirdParty/json/src/json.hpp \
+	ThirdParty/spdlog/include/spdlog/logger.h \
+	ThirdParty/spdlog/include/spdlog/formatter.h \
+	ThirdParty/spdlog/include/spdlog/spdlog.h \
+	ThirdParty/spdlog/include/spdlog/common.h \
+	ThirdParty/spdlog/include/spdlog/details/format.h \
+	ThirdParty/spdlog/include/spdlog/details/log_msg.h \
+	ThirdParty/spdlog/include/spdlog/details/async_logger_impl.h \
+	ThirdParty/spdlog/include/spdlog/details/file_helper.h \
+	ThirdParty/spdlog/include/spdlog/details/os.h \
+	ThirdParty/spdlog/include/spdlog/details/null_mutex.h \
+	ThirdParty/spdlog/include/spdlog/details/pattern_formatter_impl.h \
+	ThirdParty/spdlog/include/spdlog/details/registry.h \
+	ThirdParty/spdlog/include/spdlog/details/line_logger.h \
+	ThirdParty/spdlog/include/spdlog/details/mpmc_bounded_q.h \
+	ThirdParty/spdlog/include/spdlog/details/async_log_helper.h \
+	ThirdParty/spdlog/include/spdlog/details/format.cc \
+	ThirdParty/spdlog/include/spdlog/details/logger_impl.h \
+	ThirdParty/spdlog/include/spdlog/details/spdlog_impl.h \
+	ThirdParty/spdlog/include/spdlog/async_logger.h \
+	ThirdParty/spdlog/include/spdlog/sinks/syslog_sink.h \
+	ThirdParty/spdlog/include/spdlog/sinks/ostream_sink.h \
+	ThirdParty/spdlog/include/spdlog/sinks/sink.h \
+	ThirdParty/spdlog/include/spdlog/sinks/stdout_sinks.h \
+	ThirdParty/spdlog/include/spdlog/sinks/file_sinks.h \
+	ThirdParty/spdlog/include/spdlog/sinks/null_sink.h \
+	ThirdParty/spdlog/include/spdlog/sinks/base_sink.h

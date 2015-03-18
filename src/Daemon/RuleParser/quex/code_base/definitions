@@ -1,0 +1,386 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                
+ *
+ * NOTE: '__VA_ARGS__' in macros is avoided because at the time of
+ *       this writing, even some prominent compilers choke on it. */
+#ifndef __QUEX_INCLUDE_GUARD__DEFINITIONS
+#define __QUEX_INCLUDE_GUARD__DEFINITIONS
+
+#include<quex/code_base/asserts>
+#include<quex/code_base/compatibility/stdint.h>
+#include<quex/code_base/compatibility/stdbool-pseudo.h>
+
+#ifndef    QUEX_NAMESPACE_QUEX 
+#   define QUEX_NAMESPACE_QUEX         quex
+#endif
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_NAMESPACE_QUEX_OPEN   namespace QUEX_NAMESPACE_QUEX {
+#   define QUEX_NAMESPACE_QUEX_CLOSE  }
+#   define QUEXED_AUX2(NSP, X)        ::NSP::X
+#   define QUEXED_AUX(NSP, X)         QUEXED_AUX2(NSP,X)
+#   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX,X)
+#   define QUEXED_DEF(X)              X
+#else
+#   define QUEX_NAMESPACE_QUEX_OPEN
+#   define QUEX_NAMESPACE_QUEX_CLOSE
+#   define QUEXED_AUX2(NSP, X)        NSP ## _ ## X
+#   define QUEXED_AUX(NSP, X)         QUEXED_AUX2(NSP, X)
+#   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
+#   define QUEXED_DEF(X)              QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER >= 1600
+    /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
+     * Forget about the 'CRT security enhancements' for sprintf, fopen, and setbuf. */
+#   pragma warning(disable: 4996)
+#endif
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   include <cstddef>  /* gets: size_t, ptrdiff_t */
+#   include <cstring>  /* gets: memmove, memcpy   */
+#   include <cstdio>   /* gets: fprintf           */
+#   include <cstdlib>
+#   include <stdexcept>
+#   define __QUEX_STD_FILE     std::FILE
+#   define __QUEX_STD_STDIN    std::stdin
+#   define __QUEX_STD_fopen    std::fopen
+#   define __QUEX_STD_fclose   std::fclose
+#   define __QUEX_STD_fprintf  std::fprintf
+#   define __QUEX_STD_fread    std::fread 
+#   define __QUEX_STD_fseek    std::fseek 
+#   define __QUEX_STD_ftell    std::ftell 
+#   define __QUEX_STD_memcpy   std::memcpy
+#   define __QUEX_STD_memmove  std::memmove
+#   define __QUEX_STD_memset   std::memset
+#   define __QUEX_STD_printf   std::printf
+#   define __QUEX_STD_sprintf  std::sprintf
+#   define __QUEX_STD_strncat  std::strncat
+#   define __QUEX_STD_malloc   std::malloc
+#   define __QUEX_STD_free     std::free  
+
+#   define QUEX_INLINE     inline
+    /* Input handle type is determined automagically via templates */
+#else
+#   include <stddef.h>
+#   include <string.h>  /* gets: memmove, memcpy     */
+#   include <stdio.h>   /* gets: fprintf             */
+#   include <stdlib.h>
+#   define __QUEX_STD_FILE     FILE
+#   define __QUEX_STD_STDIN    stdin
+#   define __QUEX_STD_fopen    fopen
+#   define __QUEX_STD_fclose   fclose
+#   define __QUEX_STD_fprintf  fprintf
+#   define __QUEX_STD_fread    fread 
+#   define __QUEX_STD_fseek    fseek 
+#   define __QUEX_STD_ftell    ftell 
+#   define __QUEX_STD_memcpy   memcpy
+#   define __QUEX_STD_memmove  memmove
+#   define __QUEX_STD_memset   memset
+#   define __QUEX_STD_printf   printf
+#   define __QUEX_STD_sprintf  sprintf
+#   define __QUEX_STD_strncat  strncat
+#   define __QUEX_STD_malloc   malloc
+#   define __QUEX_STD_free     free  
+
+#   define QUEX_INLINE             /* static */
+#   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
+#endif
+
+/* Support of computed goto */
+#ifdef QUEX_OPTION_COMPUTED_GOTOS
+    typedef  void*     QUEX_TYPE_GOTO_LABEL;
+#   define QUEX_GOTO_LABEL_VOID                       (QUEX_TYPE_GOTO_LABEL)(0x0)
+#   define QUEX_LABEL(StateIndex)                     &&_##StateIndex 
+
+#   define QUEX_GOTO_TERMINAL(LABEL)                  do { goto *LABEL; } while(0)
+
+    /* If no computed gotos are used, then there are two state routers, one for forward
+     * state routing and another for backward state routing. Thus, two macros for the same
+     * thing are required.                                                                 */
+#   define QUEX_GOTO_STATE(LABEL)                     do { goto *LABEL; } while(0)
+
+
+#else
+    typedef  int32_t  QUEX_TYPE_GOTO_LABEL;          /* > 0: State index
+                                                      * < 0: Drop Out of a state abs(Label). */
+#   define QUEX_GOTO_LABEL_VOID                      (QUEX_TYPE_GOTO_LABEL)(-1)
+#   define QUEX_LABEL(StateIndex)                    StateIndex 
+
+#   define QUEX_GOTO_TERMINAL(LABEL)      \
+           do {                           \
+               last_acceptance = LABEL;   \
+               goto QUEX_TERMINAL_ROUTER; \
+           } while(0)
+
+#   define QUEX_GOTO_STATE(LABEL)           \
+           do {                             \
+              target_state_index = LABEL;   \
+              goto QUEX_LABEL_STATE_ROUTER; \
+           } while(0)
+#endif
+
+/* DELETE QUEX_GOTO_RELOAD' when safe */
+#define QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \
+           do { \
+           __QUEX_STD_fprintf(stderr, "%s:%i:\tUSE of QUEX_GOTO_RELOAD -- SUPPOSED TO BE SUPERFLUOUS", __FILE__, __LINE__); \
+           target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+           goto RELOAD_LABEL; } while (0)
+
+#define __QUEX_PRINT_SOURCE_POSITION()                             \
+        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { \
+               __QUEX_PRINT_SOURCE_POSITION(); \
+               throw std::runtime_error(Msg); \
+           } while(0)
+#else
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { \
+               __QUEX_PRINT_SOURCE_POSITION(); \
+               __QUEX_STD_fprintf(stderr, "%s", Msg); exit(-1); \
+           } while(0)
+#endif
+
+#if defined(QUEX_OPTION_DEBUG_SHOW)
+
+#   define __quex_debug(Str)                                        \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "%s", (Str)) 
+#   define __quex_debug1(Str)                                       \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, "%s\n", (Str)) 
+#   define __quex_debug2(FormatStr, Arg)                            \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, FormatStr "\n", Arg)
+#   define __quex_debug3(FormatStr, Arg0, Arg1)                     \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, FormatStr "\n", Arg0, Arg1)
+#   define __quex_debug4(FormatStr, Arg0, Arg1, Arg2)               \
+           __QUEX_PRINT_SOURCE_POSITION();                          \
+           __QUEX_STD_fprintf(stderr, FormatStr "\n", Arg0, Arg1, Arg2)
+
+#   define __QUEX_PRINT_CHAR(C)                             \
+             (C) == '\n' ? __QUEX_STD_fprintf(stderr, "%02X '\\n'\n", (int)(C)) \
+           : (C) == '\t' ? __QUEX_STD_fprintf(stderr, "%02X '\\t'\n", (int)(C)) \
+           : (C) == '\r' ? __QUEX_STD_fprintf(stderr, "%02X '\\r'\n", (int)(C)) \
+           : (C) == '\a' ? __QUEX_STD_fprintf(stderr, "%02X '\\a'\n", (int)(C)) \
+           : (C) == '\v' ? __QUEX_STD_fprintf(stderr, "%02X '\\v'\n", (int)(C)) \
+           :               __QUEX_STD_fprintf(stderr, "%02X '%c'\n",  (int)(C), (C) < 0xFF ? (char)(C) : '?')
+
+#   define __quex_debug_core(StateIdx, Message)                \
+           __quex_debug3("state %i ____%s", (int)(StateIdx), (Message)) 
+
+#   define __quex_debug_input(StateIdx)                                            \
+           __quex_debug("input:           ");                                      \
+           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
+           __quex_debug2("input position:  %i",                                    \
+                         (int)(me->buffer._input_p - me->buffer._memory._front));  \
+           __quex_optional_statistics((StateIdx))
+
+#   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
+           __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase), (Message)); \
+           __quex_assert((int)PathIterator - (int)PathBase >= (int)0);                               \
+           __quex_debug4("(path walker: %i, path: %i, offset: %i)",                                  \
+                         (int)PathWalkerIdx,                                                         \
+                         (int)__QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PathBase),                       \
+                         (int)(PathIterator-PathBase)); 
+
+#   define __quex_debug_template_core(TemplateIdx, StateKey, Message)                     \
+           __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateKey), (Message));   \
+           __quex_debug3("(template: %i, state key=%i)", (int)TemplateIdx, (int)StateKey)
+
+#   define __quex_debug_state(StateIdx)                \
+           __quex_debug_core(StateIdx, "__________");  \
+           __quex_debug_input(StateIdx)
+
+#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator)               \
+           __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, "__________"); \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase))
+
+#   define __quex_debug_template_state(TemplateIdx, StateKey)                      \
+           __quex_debug_template_core(TemplateIdx, StateKey, "__________");        \
+           __quex_debug_input(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(StateIdx))
+
+#   define __quex_debug_drop_out(StateIdx)            \
+           __quex_debug_core(StateIdx, "<DROP OUT>");  
+
+#   define __quex_debug_path_walker_drop_out(PathWalkerIdx, PathBase, PathIterator) \
+           __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, "<DROP OUT>")        
+
+#   define __quex_debug_template_drop_out(TemplateIdx, StateKey)            \
+           __quex_debug_template_core(TemplateIdx, StateKey, "<DROP OUT>")           
+
+#   define __quex_debug_buffer_info(B)                                         \
+           __quex_debug2("input position:  %i",                                \
+                         (int)((B)._input_p        - (B)._memory._front + 1)); \
+           __quex_debug2("lexeme start:    %i",                                \
+                         (int)((B)._lexeme_start_p - (B)._memory._front + 1)); \
+           __quex_debug2("buffer size:     %i",                                \
+                         (int)((B)._memory._back   - (B)._memory._front)); 
+
+#   define __quex_debug_reload_before()                              \
+           __quex_debug1("reload ________________");                 \
+           __quex_debug2("fallback bytes:  %i",                      \
+                         (int)(QUEX_SETTING_BUFFER_MIN_FALLBACK_N)); \
+           __quex_debug1("(before)\n");                              \
+           __quex_debug_buffer_info(me->buffer);
+           
+#   define __quex_debug_reload_after()               \
+           __quex_debug1("(after)");                 \
+           __quex_debug_buffer_info(me->buffer);     \
+           __quex_debug1("reload terminated _____"); 
+
+#   define __quex_debug_counter()                        \
+           QUEX_NAME(Counter_print_this)(&self.counter)
+
+
+#else /* not defined(QUEX_OPTION_DEBUG_SHOW) */
+
+#   define __quex_debug(FormatStr)                /* empty */
+#   define __quex_debug1(Str)                     /* empty */
+#   define __quex_debug2(FormatStr, Arg)          /* empty */
+#   define __quex_debug3(FormatStr, Arg0, Arg1)   /* empty */
+
+#   define __quex_debug_state(StateIdx)           \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_path_walker_state(PathWalkerIdx, PathBase, PathIterator) \
+           __quex_optional_statistics(StateIdx)
+#   define __quex_debug_template_state(TemplateID, StateKey) \
+           __quex_optional_statistics(StateIdx)
+
+#   define __quex_debug_drop_out(StateIdx)                                          /* empty */
+#   define __quex_debug_path_walker_drop_out(PathWalkerIdx, PathBase, PathIterator) /* empty */
+#   define __quex_debug_template_drop_out(TemplateID, StateKey)                     /* empty */ 
+
+#   define __quex_debug_reload_before()           /* empty */
+#   define __quex_debug_reload_after()            /* empty */
+#   define __quex_debug_counter()                 /* empty */
+
+#endif /* ! QUEX_OPTION_DEBUG_SHOW */
+
+#if  defined(QUEX_OPTION_DEBUG_SHOW_LOADS)
+
+#   include <quex/code_base/buffer/Buffer_debug>
+#   define __quex_debug_buffer_load(BUFFER, Msg)         \
+           __QUEX_STD_fprintf(stderr, Msg);              \
+           QUEX_NAME(Buffer_show_debug_content)(BUFFER); 
+
+#elif  defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
+
+#   include <quex/code_base/buffer/Buffer_debug>
+#   define __quex_debug_buffer_load(BUFFER, Msg)         \
+           __QUEX_STD_fprintf(stdout, Msg);              \
+           QUEX_NAME(Buffer_show_content)(BUFFER); 
+#else
+
+#   define __quex_debug_buffer_load(BUFFER, Msg) /* empty */
+
+#endif /* __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
+
+#ifdef QUEX_OPTION_STATISTICS
+#    define __quex_optional_statistics(StateIdx) \
+            QUEX_NAME(statistics_state_count)(QUEX_NAME(statistics_state_ ## StateIdx), \
+                                              *(me->buffer._input_p));
+#else
+#    define __quex_optional_statistics(StateIdx) /* empty */
+#endif
+
+#if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "\nThe provided input stream behaves strangely. Number of read\n"   \
+        "characters is not proportional to the stream position increase.\n" \
+        "The buffer filler type which you are using might be able to\n"     \
+        "deal with those cases. Try compile option:\n"                      \
+        "\n" \
+                  "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
+        "\n" \
+        "However, those mechanisms imply a trade-off in terms of speed.\n"   \
+        "Please, consider using a 'binary' for your input stream, or use\n" \
+        "a different implementation of the standard I/O library (e.g.\n"    \
+        "not Microsoft(tm)).\n"
+#else
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
+        "Nevertheless, the quex engine detected that the number of characters\n"   \
+        "is not proportional to the character position increase. The buffer\n"     \
+        "filler type which you are using **is not able** to deal with those\n"     \
+        "cases. You **must** use a binary mode of your input stream!\n"            
+#endif
+#define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD \
+        "Macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION enables strange stream\n" \
+        "handling. This functionality cannot be used in backward load. Either\n"    \
+        "renounce on pre-conditions or only use 'binary' file streams.\n"           \
+        
+#define __QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER \
+        "A character encoding name '%s' has been specified while the analyzer is not\n" \
+        "setup to run with a converter (icu or iconv).\n" 
+
+#define __QUEX_MESSAGE_ASSERTS_INFO \
+        "## Disable this message by compile option\n"                               \
+        "##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'\n"              \
+        "##\n"                                                                      \
+        "## Asserts activated! Lexical analyzer is 'paranoid'!\n"                   \
+        "## => Even smallest misbehavior causes program exit.\n"                    \
+        "##    This helps to find subtile errors.\n"                                \
+        "##\n"                                                                      \
+        "## Note however: the paranoia is a heavy load on performance!\n"           \
+        "##\n"                                                                      \
+        "## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'\n"                  \
+        "##\n"                                                                      \
+        "## Report any bug at\n"                                                    \
+        "##        http://sourceforge.net/tracker/?group_id=168259&atid=846112\n" 
+
+#define __QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR \
+        "Error: Quex engine constructor has received a standard input handle!\n"   \
+        "Error: Standard input has to be treated like buffered input. Please,\n"   \
+        "Error: consult the documentation or the example 'stdinlexer.cpp' in\n"    \
+        "Error: directory $QUEX_PATH/demo/010 (> make stdinlexer.exe). Please,\n"  \
+        "Error: review the other (non-stdin) examples in this directory to\n"      \
+        "Error: conclude how to read encoded data via stdin.\n"
+
+#define __QUEX_MESSAGE_C_DOES_NOT_SUPPORT_MULTIPLE_IMPLICIT_TOKEN_ARGS \
+        "Error: Quex does not support unspecified multiple arguments for token\n" \
+        "Error: senders in plain 'C'. Please use something like\n\n"              \
+        "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
+
+#define __QUEX_MESSAGE_MODE_STACK_OVERFLOW \
+        "Error: Mode stack overflow. Adapt size of mode stack via the macro\n"      \
+        "Error: QUEX_SETTING_MODE_STACK_SIZE, or review mode transitions.\n"        \
+        "Error: I.e. check that for every GOSUB (push), there is a correspondent\n" \
+        "Error: GOUP (pop)."
+
+#define QUEX_ERROR_DEPRECATED(NAME, REPLACEMENT) \
+        QUEX_ERROR_EXIT(NAME " has been deprecated\n"   \
+                        "Please, use " REPLACEMENT ".")
+
+#define ____QUEX_APPEND(X, Y)  X ## Y
+#define __QUEX_APPEND(X, Y)    ____QUEX_APPEND(X, Y)
+
+#define QUEX_STRING(X)            #X
+#define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)
+#define QUEX_SOURCE_POS()         __FILE__ ":" QUEX_NUMBER_TO_STRING(__LINE__) ": "
+
+#if ! defined(QUEX_OPTION_TERMINATION_ZERO_DISABLED)
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)        \
+        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_input_p); \
+        *((BUFFER)->_input_p) = '\0';
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
+        /* only need to reset, in case that the terminating zero was set*/        \
+        if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) { \
+            *((BUFFER)->_input_p) = (BUFFER)->_character_at_lexeme_start;         \
+            (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     \
+        }
+#else
+
+#   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)   /* empty */
+#   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)  /* empty */
+
+#endif
+
+#endif /* __QUEX_INCLUDE_GUARD__DEFINITIONS */

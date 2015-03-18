@@ -1,0 +1,9 @@
+[submodule "src/ThirdParty/json"]
+	path = src/ThirdParty/json
+	url = https://github.com/nlohmann/json.git
+[submodule "src/ThirdParty/spdlog"]
+	path = src/ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "src/ThirdParty/cppformat"]
+	path = src/ThirdParty/cppformat
+	url = https://github.com/cppformat/cppformat
