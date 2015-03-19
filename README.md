@@ -95,7 +95,7 @@ A USB device ID, as understood by usbguard, is the colon delimited pair *vendor\
 ID assigned by the manufacturer and it should uniquely identify a USB product. Both *vendor\_id* and *product\_id* are 16-bit
 numbers represented in hexadecimal base.
 
-In the rule, it's possible to use an asterisk character to match either any device ID `\*:\*` or any product ID from a
+In the rule, it's possible to use an asterisk character to match either any device ID `*:*` or any product ID from a
 specific vendor, e.g. `1234:*`.
 
 #### Device attributes
