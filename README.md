@@ -111,3 +111,13 @@ List of attributes:
  * `name "..."`
  * `port "[0-9]{1,2}-[0-9]{1,2}"`
  * `port { "[0-9]{1,2}-[0-9]{1,2}" "[0-9]{1,2}-[0-9]{1,2}" ... }`
+
+### Initial policy
+
+There's currently no tool to generate an initial rule set for devices that the user wants to allow by default.
+However, using the following bash oneliner, you can generate a simple allow policy for USB devices connected
+to the system at the moment of generating the policy:
+
+    # lsusb | sed -n 's|.*\([0-9a-f]\{4\}:[0-9a-f]\{4\}\) \(.*\)|allow \1|p' > /etc/usbguard/rules.conf
+
+Future releases will include a tool to generate more complex initial policies.
