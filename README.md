@@ -32,6 +32,7 @@ And then do:
 If you want to compile the sources in a cloned repository, there's one additional step required:
 
 	$ git submodule init
+	$ git submodule update
 
 This will fetch the sources of [cppformat](https://github.com/cppformat/cppformat), [json](https://github.com/nlohmann/json/)
 and [spdlog](https://github.com/gabime/spdlog) which are used in this project too.
