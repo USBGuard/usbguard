@@ -9,6 +9,23 @@ only. Please share your feedback or request a feature in the Github issue tracke
 Report a bug or request a feature in [usbguard](https://github.com/dkopecek/usbguard/issues/new)
 Report a bug or request a feature in [usbguard-applet-qt](https://github.com/dkopecek/usbguard-applet-qt/issues/new)
 
+## Use Cases
+
+### Use case #1: USB device whitelisting
+A  desktop user usually has a quite stable set of USB devices he uses. The set consists of internally and externally connected devices. From a security point of view, it’s good to limit the usage of the computer’s USB ports to these devices only with some temporary exceptions (connecting a third-party’s USB disk to our system to transfer data   from/to it).
+
+USBGuard  can lockdown the system and permit only known devices to create interfaces to it via USB. It is possible to bypass this  protection by  emulating the devices on the whitelist. However, this requires the knowledge of the contents of such list and for devices which export a  unique serial number, it’s even harder as one needs to know this serial  number to successfully emulate the device.
+
+Reprogramming  attacks ([BadUSB](https://srlabs.de/badusb/)) which change the type of the device or add a hidden/unexpected interface to the device (a USB keyboard/network card  interface on a USB flash disk) will change the attributes of the  device and it will no longer match the whitelist.
+
+Allowing to attach any USB device to the system exposes it to exploitation of bugs in USB interface drivers in the kernel.
+
+### Use case #2: USB device blacklisting
+The USB protocol uses a classification system for the various types  of  interfaces a USB device can provide. If an user doesn’t want to use a particular class of interfaces, he can block devices that want to communicate with the computer as an interface from that class.
+
+### Use case #3: Triggering actions on USB device events
+The project makes possible to easily implement triggering of various actions when a particular USB device or USB device class is inserted, removed, etc. This feature might be used for example for auditing USB usage, screen locking (per-user via applet), etc.
+
 ## Supported Operating Systems
 
 Currently, usbguard works only on Linux. To enforce the user-defined policy, it uses the USB device authorization feature
