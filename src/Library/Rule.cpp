@@ -11,6 +11,12 @@ namespace usbguard {
     delete d_pointer;
   }
 
+  Rule::Rule(const Rule& rhs)
+  {
+    d_pointer = new RulePrivate(*rhs.d_pointer);
+    return;
+  }
+
   uint32_t Rule::getSeqn() const
   {
     return d_pointer->getSeqn();

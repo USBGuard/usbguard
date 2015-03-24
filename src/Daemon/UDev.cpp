@@ -5,34 +5,35 @@
 
 namespace usbguard
 {
-  Firewall::Rule UDevDeviceToDeviceRule(struct udev_device *dev)
+  Rule UDevDeviceToDeviceRule(struct udev_device *dev)
   {
-    Firewall::Rule rule;
+    Rule rule;
 
     const char *id_vendor = udev_device_get_sysattr_value(dev, "idVendor");
     if (id_vendor) {
-      rule.id_vendor = id_vendor;
+      rule.setVendorID(id_vendor);
     }
 
     const char *id_product = udev_device_get_sysattr_value(dev, "idProduct");
     if (id_product) {
-      rule.id_product = id_product;
+      rule.setProductID(id_product);
     }
 
     const char *name = udev_device_get_sysattr_value(dev, "product");
     if (name) {
-      rule.name = name;
+      rule.setDeviceName(name);
     }
 
-    rule.hash = UDevDeviceHash(dev);
+    rule.setDeviceHash(UDevDeviceHash(dev));
 
-    log->debug("Device hash: {}", rule.hash);
+    log->debug("Device hash: {}", rule.getDeviceHash());
 
     const char *port = udev_device_get_sysname(dev);
     if (port) {
-      rule.id_ports.push_back(port);
+      rule.refDevicePorts().push_back(port);
     }
 
+#if 0
     const char *syspath = udev_device_get_syspath(dev);
     if (syspath) {
       rule.ref_syspath = syspath;
@@ -44,8 +45,9 @@ namespace usbguard
     if (usb_class) {
       rule.usb_class = usb_class;
     }
+#endif
 
-    rule.target = Firewall::Target::Unknown;
+    rule.setTarget(Rule::Target::Unknown);
 
     return std::move(rule);
   }

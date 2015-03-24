@@ -1,6 +1,4 @@
-#include "IPCClient.hpp"
-#include "Logging.hpp"
-#include "JSON.hpp"
+#include "IPCClientPrivate.hpp"
 
 #include <sys/poll.h>
 #include <sys/eventfd.h>
@@ -9,31 +7,26 @@ namespace usbguard
 {
   static int32_t qbPollEventFn(int32_t fd, int32_t revents, void *data)
   {
-    log->debug("Processing event");
     return 0;
   }
 
-  void IPCClient::processEvent()
+  void IPCClientPrivate::processEvent()
   {
     const json j = receiveOne();
     processOne(j);
   }
 
-  const json IPCClient::receiveOne()
+  const json IPCClientPrivate::receiveOne()
   {
     char *data = new char[1<<20];
     ssize_t recv_size;
 
     if ((recv_size = qb_ipcc_event_recv(_qb_conn, data, 1<<20, 500)) < 0) {
-      log->error("IPC receive error: {}", strerror((int)-recv_size));
       disconnect();
       throw IPCException(IPCException::ProtocolError, "Receive error");
     }
 
-    log->debug("Received {} bytes.", recv_size);
-
     if (recv_size < (ssize_t)sizeof(struct qb_ipc_response_header)) {
-      log->error("Message too small. Disconnecting.");
       disconnect();
       throw IPCException(IPCException::ProtocolError, "Message too small");
     }
@@ -42,7 +35,6 @@ namespace usbguard
       (const struct qb_ipc_response_header *)data;
 
     if (hdr->size != recv_size) {
-      log->error("Invalid size in header. Disconnecting.");
       disconnect();
       throw IPCException(IPCException::ProtocolError, "Invalid size in header");
     }
@@ -52,11 +44,10 @@ namespace usbguard
     const std::string json_string(jdata, jsize);
     const json jobj = json::parse(json_string);
     delete [] data;
-    log->debug("Received JSON: {}", jobj.dump());
     return std::move(jobj);
   }
 
-  void IPCClient::processOne(const json& jobj)
+  void IPCClientPrivate::processOne(const json& jobj)
   {
     if (!jobj["_e"].is_null()) {
       processExceptionJSON(jobj);
@@ -77,15 +68,13 @@ namespace usbguard
     return;
   }
 
-  void IPCClient::processReturnValue(const json& jobj)
+  void IPCClientPrivate::processReturnValue(const json& jobj)
   {
     std::unique_lock<std::mutex> lock(_rv_map_mutex);
     const uint64_t id = jobj["_i"];
     auto const& it = _rv_map.find(id);
 
     if (it == _rv_map.end()) {
-      log->debug("Return value slot for ID {} not found", id);
-      log->debug("Out-of-band object: {}", jobj.dump());
       return;
     }
 
@@ -95,50 +84,45 @@ namespace usbguard
     return;
   }
 
-  void IPCClient::processExceptionJSON(const json& jobj)
+  void IPCClientPrivate::processExceptionJSON(const json& jobj)
   {
-    log->debug("Processing exception");
     if (!jobj["_i"].is_null()) {
       processReturnValue(jobj);
     }
     else {
-      log->debug("Exception without an ID. Ignoring");
-      log->debug("Exception JSON: {}", jobj.dump());
     }
     return;
   }
 
-  void IPCClient::processSignalJSON(const json& jobj)
+  void IPCClientPrivate::processSignalJSON(const json& jobj)
   {
-    log->debug("Processing signal");
     try {
       const std::string name = jobj["_s"];
       if (name == "DeviceInserted") {
-	DeviceInserted(jobj["seqn"], jobj["name"], jobj["usb_class"],
-		       jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
-		       jobj["rule_seqn"]);
+	_p_instance.DeviceInserted(jobj["seqn"], jobj["name"], jobj["usb_class"],
+				   jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+				   jobj["rule_seqn"]);
       }
       else if (name == "DeviceRemoved") {
-	DeviceRemoved(jobj["seqn"], jobj["name"], jobj["usb_class"],
-		      jobj["vendor_id"], jobj["product_id"]);
+	_p_instance.DeviceRemoved(jobj["seqn"], jobj["name"], jobj["usb_class"],
+				  jobj["vendor_id"], jobj["product_id"]);
       }
       else if (name == "DeviceAllowed") {
-	DeviceAllowed(jobj["seqn"], jobj["name"], jobj["usb_class"],
-		      jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
-		      jobj["rule_seqn"]);
+	_p_instance.DeviceAllowed(jobj["seqn"], jobj["name"], jobj["usb_class"],
+				  jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+				  jobj["rule_seqn"]);
       }
-      else if (name == "DeviceDenied") {
-	DeviceDenied(jobj["seqn"], jobj["name"], jobj["usb_class"],
-		     jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
-		     jobj["rule_seqn"]);
+      else if (name == "DeviceBlocked") {
+	_p_instance.DeviceBlocked(jobj["seqn"], jobj["name"], jobj["usb_class"],
+				  jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+				  jobj["rule_seqn"]);
       }
       else if (name == "DeviceRejected") {
-	DeviceRejected(jobj["seqn"], jobj["name"], jobj["usb_class"],
-		       jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
-		       jobj["rule_seqn"]);
+	_p_instance.DeviceRejected(jobj["seqn"], jobj["name"], jobj["usb_class"],
+				   jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+				   jobj["rule_seqn"]);
       }
       else {
-	log->error("Unknown signal name: {}", name);
 	throw 0;
       }
     } catch(...) {
@@ -148,22 +132,18 @@ namespace usbguard
     return;
   }
 
-  void IPCClient::processMethodReturnJSON(const json& jobj)
+  void IPCClientPrivate::processMethodReturnJSON(const json& jobj)
   {
-    log->debug("Processing method return");
     if (!jobj["_i"].is_null()) {
       processReturnValue(jobj);
     }
     else {
-      log->debug("Method return value without an ID. Ignoring");
-      log->debug("Return value JSON: {}", jobj.dump());
     }
     return;
   }
 
-  void IPCClient::processMethodCallJSON(const json& jobj)
+  void IPCClientPrivate::processMethodCallJSON(const json& jobj)
   {
-    log->debug("Processing method call");
     return;
   }
 
@@ -173,13 +153,13 @@ namespace usbguard
     try {
       client->processEvent();
     } catch(const IPCException& ex) {
-      log->debug("An IPC exception was thrown during IPC message processing: {}", ex.what());
     }
     return 0;
   }
 
-  IPCClient::IPCClient()
-    : _thread(this, &IPCClient::thread)
+  IPCClientPrivate::IPCClientPrivate(IPCClient& p_instance)
+    : _p_instance(p_instance),
+      _thread(this, &IPCClientPrivate::thread)
   {
     _qb_conn = nullptr;
     _qb_conn_fd = -1;
@@ -190,7 +170,7 @@ namespace usbguard
     return;
   }
 
-  IPCClient::~IPCClient()
+  IPCClientPrivate::~IPCClientPrivate()
   {
     disconnect();
     stop();
@@ -200,7 +180,7 @@ namespace usbguard
     return;
   }
 
-  void IPCClient::connect()
+  void IPCClientPrivate::connect()
   {
     _qb_conn = qb_ipcc_connect("usbguard", 1<<20);
 
@@ -218,42 +198,40 @@ namespace usbguard
     }
 
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _qb_conn_fd, POLLIN, this, qbIPCMessageProcessFn);
-
-    IPCConnected();
+    _p_instance.IPCConnected();
     return;
   }
 
-  void IPCClient::disconnect()
+  void IPCClientPrivate::disconnect()
   {
     if (_qb_conn != nullptr && _qb_conn_fd != -1) {
-      log->debug("Disconnecting");
       qb_loop_poll_del(_qb_loop, _qb_conn_fd);
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
       _qb_conn_fd = -1;
-      IPCDisconnected();
+      _p_instance.IPCDisconnected();
     }
     return;
   }
 
-  bool IPCClient::isConnected() const
+  bool IPCClientPrivate::isConnected() const
   {
     return _qb_conn_fd != -1;
   }
 
-  void IPCClient::wait()
+  void IPCClientPrivate::wait()
   {
     _thread.wait();
   }
 
-  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec)
+  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "appendRule" },
       {   "rule_spec", rule_spec },
       { "parent_seqn", parent_seqn },
       { "timeout_sec", timeout_sec },
-      {          "_i", IPC::randomID() }
+      {          "_i", IPC::uniqueID() }
     };
 
     const json jrep = qbIPCSendRecvJSON(jreq);
@@ -267,66 +245,66 @@ namespace usbguard
     }
   }
 
-  void IPCClient::removeRule(uint32_t seqn)
+  void IPCClientPrivate::removeRule(uint32_t seqn)
   {
     const json jreq = {
       {   "_m", "removeRule" },
       { "seqn", seqn },
-      {   "_i", IPC::randomID() }
+      {   "_i", IPC::uniqueID() }
     };
 
     qbIPCSendRecvJSON(jreq);
     return;
   }
 
-  void IPCClient::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "allowDevice" },
       {        "seqn", seqn },
       {      "append", append },
       { "timeout_sec", timeout_sec },
-      {          "_i", IPC::randomID() }
+      {          "_i", IPC::uniqueID() }
     };
 
     qbIPCSendRecvJSON(jreq);
     return;
   }
 
-  void IPCClient::denyDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
-      {          "_m", "denyDevice" },
+      {          "_m", "blockDevice" },
       {        "seqn", seqn },
       {      "append", append },
       { "timeout_sec", timeout_sec },
-      {          "_i", IPC::randomID() }
+      {          "_i", IPC::uniqueID() }
     };
 
     qbIPCSendRecvJSON(jreq);
     return;
   }
 
-  void IPCClient::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "rejectDevice" },
       {        "seqn", seqn },
       {      "append", append },
       { "timeout_sec", timeout_sec },
-      {          "_i", IPC::randomID() }
+      {          "_i", IPC::uniqueID() }
     };
 
     qbIPCSendRecvJSON(jreq);
     return;
   }
 
-  void IPCClient::thread()
+  void IPCClientPrivate::thread()
   {
     qb_loop_run(_qb_loop);
   }
 
-  void IPCClient::stop()
+  void IPCClientPrivate::stop()
   {
     _thread.stop(/*do_wait=*/false);
     qb_loop_stop(_qb_loop);
@@ -336,20 +314,17 @@ namespace usbguard
     return;
   }
 
-  json IPCClient::qbIPCSendRecvJSON(const json& jval)
+  json IPCClientPrivate::qbIPCSendRecvJSON(const json& jval)
   {
     if (!isConnected()) {
-      log->debug("Cannot send. IPC not connected.");
       throw IPCException(IPCException::ConnectionError, "Not connected");
     }
 
-    log->debug("Sending JSON object: {}", jval.dump());
     const std::string json_string = jval.dump();
 
     struct qb_ipc_request_header hdr;
     hdr.id = 0;
     hdr.size = sizeof hdr + json_string.size();
-    log->debug("hdr.size = {}", hdr.size);
 
     struct iovec iov[2];
     iov[0].iov_base = &hdr;
@@ -358,7 +333,6 @@ namespace usbguard
     iov[1].iov_len = json_string.size();
 
     const uint64_t id = jval["_i"];
-    log->debug("Object ID = {}", id);
 
     /* Lock the return value slot map */
     std::unique_lock<std::mutex> rv_map_lock(_rv_map_mutex);
@@ -397,7 +371,6 @@ namespace usbguard
     rv_map_lock.unlock();
 
     if (timed_out) {
-      log->debug("Timed out while waiting for a reply");
       throw IPCException(IPCException::TransientError, "Timed out while waiting for IPC reply");
     }
     else {
@@ -405,19 +378,17 @@ namespace usbguard
        * We might have caused an exception. Check whether
        * that's the case and if true, throw it here.
        */
-      if (isException(retval)) {
+      if (isExceptionJSON(retval)) {
 	throw IPCException(IPCException::ProtocolError, "The remote end sent an exception");
       }
       else {
-	log->debug("Received JSON object: {}", retval.dump());
 	return std::move(retval);
       }
     }
-    log->critical("BUG: Unhandled return from qbSendRecvJSON");
     return json();
   }
 
-  bool IPCClient::isException(const json& jval) const
+  bool IPCClientPrivate::isExceptionJSON(const json& jval) const
   {
     return false;
   }

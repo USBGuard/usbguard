@@ -134,15 +134,15 @@ namespace usbguard
 	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
   }
 
-  void IPCServer::DeviceDenied(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id,
-			       bool rule_match,
-			       uint32_t rule_seqn)
+  void IPCServer::DeviceBlocked(uint32_t seqn,
+				const std::string& name,
+				const std::string& usb_class,
+				const std::string& vendor_id,
+				const std::string& product_id,
+				bool rule_match,
+				uint32_t rule_seqn)
   {
-    log->debug("DeviceDenied: seqn={}, name={}, usb_class={}, "
+    log->debug("DeviceBlocked: seqn={}, name={}, usb_class={}, "
 	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
 	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
   }

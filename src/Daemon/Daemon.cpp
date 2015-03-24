@@ -1,10 +1,9 @@
 #include <build-config.h>
 
-#include "Daemon/Daemon.hpp"
+#include "Daemon.hpp"
+
 #include "Common/Logging.hpp"
 #include "Common/Utility.hpp"
-#include "Daemon/UDev.hpp"
-#include "Daemon/RuleParser.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -113,28 +112,7 @@ namespace usbguard
 
   void Daemon::loadRules(const String& path)
   {
-    log->debug("Loading rules from {}", path);
-    std::ifstream stream(path);
-    std::string line_string;
-    size_t line_number = 0;
-    
-    if (!stream.is_open() || stream.fail()) {
-      log->error("Cannot read rules from {}", path);
-      throw std::runtime_error("Rule I/O error");
-    }
-
-    do {
-      ++line_number;
-      std::getline(stream, line_string);
-      Firewall::Rule rule = parseRuleSpecification(line_string);
-      if (rule) {
-	log->debug("Append rule: line {}: {}", line_number, line_string);
-	uint32_t seqn = _firewall.appendRule(rule);
-	log->debug("Rule seqn: {}", seqn);
-      }
-    } while(stream.good());
-
-    log->debug("All rules from {} loaded.", path);
+    _ruleset.load(path);
     return;
   }
 
@@ -181,24 +159,24 @@ namespace usbguard
     return;
   }
 
-  Pointer<const Firewall::Rule> Daemon::syncDeviceRule(Pointer<Firewall::Rule> device_rule)
+  Pointer<const Rule> Daemon::syncDeviceRule(Pointer<Rule> device_rule)
   {
-    auto matching_rule = _firewall.getFirstMatchingRule(*device_rule);
+    auto matching_rule = _ruleset.getFirstMatchingRule(device_rule);
 
-    if (matching_rule->target != device_rule->target) {
+    if (matching_rule->getTarget() != device_rule->getTarget()) {
       /*
        * Sync the device_rule
        */
-      device_rule->target = matching_rule->target;
-      device_rule->action = matching_rule->action;
+      device_rule->setTarget(matching_rule->getTarget());
+      device_rule->setAction(matching_rule->getAction());
       return matching_rule;
     } else {
       return nullptr;
     }
   }
 
-  void Daemon::evalDeviceRule(Pointer<Firewall::Rule> device_rule,
-			      Pointer<const Firewall::Rule> matching_rule)
+  void Daemon::evalDeviceRule(Pointer<Rule> device_rule,
+			      Pointer<const Rule> matching_rule)
   {
     /* Sync /sys device state */
     sysioSyncState(device_rule);
@@ -209,34 +187,34 @@ namespace usbguard
      * Send an IPC signal announcing which target was selected
      * for the device
      */
-    switch(device_rule->target)
+    switch(device_rule->getTarget())
       {
-      case Firewall::Target::Allow:
-	DeviceAllowed(device_rule->rule_seqn,
-		      device_rule->name,
-		      device_rule->usb_class,
-		      device_rule->id_vendor,
-		      device_rule->id_product,
-		      (matching_rule->rule_seqn != Firewall::Rule::DefaultSeqn),
-		      matching_rule->rule_seqn);
+      case Rule::Target::Allow:
+	DeviceAllowed(device_rule->getSeqn(),
+		      device_rule->getDeviceName(),
+		      device_rule->getDeviceName(), /* FIXME */
+		      device_rule->getVendorID(),
+		      device_rule->getProductID(),
+		      (matching_rule->getSeqn() != Rule::SeqnDefault),
+		      matching_rule->getSeqn());
 	break;
-      case Firewall::Target::Deny:
-	DeviceDenied(device_rule->rule_seqn,
-		     device_rule->name,
-		     device_rule->usb_class,
-		     device_rule->id_vendor,
-		     device_rule->id_product,
-		     (matching_rule->rule_seqn != Firewall::Rule::DefaultSeqn),
-		     matching_rule->rule_seqn);
+      case Rule::Target::Block:
+	DeviceBlocked(device_rule->getSeqn(),
+		      device_rule->getDeviceName(),
+		      device_rule->getDeviceName(), /* FIXME */
+		      device_rule->getVendorID(),
+		      device_rule->getProductID(),
+		      (matching_rule->getSeqn() != Rule::SeqnDefault),
+		      matching_rule->getSeqn());
 	break;
-      case Firewall::Target::Reject:
-	DeviceRejected(device_rule->rule_seqn,
-		       device_rule->name,
-		       device_rule->usb_class,
-		       device_rule->id_vendor,
-		       device_rule->id_product,
-		       (matching_rule->rule_seqn != Firewall::Rule::DefaultSeqn),
-		       matching_rule->rule_seqn);
+      case Rule::Target::Reject:
+	DeviceRejected(device_rule->getSeqn(),
+		       device_rule->getDeviceName(),
+		       device_rule->getDeviceName(), /* FIXME */
+		       device_rule->getVendorID(),
+		       device_rule->getProductID(),
+		       (matching_rule->getSeqn() != Rule::SeqnDefault),
+		       matching_rule->getSeqn());
 	break;
       default:
 	throw std::runtime_error("BUG: Unknown target");
@@ -248,7 +226,7 @@ namespace usbguard
   {
     /* First create a device specific rule. The sequence number for
      * this rule is not yet assigned. The target is set to Unknown. */
-    auto device_rule = makePointer<Firewall::Rule>(UDevDeviceToDeviceRule(device));
+    auto device_rule = makePointer<Rule>(UDevDeviceToDeviceRule(device));
 
     /* Register the device in device map */
     dmAddDeviceRule(device_rule);
@@ -259,19 +237,19 @@ namespace usbguard
 
     /* At the insertion phase, the syncDeviceRule method cannot return
        a nullptr because the state of the device will always change from
-       the default Unknown to one of Allowed, Denied or Rejected */
+       the default Unknown to one of Allowed, Blocked or Rejected */
     if (matching_rule == nullptr) {
       throw std::runtime_error("BUG: matching_rule is NULL after sync on device insert");
     }
 
     /* Send an IPC signal announcing that a device was added */
-    DeviceInserted(device_rule->rule_seqn,
-		device_rule->name,
-		device_rule->usb_class,
-		device_rule->id_vendor,
-		device_rule->id_product,
-		(matching_rule->rule_seqn != Firewall::Rule::DefaultSeqn),
-		matching_rule->rule_seqn);
+    DeviceInserted(device_rule->getSeqn(),
+		   device_rule->getDeviceName(),
+		   device_rule->getDeviceName(), /* FIXME */
+		   device_rule->getVendorID(),
+		   device_rule->getProductID(),
+		   (matching_rule->getSeqn() != Rule::SeqnDefault),
+		   matching_rule->getSeqn());
 
     /* Now we can evaluate the target and action, which will set
        the target state of the device */
@@ -280,22 +258,22 @@ namespace usbguard
     return;
   }
 
-  void Daemon::sysioSyncState(Pointer<Firewall::Rule> device_rule)
+  void Daemon::sysioSyncState(Pointer<Rule> device_rule)
   {
     const char *target_file = nullptr;
     int target_value = 0;
 
-    switch (device_rule->target)
+    switch (device_rule->getTarget())
       {
-      case Firewall::Target::Allow:
+      case Rule::Target::Allow:
 	target_file = "authorized";
 	target_value = 1;
 	break;
-      case Firewall::Target::Deny:
+      case Rule::Target::Block:
 	target_file = "authorized";
 	target_value = 0;
 	break;
-      case Firewall::Target::Reject:
+      case Rule::Target::Reject:
 	target_file = "remove";
 	target_value = 1;
 	break;
@@ -304,11 +282,14 @@ namespace usbguard
 	/* FIXME: potential deadlock */
       }
 
+#if 0
     char sysio_path[SYSIO_PATH_MAX];
     snprintf(sysio_path, SYSIO_PATH_MAX, "%s/%s",
 	     device_rule->ref_syspath.c_str(), target_file);
     /* FIXME: check that snprintf wrote the whole path */
     sysIOWrite(sysio_path, target_value);
+    // FIXME: sysio
+#endif
 
     return;
   }
@@ -331,24 +312,24 @@ namespace usbguard
 
     dmRemoveDeviceRule(device_rule);
 
-    DeviceRemoved(device_rule->rule_seqn,
-		  device_rule->name,
-		  device_rule->usb_class,
-		  device_rule->id_vendor,
-		  device_rule->id_product);
+    DeviceRemoved(device_rule->getSeqn(),
+		  device_rule->getDeviceName(),
+		  device_rule->getDeviceName(), /* FIXME */
+		  device_rule->getVendorID(),
+		  device_rule->getProductID());
     return;
   }
 
-  unsigned int Daemon::dmAddDeviceRule(Pointer<Firewall::Rule> rule)
+  unsigned int Daemon::dmAddDeviceRule(Pointer<Rule> rule)
   {
-    const unsigned int seqn = _firewall.assignSeqn(*rule);
+    const uint32_t seqn = _ruleset.assignSeqn(rule);
     _device_map[seqn] = rule;
     return seqn;
   }
 
-  void Daemon::dmRemoveDeviceRule(Pointer<const Firewall::Rule> rule)
+  void Daemon::dmRemoveDeviceRule(Pointer<const Rule> rule)
   {
-    _device_map.erase(rule->rule_seqn);
+    _device_map.erase(rule->getSeqn());
     return;
   }
 
@@ -438,7 +419,7 @@ namespace usbguard
     return;
   }
 
-  Pointer<const Firewall::Rule> Daemon::dmGetDeviceRuleBySeqn(unsigned int seqn) const
+  Pointer<const Rule> Daemon::dmGetDeviceRuleBySeqn(unsigned int seqn) const
   {
     auto it = _device_map.find(seqn);
     if (it == _device_map.end()) {
@@ -449,7 +430,7 @@ namespace usbguard
     }
   }
 
-  Pointer<Firewall::Rule> Daemon::dmGetDeviceRuleBySeqnMutable(unsigned int seqn)
+  Pointer<Rule> Daemon::dmGetDeviceRuleBySeqnMutable(unsigned int seqn)
   {
     auto it = _device_map.find(seqn);
     if (it == _device_map.end()) {
@@ -460,12 +441,12 @@ namespace usbguard
     }    
   }
 
-  Pointer<const Firewall::Rule> Daemon::dmGetDeviceRuleByPath(const String& syspath)
+  Pointer<const Rule> Daemon::dmGetDeviceRuleByPath(const String& syspath)
   {
     for (auto it = _device_map.begin(); it != _device_map.end(); ++it) {
-      if (it->second->ref_syspath == syspath) {
-	return it->second;
-      }
+      //if (it->second->ref_syspath == syspath) {
+      //return it->second;
+      //} FIXME
     }
     return nullptr;
   }
@@ -577,8 +558,8 @@ namespace usbguard
       else if (name == "allowDevice") {
 	allowDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
       }
-      else if (name == "denyDevice") {
-	denyDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+      else if (name == "blockDevice") {
+	blockDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "rejectDevice") {
 	rejectDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
@@ -775,20 +756,20 @@ namespace usbguard
     return;
   }
 
-  void Daemon::DeviceDenied(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id,
-			       bool rule_match,
-			       uint32_t rule_seqn)
+  void Daemon::DeviceBlocked(uint32_t seqn,
+			     const std::string& name,
+			     const std::string& usb_class,
+			     const std::string& vendor_id,
+			     const std::string& product_id,
+			     bool rule_match,
+			     uint32_t rule_seqn)
   {
-    log->debug("DeviceDenied: seqn={}, name={}, usb_class={}, "
+    log->debug("DeviceBlocked: seqn={}, name={}, usb_class={}, "
 	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
 	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
 
     const json j = {
-      {         "_s", "DeviceDenied" },
+      {         "_s", "DeviceBlocked" },
       {       "seqn", seqn },
       {       "name", name },
       {  "usb_class", usb_class },
@@ -888,19 +869,19 @@ namespace usbguard
 			      uint32_t timeout_sec)
   {
     (void)timeout_sec; /* TODO */
-    const Firewall::Rule rule = parseRuleSpecification(rule_spec);
+    const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
     log->debug("Appending rule: {}", rule_spec);
-    return _firewall.appendRule(rule, parent_seqn);
+    return _ruleset.appendRule(rule, parent_seqn);
   }
 
   void Daemon::removeRule(uint32_t seqn)
   {
     log->debug("Removing rule: seqn={}", seqn);
-    _firewall.removeRule(seqn);
+    _ruleset.removeRule(seqn);
   }
 
-  void Daemon::applyDevicePolicy(uint32_t seqn, Firewall::Target target, bool append, uint32_t timeout_sec)
+  void Daemon::applyDevicePolicy(uint32_t seqn, Rule::Target target, bool append, uint32_t timeout_sec)
   {
     auto device_rule = dmGetDeviceRuleBySeqnMutable(seqn);
 
@@ -910,17 +891,17 @@ namespace usbguard
 
     if (append) {
       /* Make a copy of the device rule */
-      Firewall::Rule rule = *device_rule;
+      Rule rule = *device_rule;
       /* Set target and reset seqn */
-      rule.target = target;
-      rule.rule_seqn = Firewall::Rule::DefaultSeqn;
+      rule.setTarget(target);
+      rule.setSeqn(Rule::SeqnDefault);
       /* Append the rule, seqn will be assigned */
-      _firewall.appendRule(rule, Firewall::Rule::LastSeqn);
+      _ruleset.appendRule(rule, Rule::SeqnLast);
       /* Sync the state of the device rule with firewall state */
       auto matching_rule = syncDeviceRule(device_rule);
     }
     else {
-      device_rule->target = target;
+      device_rule->setTarget(target);
       /* 
        * NOTE: What to do with the seqn & matching rule fields here?
        *       They might be set from a previous evaluation...
@@ -935,19 +916,19 @@ namespace usbguard
   void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Allowing device: {}", seqn);
-    applyDevicePolicy(seqn, Firewall::Target::Allow, append, timeout_sec);
+    applyDevicePolicy(seqn, Rule::Target::Allow, append, timeout_sec);
   }
 
-  void Daemon::denyDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void Daemon::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Blocking device: {}", seqn);
-    applyDevicePolicy(seqn, Firewall::Target::Deny, append, timeout_sec);
+    applyDevicePolicy(seqn, Rule::Target::Block, append, timeout_sec);
   }
 
   void Daemon::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Rejecting device: {}", seqn);
-    applyDevicePolicy(seqn, Firewall::Target::Reject, append, timeout_sec);
+    applyDevicePolicy(seqn, Rule::Target::Reject, append, timeout_sec);
   }
 
 } /* namespace usbguard */

@@ -35,6 +35,7 @@ namespace usbguard {
      */
     Rule();
     ~Rule();
+    Rule(const Rule& rhs);
 
     uint32_t getSeqn() const;
     const String& getVendorID() const;

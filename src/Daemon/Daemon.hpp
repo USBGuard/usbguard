@@ -1,14 +1,17 @@
 #ifndef USBFW_DAEMON_HPP
 #define USBFW_DAEMON_HPP
 
-#include "Types.hpp"
-#include "USBFirewall.hpp"
+#include "Typedefs.hpp"
 #include "ConfigFile.hpp"
-#include "Thread.hpp"
+#include "IPC.hpp"
+#include "RuleSet.hpp"
+#include "Rule.hpp"
+
+#include "Common/Thread.hpp"
+#include "Common/JSON.hpp"
+
 #include "SysIO.hpp"
 #include "UDev.hpp"
-#include "IPC.hpp"
-#include "JSON.hpp"
 
 #include <mutex>
 #include <qb/qbipcs.h>
@@ -33,7 +36,7 @@ namespace usbguard
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);
     void allowDevice(uint32_t seqn, bool append,  uint32_t timeout_sec);
-    void denyDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
+    void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
  
     void DeviceInserted(uint32_t seqn,
@@ -58,13 +61,13 @@ namespace usbguard
 		       bool rule_match,
 		       uint32_t rule_seqn);
 
-    void DeviceDenied(uint32_t seqn,
-		      const std::string& name,
-		      const std::string& usb_class,
-		      const std::string& vendor_id,
-		      const std::string& product_id,
-		      bool rule_match,
-		      uint32_t rule_seqn);
+    void DeviceBlocked(uint32_t seqn,
+		       const std::string& name,
+		       const std::string& usb_class,
+		       const std::string& vendor_id,
+		       const std::string& product_id,
+		       bool rule_match,
+		       uint32_t rule_seqn);
 
     void DeviceRejected(uint32_t seqn,
 			const std::string& name,
@@ -102,27 +105,27 @@ namespace usbguard
     void processDeviceInsertion(struct udev_device *device);
     void processDeviceRemoval(struct udev_device *device);
 
-    Pointer<const Firewall::Rule> syncDeviceRule(Pointer<Firewall::Rule> device_rule);
-    void evalDeviceRule(Pointer<Firewall::Rule> device_rule,
-			Pointer<const Firewall::Rule> matching_rule = makePointer<Firewall::Rule>());
-    void sysioSyncState(Pointer<Firewall::Rule> device_rule);
-    void applyDevicePolicy(uint32_t seqn, Firewall::Target target, bool append, uint32_t timeout_sec);
+    Pointer<const Rule> syncDeviceRule(Pointer<Rule> device_rule);
+    void evalDeviceRule(Pointer<Rule> device_rule,
+			Pointer<const Rule> matching_rule = makePointer<Rule>());
+    void sysioSyncState(Pointer<Rule> device_rule);
+    void applyDevicePolicy(uint32_t seqn, Rule::Target target, bool append, uint32_t timeout_sec);
 
-    unsigned int dmAddDeviceRule(Pointer<Firewall::Rule> rule);
-    Pointer<Firewall::Rule> dmGetDeviceRuleBySeqnMutable(unsigned int seqn);
-    Pointer<const Firewall::Rule> dmGetDeviceRuleBySeqn(unsigned int seqn) const;
-    Pointer<const Firewall::Rule> dmGetDeviceRuleByPath(const String& syspath);
-    void dmRemoveDeviceRule(Pointer<const Firewall::Rule> rule);
+    unsigned int dmAddDeviceRule(Pointer<Rule> rule);
+    Pointer<Rule> dmGetDeviceRuleBySeqnMutable(unsigned int seqn);
+    Pointer<const Rule> dmGetDeviceRuleBySeqn(unsigned int seqn) const;
+    Pointer<const Rule> dmGetDeviceRuleByPath(const String& syspath);
+    void dmRemoveDeviceRule(Pointer<const Rule> rule);
     void sysioSetAuthorizedDefault(bool state);
 
   private:
     ConfigFile _config;
-    Firewall _firewall;
+    RuleSet _ruleset;
     qb_loop_t *_qb_loop;
     qb_ipcs_service_t *_qb_service;
     struct udev *_udev;
     struct udev_monitor *_umon;
-    PointerMap<unsigned int, Firewall::Rule> _device_map;
+    PointerMap<unsigned int, Rule> _device_map;
   };
 } /* namespace usbguard */
 

@@ -26,9 +26,9 @@ namespace usbguard
 			     bool append,
 			     uint32_t timeout_sec) = 0;
 
-    virtual void denyDevice(uint32_t seqn,
-			    bool append,
-			    uint32_t timeout_sec) = 0;
+    virtual void blockDevice(uint32_t seqn,
+			     bool append,
+			     uint32_t timeout_sec) = 0;
 
     virtual void rejectDevice(uint32_t seqn,
 			      bool append,
@@ -57,13 +57,13 @@ namespace usbguard
 			       bool rule_match,
 			       uint32_t rule_seqn);
 
-    virtual void DeviceDenied(uint32_t seqn,
-			      const std::string& name,
-			      const std::string& usb_class,
-			      const std::string& vendor_id,
-			      const std::string& product_id,
-			      bool rule_match,
-			      uint32_t rule_seqn);
+    virtual void DeviceBlocked(uint32_t seqn,
+			       const std::string& name,
+			       const std::string& usb_class,
+			       const std::string& vendor_id,
+			       const std::string& product_id,
+			       bool rule_match,
+			       uint32_t rule_seqn);
 
     virtual void DeviceRejected(uint32_t seqn,
 				const std::string& name,

@@ -1,7 +1,7 @@
 #ifndef USBFW_SYSIO_HPP
 #define USBFW_SYSIO_HPP
 
-#include "CCBQueue.hpp"
+#include "Common/CCBQueue.hpp"
 #include <limits.h>
 
 namespace usbguard

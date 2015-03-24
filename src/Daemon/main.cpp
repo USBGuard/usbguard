@@ -1,6 +1,6 @@
 #include "Common/Logging.hpp"
 #include "Common/Utility.hpp"
-#include "Common/Types.hpp"
+#include "Typedefs.hpp"
 #include "Daemon.hpp"
 
 #include <iostream>
