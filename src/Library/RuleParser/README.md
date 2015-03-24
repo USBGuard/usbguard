@@ -14,13 +14,13 @@ the parser, you'll need two files. The source code of [the generator](http://www
 and the [parser template](http://www.sqlite.org/src/artifact?ci=trunk&filename=tool/lempar.c) -- `lempar.c`.
 To compile the parser:
 
-> $ gcc -O2 -Wall -o lemon lemon.c
+    $ gcc -O2 -Wall -o lemon lemon.c
 
 ## Generating the lexer and parser
 
 Assuming that you have the lemon parser generator (along with the parser template) and the Quex lexer generator installed,
 these are commands needed to generate the C/C++ source files of the rule language lexer and parser:
 
-> cd src/Library/RuleParser/
-> lemon T=/path/to/lempar.c Parser.y
-> quex --source-package . --foreign-token-id-file Parser.h --token-id-prefix RULE_TOKEN_ -i Lexer.qx -o Lexer --fes pp
+    $ cd src/Library/RuleParser/
+    $ lemon T=/path/to/lempar.c Parser.y
+    $ quex --source-package . --foreign-token-id-file Parser.h --token-id-prefix RULE_TOKEN_ -i Lexer.qx -o Lexer --fes pp
