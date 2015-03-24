@@ -1,0 +1,63 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    struct QUEX_NAME(Memento_tag);
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+
+    /* Packing and unpacking of essential information about the analyzer. 
+     * The memento_pack/unpack functions are implemented per analyzer.
+     * Their implementation happens inside the generated source file.  */
+#   ifndef __QUEX_OPTION_PLAIN_C
+    TEMPLATE_IN(InputHandleT) 
+#   else
+    /* not inline in 'C' */ struct 
+#   endif
+    QUEX_NAME(Memento_tag)*
+    QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me, 
+                            QUEX_TYPE_CHARACTER*  InputName, 
+                            InputHandleT**        input_handle);
+
+#   ifndef __QUEX_OPTION_PLAIN_C
+    QUEX_INLINE
+#   endif
+    /* not inline in 'C' */ void
+    QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*             me, 
+                              struct QUEX_NAME(Memento_tag)*  memento);
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_NAME(include_push)(QUEX_TYPE_ANALYZER*    me,
+                            InputHandleT*          Optional_InputHandle,
+                            QUEX_TYPE_CHARACTER*   Optional_InputName,
+                            const QUEX_NAME(Mode)* Mode, 
+                            const char*            CharacterCodecName /* = 0x0 */);
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_NAME(include_push_input_name)(QUEX_TYPE_ANALYZER*      me,
+                                       QUEX_TYPE_CHARACTER*     InputName          /* = 0x0 */,
+                                       const QUEX_NAME(Mode)*   mode               /* = 0x0 */, 
+                                       const char*              CharacterCodecName /* = 0x0 */);
+
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_NAME(include_push_input_handle)(QUEX_TYPE_ANALYZER*      me,
+                                         InputHandleT*            sh                 /* = 0x0 */,
+                                         const QUEX_NAME(Mode)*   mode               /* = 0x0 */, 
+                                         const char*              CharacterCodecName /* = 0x0 */);
+
+    QUEX_INLINE bool  QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me);
+
+    QUEX_INLINE void  QUEX_NAME(include_stack_delete)(QUEX_TYPE_ANALYZER* me);
+#   endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK */
+

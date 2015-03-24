@@ -1,0 +1,125 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER
+
+#include<quex/code_base/definitions>
+
+#if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_OPTION_PLAIN_C)
+#   include<quex/code_base/buffer/MemoryPositionMimiker>
+#endif
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    typedef struct { 
+        /* (*) Buffer Memory Setup:
+         *      memory[0]             = lower buffer limit code character
+         *      memory[1]             = first char of content
+         *      ...
+         *      memory[BUFFER_SIZE-2] = last char of content
+         *      memory[BUFFER_SIZE-1] = upper buffer limit code character             */
+        QUEX_TYPE_CHARACTER*  _front;         /* first character in buffer (BLC)      */
+        QUEX_TYPE_CHARACTER*  _back;          /* last character in buffer  (BLC)      */
+        /* NOTE: It is not sufficient, to have a content_end pointer. It is necessary
+         *       to detect the case where input_p  stands on the end of file. Thus 
+         *       it is necessary to have an '_end_of_file_p' that is 0x0 if end of file
+         *       is not inside the buffer.                                            */
+        QUEX_TYPE_CHARACTER*  _end_of_file_p; 
+
+        /* Store whether the memory has an external owner */
+        bool                  _external_owner_f;
+    } QUEX_NAME(BufferMemory);
+
+    QUEX_INLINE size_t  QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)*);
+
+    typedef struct { 
+        QUEX_NAME(BufferMemory)  _memory;
+
+        /* (*) Iterator positions for lexical analysis */
+        QUEX_TYPE_CHARACTER*     _input_p;
+        QUEX_TYPE_CHARACTER*     _lexeme_start_p;
+
+        /* (*) Information about characters that passed.
+         *     This is required to temporarily store a terminating zero and to
+         *     check for the 'begin of line' pre-condition.
+         *
+         *     NOTE: The terminating zero is stored in the first character **after** the
+         *           lexeme (matching character sequence). The begin of line pre-condition
+         *           is concerned with the last character in the lexeme, which is the one
+         *           before the 'char_covered_by_terminating_zero'. */
+        QUEX_TYPE_CHARACTER   _character_at_lexeme_start;      /* --> terminating zero helper */
+#       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        QUEX_TYPE_CHARACTER   _character_before_lexeme_start;  /* --> begin of line           */
+#       endif
+
+        /*     -- character index in the stream that corresponds to the character
+         *        at the first character (see above: _front[1])                               */
+        ptrdiff_t _content_character_index_begin;
+        /*     -- character index in the stream that corresponds to the character
+         *        after the last character in the buffer. This is necessary, because,
+         *        some weird (but popular) implementations of istream do not correlate
+         *        propperly between bytes transferred into a buffer and the increment 
+         *        of the stream position.                                                     */
+        ptrdiff_t _content_character_index_end;
+        
+        /*     -- byte order (i.e little- vs. big-endian) reversion: enable disable the 
+         *        reversion of byte order.                                                    */
+        bool      _byte_order_reversion_active_f;
+
+        struct    QUEX_NAME(BufferFiller_tag)*             filler;
+
+        void      (*on_buffer_content_change)(QUEX_TYPE_CHARACTER*  BeginOfContent,
+                                              QUEX_TYPE_CHARACTER*  EndOfContent);
+    } QUEX_NAME(Buffer);
+
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*     me, 
+                                                                  InputHandleT*          input_handle,
+                                                                  QUEX_TYPE_CHARACTER*   InputMemory,
+                                                                  const size_t           BufferMemorySize,
+                                                                  QUEX_TYPE_CHARACTER*   EndOfFileP,
+                                                                  const char*            CharacterEncodingName, 
+                                                                  const size_t           TranslationBufferMemorySize, 
+                                                                  bool                   ByteOrderReversionF);
+
+    TEMPLATE_IN(InputHandleT) void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*    me, 
+                                                              InputHandleT*  input_handle, 
+                                                              const char*    CharacterEncodingName, 
+                                                              const size_t   TranslationBufferMemorySize);
+
+    QUEX_INLINE void                  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)*);
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION  QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                          QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
+                                                                                QUEX_TYPE_CHARACTER_POSITION);
+    
+    QUEX_INLINE void       QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE void       QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterIndex);
+    QUEX_INLINE void       QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
+
+    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER* Position);
+    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool    QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
+
+    QUEX_INLINE void    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, 
+                                                             QUEX_TYPE_CHARACTER* End);
+
+    QUEX_INLINE void    QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)*);
+
+    QUEX_INLINE QUEX_TYPE_CHARACTER*    QUEX_NAME(BufferMemory_reset)(QUEX_NAME(BufferMemory)*  me, 
+                                                                      QUEX_TYPE_CHARACTER*      Memory, 
+                                                                      const size_t              Size,
+                                                                      QUEX_TYPE_CHARACTER*      EndOfContentP);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER */

@@ -1,0 +1,103 @@
+
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                       */
+
+        /*  Tokens are placed directly before the buffer. They are one of the most
+         *  used variables. The most used variables shall be stored close to each
+         *  other, in order to prevent cache misses.                               
+         * 
+         *  Note, that the token queue is also implemented from higher addresses 
+         *  to lower addresses. It is assumed that it is most likely only filled
+         *  at the top, and thus the addresses close to the buffer shall be used
+         *  more often than the addresses far from it.                            */
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+        QUEX_NAME(TokenQueue)  _token_queue;  
+#           if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+            uint8_t            __memory_token_queue[sizeof(QUEX_TYPE_TOKEN)*QUEX_SETTING_TOKEN_QUEUE_SIZE];
+#           endif
+#       else
+            QUEX_TYPE_TOKEN*   token;         
+#           if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+            QUEX_TYPE_TOKEN    __memory_token;
+#           endif
+#       endif
+
+
+        QUEX_NAME(Buffer)      buffer;
+
+#if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+     || defined(QUEX_OPTION_ASSERTS)
+        /* When a mode change happens and the user does not 'return' but 'CONTINUE'
+         * an error must be logged, since the following characters are still swallowed
+         * by the current function and not the new one. For this one needs to return and
+         * then continue further.                                                 */
+        QUEX_NAME(AnalyzerFunctionP)  DEBUG_analyzer_function_at_entry;
+#       endif
+
+        /* Each mode has a dedicated analyzer function.  The function pointer
+         * to the currently active mode's function is stored redundantly in 
+         * 'current_analyzer_function' to accelerate the access to it.            */
+        QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
+        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+
+        /*_________________________________________________________________________
+         *        __   __   ___  __  
+         *  |\/| /  \ |  \ |__  /__` 
+         *  |  | \__/ |__/ |___ .__/ 
+         *                                                                         */
+        /* Map: mode-id --> mode object                                            */
+        struct QUEX_NAME(Mode_tag)*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+
+        struct {
+            struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            struct QUEX_NAME(Mode_tag)** end;
+            struct QUEX_NAME(Mode_tag)** memory_end;
+        }                                _mode_stack;
+
+        /*_________________________________________________________________________
+         *   __   __            ___  ___  __  
+         *  /  ` /  \ |  | |\ |  |  |__  |__) 
+         *  \__, \__/ \__/ | \|  |  |___ |  \ 
+         *                                                                         
+         * Dependent on setup all counting might be set to 'null operations'.    
+         * In case of no counting, we spend sizeof(void*) bytes for nothing, just
+         * to keep the code uniform.                                               */
+        __QUEX_IF_COUNT(QUEX_NAME(Counter)              counter;)
+
+        /*_________________________________________________________________________
+         *       __   __                            ___  __   __  
+         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
+         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
+         *                                                                         
+         *  Accumulate lexemes from multiple patterns.                             */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_NAME(Accumulator)          accumulator;
+#       endif
+
+        /*_________________________________________________________________________
+         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
+         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
+         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
+         *                                                                         
+         *  Fast and simple dictionary to post-classify lexemes.                   */
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        QUEX_NAME(Dictionary)           post_categorizer;
+#       endif
+
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_NAME(Memento_tag)*  _parent_memento;
+#       endif
+
+        /*_________________________________________________________________________
+         *           __   __  
+         *   |\/| | /__` /  ` 
+         *   |  | | .__/ \__,                                                      */
+
+        /*  Temporary Filename ____________________________________________________
+         *  Sometimes we just want to tell the filename; handle owned by analyzer. */
+        FILE*    __file_handle_allocated_by_constructor;
+

@@ -16,12 +16,8 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#ifndef _UTILITY_H_
-#define _UTILITY_H_
-
-#include "Types.hpp"
-#include "Logging.hpp"
-
+#pragma once
+#include "Typedefs.hpp"
 #include <string>
 #include <vector>
 #include <sstream>
@@ -186,7 +182,6 @@ namespace usbguard
     DIR* dirobj;
 
     if ((dirobj = opendir(directory.c_str())) == nullptr) {
-      log->error("Failed to open directory {}", directory);
       throw std::runtime_error("Cannot open directory");
     }
 
@@ -228,7 +223,6 @@ namespace usbguard
 
     if (error > 0) {
       closedir(dirobj);
-      log->error("Error while reading directory entries of {}", directory);
       throw std::runtime_error("Error while reading directory entries");
     }
 
@@ -237,5 +231,3 @@ namespace usbguard
   }
 
 } /* namespace usbguard */
-
-#endif /* _UTILITY_H_ */

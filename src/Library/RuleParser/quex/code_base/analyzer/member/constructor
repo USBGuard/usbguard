@@ -1,0 +1,88 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR
+
+#include <quex/code_base/definitions>
+
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_NAMESPACE_MAIN_OPEN 
+
+/* The constructor 'core' function is implemented per analyzer.
+ * It's implementation happens inside the generated source file. */
+#ifndef __QUEX_OPTION_PLAIN_C
+TEMPLATE_IN(InputHandleT)
+#endif
+void
+QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+                            InputHandleT*          input_handle, 
+                            const char*            CharacterEncodingName,
+                            bool                   ByteOrderReversionF,
+                            QUEX_TYPE_CHARACTER*   BufferMemory,    
+                            size_t                 BufferMemorySize,
+                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP);
+
+QUEX_INLINE void
+QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
+                            QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                            size_t               BufferMemorySize,
+                            QUEX_TYPE_CHARACTER* BufferEndOfFileP, 
+                            const char*          CharacterEncodingName /* = 0x0   */,
+                            bool                 ByteOrderReversionF   /* = false */);
+
+QUEX_INLINE void
+QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
+                               const char*         Filename, 
+                               const char*         CharacterEncodingName /* = 0x0   */,
+                               bool                ByteOrderReversionF   /* = false */);
+
+QUEX_INLINE void
+QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
+                          __QUEX_STD_FILE*    fh, 
+                          const char*         CharacterEncodingName /* = 0x0   */,
+                          bool                ByteOrderReversionF   /* = false */);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void
+QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
+                             std::istream*       p_input_stream, 
+                             const char*         CharacterEncodingName /* = 0x0   */,
+                             bool                ByteOrderReversionF   /* = false */);
+
+#endif
+
+#if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void
+QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
+                              std::wistream*      p_input_stream, 
+                              const char*         CharacterEncodingName /* = 0x0   */,
+                              bool                ByteOrderReversionF   /* = false */);
+#endif
+
+QUEX_INLINE void
+QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me); 
+
+TEMPLATE_IN(InputHandleT) void
+QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
+                 InputHandleT*        input_handle, 
+                 const char*          CharacterEncodingName /* = 0x0 */);
+
+QUEX_INLINE QUEX_TYPE_CHARACTER*
+QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
+                        QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                        size_t               BufferMemorySize,
+                        QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0 */
+                        const char*          CharacterEncodingName /* = 0x0 */);
+
+QUEX_INLINE void 
+QUEX_NAME(reset_plain)(QUEX_TYPE_ANALYZER*  me,
+                       const char*          CharacterEncodingName /* = 0x0 */);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR */
+

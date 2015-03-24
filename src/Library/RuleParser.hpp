@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014 Red Hat, Inc.
+// Copyright (C) 2015 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,9 @@
 //
 #pragma once
 #include "Typedefs.hpp"
-#include "ThirdParty/spdlog/include/spdlog/spdlog.h"
+#include "Rule.hpp"
 
 namespace usbguard
 {
-  extern std::shared_ptr<spdlog::logger> log;
-  void setupLogger(bool debug, bool syslog, bool console, const String& file);
-  void destroyLogger();
+  Rule parseRuleSpecification(const String& rule_spec);
 } /* namespace usbguard */

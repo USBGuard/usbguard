@@ -1,0 +1,98 @@
+/* -*- C++ -*- vim:set syntax=cpp: 
+ *
+ * Byte Order Mark (BOM) Handling.
+ *
+ * The byte order mark (BOM) is a Unicode character used to signal 
+ * the endianness (byte order) of a text file or stream. Its code 
+ * point is U+FEFF. 
+ * [Source: <http://en.wikipedia.org/wiki/Byte_order_mark>]
+ *
+ * This file implements a function to cut the BOM and tell about 
+ * the encoding of the data stream.
+ *
+ * (C) 2010 Frank-Rene Schaefer    
+
+ * ABSOLUTELY NO WARRANTY                                                      */
+#ifndef __QUEX_INCLUDE_GUARD__BOM
+#define __QUEX_INCLUDE_GUARD__BOM
+
+#include <quex/code_base/definitions>
+
+typedef enum {
+    QUEX_BOM_NONE            = 0x200,  /* D9 --> NONE/NOT SURE */
+    QUEX_BOM_UTF_8           = 0x001,  /* D0 --> UTF 8         */
+    QUEX_BOM_UTF_1           = 0x002,  /* D1 --> UTF 1         */
+    QUEX_BOM_UTF_EBCDIC      = 0x004,  /* D2 --> UTF EBCDIC    */
+    QUEX_BOM_BOCU_1          = 0x008,  /* D3 --> BOCU 1        */
+    QUEX_BOM_GB_18030        = 0x010,  /* D4 --> GB_18030      */
+    QUEX_BOM_UTF_7           = 0x220,  /* D5 --> UTF 7;        
+                                        * D9 --> May be not.   */
+    QUEX_BOM_UTF_16          = 0x040,  /* D6 --> UTF 16        */         
+    QUEX_BOM_UTF_16_LE       = 0x041,                          
+    QUEX_BOM_UTF_16_BE       = 0x042,                          
+    QUEX_BOM_UTF_32          = 0x080,  /* D7 --> UTF 32        */
+    QUEX_BOM_UTF_32_LE       = 0x081,                          
+    QUEX_BOM_UTF_32_BE       = 0x082,                          
+    QUEX_BOM_SCSU            = 0x100,  /* D8 --> SCSU          */
+    QUEX_BOM_SCSU_TO_UCS     = 0x101,  
+    QUEX_BOM_SCSU_W0_TO_FE80 = 0x102, 
+    QUEX_BOM_SCSU_W1_TO_FE80 = 0x103, 
+    QUEX_BOM_SCSU_W2_TO_FE80 = 0x104, 
+    QUEX_BOM_SCSU_W3_TO_FE80 = 0x105, 
+    QUEX_BOM_SCSU_W4_TO_FE80 = 0x106, 
+    QUEX_BOM_SCSU_W5_TO_FE80 = 0x107, 
+    QUEX_BOM_SCSU_W6_TO_FE80 = 0x108, 
+    QUEX_BOM_SCSU_W7_TO_FE80 = 0x109 
+} QUEX_TYPE_BOM;
+
+/* Table of (known) BOMs _____________________________________________________
+ *
+ *         BOM_UTF_8        { 0xEF, 0xBB, 0xBF }
+ *         UTF_16_BE        { 0xFE, 0xFF }
+ *         UTF_16_LE        { 0xFF, 0xFE }
+ *         UTF_32_BE        { 0x00, 0x00, 0xFE, 0xFF }
+ *         UTF_32_LE        { 0xFF, 0xFE, 0x00, 0x00 }
+ *         UTF_7_38         { 0x2B, 0x2F, 0x76, 0x38 }
+ *         UTF_7_39         { 0x2B, 0x2F, 0x76, 0x39 }
+ *         UTF_7_2B         { 0x2B, 0x2F, 0x76, 0x2B }
+ *         UTF_7_2F         { 0x2B, 0x2F, 0x76, 0x2F }
+ *         UTF_1            { 0xF7, 0x64, 0x4C }
+ *         UTF_EBCDIC       { 0xDD, 0x73, 0x66, 0x73 }
+ *         SCSU             { 0x0E, 0xFE, 0xFF }
+ *         SCSU_TO_UCS      { 0x0F, 0xFE, 0xFF }
+ *         SCSU_W0_TO_FE80  { 0x18, 0xA5, 0xFF }
+ *         SCSU_W1_TO_FE80  { 0x19, 0xA5, 0xFF }
+ *         SCSU_W2_TO_FE80  { 0x1A, 0xA5, 0xFF }
+ *         SCSU_W3_TO_FE80  { 0x1B, 0xA5, 0xFF }
+ *         SCSU_W4_TO_FE80  { 0x1C, 0xA5, 0xFF }
+ *         SCSU_W5_TO_FE80  { 0x1D, 0xA5, 0xFF }
+ *         SCSU_W6_TO_FE80  { 0x1E, 0xA5, 0xFF }
+ *         SCSU_W7_TO_FE80  { 0x1F, 0xA5, 0xFF }
+ *         BOCU_1_x         { 0xFB, 0xEE, 0x28, 0xFF }
+ *         BOCU_1           { 0xFB, 0xEE, 0x28, }
+ *         GB_18030         { 0x84, 0x31, 0x95, 0x33 }                         
+ *_____________________________________________________________________________*/
+
+QUEX_NAMESPACE_QUEX_OPEN
+
+extern QUEX_TYPE_BOM
+QUEXED_DEF(bom_snap)(__QUEX_STD_FILE* InputHandle);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+template <class InputStream> QUEX_INLINE QUEX_TYPE_BOM
+QUEXED_DEF(bom_snap)(InputStream* p_input_stream);
+#endif
+
+extern QUEX_TYPE_BOM
+QUEXED_DEF(__bom_snap_core)(uint8_t buffer[4], size_t read_n, size_t* byte_n);
+
+extern QUEX_TYPE_BOM
+QUEXED_DEF(bom_identify)(const uint8_t* const Buffer, size_t* n);
+
+extern const char*
+QUEXED_DEF(bom_name)(QUEX_TYPE_BOM BOM);
+
+QUEX_NAMESPACE_QUEX_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__BOM */
+

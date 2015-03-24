@@ -1,0 +1,28 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING
+
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+#if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    /* Command line options: --token-policy  queue               */
+    QUEX_INLINE  void
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN**);
+
+#elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)  
+    /* Command line options: --token-policy  single              */
+    QUEX_INLINE  QUEX_TYPE_TOKEN_ID
+    QUEX_NAME(receive)(QUEX_TYPE_ANALYZER* me);
+
+#else
+#   error "This section should never be compiled."
+#endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__TOKEN_RECEIVING */
+
