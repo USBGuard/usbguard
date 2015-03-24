@@ -1,6 +1,7 @@
 #include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
 #include <stdexcept>
+#include <fstream>
 
 namespace usbguard {
   
@@ -15,18 +16,48 @@ namespace usbguard {
 
   void RuleSetPrivate::load(const String& path)
   {
+    std::ifstream stream(path);
+    if (!stream.is_open()) {
+      throw std::runtime_error("Cannot load ruleset file");
+    }
+    load(stream);
+    return;
   }
   
   void RuleSetPrivate::load(std::istream& stream)
   {
+    std::string line_string;
+    size_t line_number = 0;
+
+    do {
+      ++line_number;
+      std::getline(stream, line_string);
+      const Rule rule = Rule::fromString(line_string);
+      if (rule) {
+	const uint32_t seqn = appendRule(rule);
+      }
+    } while(stream.good());
+
+    return;
   }
   
   void RuleSetPrivate::save(const String& path)
   {
+    std::ofstream stream(path, std::fstream::trunc);
+    if (!stream.is_open()) {
+      throw std::runtime_error("Cannot store ruleset to file");
+    }
+    save(stream);
+    return;
   }
   
   void RuleSetPrivate::save(std::ostream& stream)
   {
+    for (auto const& rule : _rules) {
+      const std::string rule_string = rule->toString();
+      stream << rule_string << std::endl;
+    }
+    return;
   }
   
   void RuleSetPrivate::setDefaultTarget(Rule::Target target)
