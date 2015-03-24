@@ -54,6 +54,8 @@ If you want to compile the sources in a cloned repository, there's one additiona
 This will fetch the sources of [cppformat](https://github.com/cppformat/cppformat), [json](https://github.com/nlohmann/json/)
 and [spdlog](https://github.com/gabime/spdlog) which are used in this project too.
 
+If you want to modify the lexer and/or the parser, you'll have to generate new source files for them. To learn how to do that, read [src/Library/RuleParser/README.md](src/Library/RuleParser/README.md).
+
 ## Pre-compiled packages
 
 ### Fedora Linux
