@@ -65,6 +65,7 @@ namespace usbguard {
     void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
 
+    operator bool() const;
     String toString() const;
 
     /*** Static methods ***/

@@ -152,6 +152,12 @@ namespace usbguard {
     return;
   }
 
+  Rule::operator bool() const
+  {
+    return !(getTarget() == Target::Unknown ||
+	     getTarget() == Target::Invalid);
+  }
+
   String Rule::toString() const
   {
     return d_pointer->toString();
