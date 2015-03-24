@@ -22,7 +22,7 @@ void printUsage(std::ostream& stream, const char *arg0)
   stream << "   -l <path> \t Log to a file at `path'." << std::endl;
   stream << "   -p <path> \t Write PID to a file at `path'." << std::endl;
   stream << "   -c <path> \t Load configuration from a file at `path'." << std::endl;
-  stream << "             \t (default: /etc/usbguard/usbguardd.conf)" << std::endl;
+  stream << "             \t (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
   stream << "   -h        \t Show this usage screen." << std::endl;
   stream << std::endl;
 }
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   bool log_console = false;
   String log_file;
   String pid_file;
-  String conf_file = "usbguardd.conf";
+  String conf_file = "/etc/usbguard/usbguard-daemon.conf";
   int opt;
 
   while ((opt = getopt(argc, argv, G_optstring)) != -1) {
