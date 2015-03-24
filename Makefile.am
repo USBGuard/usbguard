@@ -40,7 +40,9 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleParser/Lexer.hpp \
 	src/Library/RuleParser/Lexer-token.hpp \
 	src/Library/RuleParser/Lexer-token_ids.hpp \
-	src/Library/RuleParser/Parser.h
+	src/Library/RuleParser/Parser.h \
+	src/Common/Thread.hpp \
+	src/Common/JSON.hpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -70,7 +72,10 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/SysIO.hpp \
 	src/Daemon/main.cpp \
 	src/Common/Logging.cpp \
-	src/Common/Utility.cpp
+	src/Common/Logging.hpp \
+	src/Common/Utility.hpp \
+	src/Common/Utility.cpp \
+	src/Common/CCBQueue.hpp
 
 usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
