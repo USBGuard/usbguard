@@ -1,6 +1,6 @@
 Name:           usbguard
-Version:        0.1
-Release:        2%{?dist}
+Version:        0.2
+Release:        1%{?dist}
 Summary:        USBGuard
 Group:          System Environment/Libraries
 License:        GPLv2+
@@ -107,5 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Mar 24 2015 Daniel Kopecek <dkopecek@redhat.com> 0.2-1
+- Update to version 0.2
+
 * Tue Mar 17 2015 Daniel Kopecek <dkopecek@redhat.com> 0.1-1
 - Initial package
