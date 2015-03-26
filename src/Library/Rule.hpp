@@ -40,6 +40,7 @@ namespace usbguard {
     uint32_t getSeqn() const;
     const String& getVendorID() const;
     const String& getProductID() const;
+    const String& getSerialNumber() const;
     const String& getDeviceName() const;
     const String& getDeviceHash() const;
     const StringVector& getDevicePorts() const;
@@ -51,10 +52,12 @@ namespace usbguard {
 
     bool appliesTo(Pointer<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
+    bool isImplicit() const;
     
     void setSeqn(uint32_t seqn);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
+    void setSerialNumber(const String& serial_number);
     void setDeviceName(const String& device_name);
     void setDeviceHash(const String& device_hash);
     void setDevicePorts(const StringVector& device_ports);

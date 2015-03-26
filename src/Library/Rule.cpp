@@ -31,6 +31,11 @@ namespace usbguard {
   {
     return d_pointer->getProductID();
   }
+
+  const String& Rule::getSerialNumber() const
+  {
+    return d_pointer->getSerialNumber();
+  }
   
   const String& Rule::getDeviceName() const
   {
@@ -81,6 +86,11 @@ namespace usbguard {
   {
     return d_pointer->appliesTo(rhs);
   }
+
+  bool Rule::isImplicit() const
+  {
+    return d_pointer->getSeqn() == Rule::SeqnDefault;
+  }
   
   void Rule::setSeqn(uint32_t seqn)
   {
@@ -100,6 +110,12 @@ namespace usbguard {
     return;
   }
   
+  void Rule::setSerialNumber(const String& serial_number)
+  {
+    d_pointer->setSerialNumber(serial_number);
+    return;
+  }
+
   void Rule::setDeviceName(const String& device_name)
   {
     d_pointer->setDeviceName(device_name);

@@ -25,6 +25,11 @@ namespace usbguard {
   {
     return _product_id;
   }
+
+  const String& RulePrivate::getSerialNumber() const
+  {
+    return _serial_number;
+  }
   
   const String& RulePrivate::getDeviceName() const
   {
@@ -132,6 +137,12 @@ namespace usbguard {
   void RulePrivate::setProductID(const String& product_id)
   {
     _product_id = product_id;
+    return;
+  }
+
+  void RulePrivate::setSerialNumber(const String& serial_number)
+  {
+    _serial_number = serial_number;
     return;
   }
   
