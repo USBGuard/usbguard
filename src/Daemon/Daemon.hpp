@@ -28,17 +28,21 @@ namespace usbguard
     void loadConfiguration(const String& path);
     void loadRules(const String& path);
 
-    /* start threads */
+    /* Start the daemon */
     void run();
-    /* stop all threads */
+    /* Stop the daemon */
     void quit();
 
+    uint32_t assignSeqn();
+
+    /* IPC methods */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);
     void allowDevice(uint32_t seqn, bool append,  uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
- 
+
+    /* IPC Signals */
     void DeviceInserted(uint32_t seqn,
 		     const std::string& name,
 		     const std::string& usb_class,

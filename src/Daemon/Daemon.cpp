@@ -126,37 +126,9 @@ namespace usbguard
     qb_loop_stop(_qb_loop);
   }
 
-  void Daemon::udevHandleEvent()
+  uint32_t Daemon::assignSeqn()
   {
-    struct udev_device *dev = udev_monitor_receive_device(_umon);
-
-    if (!dev) {
-      return;
-    }
-
-    const char *action_cstr = udev_device_get_action(dev);
-
-    if (!action_cstr) {
-      log->warn("BUG? Device event witout action value.");
-      udev_device_unref(dev);
-      return;
-    }
-
-    const std::string action(action_cstr);
-
-    if (action == "add") {
-      processDeviceInsertion(dev);
-    }
-    else if (action == "remove") {
-      processDeviceRemoval(dev);
-    }
-    else {
-      log->warn("BUG? Unknown device action value \"{}\"", action);
-    }
-    /* Unref the udev device */
-    udev_device_unref(dev);
-
-    return;
+    return _ruleset.assignSeqn();
   }
 
   Pointer<const Rule> Daemon::syncDeviceRule(Pointer<Rule> device_rule)

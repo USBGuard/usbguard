@@ -72,4 +72,10 @@ namespace usbguard {
   {
     return d_pointer->assignSeqn(rule);
   }
+
+  uint32_t RuleSet::assignSeqn()
+  {
+    return d_pointer->assignSeqn();
+  }
+
 } /* namespace usbguard */

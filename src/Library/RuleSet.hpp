@@ -86,11 +86,16 @@ namespace usbguard {
     Pointer<Rule> getTimedOutRule();
 
     /**
-     * Assign an unique sequence number to a rule.
+     * Assign a unique sequence number to a rule.
      * Return the assigned sequence number.
      */
     uint32_t assignSeqn(Pointer<Rule> rule);
-    
+
+    /**
+     * Generate a unique sequence number.
+     */
+    uint32_t assignSeqn();
+
   private:
     RuleSetPrivate* d_pointer;
   };

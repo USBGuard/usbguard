@@ -164,7 +164,13 @@ namespace usbguard {
 
   uint32_t RuleSetPrivate::assignSeqn(Pointer<Rule> rule)
   {
-    rule->setSeqn(_seqn_next++);
+    rule->setSeqn(assignSeqn());
     return rule->getSeqn();
   }
+
+  uint32_t RuleSetPrivate::assignSeqn()
+  {
+    return _seqn_next++;
+  }
+
 } /* namespace usbguard */
