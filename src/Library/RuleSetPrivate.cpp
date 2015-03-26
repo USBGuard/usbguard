@@ -34,7 +34,7 @@ namespace usbguard {
       std::getline(stream, line_string);
       const Rule rule = Rule::fromString(line_string);
       if (rule) {
-	const uint32_t seqn = appendRule(rule);
+	appendRule(rule);
       }
     } while(stream.good());
 
