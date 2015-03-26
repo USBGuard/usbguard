@@ -15,7 +15,6 @@ namespace usbguard
     void disconnect();
     bool isConnected() const;
     void wait();
-    void processEvent();
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);

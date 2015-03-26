@@ -36,12 +36,6 @@ namespace usbguard
     return;
   }
 
-  void IPCClient::processEvent()
-  {
-    d_pointer->processEvent();
-    return;
-  }
-
   uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec)
   {
     return d_pointer->appendRule(rule_spec, parent_seqn, timeout_sec);

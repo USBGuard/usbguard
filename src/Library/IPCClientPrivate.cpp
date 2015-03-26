@@ -149,7 +149,7 @@ namespace usbguard
 
   static int32_t qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data)
   {
-    IPCClient *client = static_cast<IPCClient*>(data);
+    IPCClientPrivate *client = static_cast<IPCClientPrivate*>(data);
     try {
       client->processEvent();
     } catch(const IPCException& ex) {
