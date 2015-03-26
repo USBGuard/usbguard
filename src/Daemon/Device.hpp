@@ -11,12 +11,12 @@ namespace usbguard {
     Device();
 
     std::mutex& refDeviceMutex();
-    Pointer<Rule> getDeviceRule();
+    Pointer<Rule> getDeviceRule(bool include_port = false);
     uint32_t getSeqn() const;
+    String getDeviceHash(bool include_port = false) const;
     void setSeqn(uint32_t seqn);
     void setTarget(Rule::Target target);
     void setDeviceName(const String& name);
-    void setDeviceHash(const String& hash);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
     void setSerialNumber(const String& serial_number);
@@ -28,7 +28,6 @@ namespace usbguard {
     uint32_t _seqn;
     Rule::Target _target;
     String _name;
-    String _hash;
     String _vendor_id;
     String _product_id;
     String _serial_number;

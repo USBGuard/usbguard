@@ -5,8 +5,8 @@
 #include "DeviceManager.hpp"
 #include "Rule.hpp"
 #include "SysIO.hpp"
-#include "UDev.hpp"
 #include "Common/Thread.hpp"
+#include <libudev.h>
 
 namespace usbguard {
   class LinuxDevice : public Device

@@ -66,8 +66,6 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
 	src/Daemon/Exceptions.hpp \
-	src/Daemon/UDev.cpp \
-	src/Daemon/UDev.hpp \
 	src/Daemon/SysIO.cpp \
 	src/Daemon/SysIO.hpp \
 	src/Daemon/Device.hpp \

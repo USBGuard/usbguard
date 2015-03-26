@@ -16,10 +16,6 @@ namespace usbguard {
       log->debug("DeviceName={}", name);
       setDeviceName(name);
     }
-
-    const String hash = UDevDeviceHash(dev);
-    setDeviceHash(hash);
-    log->debug("DeviceHash={}", hash);
     
     const char *id_vendor = udev_device_get_sysattr_value(dev, "idVendor");
     if (id_vendor) {
@@ -46,6 +42,8 @@ namespace usbguard {
     } else {
       throw std::runtime_error("device wihtout syspath");
     }
+
+    log->debug("DeviceHash={}", getDeviceHash());
 
     setTarget(Rule::Target::Unknown);
 
