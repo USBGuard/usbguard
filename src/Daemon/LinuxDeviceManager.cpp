@@ -84,6 +84,10 @@ namespace usbguard {
   LinuxDeviceManager::~LinuxDeviceManager()
   {
     setDefaultBlockedState(/*state=*/false); // FIXME: Set to previous state
+    stop();
+    udev_monitor_unref(_umon);
+    udev_unref(_udev);
+    close(_event_fd);
     return;
   }
 
