@@ -1,8 +1,9 @@
-#ifndef USBFW_SYSIO_HPP
-#define USBFW_SYSIO_HPP
+#pragma once
 
 #include "Common/CCBQueue.hpp"
 #include <limits.h>
+#include <dirent.h>
+#include <string>
 
 namespace usbguard
 {
@@ -28,8 +29,9 @@ namespace usbguard
 
   typedef CCBQueue<SysIORequest> SysIOQueue;
 
-  void sysIOWrite(const char *path, int value);
+  void sysioWrite(const char *path, int value);
+  ssize_t sysioWriteFileAt(DIR* dirfp, const std::string& relpath, char *buffer, size_t buflen);
+  ssize_t sysioReadFileAt(DIR* dirfp, const std::string& relpath, char *buffer, size_t buflen);
+  void sysioSetAuthorizedDefault(bool state);
 
 } /* namespace usbguard */
-
-#endif /* USBFW_SYSIO_HPP */

@@ -6,12 +6,11 @@
 #include "IPC.hpp"
 #include "RuleSet.hpp"
 #include "Rule.hpp"
+#include "Device.hpp"
+#include "DeviceManager.hpp"
 
 #include "Common/Thread.hpp"
 #include "Common/JSON.hpp"
-
-#include "SysIO.hpp"
-#include "UDev.hpp"
 
 #include <mutex>
 #include <qb/qbipcs.h>
@@ -81,6 +80,14 @@ namespace usbguard
 			bool rule_match,
 			uint32_t rule_seqn);
 
+    /* Device manager hooks */
+    void dmDeviceInserted(Pointer<Device> device);
+    void dmDevicePresent(Pointer<Device> device) {}
+    void dmDeviceRemoved(Pointer<Device> device);
+    void dmDeviceAllowed(Pointer<Device> device);
+    void dmDeviceBlocked(Pointer<Device> device);
+    void dmDeviceRejected(Pointer<Device> device);
+
     json processJSON(const json& jobj);
     json processMethodCallJSON(const json& jobj);
 
@@ -97,7 +104,6 @@ namespace usbguard
     static int32_t qbIPCDispatchAdd(enum qb_loop_priority p, int32_t fd, int32_t evts, void *data, qb_ipcs_dispatch_fn_t fn);
     static int32_t qbIPCDispatchMod(enum qb_loop_priority p, int32_t fd, int32_t evts, void *data, qb_ipcs_dispatch_fn_t fn);
     static int32_t qbIPCDispatchDel(int32_t fd);
-    static int32_t qbIPCEventFd(int32_t fd, int32_t revents, void *data);
 
     void initIPC();
     void finiIPC();
@@ -105,31 +111,16 @@ namespace usbguard
     void qbIPCBroadcastData(const struct iovec *iov, size_t iov_len);
     void qbIPCBroadcastString(const std::string& s);
 
-    void udevHandleEvent();
-    void processDeviceInsertion(struct udev_device *device);
-    void processDeviceRemoval(struct udev_device *device);
-
-    Pointer<const Rule> syncDeviceRule(Pointer<Rule> device_rule);
-    void evalDeviceRule(Pointer<Rule> device_rule,
-			Pointer<const Rule> matching_rule = makePointer<Rule>());
-    void sysioSyncState(Pointer<Rule> device_rule);
-    void applyDevicePolicy(uint32_t seqn, Rule::Target target, bool append, uint32_t timeout_sec);
-
-    unsigned int dmAddDeviceRule(Pointer<Rule> rule);
-    Pointer<Rule> dmGetDeviceRuleBySeqnMutable(unsigned int seqn);
-    Pointer<const Rule> dmGetDeviceRuleBySeqn(unsigned int seqn) const;
-    Pointer<const Rule> dmGetDeviceRuleByPath(const String& syspath);
-    void dmRemoveDeviceRule(Pointer<const Rule> rule);
-    void sysioSetAuthorizedDefault(bool state);
+    void allowDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
+    void blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
+    void rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
 
   private:
     ConfigFile _config;
     RuleSet _ruleset;
+    DeviceManager *_dm;
     qb_loop_t *_qb_loop;
     qb_ipcs_service_t *_qb_service;
-    struct udev *_udev;
-    struct udev_monitor *_umon;
-    PointerMap<unsigned int, Rule> _device_map;
   };
 } /* namespace usbguard */
 

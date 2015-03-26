@@ -70,6 +70,12 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/UDev.hpp \
 	src/Daemon/SysIO.cpp \
 	src/Daemon/SysIO.hpp \
+	src/Daemon/Device.hpp \
+	src/Daemon/Device.cpp \
+	src/Daemon/DeviceManager.hpp \
+	src/Daemon/DeviceManager.cpp \
+	src/Daemon/LinuxDeviceManager.hpp \
+	src/Daemon/LinuxDeviceManager.cpp \
 	src/Daemon/main.cpp \
 	src/Common/Logging.cpp \
 	src/Common/Logging.hpp \
