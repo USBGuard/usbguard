@@ -279,8 +279,14 @@ namespace usbguard {
       return;
     }
     const String syspath(syspath_cstr);
-    Pointer<Device> device = removeDevice(syspath);
-    DeviceRemoved(device);
+    try {
+      Pointer<Device> device = removeDevice(syspath);
+      DeviceRemoved(device);
+    } catch(...) {
+      /* Ignore for now */
+      log->debug("Removal of an unknown device ignored.");
+      return;
+    }
     return;
   }
 
