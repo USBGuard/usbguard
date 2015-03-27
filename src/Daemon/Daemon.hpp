@@ -1,5 +1,4 @@
-#ifndef USBFW_DAEMON_HPP
-#define USBFW_DAEMON_HPP
+#pragma once
 
 #include "Typedefs.hpp"
 #include "ConfigFile.hpp"
@@ -37,6 +36,7 @@ namespace usbguard
     /* IPC methods */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);
+
     void allowDevice(uint32_t seqn, bool append,  uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
@@ -115,7 +115,7 @@ namespace usbguard
     void blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
     void rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
 
-    Pointer<Rule> appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec);
+    Pointer<const Rule> appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec);
 
   private:
     ConfigFile _config;
@@ -125,5 +125,3 @@ namespace usbguard
     qb_ipcs_service_t *_qb_service;
   };
 } /* namespace usbguard */
-
-#endif /* USBFW_DAEMON_HPP */

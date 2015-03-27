@@ -53,6 +53,11 @@ namespace usbguard {
     return d_pointer->appendRule(rule, parent_seqn);
   }
 
+  Pointer<const Rule> RuleSet::getRule(uint32_t seqn)
+  {
+    return d_pointer->getRule(seqn);
+  }
+
   bool RuleSet::removeRule(uint32_t seqn)
   {
     return d_pointer->removeRule(seqn);

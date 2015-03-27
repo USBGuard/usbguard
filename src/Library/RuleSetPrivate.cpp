@@ -26,6 +26,7 @@ namespace usbguard {
   
   void RuleSetPrivate::load(std::istream& stream)
   {
+    std::unique_lock<std::mutex> lock(_io_mutex);
     std::string line_string;
     size_t line_number = 0;
 
@@ -53,6 +54,9 @@ namespace usbguard {
   
   void RuleSetPrivate::save(std::ostream& stream)
   {
+    std::unique_lock<std::mutex> io_lock(_io_mutex);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
     for (auto const& rule : _rules) {
       const std::string rule_string = rule->toString();
       stream << rule_string << std::endl;
@@ -62,18 +66,21 @@ namespace usbguard {
   
   void RuleSetPrivate::setDefaultTarget(Rule::Target target)
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
     _default_target = target;
     return;
   }
 
   void RuleSetPrivate::setDefaultAction(const String& action)
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
     _default_action = action;
     return;
   }
 
   uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn)
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
     auto rule_ptr = makePointer<Rule>(rule);
 
     /* Assign a unique sequence number to the rule */
@@ -112,8 +119,20 @@ namespace usbguard {
     return rule_ptr->getSeqn();
   }
 
+  Pointer<const Rule> RuleSetPrivate::getRule(uint32_t seqn)
+  {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    for (auto const& rule : _rules) {
+      if (rule->getSeqn() == seqn) {
+	return rule;
+      }
+    }
+    throw std::out_of_range("Rule not found");
+  }
+
   bool RuleSetPrivate::removeRule(uint32_t seqn)
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto it = _rules.begin(); it != _rules.end(); ++it) {
       auto const& rule_ptr = *it;
       if (rule_ptr->getSeqn() == seqn) {
@@ -127,6 +146,8 @@ namespace usbguard {
 
   Pointer<const Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn)
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
     for (auto const& rule_ptr : _rules) {
       if (rule_ptr->appliesTo(device_rule)) {
 	return rule_ptr;
@@ -144,6 +165,8 @@ namespace usbguard {
 
   Pointer<Rule> RuleSetPrivate::getTimedOutRule()
   {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
     if (_rules_timed.size() < 1) {
       return nullptr;
     }

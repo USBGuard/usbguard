@@ -206,11 +206,103 @@ namespace usbguard {
   
   String RulePrivate::toString() const
   {
-    return String();
+    String rule_string;
+
+    switch(_target) {
+    case Rule::Target::Allow:
+      rule_string = "allow";
+      break;
+    case Rule::Target::Block:
+      rule_string = "block";
+      break;
+    case Rule::Target::Reject:
+      rule_string = "reject";
+      break;
+    default:
+      throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
+    }
+
+    if (!_vendor_id.empty() && !_product_id.empty()) {
+      rule_string.append(" ");
+      rule_string.append(_vendor_id);
+      rule_string.append(":");
+      rule_string.append(_product_id);
+    }
+    else if (!_vendor_id.empty() && _product_id.empty()) {
+      rule_string.append(" ");
+      rule_string.append(_vendor_id);
+      rule_string.append(":*");
+    }
+    else if (_vendor_id.empty() && !_product_id.empty()) {
+      throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
+    }
+    else {
+      /* DeviceID not specified is the same as "*:*" */
+    }
+    /* Serial Number */
+    toString_addNonEmptyField(rule_string, "serial", _serial_number);
+    /* Device Name */
+    toString_addNonEmptyField(rule_string, "name", _device_name);
+    /* Device Hash */
+    toString_addNonEmptyField(rule_string, "hash", _device_hash);
+    /* Device Ports */
+    if (_device_ports.size() == 1) {
+      toString_addNonEmptyField(rule_string, "port", _device_ports[0]);
+    }
+    else if (_device_ports.size() > 1) {
+      rule_string.append(" port { ");
+      for (auto const& port : _device_ports) {
+	rule_string.append("\"");
+	rule_string.append(port);
+	rule_string.append("\" ");
+      }
+      rule_string.append("}");
+    }
+    /* Device Interface Types */
+    // FIXME
+    /* Action */
+    toString_addNonEmptyField(rule_string, "action", _action);
+
+    return rule_string;
   }
 
   Rule RulePrivate::fromString(const String& rule_string)
   {
     return parseRuleSpecification(rule_string);
   }
+
+  void RulePrivate::toString_addNonEmptyField(String& rule, const String& name, const String& value)
+  {
+    if (value.empty()) {
+      return;
+    }
+
+    rule.append(" ");
+    rule.append(name);
+    rule.append(" ");
+    rule.append(quoteEscapeString(value));
+
+    return;
+  }
+
+  String RulePrivate::quoteEscapeString(const String& value)
+  {
+    String result;
+    result.append("\"");
+    for (auto c : value) {
+      switch(c) {
+      case '"':
+	result.append("\\");
+	result.append("\"");
+	continue;
+      case '\\':
+	result.append("\\");
+	result.append("\\");
+	continue;
+      }
+    }
+    result.append("\"");
+    return std::move(result);
+  }
+
 } /* namespace usbguard */

@@ -4,6 +4,7 @@
 #include "RuleSet.hpp"
 #include <istream>
 #include <ostream>
+#include <mutex>
 
 namespace usbguard {
   class RuleSetPrivate
@@ -26,6 +27,8 @@ namespace usbguard {
     uint32_t assignSeqn();
 
   private:
+    std::mutex _io_mutex; /* mutex for load/save */
+    std::mutex _op_mutex; /* mutex for operations on the rule set */
     RuleSet& _p_instance;
     Rule::Target _default_target;
     String _default_action;

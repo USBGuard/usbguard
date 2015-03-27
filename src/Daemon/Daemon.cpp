@@ -109,19 +109,27 @@ namespace usbguard
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
     log->debug("Appending rule: {}", rule_spec);
-    return _ruleset.appendRule(rule, parent_seqn);
+    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn);
+    if (_config.hasSettingValue("RuleFile")) {
+      _ruleset.save(_config.getSettingValue("RuleFile"));
+    }
+    return seqn;
   }
 
   void Daemon::removeRule(uint32_t seqn)
   {
     log->debug("Removing rule: seqn={}", seqn);
     _ruleset.removeRule(seqn);
+    if (_config.hasSettingValue("RuleFile")) {
+      _ruleset.save(_config.getSettingValue("RuleFile"));
+    }
+    return;
   }
   
   void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Allowing device: {}", seqn);
-    Pointer<Rule> rule;
+    Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Allow, timeout_sec);
     }
@@ -135,7 +143,7 @@ namespace usbguard
   void Daemon::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Blocking device: {}", seqn);
-    Pointer<Rule> rule;
+    Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Block, timeout_sec);
     }
@@ -149,7 +157,7 @@ namespace usbguard
   void Daemon::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Rejecting device: {}", seqn);
-    Pointer<Rule> rule;
+    Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Reject, timeout_sec);
     }
@@ -679,9 +687,14 @@ namespace usbguard
     return;
   }
 
-  Pointer<Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target taget, uint32_t timeout_sec)
+  Pointer<const Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec)
   {
-    return nullptr; /* FIXME */
+    Pointer<Device> device = _dm->getDevice(seqn);
+    Pointer<Rule> device_rule = device->getDeviceRule();
+    device_rule->setTarget(target);
+    const String rule_string = device_rule->toString();
+    const uint32_t rule_seqn = appendRule(rule_string, Rule::SeqnLast, timeout_sec);
+    return _ruleset.getRule(rule_seqn);
   }
 
 } /* namespace usbguard */
