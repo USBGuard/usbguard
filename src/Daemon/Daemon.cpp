@@ -121,7 +121,13 @@ namespace usbguard
   void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Allowing device: {}", seqn);
-    Pointer<Rule> rule = makePointer<Rule>();
+    Pointer<Rule> rule;
+    if (append) {
+      rule = appendDeviceRule(seqn, Rule::Target::Allow, timeout_sec);
+    }
+    else {
+      rule = makePointer<Rule>();
+    }
     allowDevice(seqn, rule);
     return;
   }
@@ -129,7 +135,13 @@ namespace usbguard
   void Daemon::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Blocking device: {}", seqn);
-    Pointer<Rule> rule = makePointer<Rule>();
+    Pointer<Rule> rule;
+    if (append) {
+      rule = appendDeviceRule(seqn, Rule::Target::Block, timeout_sec);
+    }
+    else {
+      rule = makePointer<Rule>();
+    }
     blockDevice(seqn, rule);
     return;
   }
@@ -137,7 +149,13 @@ namespace usbguard
   void Daemon::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     log->debug("Rejecting device: {}", seqn);
-    Pointer<Rule> rule = makePointer<Rule>();
+    Pointer<Rule> rule;
+    if (append) {
+      rule = appendDeviceRule(seqn, Rule::Target::Reject, timeout_sec);
+    }
+    else {
+      rule = makePointer<Rule>();
+    }
     rejectDevice(seqn, rule);
     return;
   }
@@ -659,6 +677,11 @@ namespace usbguard
 		   (matched_rule->getSeqn() != Rule::SeqnDefault),
 		   matched_rule->getSeqn());
     return;
+  }
+
+  Pointer<Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target taget, uint32_t timeout_sec)
+  {
+    return nullptr; /* FIXME */
   }
 
 } /* namespace usbguard */

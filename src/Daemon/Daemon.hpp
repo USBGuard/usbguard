@@ -115,6 +115,8 @@ namespace usbguard
     void blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
     void rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
 
+    Pointer<Rule> appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec);
+
   private:
     ConfigFile _config;
     RuleSet _ruleset;
