@@ -1,13 +1,13 @@
-# usbguard
+# USBGuard
 
-The usbguard software framework helps to protect your computer against rogue USB devices by implementing basic
+The USBGuard software framework helps to protect your computer against rogue USB devices by implementing basic
 whitelisting/blacklisting capabilities based on USB device attributes.
 
 **WARNING**: The 0.x releases are not production ready packages. They serve for tech-preview and user feedback purposes
 only. Please share your feedback or request a feature in the Github issue trackers for each project:
 
-Report a bug or request a feature in [usbguard](https://github.com/dkopecek/usbguard/issues/new)
-Report a bug or request a feature in [usbguard-applet-qt](https://github.com/dkopecek/usbguard-applet-qt/issues/new)
+ * [Report a bug or request a feature in **usbguard**](https://github.com/dkopecek/usbguard/issues/new)
+ * [Report a bug or request a feature in **usbguard-applet-qt**](https://github.com/dkopecek/usbguard-applet-qt/issues/new)
 
 ## Use Cases
 
@@ -28,7 +28,7 @@ The project makes possible to easily implement triggering of various actions whe
 
 ## Supported Operating Systems
 
-Currently, usbguard works only on Linux. To enforce the user-defined policy, it uses the USB device authorization feature
+Currently, USBGuard works only on Linux. To enforce the user-defined policy, it uses the USB device authorization feature
 implemented in the Linux kernel since the year 2007. Read [this document](https://www.kernel.org/doc/Documentation/usb/authorization.txt)
 if you want to know more.
 
@@ -73,7 +73,7 @@ To actually start the daemon, use:
 
 ## Rules
 
-The usbguard daemon decides which USB device to authorize based on a policy defined by a set of rules. When an USB device is inserted into
+The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules. When an USB device is inserted into
 the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either authorizes (allows), deauthorizes
 (blocks) or removes (rejects) the device, based on the rule target. If no matching rule is found, the decision is based on an implicit default
 target. This implicit default is to block the device until a decision is made by the user.
@@ -111,7 +111,7 @@ do so with a device id and/or device attributes.
 
 #### Device ID
 
-A USB device ID, as understood by usbguard, is the colon delimited pair *vendor\_id:product\_id*. All USB devices have this
+A USB device ID is the colon delimited pair *vendor\_id:product\_id*. All USB devices have this
 ID assigned by the manufacturer and it should uniquely identify a USB product. Both *vendor\_id* and *product\_id* are 16-bit
 numbers represented in hexadecimal base.
 
