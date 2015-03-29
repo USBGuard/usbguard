@@ -120,7 +120,7 @@ specific vendor, e.g. `1234:*`.
 
 #### Device attributes
 
-(Please see [issue #11](https://github.com/dkopecek/usbguard/issues/11) and comment on the proposed changes to related to this section)
+(Please see [issue #11](https://github.com/dkopecek/usbguard/issues/11) and comment on the proposed changes related to this section)
 
 Device attributes are specific value read from the USB device after it's inserted to the system. Which attributes are
 available is defined bellow. Some of the attributes are derived or based on attributes read directly from the device.
