@@ -28,6 +28,15 @@ namespace usbguard {
     /**< Sequence number for specifying that the last rule in the ruleset should be used in context of the operation */
     static const uint32_t SeqnLast = std::numeric_limits<uint32_t>::max() - 1;
 
+    enum SetOperator {
+      AllOf,
+      AnyOf,
+      OneOf,
+      NoneOf,
+      EqualsSetOf,
+      EqualsOrderedSetOf,
+    };
+
     /**
      * Construct a default rule.
      * This rule matches only a default rule and cannot be converted to a string
