@@ -1,3 +1,4 @@
+
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST=
 
@@ -68,6 +69,8 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Exceptions.hpp \
 	src/Daemon/SysIO.cpp \
 	src/Daemon/SysIO.hpp \
+	src/Daemon/USB.cpp \
+	src/Daemon/USB.hpp \
 	src/Daemon/Device.hpp \
 	src/Daemon/Device.cpp \
 	src/Daemon/DeviceManager.hpp \
