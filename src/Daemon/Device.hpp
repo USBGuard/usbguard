@@ -2,6 +2,7 @@
 
 #include "Typedefs.hpp"
 #include "Rule.hpp"
+#include "USB.hpp"
 #include <mutex>
 
 namespace usbguard {
@@ -20,8 +21,12 @@ namespace usbguard {
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
     void setSerialNumber(const String& serial_number);
-    void setInterfaceTypes(const StringVector& types);
-    StringVector& refInterfaceTypes();
+
+    std::vector<USBInterfaceType>& refInterfaceTypes();
+
+    void loadDeviceDescriptor(const USBDeviceDescriptor* descriptor);
+    void loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor);
+    void loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor);
 
   private:
     std::mutex _mutex;
@@ -31,6 +36,6 @@ namespace usbguard {
     String _vendor_id;
     String _product_id;
     String _serial_number;
-    StringVector _interface_types;
+    std::vector<USBInterfaceType> _interface_types;
   };
 } /* namespace usbguard */

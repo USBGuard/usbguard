@@ -30,7 +30,6 @@ namespace usbguard {
     //}
     device_rule->setDeviceName(_name);
     device_rule->setDeviceHash(getDeviceHash(/*include_port=*/false));
-    device_rule->setInterfaceTypes(_interface_types);
     
     return std::move(device_rule);
   }
@@ -56,13 +55,6 @@ namespace usbguard {
 	&_name, &_vendor_id, &_product_id, &_serial_number }) {
       /* Update the hash value */
       crypto_generichash_update(&state, (const uint8_t *)field->c_str(), field->size());
-    }
-
-    const uint32_t types = _interface_types.size();
-    crypto_generichash_update(&state, (const uint8_t *)&types, sizeof types);
-
-    for (auto const& type : _interface_types) {
-      crypto_generichash_update(&state, (const uint8_t *)type.c_str(), type.size());
     }
 
     /* Finalize the hash value */
@@ -112,13 +104,7 @@ namespace usbguard {
     return;
   }
 
-  void Device::setInterfaceTypes(const StringVector& types)
-  {
-    _interface_types = types;
-    return;
-  }
-
-  StringVector& Device::refInterfaceTypes()
+  std::vector<USBInterfaceType>& Device::refInterfaceTypes()
   {
     return _interface_types;
   }
