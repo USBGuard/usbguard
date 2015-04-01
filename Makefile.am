@@ -69,6 +69,7 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Exceptions.hpp \
 	src/Daemon/SysIO.cpp \
 	src/Daemon/SysIO.hpp \
+	src/Daemon/ByteOrder.hpp \
 	src/Daemon/USB.cpp \
 	src/Daemon/USB.hpp \
 	src/Daemon/Device.hpp \

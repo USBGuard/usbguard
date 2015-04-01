@@ -37,5 +37,7 @@ namespace usbguard {
     String _product_id;
     String _serial_number;
     std::vector<USBInterfaceType> _interface_types;
+    int _num_configurations;
+    int _num_interfaces;
   };
 } /* namespace usbguard */

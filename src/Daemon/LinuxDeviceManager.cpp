@@ -2,9 +2,11 @@
 #include "Daemon.hpp"
 #include "SysIO.hpp"
 #include "Common/Logging.hpp"
+#include "USB.hpp"
 #include <sys/eventfd.h>
 #include <sys/select.h>
 #include <stdexcept>
+#include <fstream>
 
 namespace usbguard {
 
@@ -46,6 +48,58 @@ namespace usbguard {
     log->debug("DeviceHash={}", getDeviceHash());
 
     setTarget(Rule::Target::Unknown);
+
+    std::ifstream descriptor_stream(_syspath + "/descriptors", std::ifstream::binary);
+    if (!descriptor_stream.good()) {
+      throw std::runtime_error("cannot load USB descriptors");
+    }
+    else {
+      readDescriptors(descriptor_stream);
+    }
+
+    return;
+  }
+
+  void LinuxDevice::readDescriptors(std::istream& stream)
+  {
+    char buffer[sizeof(USBDeviceDescriptor)];
+    stream.read(buffer, sizeof buffer);
+
+    const USBDeviceDescriptor descriptor = \
+      USBParseDeviceDescriptor(buffer, stream.gcount());
+    loadDeviceDescriptor(&descriptor);
+
+    for (size_t c = 0; c < descriptor.bNumConfigurations; ++c) {
+      readConfiguration(c, stream);
+    }
+
+    return;
+  }
+
+  void LinuxDevice::readConfiguration(int c_num, std::istream& stream)
+  {
+    char buffer[sizeof(USBConfigurationDescriptor)];
+    stream.read(buffer, sizeof buffer);
+
+    const USBConfigurationDescriptor descriptor = \
+      USBParseConfigurationDescriptor(buffer, stream.gcount());
+    loadConfigurationDescriptor(c_num, &descriptor);
+
+    for (size_t i = 0; i < descriptor.bNumInterfaces; ++i) {
+      readInterfaceDescriptor(c_num, i, stream);
+    }
+
+    return;
+  }
+
+  void LinuxDevice::readInterfaceDescriptor(int c_num, int i_num, std::istream& stream)
+  {
+    char buffer[sizeof(USBInterfaceDescriptor)];
+    stream.read(buffer, sizeof buffer);
+
+    const USBInterfaceDescriptor descriptor = \
+      USBParseInterfaceDescriptor(buffer, stream.gcount());
+    loadInterfaceDescriptor(c_num, i_num, &descriptor);
 
     return;
   }

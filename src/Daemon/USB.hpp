@@ -73,4 +73,8 @@ namespace usbguard {
 
   const String USBInterfaceTypeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol);
 
+  const USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  const USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  const USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+
 } /* namespace usbguard */

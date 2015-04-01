@@ -1,4 +1,5 @@
 #include "Device.hpp"
+#include "Common/Logging.hpp"
 #include <mutex>
 #include <sodium.h>
 
@@ -7,6 +8,8 @@ namespace usbguard {
   {
     _seqn = Rule::SeqnDefault;
     _target = Rule::Target::Unknown;
+    _num_configurations = -1;
+    _num_interfaces = -1;
     return;
   }
 
@@ -107,6 +110,36 @@ namespace usbguard {
   std::vector<USBInterfaceType>& Device::refInterfaceTypes()
   {
     return _interface_types;
+  }
+
+  void Device::loadDeviceDescriptor(const USBDeviceDescriptor* descriptor)
+  {
+    _num_configurations = descriptor->bNumConfigurations;
+    return;
+  }
+
+  void Device::loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor)
+  {
+    _num_interfaces += descriptor->bNumInterfaces;
+    return;
+  }
+
+  void Device::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
+  {
+    USBInterfaceType interface_type;
+
+    interface_type.bFields.bClass = descriptor->bInterfaceClass;
+    interface_type.bFields.bSubClass = descriptor->bInterfaceSubClass;
+    interface_type.bFields.bProtocol = descriptor->bInterfaceProtocol;
+
+    _interface_types.push_back(interface_type);
+
+    log->debug("Added interface type: {:x}:{:x}:{:x}",
+	       interface_type.bFields.bClass,
+	       interface_type.bFields.bSubClass,
+	       interface_type.bFields.bProtocol);
+
+    return;
   }
 
 } /* namespace usbguard */

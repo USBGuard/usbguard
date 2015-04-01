@@ -7,6 +7,7 @@
 #include "SysIO.hpp"
 #include "Common/Thread.hpp"
 #include <libudev.h>
+#include <istream>
 
 namespace usbguard {
   class LinuxDevice : public Device
@@ -14,6 +15,12 @@ namespace usbguard {
   public:
     LinuxDevice(struct udev_device* dev);
     const String& getSysPath() const;
+
+  protected:
+    void readDescriptors(std::istream& stream);
+    void readConfiguration(int c_num, std::istream& stream);
+    void readInterfaceDescriptor(int c_num, int i_num, std::istream& stream);
+
   private:
     String _syspath;
   };
