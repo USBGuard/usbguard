@@ -124,7 +124,7 @@ specific vendor, e.g. `1234:*`.
 
 #### Device attributes
 
-(Please see [issue #11](https://github.com/dkopecek/usbguard/issues/11) and comment on the proposed changes related to this section)
+(Please see [issue #11](https://github.com/dkopecek/usbguard/issues/11) and comment on the changes related to this section)
 
 Device attributes are specific value read from the USB device after it's inserted to the system. Which attributes are
 available is defined bellow. Some of the attributes are derived or based on attributes read directly from the device.
@@ -132,11 +132,24 @@ The value of an attribute is represented as a double-quoted string.
 
 List of attributes:
 
- * `class "NN"`
- * `hash "[0-9a-f]{32}"`
- * `name "..."`
- * `port "[0-9]{1,2}-[0-9]{1,2}"`
- * `port { "[0-9]{1,2}-[0-9]{1,2}" "[0-9]{1,2}-[0-9]{1,2}" ... }`
+ * `hash "[0-9a-f]{32}"`: Match a hash of the device attributes (the hash is computed for every device by USBGuard).
+ * `name "device-name"`: Match the USB device name attribute. 
+ * `serial "serial-number"`: Match the iSerial USB device attribute.
+ * `via-port "port-id"`: Match the USB port through which the device is connected.
+ * `via-port [operator] { "port-id" "port-id" ... }`: Match a set of USB ports.
+ * `with-interface interface-type`: Match an interface the USB device provides.
+ * `with-interface [operator] { interface-type interface-type ... }`: Match a set of interface types against the set of interfaces that the USB device provides.
+
+`operator` is one of:
+ * `all-of`: The device attribute set must contain all of the specified values for the rule to match.
+ * `one-of`: The device attribute set must contain at least one of the specified values for the rule to match.
+ * `none-of`: The device attribute set must not contain any of the specified values for the rule to match.
+ * `equals`: The device attribute set must contain exactly the same set of values for the rule to match.
+ * `equals-ordered`: The device attribute set must contain exactly the same set of values in the same order for the rule to match.
+
+`port-id` is a platform specific USB port identification. On Linux it's in the form "b-n" where `b` and `n` are unsigned integers (e.g. "1-2", "2-4", ...).
+
+`interface-type` represents a USB interface and should be formated as three 8-bit numbers in hexadecimal base delimited by colon, i.e. `cc:ss:pp`. The numbers represent the interface class (`cc`), subclass (`ss`) and protocol (`pp`) as assigned by the [USB-IF](www.usb.org/about) ([List of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class)). Instead of the subclass and protocol number, you may write an asterisk character (`\*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
 ### Initial policy
 
