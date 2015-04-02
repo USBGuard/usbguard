@@ -96,7 +96,7 @@ The rule language grammar, expressed in a BNF-like syntax, is the following:
     device_attributes ::= device_attributes | attribute.
     device_attributes ::= .
 
-    attribute ::= name string.
+See [Device attributes](https://github.com/dkopecek/usbguard#device-attributes) section for the list of available attributes and their syntax.
 
 ### Targets
 
