@@ -15,14 +15,27 @@ mode RULE :
 	"{" => RULE_TOKEN_CURLYBRACE_OPEN;
 	"}" => RULE_TOKEN_CURLYBRACE_CLOSE;
 	":" => RULE_TOKEN_COLON;
+
 	[0-9a-fA-F]{4} => RULE_TOKEN_HEXCHAR4(Lexeme);
+	[0-9a-fA-F]{2} => RULE_TOKEN_HEXCHAR2(Lexeme);
+
 	"allow" => RULE_TOKEN_KEYWORD_ALLOW;
 	"block" => RULE_TOKEN_KEYWORD_BLOCK;
 	"reject" => RULE_TOKEN_KEYWORD_REJECT;
+
 	"name" => RULE_TOKEN_KEYWORD_NAME;
 	"action" => RULE_TOKEN_KEYWORD_ACTION;
 	"hash" => RULE_TOKEN_KEYWORD_HASH;
-	"port" => RULE_TOKEN_KEYWORD_PORT;
+	"via-port" => RULE_TOKEN_KEYWORD_VIAPORT;
+	"with-interface" => RULE_TOKEN_KEYWORD_WITHINTERFACE;
+	"serial" => RULE_TOKEN_KEYWORD_SERIAL;
+
+	"all-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
+	"any-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
+	"one-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
+	"none-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
+	"equals" => RULE_TOKEN_SET_OPERATOR(Lexeme);
+	"equals-ordered" => RULE_TOKEN_SET_OPERATOR(Lexeme);
 
 	"\"" {
 	     self_send(RULE_TOKEN_DQ_STRING_BEGIN);

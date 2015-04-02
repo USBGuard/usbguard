@@ -20,6 +20,12 @@
 #include "RuleParser/Lexer.hpp"
 #include "Typedefs.hpp"
 
+#include "Rule.hpp"
+#include "USB.hpp"
+#include "Lexer.hpp"
+#include "Common/Utility.hpp"
+
+#include <cstddef>
 #include <stdexcept>
 #include <stdlib.h>
 #include <sstream>

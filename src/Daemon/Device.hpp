@@ -20,8 +20,8 @@ namespace usbguard {
     void setDeviceName(const String& name);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
+    void setDevicePort(const String& port);
     void setSerialNumber(const String& serial_number);
-
     std::vector<USBInterfaceType>& refInterfaceTypes();
 
     void loadDeviceDescriptor(const USBDeviceDescriptor* descriptor);
@@ -36,6 +36,7 @@ namespace usbguard {
     String _vendor_id;
     String _product_id;
     String _serial_number;
+    String _port;
     std::vector<USBInterfaceType> _interface_types;
     int _num_configurations;
     int _num_interfaces;

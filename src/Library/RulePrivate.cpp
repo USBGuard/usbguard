@@ -1,5 +1,6 @@
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
+#include <iostream>
 
 namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)
@@ -8,6 +9,8 @@ namespace usbguard {
     _seqn = Rule::SeqnDefault;
     _target = Rule::Target::Invalid;
     _timeout_seconds = 0;
+    _device_ports_op = Rule::SetOperator::Match;
+    _interface_types_op = Rule::SetOperator::Match;
     return;
   }
   
@@ -46,7 +49,7 @@ namespace usbguard {
     return _device_ports;
   }
   
-  const StringVector& RulePrivate::getInterfaceTypes() const
+  const std::vector<USBInterfaceType>& RulePrivate::getInterfaceTypes() const
   {
     return _interface_types;
   }
@@ -102,23 +105,80 @@ namespace usbguard {
 	return false;
       }
     }
-    if (_device_ports.size() > 0) {
-      bool match = false;
-      for (auto const& port : _device_ports) {
-	for (auto const& rhs_port : rhs.getDevicePorts()) {
-	  if (port == rhs_port) {
-	    match = true;
-	    break;
-	  }
-	}
-	if (match) {
-	  break;
-	}
-      }
-      if (!match) {
+    if (!_serial_number.empty()) {
+      if (_serial_number != rhs.getSerialNumber()) {
 	return false;
       }
     }
+
+    /*
+     * Solve device ports set match
+     */
+    switch (_device_ports_op) {
+    case Rule::SetOperator::Match:
+      /* Skip device ports matching */
+      break;
+    case Rule::SetOperator::AllOf:
+      if (!setSolveAllOf(_device_ports, rhs.getDevicePorts())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::OneOf:
+      if (!setSolveOneOf(_device_ports, rhs.getDevicePorts())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::NoneOf:
+      if (!setSolveNoneOf(_device_ports, rhs.getDevicePorts())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::Equals:
+      if (!setSolveEquals(_device_ports, rhs.getDevicePorts())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::EqualsOrdered:
+      if (!setSolveEqualsOrdered(_device_ports, rhs.getDevicePorts())) {
+	return false;
+      }
+      break;
+    }
+
+    /*
+     * Solve interface types set match
+     */
+    switch (_interface_types_op) {
+    case Rule::SetOperator::Match:
+      /* Skip interface type matching */
+      break;
+    case Rule::SetOperator::AllOf:
+      if (!setSolveAllOf(_interface_types, rhs.getInterfaceTypes())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::OneOf:
+      if (!setSolveOneOf(_interface_types, rhs.getInterfaceTypes())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::NoneOf:
+      if (!setSolveNoneOf(_interface_types, rhs.getInterfaceTypes())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::Equals:
+      if (!setSolveEquals(_interface_types, rhs.getInterfaceTypes())) {
+	return false;
+      }
+      break;
+    case Rule::SetOperator::EqualsOrdered:
+      if (!setSolveEqualsOrdered(_interface_types, rhs.getInterfaceTypes())) {
+	return false;
+      }
+      break;
+    }
+
     return true;
   }
   
@@ -164,7 +224,7 @@ namespace usbguard {
     return;
   }
   
-  void RulePrivate::setInterfaceTypes(const StringVector& interface_types)
+  void RulePrivate::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
   {
     _interface_types = interface_types;
     return;
@@ -175,11 +235,23 @@ namespace usbguard {
     return _device_ports;
   }
 
-  StringVector& RulePrivate::refInterfaceTypes()
+  std::vector<USBInterfaceType>& RulePrivate::refInterfaceTypes()
   {
     return _interface_types;
   }
   
+  void RulePrivate::setDevicePortsSetOperator(Rule::SetOperator op)
+  {
+    _device_ports_op = op;
+    return;
+  }
+
+  void RulePrivate::setInterfaceTypesSetOperator(Rule::SetOperator op)
+  {
+    _interface_types_op = op;
+    return;
+  }
+
   void RulePrivate::setTarget(Rule::Target target)
   {
     _target = target;
@@ -204,7 +276,7 @@ namespace usbguard {
     return;
   }
   
-  String RulePrivate::toString() const
+  String RulePrivate::toString(bool invalid) const
   {
     String rule_string;
 
@@ -219,7 +291,12 @@ namespace usbguard {
       rule_string = "reject";
       break;
     default:
-      throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
+      if (!invalid) {
+	throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
+      }
+      else {
+	rule_string = "<INVALID>";
+      }
     }
 
     if (!_vendor_id.empty() && !_product_id.empty()) {
@@ -234,7 +311,12 @@ namespace usbguard {
       rule_string.append(":*");
     }
     else if (_vendor_id.empty() && !_product_id.empty()) {
-      throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
+      if (!invalid) {
+	throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
+      }
+      else {
+	rule_string.append("<INVALID>:<INVALID>");
+      }
     }
     else {
       /* DeviceID not specified is the same as "*:*" */
@@ -245,12 +327,16 @@ namespace usbguard {
     toString_addNonEmptyField(rule_string, "name", _device_name);
     /* Device Hash */
     toString_addNonEmptyField(rule_string, "hash", _device_hash);
+
     /* Device Ports */
-    if (_device_ports.size() == 1) {
-      toString_addNonEmptyField(rule_string, "port", _device_ports[0]);
+    if (_device_ports.size() == 1
+	&& _device_ports_op == Rule::SetOperator::OneOf) {
+      toString_addNonEmptyField(rule_string, "via-port", _device_ports[0]);
     }
-    else if (_device_ports.size() > 1) {
-      rule_string.append(" port { ");
+    else if (_device_ports.size() > 0) {
+      rule_string.append(" via-port ");
+      rule_string.append(Rule::setOperatorToString(_device_ports_op));
+      rule_string.append(" { ");
       for (auto const& port : _device_ports) {
 	rule_string.append("\"");
 	rule_string.append(port);
@@ -258,8 +344,23 @@ namespace usbguard {
       }
       rule_string.append("}");
     }
-    /* Device Interface Types */
-    // FIXME
+
+    /* Interface types */
+    if (_interface_types.size() == 1
+	&& _interface_types_op == Rule::SetOperator::OneOf) {
+      toString_addNonEmptyField(rule_string, "with-interface", _device_ports[0]);
+    }
+    else if (_interface_types.size() > 0) {
+      rule_string.append(" with-interface ");
+      rule_string.append(Rule::setOperatorToString(_interface_types_op));
+      rule_string.append(" { ");
+      for (auto const& type : _interface_types) {
+	rule_string.append(type.typeString());
+	rule_string.append(" ");
+      }
+      rule_string.append("}");
+    }
+
     /* Action */
     toString_addNonEmptyField(rule_string, "action", _action);
 
@@ -299,6 +400,8 @@ namespace usbguard {
 	result.append("\\");
 	result.append("\\");
 	continue;
+      default:
+	result.append(&c, 1);
       }
     }
     result.append("\"");

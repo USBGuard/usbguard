@@ -25,6 +25,7 @@
 #include <iomanip>
 #include <sys/types.h>
 #include <dirent.h>
+#include <iostream>
 
 namespace usbguard
 {
@@ -100,7 +101,7 @@ namespace usbguard
    * representation.
    */
   template<typename T>
-  String numberToString(T number, const String& prefix = String(), int base = 10)
+  String numberToString(T number, const String& prefix = String(), int base = 10, int align = -1, char align_char = ' ')
   {
     std::ostringstream ss;
     if (!prefix.empty()) {
@@ -108,21 +109,37 @@ namespace usbguard
     }
     ss << std::setbase(base);
     ss << number;
-    return ss.str();
+
+    const String number_string = ss.str();
+
+    if (align > 0 && number_string.size() < align) {
+      const size_t chars_to_add = (size_t)align - number_string.size();
+      const String alignment(chars_to_add, align_char);
+      return alignment + number_string;
+    }
+    else {
+      return ss.str();
+    }
   }
+
+  template<>
+  String numberToString(uint8_t number, const String& prefix, int base, int align, char align_char);
 
   /**
    * Convert a string representation of a number
    * to a number of type T.
    */
   template<typename T>
-  T stringToNumber(const String& s)
+  T stringToNumber(const String& s, int base = 10)
   {
     std::istringstream ss(s);
     T num;
-    ss >> num;
+    ss >> std::setbase(base) >> num;
     return num;
   }
+
+  template<>
+  uint8_t stringToNumber(const String& s, int base);
 
   /**
    * Return the filename part of a path. If include_extension is set to

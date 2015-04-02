@@ -45,6 +45,14 @@ namespace usbguard {
       throw std::runtime_error("device wihtout syspath");
     }
 
+    const char *sysname = udev_device_get_sysname(dev);
+    if (sysname) {
+      log->debug("Sysname={}", sysname);
+      setDevicePort(sysname);
+    } else {
+      throw std::runtime_error("device wihtout sysname");
+    }
+
     log->debug("DeviceHash={}", getDeviceHash());
 
     setTarget(Rule::Target::Unknown);

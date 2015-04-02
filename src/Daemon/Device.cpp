@@ -28,9 +28,12 @@ namespace usbguard {
     device_rule->setVendorID(_vendor_id);
     device_rule->setProductID(_product_id);
     device_rule->setSerialNumber(_serial_number);
-    //if (include_port) {
-    // ... TODO ...
-    //}
+
+    if (include_port) {
+      device_rule->refDevicePorts().push_back(_port);
+    }
+
+    device_rule->setInterfaceTypes(refInterfaceTypes());
     device_rule->setDeviceName(_name);
     device_rule->setDeviceHash(getDeviceHash(/*include_port=*/false));
     
@@ -101,6 +104,12 @@ namespace usbguard {
     return;
   }
 
+  void Device::setDevicePort(const String& port)
+  {
+    _port = port;
+    return;
+  }
+
   void Device::setSerialNumber(const String& serial_number)
   {
     _serial_number = serial_number;
@@ -126,19 +135,9 @@ namespace usbguard {
 
   void Device::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
   {
-    USBInterfaceType interface_type;
-
-    interface_type.bFields.bClass = descriptor->bInterfaceClass;
-    interface_type.bFields.bSubClass = descriptor->bInterfaceSubClass;
-    interface_type.bFields.bProtocol = descriptor->bInterfaceProtocol;
-
+    USBInterfaceType interface_type(*descriptor);
     _interface_types.push_back(interface_type);
-
-    log->debug("Added interface type: {:x}:{:x}:{:x}",
-	       interface_type.bFields.bClass,
-	       interface_type.bFields.bSubClass,
-	       interface_type.bFields.bProtocol);
-
+    log->debug("Added interface type: {}", interface_type.typeString());
     return;
   }
 

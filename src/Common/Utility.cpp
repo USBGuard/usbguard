@@ -243,4 +243,23 @@ namespace usbguard
     return filename.substr(0, substr_to);
   }
 
+  /*
+   * The ostringstream class used for the implementation of numberToString
+   * treats (u)int8_t as a char. We want to treat it as a number, so this
+   * explicit specialization handles the uint8_t case by recasting it to
+   * an unsigned int.
+   */
+  template<>
+  String numberToString(uint8_t number, const String& prefix, int base, int align, char align_char)
+  {
+    return numberToString((unsigned int)number, prefix, base, align, align_char);
+  }
+
+  template<>
+  uint8_t stringToNumber(const String& s, int base)
+  {
+    const unsigned int num = stringToNumber<unsigned int>(s, base);
+    return (uint8_t)num;
+  }
+
 } /* namespace usbguard */

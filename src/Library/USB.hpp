@@ -54,24 +54,33 @@ namespace usbguard {
     uint8_t iInterface;
   } __attribute__((packed));
 
-  union USBInterfaceType
+  class USBInterfaceType
   {
+  public:
+    static const uint8_t MatchClass = 1<<0;
+    static const uint8_t MatchSubClass = 1<<1;
+    static const uint8_t MatchProtocol = 1<<2;
+    static const uint8_t MatchAll = MatchClass|MatchSubClass|MatchProtocol;
+
     USBInterfaceType();
-
-    struct {
-      uint8_t bClass;
-      uint8_t bSubClass;
-      uint8_t bProtocol;
-    } bFields;
-
-    uint64_t bType;
+    USBInterfaceType(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
+    USBInterfaceType(const USBInterfaceDescriptor& descriptor, uint8_t mask = MatchAll);
 
     bool operator==(const USBInterfaceType& rhs) const;
-    bool sameClass(const USBInterfaceType& rhs) const;
-    bool sameSubClass(const USBInterfaceType& rhs) const;
+    bool appliesTo(const USBInterfaceType& rhs) const;
+
+    const String typeString() const;
+    static const String typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
+
+  private:
+    uint8_t _bClass;
+    uint8_t _bSubClass;
+    uint8_t _bProtocol;
+    uint8_t _mask;
   };
 
-  const String USBInterfaceTypeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol);
+  template<>
+  bool matches(const USBInterfaceType& a, const USBInterfaceType& b);
 
   const USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
   const USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size = nullptr);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Typedefs.hpp>
+#include <USB.hpp>
 #include <cstdint>
 #include <chrono>
 
@@ -28,13 +29,13 @@ namespace usbguard {
     /**< Sequence number for specifying that the last rule in the ruleset should be used in context of the operation */
     static const uint32_t SeqnLast = std::numeric_limits<uint32_t>::max() - 1;
 
-    enum SetOperator {
+    enum class SetOperator {
       AllOf,
-      AnyOf,
       OneOf,
       NoneOf,
-      EqualsSetOf,
-      EqualsOrderedSetOf,
+      Equals,
+      EqualsOrdered,
+      Match /* Special operator: matches anything, cannot be used directly in a rule */
     };
 
     /**
@@ -53,7 +54,7 @@ namespace usbguard {
     const String& getDeviceName() const;
     const String& getDeviceHash() const;
     const StringVector& getDevicePorts() const;
-    const StringVector& getInterfaceTypes() const;
+    const std::vector<USBInterfaceType>& getInterfaceTypes() const;
     Target getTarget() const;
     const String& getAction() const;
     const std::chrono::steady_clock::time_point getTimePointAdded() const;
@@ -70,20 +71,24 @@ namespace usbguard {
     void setDeviceName(const String& device_name);
     void setDeviceHash(const String& device_hash);
     void setDevicePorts(const StringVector& device_ports);
-    void setInterfaceTypes(const StringVector& interface_types);
+    void setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types);
     StringVector& refDevicePorts();
-    StringVector& refInterfaceTypes();
+    std::vector<USBInterfaceType>& refInterfaceTypes();
+    void setDevicePortsSetOperator(Rule::SetOperator op);
+    void setInterfaceTypesSetOperator(Rule::SetOperator op);
     void setTarget(Rule::Target target);
     void setAction(const String& action);
     void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
 
     operator bool() const;
-    String toString() const;
+    String toString(bool invalid = false) const;
 
     /*** Static methods ***/
     static Rule fromString(const String& rule_string);
-    
+    static SetOperator setOperatorFromString(const String& set_operator_string);
+    static const String setOperatorToString(SetOperator op);
+
   private:
     RulePrivate* d_pointer;
   };

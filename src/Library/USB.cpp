@@ -1,36 +1,103 @@
 #include "USB.hpp"
-#include "ByteOrder.hpp"
+#include "Common/ByteOrder.hpp"
 #include "Common/Utility.hpp"
 #include <stdexcept>
+#include <iostream>
 
 namespace usbguard {
   USBInterfaceType::USBInterfaceType()
   {
-    bType = 0;
+    _bClass = 0;
+    _bSubClass = 0;
+    _bProtocol = 0;
+    _mask = 0;
+    return;
+  }
+
+  USBInterfaceType::USBInterfaceType(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
+  {
+    _bClass = bClass;
+    _bSubClass = bSubClass;
+    _bProtocol = bProtocol;
+    _mask = mask;
+
+    return;
+  }
+
+  USBInterfaceType::USBInterfaceType(const USBInterfaceDescriptor& descriptor, uint8_t mask)
+  {
+    _bClass = descriptor.bInterfaceClass;
+    _bSubClass = descriptor.bInterfaceSubClass;
+    _bProtocol = descriptor.bInterfaceProtocol;
+    _mask = mask;
     return;
   }
 
   bool USBInterfaceType::operator==(const USBInterfaceType& rhs) const
   {
-    return (bType == rhs.bType);
+    return (_bClass == rhs._bClass &&
+	    _bSubClass == rhs._bSubClass &&
+	    _bProtocol == rhs._bProtocol &&
+	    _mask == rhs._mask);
   }
 
-  bool USBInterfaceType::sameClass(const USBInterfaceType& rhs) const
+  bool USBInterfaceType::appliesTo(const USBInterfaceType& rhs) const
   {
-    return (bFields.bClass == rhs.bFields.bClass);
+    if (_mask & MatchClass) {
+      if (_bClass != rhs._bClass) {
+	return false;
+      }
+    }
+    if (_mask & MatchSubClass) {
+      if (_bSubClass != rhs._bSubClass) {
+	return false;
+      }
+    }
+    if (_mask & MatchProtocol) {
+      if (_bProtocol != rhs._bProtocol) {
+	return false;
+      }
+    }
+    return true;
   }
 
-  bool USBInterfaceType::sameSubClass(const USBInterfaceType& rhs) const
+  const String USBInterfaceType::typeString() const
   {
-    return (bFields.bClass == rhs.bFields.bClass &&
-	    bFields.bSubClass == rhs.bFields.bSubClass);
+    return USBInterfaceType::typeString(_bClass, _bSubClass, _bProtocol, _mask);
   }
 
-  const String USBInterfaceTypeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol)
+  const String USBInterfaceType::typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
   {
-    return (numberToString(bClass, "", 16) + ":" +
-	    numberToString(bSubClass, "", 16) + ":" +
-	    numberToString(bProtocol, "", 16));
+    String type_string("");
+
+    if (mask & MatchClass) {
+      type_string.append(numberToString(bClass, "", 16, 2, '0') + ":");
+
+      if (mask & MatchSubClass) {
+	type_string.append(numberToString(bSubClass, "", 16, 2, '0') + ":");
+
+	if (mask & MatchProtocol) {
+	  type_string.append(numberToString(bProtocol, "", 16, 2, '0'));
+	}
+	else {
+	  type_string.append("*");
+	}
+      }
+      else {
+	type_string.append("*:*");
+      }
+    }
+    else {
+      throw std::runtime_error("BUG: cannot create type string, invalid mask");
+    }
+
+    return std::move(type_string);
+  }
+
+  template<>
+  bool matches(const USBInterfaceType& a, const USBInterfaceType& b)
+  {
+    return a.appliesTo(b);
   }
 
   const USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size)

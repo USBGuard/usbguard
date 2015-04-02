@@ -28,6 +28,7 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCClient.cpp \
 	src/Library/IPCClientPrivate.hpp \
 	src/Library/IPCClientPrivate.cpp \
+	src/Library/USB.cpp \
 	src/Library/Rule.cpp \
 	src/Library/RuleParser.cpp \
 	src/Library/RuleParser.hpp \
@@ -43,12 +44,15 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleParser/Lexer-token_ids.hpp \
 	src/Library/RuleParser/Parser.h \
 	src/Common/Thread.hpp \
-	src/Common/JSON.hpp
+	src/Common/JSON.hpp \
+	src/Common/ByteOrder.hpp \
+	src/Library/Typedefs.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
 	src/Library/IPC.hpp \
 	src/Library/IPCClient.hpp \
+	src/Library/USB.hpp \
 	src/Library/Rule.hpp \
 	src/Library/RuleSet.hpp \
 	src/Library/Typedefs.hpp
@@ -69,9 +73,6 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Exceptions.hpp \
 	src/Daemon/SysIO.cpp \
 	src/Daemon/SysIO.hpp \
-	src/Daemon/ByteOrder.hpp \
-	src/Daemon/USB.cpp \
-	src/Daemon/USB.hpp \
 	src/Daemon/Device.hpp \
 	src/Daemon/Device.cpp \
 	src/Daemon/DeviceManager.hpp \

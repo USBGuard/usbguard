@@ -1,4 +1,5 @@
 #include "RulePrivate.hpp"
+#include <utility>
 
 namespace usbguard {
   Rule::Rule()
@@ -52,7 +53,7 @@ namespace usbguard {
     return d_pointer->getDevicePorts();
   }
   
-  const StringVector& Rule::getInterfaceTypes() const
+  const std::vector<USBInterfaceType>& Rule::getInterfaceTypes() const
   {
     return d_pointer->getInterfaceTypes();
   }
@@ -134,7 +135,7 @@ namespace usbguard {
     return;
   }
   
-  void Rule::setInterfaceTypes(const StringVector& interface_types)
+  void Rule::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
   {
     d_pointer->setInterfaceTypes(interface_types);
     return;
@@ -145,9 +146,21 @@ namespace usbguard {
     return d_pointer->refDevicePorts();
   }
 
-  StringVector& Rule::refInterfaceTypes()
+  std::vector<USBInterfaceType>& Rule::refInterfaceTypes()
   {
     return d_pointer->refInterfaceTypes();
+  }
+
+  void Rule::setDevicePortsSetOperator(Rule::SetOperator op)
+  {
+    d_pointer->setDevicePortsSetOperator(op);
+    return;
+  }
+
+  void Rule::setInterfaceTypesSetOperator(Rule::SetOperator op)
+  {
+    d_pointer->setInterfaceTypesSetOperator(op);
+    return;
   }
   
   void Rule::setTarget(Rule::Target target)
@@ -180,13 +193,52 @@ namespace usbguard {
 	     getTarget() == Target::Invalid);
   }
 
-  String Rule::toString() const
+  String Rule::toString(bool invalid) const
   {
-    return d_pointer->toString();
+    return d_pointer->toString(invalid);
   }
 
   Rule Rule::fromString(const String& rule_string)
   {
     return RulePrivate::fromString(rule_string);
+  }
+
+  Rule::SetOperator Rule::setOperatorFromString(const String& set_operator_string)
+  {
+    const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
+      { "all-of", SetOperator::AllOf },
+      { "one-of", SetOperator::OneOf },
+      { "none-of", SetOperator::NoneOf },
+      { "equals", SetOperator::Equals },
+      { "equals-ordered", SetOperator::EqualsOrdered }
+    };
+
+    for (auto ttable_entry : set_operator_ttable) {
+      if (ttable_entry.first == set_operator_string) {
+	return ttable_entry.second;
+      }
+    }
+
+    throw std::runtime_error("Invalid set operator string");
+  }
+
+  const String Rule::setOperatorToString(Rule::SetOperator op)
+  {
+    const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
+      { "all-of", SetOperator::AllOf },
+      { "one-of", SetOperator::OneOf },
+      { "none-of", SetOperator::NoneOf },
+      { "equals", SetOperator::Equals },
+      { "equals-ordered", SetOperator::EqualsOrdered },
+      { "<MATCH>", SetOperator::Match }
+    };
+
+    for (auto ttable_entry : set_operator_ttable) {
+      if (ttable_entry.second == op) {
+	return ttable_entry.first;
+      }
+    }
+
+    throw std::runtime_error("Invalid set operator string");
   }
 }

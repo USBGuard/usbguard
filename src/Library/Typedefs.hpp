@@ -43,6 +43,15 @@ namespace usbguard {
   template<typename key_type>
   using StringVectorMap = std::map<key_type, StringVector>;
 
+  template<typename T>
+  bool matches(const T& a, const T& b)
+  {
+    return a == b;
+  }
+
+  template<>
+  bool matches(const String& a, const String& b);
+
   /*
    * Smart Pointer typedefs and custom operations
    */
