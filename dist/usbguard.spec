@@ -1,10 +1,10 @@
 Name:           usbguard
 Version:        0.2
 Release:        1%{?dist}
-Summary:        USBGuard
-Group:          System Environment/Libraries
+Summary:        A tool for implementing USB device usage policy
+Group:          System Environment/Daemons
 License:        GPLv2+
-URL:            http://nonesofar/
+URL:            http://dkopecek.github.io/usbguard
 Source0:        %{name}-%{version}.tar.gz
 Source1:        usbguard-daemon.conf
 Source2:        usbguard.service
@@ -21,9 +21,10 @@ BuildRequires: libqb-devel
 BuildRequires: libsodium-devel
 BuildRequires: systemd systemd-devel
 
-
 %description
-USBGuard
+The USBGuard software framework helps to protect your computer against rogue USB
+devices by implementing basic whitelisting/blacklisting capabilities based on
+USB device attributes.
 
 %package        devel
 Summary:        Development files for %{name}
@@ -107,8 +108,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-* Tue Mar 24 2015 Daniel Kopecek <dkopecek@redhat.com> 0.2-1
+* Fri Apr 03 2015 Daniel Kopecek <dkopecek@redhat.com> 0.2-1
 - Update to version 0.2
+- Updated description
+- Corrected package group
 
 * Tue Mar 17 2015 Daniel Kopecek <dkopecek@redhat.com> 0.1-1
 - Initial package
