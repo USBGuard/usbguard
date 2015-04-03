@@ -33,6 +33,57 @@ namespace usbguard {
     return;
   }
 
+  USBInterfaceType::USBInterfaceType(const std::string& type_string)
+  {
+    std::vector<std::string> tokens;
+    tokenizeString(type_string, tokens, ":", /*trim_empty=*/false);
+
+    _bClass = 0;
+    _bSubClass = 0;
+    _bProtocol = 0;
+    _mask = 0;
+
+    if (tokens.size() != 3) {
+      throw std::runtime_error("Invalid type_string");
+    }
+
+    if (tokens[0].size() != 2) {
+      throw std::runtime_error("Invalid type_string");
+    }
+    else {
+      _bClass = stringToNumber<uint8_t>(tokens[0], 16);
+      _mask |= MatchClass;
+    }
+
+    if (tokens[1] != "*") {
+      if (tokens[1].size() != 2) {
+	throw std::runtime_error("Invalid type_string");
+      }
+      else {
+	_bSubClass = stringToNumber<uint8_t>(tokens[1], 16);
+	_mask |= MatchSubClass;
+      }
+    }
+
+    if (tokens[2] != "*") {
+      if (tokens[2].size() != 2) {
+	throw std::runtime_error("Invalid type_string");
+      }
+      else {
+	_bProtocol = stringToNumber<uint8_t>(tokens[2], 16);
+	_mask |= MatchProtocol;
+      }
+    }
+
+    if (!(_mask == (MatchAll) ||
+	  _mask == (MatchClass|MatchSubClass) ||
+	  _mask == (MatchClass))) {
+      throw std::runtime_error("Invalid type_string");
+    }
+
+    return;
+  }
+
   bool USBInterfaceType::operator==(const USBInterfaceType& rhs) const
   {
     return (_bClass == rhs._bClass &&

@@ -65,6 +65,7 @@ namespace usbguard {
     USBInterfaceType();
     USBInterfaceType(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
     USBInterfaceType(const USBInterfaceDescriptor& descriptor, uint8_t mask = MatchAll);
+    USBInterfaceType(const std::string& type_string);
 
     bool operator==(const USBInterfaceType& rhs) const;
     bool appliesTo(const USBInterfaceType& rhs) const;
