@@ -1,9 +1,14 @@
 #pragma once
 
+#include <Rule.hpp>
+#include <USB.hpp>
 #include <cstdint>
 #include <stdexcept>
 #include <sodium.h>
 #include <atomic>
+#include <map>
+#include <vector>
+#include <string>
 
 namespace usbguard
 {
@@ -86,47 +91,31 @@ namespace usbguard
 
     /* IPC Signals */
     virtual void DeviceInserted(uint32_t seqn,
-				const std::string& name,
-				const std::string& usb_class,
-				const std::string& vendor_id,
-				const std::string& product_id,
+				const std::map<std::string,std::string>& attributes,
+				const std::vector<USBInterfaceType>& interfaces,
 				bool rule_match,
 				uint32_t rule_seqn) = 0;
-#if 0
+
     virtual void DevicePresent(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id,
-			       const std::string& target) = 0;
-#endif
+			       const std::map<std::string,std::string>& attributes,
+			       const std::vector<USBInterfaceType>& interfaces,
+			       Rule::Target target) = 0;
+
     virtual void DeviceRemoved(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id) = 0;
+			       const std::map<std::string,std::string>& attributes) = 0;
 
     virtual void DeviceAllowed(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id,
+			       const std::map<std::string,std::string>& attributes,
 			       bool rule_match,
 			       uint32_t rule_seqn) = 0;
 
     virtual void DeviceBlocked(uint32_t seqn,
-			       const std::string& name,
-			       const std::string& usb_class,
-			       const std::string& vendor_id,
-			       const std::string& product_id,
+			       const std::map<std::string,std::string>& attributes,
 			       bool rule_match,
 			       uint32_t rule_seqn) = 0;
 
     virtual void DeviceRejected(uint32_t seqn,
-				const std::string& name,
-				const std::string& usb_class,
-				const std::string& vendor_id,
-				const std::string& product_id,
+				const std::map<std::string,std::string>& attributes,
 				bool rule_match,
 				uint32_t rule_seqn) = 0;
 

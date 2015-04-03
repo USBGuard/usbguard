@@ -169,24 +169,24 @@ namespace usbguard
   }
 
   void Daemon::DeviceInserted(uint32_t seqn,
-			      const std::string& name,
-			      const std::string& usb_class,
-			      const std::string& vendor_id,
-			      const std::string& product_id,
+			      const std::map<std::string,std::string>& attributes,
+			      const std::vector<USBInterfaceType>& interfaces,
 			      bool rule_match,
 			      uint32_t rule_seqn)
   {
-    log->debug("DeviceInserted: seqn={}, name={}, usb_class={}, "
-	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
-	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
+    log->debug("DeviceInserted: seqn={}, rule_match={}, rule_seqn={}",
+	       seqn, rule_match, rule_seqn);
+
+    json interfaces_json;
+    for (auto const& type : interfaces) {
+      interfaces_json.push_back(type.typeString());
+    }
 
     const json j = {
       {         "_s", "DeviceInserted" },
       {       "seqn", seqn },
-      {       "name", name },
-      {  "usb_class", usb_class },
-      {  "vendor_id", vendor_id },
-      { "product_id", product_id },
+      { "attributes", attributes },
+      { "interfaces", interfaces_json },
       { "rule_match", rule_match },
       {  "rule_seqn", rule_seqn }
     };
@@ -196,23 +196,41 @@ namespace usbguard
     return;
   }
 
-  void Daemon::DeviceRemoved(uint32_t seqn,
-				const std::string& name,
-				const std::string& usb_class,
-				const std::string& vendor_id,
-				const std::string& product_id)
+  void Daemon::DevicePresent(uint32_t seqn,
+			     const std::map<std::string,std::string>& attributes,
+			     const std::vector<USBInterfaceType>& interfaces,
+			     Rule::Target target)
   {
-    log->debug("DeviceRemoved: seqn={}, name={}, usb_class={}, "
-	       "vendor_id={}, product_id={}",
-	       seqn, name, usb_class, vendor_id, product_id);
+    log->debug("DeviceInserted: seqn={}, target={}", seqn, Rule::targetToString(target));
+
+    json interfaces_json;
+    for (auto const& type : interfaces) {
+      interfaces_json.push_back(type.typeString());
+    }
+
+    const json j = {
+      {         "_s", "DeviceInserted" },
+      {       "seqn", seqn },
+      { "attributes", attributes },
+      { "interfaces", interfaces_json },
+      {     "target", Rule::targetToString(target) },
+    };
+
+    const std::string json_string = j.dump();
+    qbIPCBroadcastString(json_string);
+    return;
+  }
+
+  void Daemon::DeviceRemoved(uint32_t seqn,
+			     const std::map<std::string,std::string>& attributes)
+
+  {
+    log->debug("DeviceRemoved: seqn={}", seqn);
 
     const json j = {
       {         "_s", "DeviceRemoved" },
       {       "seqn", seqn },
-      {       "name", name },
-      {  "usb_class", usb_class },
-      {  "vendor_id", vendor_id },
-      { "product_id", product_id }
+      { "attributes", attributes }
     };
 
     const std::string json_string = j.dump();
@@ -221,24 +239,17 @@ namespace usbguard
   }
 
   void Daemon::DeviceAllowed(uint32_t seqn,
-				const std::string& name,
-				const std::string& usb_class,
-				const std::string& vendor_id,
-				const std::string& product_id,
-				bool rule_match,
-				uint32_t rule_seqn)
+			     const std::map<std::string,std::string>& attributes,
+			     bool rule_match,
+			     uint32_t rule_seqn)
   {
-    log->debug("DeviceAllowed: seqn={}, name={}, usb_class={}, "
-	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
-	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
+    log->debug("DeviceAllowed: seqn={}, rule_match={}, rule_seqn={}",
+	       seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceAllowed" },
       {       "seqn", seqn },
-      {       "name", name },
-      {  "usb_class", usb_class },
-      {  "vendor_id", vendor_id },
-      { "product_id", product_id },
+      { "attributes", attributes },
       { "rule_match", rule_match },
       {  "rule_seqn", rule_seqn }
     };
@@ -249,24 +260,17 @@ namespace usbguard
   }
 
   void Daemon::DeviceBlocked(uint32_t seqn,
-			     const std::string& name,
-			     const std::string& usb_class,
-			     const std::string& vendor_id,
-			     const std::string& product_id,
+			     const std::map<std::string,std::string>& attributes,
 			     bool rule_match,
 			     uint32_t rule_seqn)
   {
-    log->debug("DeviceBlocked: seqn={}, name={}, usb_class={}, "
-	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
-	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
+    log->debug("DeviceBlocked: seqn={}, rule_match={}, rule_seqn={}",
+	       seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceBlocked" },
       {       "seqn", seqn },
-      {       "name", name },
-      {  "usb_class", usb_class },
-      {  "vendor_id", vendor_id },
-      { "product_id", product_id },
+      { "attributes", attributes },
       { "rule_match", rule_match },
       {  "rule_seqn", rule_seqn }
     };
@@ -277,24 +281,17 @@ namespace usbguard
   }
 
   void Daemon::DeviceRejected(uint32_t seqn,
-				 const std::string& name,
-				 const std::string& usb_class,
-				 const std::string& vendor_id,
-				 const std::string& product_id,
-				 bool rule_match,
-				 uint32_t rule_seqn)
+			      const std::map<std::string,std::string>& attributes,
+			      bool rule_match,
+			      uint32_t rule_seqn)
   {
-    log->debug("DeviceRejected: seqn={}, name={}, usb_class={}, "
-	       "vendor_id={}, product_id={}, rule_match={}, rule_seqn={}",
-	       seqn, name, usb_class, vendor_id, product_id, rule_match, rule_seqn);
+    log->debug("DeviceRejected: seqn={}, rule_match={}, rule_seqn={}",
+	       seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceRejected" },
       {       "seqn", seqn },
-      {       "name", name },
-      {  "usb_class", usb_class },
-      {  "vendor_id", vendor_id },
-      { "product_id", product_id },
+      { "attributes", attributes },
       { "rule_match", rule_match },
       {  "rule_seqn", rule_seqn }
     };
@@ -309,11 +306,17 @@ namespace usbguard
     Pointer<Rule> device_rule = device->getDeviceRule();
     Pointer<const Rule> matched_rule = _ruleset.getFirstMatchingRule(device_rule);
 
+    std::map<std::string,std::string> attributes;
+    
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+    attributes["serial"] = device_rule->getSerialNumber();
+    attributes["hash"] = device_rule->getDeviceHash();
+
     DeviceInserted(device_rule->getSeqn(),
-		   device_rule->getDeviceName(),
-		   device_rule->getDeviceName(), /* FIXME */
-		   device_rule->getVendorID(),
-		   device_rule->getProductID(),
+		   attributes,
+		   device_rule->refInterfaceTypes(),
 		   matched_rule->isImplicit() ? false : true,
 		   matched_rule->getSeqn());
 
@@ -337,11 +340,16 @@ namespace usbguard
   void Daemon::dmDeviceRemoved(Pointer<Device> device)
   {
     Pointer<Rule> device_rule = device->getDeviceRule();
-    DeviceRemoved(device_rule->getSeqn(),
-		  device_rule->getDeviceName(),
-		  device_rule->getDeviceName(), /* FIXME */
-		  device_rule->getVendorID(),
-		  device_rule->getProductID());
+
+    std::map<std::string,std::string> attributes;
+    
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+    attributes["serial"] = device_rule->getSerialNumber();
+    attributes["hash"] = device_rule->getDeviceHash();
+
+    DeviceRemoved(device_rule->getSeqn(), attributes);
     return;
   }
 
@@ -649,11 +657,15 @@ namespace usbguard
   {
     Pointer<Device> device = _dm->allowDevice(seqn);
     Pointer<Rule> device_rule = device->getDeviceRule();
+
+    std::map<std::string,std::string> attributes;
+    
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+
     DeviceAllowed(device_rule->getSeqn(),
-		  device_rule->getDeviceName(),
-		  device_rule->getDeviceName(), /* FIXME */
-		  device_rule->getVendorID(),
-		  device_rule->getProductID(),
+		  attributes,
 		  (matched_rule->getSeqn() != Rule::SeqnDefault),
 		  matched_rule->getSeqn());
     return;
@@ -663,11 +675,15 @@ namespace usbguard
   {
     Pointer<Device> device = _dm->blockDevice(seqn);
     Pointer<Rule> device_rule = device->getDeviceRule();
+
+    std::map<std::string,std::string> attributes;
+    
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+
     DeviceBlocked(device_rule->getSeqn(),
-		  device_rule->getDeviceName(),
-		  device_rule->getDeviceName(), /* FIXME */
-		  device_rule->getVendorID(),
-		  device_rule->getProductID(),
+		  attributes,
 		  (matched_rule->getSeqn() != Rule::SeqnDefault),
 		  matched_rule->getSeqn());
     return;
@@ -677,11 +693,15 @@ namespace usbguard
   {
     Pointer<Device> device = _dm->rejectDevice(seqn);
     Pointer<Rule> device_rule = device->getDeviceRule();
+
+    std::map<std::string,std::string> attributes;
+    
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+
     DeviceRejected(device_rule->getSeqn(),
-		   device_rule->getDeviceName(),
-		   device_rule->getDeviceName(), /* FIXME */
-		   device_rule->getVendorID(),
-		   device_rule->getProductID(),
+		   attributes,
 		   (matched_rule->getSeqn() != Rule::SeqnDefault),
 		   matched_rule->getSeqn());
     return;

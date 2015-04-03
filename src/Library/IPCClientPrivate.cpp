@@ -99,27 +99,104 @@ namespace usbguard
     try {
       const std::string name = jobj["_s"];
       if (name == "DeviceInserted") {
-	_p_instance.DeviceInserted(jobj["seqn"], jobj["name"], jobj["usb_class"],
-				   jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	std::vector<USBInterfaceType> interfaces;
+	for (auto const& jitem : jobj["interfaces"]) {
+	  const std::string type_string = jitem;
+	  interfaces.push_back(USBInterfaceType(type_string));
+	}
+
+	_p_instance.DeviceInserted(jobj["seqn"],
+				   attributes,
+				   interfaces,
+				   jobj["rule_match"],
 				   jobj["rule_seqn"]);
       }
+      else if (name == "DevicePresent") {
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	std::vector<USBInterfaceType> interfaces;
+	for (auto const& jitem : jobj["interfaces"]) {
+	  const std::string type_string = jitem;
+	  interfaces.push_back(USBInterfaceType(type_string));
+	}
+
+	_p_instance.DevicePresent(jobj["seqn"],
+				  attributes,
+				  interfaces,
+				  Rule::targetFromString(jobj["target"]));
+      }
       else if (name == "DeviceRemoved") {
-	_p_instance.DeviceRemoved(jobj["seqn"], jobj["name"], jobj["usb_class"],
-				  jobj["vendor_id"], jobj["product_id"]);
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	_p_instance.DeviceRemoved(jobj["seqn"],
+				  attributes);
       }
       else if (name == "DeviceAllowed") {
-	_p_instance.DeviceAllowed(jobj["seqn"], jobj["name"], jobj["usb_class"],
-				  jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	_p_instance.DeviceAllowed(jobj["seqn"],
+				  attributes,
+				  jobj["rule_match"],
 				  jobj["rule_seqn"]);
       }
       else if (name == "DeviceBlocked") {
-	_p_instance.DeviceBlocked(jobj["seqn"], jobj["name"], jobj["usb_class"],
-				  jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	_p_instance.DeviceBlocked(jobj["seqn"],
+				  attributes,
+				  jobj["rule_match"],
 				  jobj["rule_seqn"]);
       }
       else if (name == "DeviceRejected") {
-	_p_instance.DeviceRejected(jobj["seqn"], jobj["name"], jobj["usb_class"],
-				   jobj["vendor_id"], jobj["product_id"], jobj["rule_match"],
+	const json attributes_json = jobj.at("attributes");
+	std::map<std::string,std::string> attributes;
+
+	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
+	  const std::string key = it.key();
+	  const std::string value = it.value();
+	  attributes[key] = value;
+	}
+
+	_p_instance.DeviceRejected(jobj["seqn"],
+				   attributes,
+				   jobj["rule_match"],
 				   jobj["rule_seqn"]);
       }
       else {
