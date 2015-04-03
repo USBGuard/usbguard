@@ -241,4 +241,40 @@ namespace usbguard {
 
     throw std::runtime_error("Invalid set operator string");
   }
-}
+
+  Rule::Target Rule::targetFromString(const String& target_string)
+  {
+    const std::vector<std::pair<String,Rule::Target> > target_ttable = {
+      { "allow", Target::Allow },
+      { "block", Target::Block },
+      { "reject", Target::Reject },
+      { "match", Target::Match }
+    };
+
+    for (auto ttable_entry : target_ttable) {
+      if (ttable_entry.first == target_string) {
+	return ttable_entry.second;
+      }
+    }
+
+    throw std::runtime_error("Invalid rule target string");
+  }
+
+  const String Rule::targetToString(Target target)
+  {
+    const std::vector<std::pair<String,Rule::Target> > target_ttable = {
+      { "allow", Target::Allow },
+      { "block", Target::Block },
+      { "reject", Target::Reject },
+      { "match", Target::Match }
+    };
+
+    for (auto ttable_entry : target_ttable) {
+      if (ttable_entry.second == target) {
+	return ttable_entry.first;
+      }
+    }
+
+    throw std::runtime_error("Invalid rule target string");
+  }
+} /* namespace usbguard */

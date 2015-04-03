@@ -88,6 +88,8 @@ namespace usbguard {
     static Rule fromString(const String& rule_string);
     static SetOperator setOperatorFromString(const String& set_operator_string);
     static const String setOperatorToString(SetOperator op);
+    static Target targetFromString(const String& target_string);
+    static const String targetToString(Target target);
 
   private:
     RulePrivate* d_pointer;
