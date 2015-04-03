@@ -17,9 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include <build-config.h>
-
 #include "Common/Utility.hpp"
-#include "Common/Logging.hpp"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -104,8 +102,6 @@ namespace usbguard
       return;
     }
 
-    log->debug("Closing fds 0..{} (and redirecting stdout,stderr,stdin)", maxfd - 1);
-
     for (int fd = 0; fd < maxfd; ++fd) {
       if (fd == nullfd) {
 	// Don't close our /dev/null fd
@@ -127,7 +123,6 @@ namespace usbguard
 
     if (args.size() > 1024) {
       // Looks suspicious...
-      log->error("Too many arguments for the command (> 1024)");
       return;
     }
 
@@ -205,14 +200,11 @@ namespace usbguard
     }
 
     if (timedout) {
-      log->error("Command execution timedout after {} second(s)", timeout_secs);
-      log->debug("Sending SIGTERM to PID {}", child_pid);
       // Try to be nice first
       ::kill(child_pid, SIGTERM);
       ::usleep(1000*500);
       // Send SIGKILL if the process is still running
       if (::waitpid(child_pid, &status, WNOHANG) != child_pid) {
-	log->debug("PID {} still alive; Sending SIGKILL", child_pid);
 	::kill(child_pid, SIGKILL);
       }
       retval = -1;

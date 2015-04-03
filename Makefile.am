@@ -46,7 +46,9 @@ libusbguard_la_SOURCES=\
 	src/Common/Thread.hpp \
 	src/Common/JSON.hpp \
 	src/Common/ByteOrder.hpp \
-	src/Library/Typedefs.cpp
+	src/Library/Typedefs.cpp \
+	src/Common/Utility.hpp \
+	src/Common/Utility.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -82,8 +84,6 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/main.cpp \
 	src/Common/Logging.cpp \
 	src/Common/Logging.hpp \
-	src/Common/Utility.hpp \
-	src/Common/Utility.cpp \
 	src/Common/CCBQueue.hpp
 
 usbguard_daemon_CPPFLAGS=\
