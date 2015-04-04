@@ -62,9 +62,9 @@ If you want to modify the lexer and/or the parser, you'll have to generate new s
 
 ## Pre-compiled packages
 
-### Fedora Linux
+### Fedora Linux, RHEL or CentOS
 
-Pre-compiled packages for Fedora 20, 21, 22 and rawhide are distributes using a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
+Pre-compiled packages for Fedora 20, 21, 22, rawhide and EPEL 7 (RHEL, CentOS) are distributes using a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
 You can install the repository by executing the following steps:
 
     $ sudo yum install yum-plugin-copr
