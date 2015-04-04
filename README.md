@@ -70,10 +70,12 @@ You can install the repository by executing the following steps:
     $ sudo yum install yum-plugin-copr
     $ sudo yum copr enable mildew/usbguard
     $ sudo yum install usbguard
+    $ sudo yum install usbguard-applet-qt
 
 To actually start the daemon, use:
 
     $ sudo systemctl start usbguard.service
+    $ usbguard-applet-qt
 
 ## Rules
 
