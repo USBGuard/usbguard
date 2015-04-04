@@ -50,13 +50,17 @@ And then do:
     $ make
     $ sudo make install
 
-If you want to compile the sources in a cloned repository, there's one additional step required:
+If you want to compile the sources in a cloned repository, there are additional step required:
 
-	$ git submodule init
-	$ git submodule update
+    $ git submodule init
+    $ git submodule update
 
 This will fetch the sources of [cppformat](https://github.com/cppformat/cppformat), [json](https://github.com/nlohmann/json/)
 and [spdlog](https://github.com/gabime/spdlog) which are used in this project too.
+
+And to generate the *configure* script, run:
+
+    $ ./autogen.sh
 
 If you want to modify the lexer and/or the parser, you'll have to generate new source files for them. To learn how to do that, read [src/Library/RuleParser/README.md](src/Library/RuleParser/README.md).
 
