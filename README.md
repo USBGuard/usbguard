@@ -160,3 +160,22 @@ to the system at the moment of generating the policy:
     # lsusb | sed -n 's|.*\([0-9a-f]\{4\}:[0-9a-f]\{4\}\) \(.*\)|allow \1|p' > /etc/usbguard/rules.conf
 
 Future releases will include a tool to generate more complex initial policies.
+
+### Example policies
+
+The following examples show what to put into the `rules.conf` file in order to implement the given policy.
+
+#### Allow USB mass storage devices (USB flash disks) and block everything else
+
+This policy will block any device that isn't just a mass storage device. Devices with a hidden keyboard interface in a USB flash disk will be blocked. Only devices with a single mass storage interface will be allowed to interact with the operating system. The policy consists of a single rule:
+
+    allow with-interface equals { 08:*:* }
+
+The blocking is implicit in this case because we didn't write a `block` rule. Implicit blocking is useful to desktop users because a desktop applet listening to USBGuard events can ask the user for a decision if an implicit target was selected for a device.
+
+#### Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port.
+
+    allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
+    reject via-port "1-2"
+
+We could use just the hash to match the device. However, using the name and serial attributes allows the policy creator to quickly assign rules to specific devices without computing the hash. On the other hand, the hash is the most specific value we can use to identify a device in USBGuard so it's the best attribute to use if you want a rule to match just one device.
