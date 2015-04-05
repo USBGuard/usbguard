@@ -18,6 +18,10 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src/Library/RuleParser \
 	@qb_CFLAGS@
 
+libusbguard_la_LDFLAGS=\
+	-no-undefined \
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+
 libusbguard_la_LIBADD=\
 	@qb_LIBS@
 
