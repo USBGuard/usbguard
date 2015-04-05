@@ -1,10 +1,8 @@
 # USBGuard
 
-The USBGuard software framework helps to protect your computer against rogue USB devices by implementing basic
-whitelisting/blacklisting capabilities based on USB device attributes.
+The USBGuard software framework helps to protect your computer against rogue USB devices (a.k.a. [BadUSB](https://srlabs.de/badusb/)) by implementing basic whitelisting/blacklisting capabilities based on USB device attributes.
 
-**WARNING**: The 0.x releases are not production ready packages. They serve for tech-preview and user feedback purposes
-only. Please share your feedback or request a feature in the Github issue trackers for each project:
+**WARNING**: The 0.x releases are not production ready packages. They serve for tech-preview and user feedback purposes only. Please share your feedback or request a feature in the Github issue trackers for each project:
 
  * [Report a bug or request a feature in **usbguard**](https://github.com/dkopecek/usbguard/issues/new)
  * [Report a bug or request a feature in **usbguard-applet-qt**](https://github.com/dkopecek/usbguard-applet-qt/issues/new)
