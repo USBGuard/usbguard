@@ -183,3 +183,15 @@ The blocking is implicit in this case because we didn't write a `block` rule. Im
     reject via-port "1-2"
 
 We could use just the hash to match the device. However, using the name and serial attributes allows the policy creator to quickly assign rules to specific devices without computing the hash. On the other hand, the hash is the most specific value we can use to identify a device in USBGuard so it's the best attribute to use if you want a rule to match just one device.
+
+#### Reject devices with suspicious combination of interfaces
+
+A USB flash disk which implements a keyboard or a network interface is very suspicious. The following set of rules forms a policy which allows USB flash disks and explicitly rejects devices with an additional and suspicious (as defined before) interface.
+
+    allow with-interface equals { 08:*:* }
+    reject with-interface all-of { 08:*:* 03:00:* }
+    reject with-interface all-of { 08:*:* 03:01:* }
+    reject with-interface all-of { 08:*:* e0:*:* }
+    reject with-interface all-of { 08:*:* 02:*:* }
+   
+The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes. Please note that blacklisting is the wrong approach and you shouldn't just blacklist a set of devices and allow the rest. The policy above assumes that blocking is the implicit default. Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible.
