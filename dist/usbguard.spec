@@ -4,8 +4,8 @@ Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
-URL:            http://dkopecek.github.io/usbguard
-Source0:        %{name}-%{version}.tar.gz
+URL:            https://dkopecek.github.io/usbguard
+Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
 Source1:        usbguard-daemon.conf
 Source2:        usbguard.service
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
