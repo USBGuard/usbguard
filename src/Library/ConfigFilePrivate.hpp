@@ -1,4 +1,5 @@
 #pragma once
+#include <build-config.h>
 #include "ConfigFile.hpp"
 #include <fstream>
 

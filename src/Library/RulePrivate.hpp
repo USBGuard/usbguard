@@ -1,4 +1,5 @@
 #pragma once
+#include <build-config.h>
 #include "Rule.hpp"
 
 namespace usbguard {

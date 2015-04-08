@@ -1,5 +1,5 @@
 #pragma once
-
+#include <build-config.h>
 #include "Typedefs.hpp"
 #include "RuleSet.hpp"
 #include <istream>

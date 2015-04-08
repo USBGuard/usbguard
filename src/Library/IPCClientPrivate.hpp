@@ -1,4 +1,5 @@
 #pragma once
+#include <build-config.h>
 #include "IPCClient.hpp"
 #include "Common/Thread.hpp"
 #include "Typedefs.hpp"
