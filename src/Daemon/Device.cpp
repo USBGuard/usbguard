@@ -31,9 +31,11 @@ namespace usbguard {
 
     if (include_port) {
       device_rule->refDevicePorts().push_back(_port);
+      device_rule->setDevicePortsSetOperator(Rule::SetOperator::Equals);
     }
 
     device_rule->setInterfaceTypes(refInterfaceTypes());
+    device_rule->setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
     device_rule->setDeviceName(_name);
     device_rule->setDeviceHash(getDeviceHash(/*include_port=*/false));
     
