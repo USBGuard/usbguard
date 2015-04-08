@@ -143,7 +143,10 @@ namespace usbguard
 				       "LogToConsole",
 				       "LogToFile",
 				       "WritePID",
-				       "DebugMode" };
+				       "DebugMode",
+				       "IPCAllowedUsers",
+				       "IPCAllowedGroups" };
+
     for (auto const& known_name : known_names) {
       if (name == known_name) {
 	return true;

@@ -81,6 +81,7 @@ namespace usbguard
 
     json processJSON(const json& jobj);
     json processMethodCallJSON(const json& jobj);
+    bool qbIPCConnectionAllowed(uid_t uid, gid_t gid);
 
   protected:
     static void qbIPCSendJSON(qb_ipcs_connection_t *qb_conn, const json& jobj);
@@ -108,11 +109,21 @@ namespace usbguard
 
     Pointer<const Rule> appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec);
 
+    bool DACAuthenticateIPCConnection(uid_t uid, gid_t gid);
+    void DACAddAllowedUID(uid_t uid);
+    void DACAddAllowedGID(gid_t gid);
+    void DACAddAllowedUID(const String& username);
+    void DACAddAllowedGID(const String& groupname);
+
   private:
     ConfigFile _config;
     RuleSet _ruleset;
     DeviceManager *_dm;
     qb_loop_t *_qb_loop;
     qb_ipcs_service_t *_qb_service;
+    
+    bool _ipc_dac_acl;
+    std::vector<uid_t> _ipc_allowed_uids;
+    std::vector<gid_t> _ipc_allowed_gids;
   };
 } /* namespace usbguard */

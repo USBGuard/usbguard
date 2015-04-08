@@ -17,6 +17,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <grp.h>
+#include <pwd.h>
+
 namespace usbguard
 {
   qb_loop_t *G_qb_loop = nullptr;
@@ -44,6 +47,7 @@ namespace usbguard
       throw std::runtime_error("signal init error");
     }
 
+    _ipc_dac_acl = false;
     return;
   }
 
@@ -62,12 +66,39 @@ namespace usbguard
     log->debug("Loading configuration from {}", path);
     _config.open(path);
 
+    /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
       log->debug("Setting rules file path from configuration file");
       const String& rule_file = _config.getSettingValue("RuleFile");
       loadRules(rule_file);
     } else {
       log->debug("No rules file path specified.");
+    }
+
+    /* IPCAllowedUsers */
+    if (_config.hasSettingValue("IPCAllowedUsers")) {
+      log->debug("Setting allowed IPC users");
+      StringVector usernames;
+      tokenizeString(_config.getSettingValue("IPCAllowedUsers"),
+		     usernames, " ", /*trim_empty=*/true);
+      for (auto const& username : usernames) {
+	log->debug("Allowed IPC user: {}", username);
+	DACAddAllowedUID(username);
+      }
+      _ipc_dac_acl = true;
+    }
+
+    /* IPCAllowedGroups */
+    if (_config.hasSettingValue("IPCAllowedGroups")) {
+      log->debug("Setting allowed IPC groups");
+      StringVector groupnames;
+      tokenizeString(_config.getSettingValue("IPCAllowedGroups"),
+		     groupnames, " ", /*trim_empty=*/true);
+      for (auto const& groupname : groupnames) {
+	log->debug("Allowed IPC group: {}", groupname);
+	DACAddAllowedGID(groupname);
+      }
+      _ipc_dac_acl = true;
     }
 
     log->debug("Configuration loaded successfully");
@@ -378,8 +409,25 @@ namespace usbguard
 
   int32_t Daemon::qbIPCConnectionAcceptFn(qb_ipcs_connection_t *conn, uid_t uid, gid_t gid)
   {
-    log->debug("Connection accept");
-    return 0;
+    Daemon* daemon = \
+      static_cast<Daemon*>(qb_ipcs_connection_service_context_get(conn));
+
+    const bool auth = daemon->qbIPCConnectionAllowed(uid, gid);
+    log->debug("Connection {}", (auth ? "authenticated" : "NOT authenticated"));
+    return (auth ? 0 : -1);
+  }
+
+  bool Daemon::qbIPCConnectionAllowed(uid_t uid, gid_t gid)
+  {
+    if (_ipc_dac_acl) {
+      log->debug("Using DAC IPC ACL");
+      log->debug("Connection request from uid={} gid={}", uid, gid);
+      return DACAuthenticateIPCConnection(uid, gid);
+    }
+    else {
+      log->debug("IPC authentication is turned off.");
+      return true;
+    }
   }
 
   void Daemon::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)
@@ -449,8 +497,9 @@ namespace usbguard
 	throw 0;
       }
       retval["_r"] = name;
-    } catch(...) {
-      throw IPCException(IPCException::ProtocolError, "Invalid IPC signal data");
+    } catch(const std::exception& ex) {
+      log->error("Exception: {}", ex.what());
+      throw IPCException(IPCException::ProtocolError, "Invalid IPC method call");
     }
 
     log->debug("Returning JSON object: {}", retval);
@@ -526,7 +575,8 @@ namespace usbguard
       if (!retval.is_null()) {
 	qbIPCSendJSON(conn, retval);
       }
-    } catch(...) {
+    } catch(const std::exception& ex) {
+      log->error("Exception: {}", ex.what());
       log->error("Invalid JSON object received. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
       return 0;
@@ -713,8 +763,103 @@ namespace usbguard
     Pointer<Rule> device_rule = device->getDeviceRule();
     device_rule->setTarget(target);
     const String rule_string = device_rule->toString();
+    log->debug("Appending rule: {}", rule_string);
     const uint32_t rule_seqn = appendRule(rule_string, Rule::SeqnLast, timeout_sec);
+    log->debug("Rule seqn is: {}", rule_seqn);
     return _ruleset.getRule(rule_seqn);
+  }
+
+  bool Daemon::DACAuthenticateIPCConnection(uid_t uid, gid_t gid)
+  {
+    /* Check for UID match */
+    for (auto allowed_uid : _ipc_allowed_uids) {
+      if (allowed_uid == uid) {
+	log->debug("uid {} is an allowed uid", uid);
+	return true;
+      }
+    }
+
+    /* Translate uid to username for group member matching */
+    char pw_string_buffer[1024];
+    struct passwd pw, *pwptr = nullptr;
+    bool check_group_membership = true;
+
+    if (getpwuid_r(uid, &pw,
+		   pw_string_buffer, sizeof pw_string_buffer, &pwptr) != 0) {
+      log->warn("Cannot lookup username for uid {}. Won't check group membership.", uid);
+      check_group_membership = false;
+    }
+
+    /* Check for GID match or group member match */
+    for (auto allowed_gid : _ipc_allowed_gids) {
+      if (allowed_gid == gid) {
+	log->debug("gid {} is an allowed gid", gid);
+	return true;
+      }
+      else if (check_group_membership) {
+	char gr_string_buffer[3072];
+	struct group gr, *grptr = nullptr;
+
+	/* Fetch list of current group members of group with a gid == allowed_gid */
+	if (getgrgid_r(allowed_gid, &gr,
+		       gr_string_buffer, sizeof gr_string_buffer, &grptr) != 0) {
+	  log->warn("Cannot lookup groupname for gid {}. "
+		    "Won't check group membership of uid {}", allowed_gid, uid);
+	  continue;
+	}
+
+	/* Check for username match among group members */
+	for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
+	  if (strcmp(pw.pw_name, gr.gr_mem[i]) == 0) {
+	    log->debug("uid {} ({}) is a member of an allowed group with gid {} ({})",
+		       uid, pw.pw_name, allowed_gid, gr.gr_name);
+	    return true;
+	  }
+	}
+      }
+    } /* allowed gid loop */
+
+    return false;
+  }
+
+  void Daemon::DACAddAllowedUID(uid_t uid)
+  {
+    _ipc_allowed_uids.push_back(uid);
+    return;
+  }
+
+  void Daemon::DACAddAllowedGID(gid_t gid)
+  {
+    _ipc_allowed_gids.push_back(gid);
+    return;
+  }
+
+  void Daemon::DACAddAllowedUID(const String& username)
+  {
+    char string_buffer[4096];
+    struct passwd pw, *pwptr = nullptr;
+
+    if (getpwnam_r(username.c_str(), &pw,
+		   string_buffer, sizeof string_buffer, &pwptr) != 0) {
+      throw std::runtime_error("cannot lookup username");
+    }
+
+    DACAddAllowedUID(pw.pw_uid);
+    return;
+  }
+
+  void Daemon::DACAddAllowedGID(const String& groupname)
+  {
+    char string_buffer[4096];
+    struct group gr, *grptr = nullptr;
+
+    if (getgrnam_r(groupname.c_str(), &gr,
+		   string_buffer, sizeof string_buffer, &grptr) != 0) {
+      throw std::runtime_error("cannot lookup groupname");
+    }
+
+    DACAddAllowedGID(gr.gr_gid);
+    return;
   }
 
 } /* namespace usbguard */
