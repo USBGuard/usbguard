@@ -1,5 +1,7 @@
+%global _hardened_build 1
+
 Name:           usbguard
-Version:        0.2
+Version:        0.3
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
@@ -8,7 +10,6 @@ URL:            https://dkopecek.github.io/usbguard
 Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
 Source1:        usbguard-daemon.conf
 Source2:        usbguard.service
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires: systemd
 Requires(post): systemd
@@ -20,6 +21,7 @@ Requires(postun): /sbin/ldconfig
 BuildRequires: libqb-devel
 BuildRequires: libsodium-devel
 BuildRequires: systemd systemd-devel
+BuildRequires: libstdc++-devel
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
@@ -43,41 +45,25 @@ developing applications that use %{name}.
 %setup -q
 
 %build
-%ifarch sparc64
-#sparc64 need big PIE
-export CXXFLAGS="$RPM_OPT_FLAGS -fPIE"
-export CFLAGS=$CXXFLAGS
-export LDFLAGS="-pie -Wl,-z,relro -Wl,-z,now"
-%else
-export CXXFLAGS="$RPM_OPT_FLAGS -fpie"
-export CFLAGS=$CXXFLAGS
-export LDFLAGS="-pie -Wl,-z,relro -Wl,-z,now"
-%endif
-
-%configure
+%configure \
+    --disable-silent-rules \
+    --disable-static
 
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install INSTALL='install -p' DESTDIR=$RPM_BUILD_ROOT
+make install INSTALL='install -p' DESTDIR=%{buildroot}
 
 # Install configuration
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/usbguard
-install -p %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/usbguard/usbguard-daemon.conf
-# Create en empty rules.conf file
-touch $RPM_BUILD_ROOT%{_sysconfdir}/usbguard/rules.conf
+mkdir -p %{buildroot}%{_sysconfdir}/usbguard
+install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/usbguard/usbguard-daemon.conf
 
 # Install systemd unit
-mkdir -p $RPM_BUILD_ROOT%{_unitdir}
-install -p %{SOURCE2} $RPM_BUILD_ROOT%{_unitdir}/usbguard.service
+mkdir -p %{buildroot}%{_unitdir}
+install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/usbguard.service
 
 # Cleanup
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %preun
 %systemd_preun usbguard.service
@@ -93,21 +79,32 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc README.md
+%license LICENSE
 %{_libdir}/*.so.*
 %{_sbindir}/usbguard-daemon
 %dir %{_sysconfdir}/usbguard
 %config(noreplace) %{_sysconfdir}/usbguard/usbguard-daemon.conf
-%config(noreplace) %{_sysconfdir}/usbguard/rules.conf
 %{_unitdir}/usbguard.service
+%{_datadir}/man/man8/usbguard-daemon.8.gz
+%{_datadir}/man/man5/usbguard-daemon.conf.5.gz
+%{_datadir}/man/man5/usbguard-rules.conf.5.gz
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Apr 09 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3-1
+- Update to version 0.3
+- disabled silent rules
+- install license file
+- added man pages
+- use _hardened_build 1 instead of custom compilation flags
+- fix file permissions on files in /etc
+- do not install an empty rule set file
+
 * Fri Apr 03 2015 Daniel Kopecek <dkopecek@redhat.com> 0.2-1
 - Update to version 0.2
 - Updated description
