@@ -88,7 +88,11 @@ namespace usbguard
     if (_config.hasSettingValue("RuleFile")) {
       log->debug("Setting rules file path from configuration file");
       const String& rule_file = _config.getSettingValue("RuleFile");
-      loadRules(rule_file);
+      try {
+	loadRules(rule_file);
+      } catch(const std::exception& ex) {
+	log->warn("The configured rule file doesn't yet exists. Starting with an empty rule set.");
+      }
     } else {
       log->debug("No rules file path specified.");
     }
