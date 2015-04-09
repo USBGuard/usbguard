@@ -1,6 +1,12 @@
-
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST=
+
+man8_MANS=\
+	doc/usbguard-daemon.roff
+
+man5_MANS=\
+	doc/usbguard-daemon.conf.roff \
+	doc/usbguard-rules.conf.roff
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
