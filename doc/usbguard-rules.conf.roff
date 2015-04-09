@@ -1,0 +1,172 @@
+.\" Generated with Ronnjs 0.4.0
+.\" http://github.com/kapouer/ronnjs
+.
+.TH "USBGUARD\-DAEMON\.CONF" "5" "April 2015" "" "5"
+.
+.SH "NAME"
+\fBusbguard-daemon.conf\fR \-\- USBGuard rule set file
+.
+.SH "SYNOPSIS"
+\fBusbguard\-rules\.conf\fR
+.
+.SH "DESCRIPTION"
+The \fBusbguard\-daemon\.conf\fR file is loaded by the USBGuard daemon after it parses the main configuration file, usbguard\-daemon\.conf(5)\. The daemon expects the file to contain rules written in a rule language which is described in the \fIRule Language\fR section bellow\.
+.
+.SH "Rule Language"
+The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules\. When an USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either \fIauthorizes\fR (allows), \fIdeauthorizes\fR (blocks) or \fIremoves\fR (rejects) the device, based on the rule target\. If no matching rule is found, the decision is based on an implicit default target\. This implicit default is to block the device until a decision is made by the user\. The rule language grammar, expressed in a BNF\-like syntax, is the following:
+.
+.IP "" 4
+.
+.nf
+rule ::= target device\.
+target ::= "allow" | "block" | "reject"\.
+device ::= device_id device_attributes\.
+device ::= \.
+device_id ::= "*:*" | vendor_id ":*" | vendor_id ":" product_id\.
+device_attributes ::= device_attributes | attribute\.
+device_attributes ::= \.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+See the \fIDevice Attributes\fR section for the list of available attributes and their syntax\.
+.
+.SS "Targets"
+The target of a rule specifies whether the device will be authorized for use or not\. Three types of target are recognized:
+.
+.IP "\(bu" 4
+\fBallow\fR \- \fBauthorize\fR the device
+.
+.IP "\(bu" 4
+\fBblock\fR \- \fBdeauthorize\fR the device
+.
+.IP "\(bu" 4
+\fBreject\fR \- \fBremove the device\fR from the system
+.
+.IP "" 0
+.
+.SS "Device Specification"
+Except the target, all the other fields of a rule need not be specified\. Such a minimal rule will match any device and allows the policy creator to write an explicit default target (there\'s an implicit one too, more on that later)\. However, if one want\'s to narrow the applicability of a rule to a set of devices or one device only, it\'s possible to do so with a device id and/or device attributes\.
+.
+.SS "\fIDevice ID\fR"
+A USB device ID is the colon delimited pair \fIvendor_id:product_id\fR\|\. All USB devices have this ID assigned by the manufacturer and it should uniquely identify a USB product\. Both \fIvendor_id\fR and \fIproduct_id\fR are 16\-bit numbers represented in hexadecimal base\.
+.
+.P
+In the rule, it\'s possible to use an asterisk character to match either any device ID \fB*:*\fR or any product ID from a specific vendor, e\.g\. \fB1234:*\fR\|\.
+.
+.SS "\fIDevice Attributes\fR"
+Device attributes are specific value read from the USB device after it\'s inserted to the system\. Which attributes are available is defined bellow\. Some of the attributes are derived or based on attributes read directly from the device\. The value of an attribute is represented as a double\-quoted string\.
+.
+.P
+List of attributes:
+.
+.IP "\(bu" 4
+\fBhash "[0\-9a\-f]{32}"\fR: Match a hash of the device attributes (the hash is computed for every device by USBGuard)\.
+.
+.IP "\(bu" 4
+\fBname "device\-name"\fR: Match the USB device name attribute\. 
+.
+.IP "\(bu" 4
+\fBserial "serial\-number"\fR: Match the iSerial USB device attribute\.
+.
+.IP "\(bu" 4
+\fBvia\-port "port\-id"\fR: Match the USB port through which the device is connected\.
+.
+.IP "\(bu" 4
+\fBvia\-port [operator] { "port\-id" "port\-id" \.\.\. }\fR: Match a set of USB ports\.
+.
+.IP "\(bu" 4
+\fBwith\-interface interface\-type\fR: Match an interface the USB device provides\.
+.
+.IP "\(bu" 4
+\fBwith\-interface [operator] { interface\-type interface\-type \.\.\. }\fR: Match a set of interface types against the set of interfaces that the USB device provides\.
+.
+.IP "" 0
+.
+.P
+where \fBoperator\fR is one of:
+.
+.IP "\(bu" 4
+\fBall\-of\fR: The device attribute set must contain all of the specified values for the rule to match\.
+.
+.IP "\(bu" 4
+\fBone\-of\fR: The device attribute set must contain at least one of the specified values for the rule to match\.
+.
+.IP "\(bu" 4
+\fBnone\-of\fR: The device attribute set must not contain any of the specified values for the rule to match\.
+.
+.IP "\(bu" 4
+\fBequals\fR: The device attribute set must contain exactly the same set of values for the rule to match\.
+.
+.IP "\(bu" 4
+\fBequals\-ordered\fR: The device attribute set must contain exactly the same set of values in the same order for the rule to match\.
+.
+.IP "" 0
+.
+.P
+and \fBport\-id\fR is a platform specific USB port identification\. On Linux it\'s in the form "b\-n" where \fBb\fR and \fBn\fR are unsigned integers (e\.g\. "1\-2", "2\-4", \.\.\.)\.
+.
+.P
+The \fBinterface\-type\fR represents a USB interface and should be formated as three 8\-bit numbers in hexadecimal base delimited by colon, i\.e\. \fBcc:ss:pp\fR\|\. The numbers represent the interface class (\fBcc\fR), subclass (\fBss\fR) and protocol (\fBpp\fR) as assigned by the USB\-IF \fIwww\.usb\.org/about\fR (List of assigned classes, subclasses and protocols \fIhttp://www\.usb\.org/developers/defined_class\fR)\. Instead of the subclass and protocol number, you may write an asterisk character (\fB\\*\fR) to match all subclasses or protocols\. Matching a specific class and a specific protocol is not allowed, i\.e\. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too\.
+.
+.SS "Example Policies"
+The following examples show what to put into the \fBrules\.conf\fR file in order to implement the given policy\.
+.
+.SS "\fIExample 1: Allow USB mass storage devices (USB flash disks) and block everything else\fR"
+This policy will block any device that isn\'t just a mass storage device\. Devices with a hidden keyboard interface in a USB flash disk will be blocked\. Only devices with a single mass storage interface will be allowed to interact with the operating system\. The policy consists of a single rule:
+.
+.IP "" 4
+.
+.nf
+allow with\-interface equals { 08:*:* }
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The blocking is implicit in this case because we didn\'t write a \fBblock\fR rule\. Implicit blocking is useful to desktop users because a desktop applet listening to USBGuard events can ask the user for a decision if an implicit target was selected for a device\.
+.
+.SS "\fIExample 2: Allow a specific Yubikey device to be connected via a specific port\. Reject everything else on that port\.\fR"
+.
+.nf
+allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via\-port "1\-2" hash "044b5e168d40ee0245478416caf3d998"
+reject via\-port "1\-2"
+.
+.fi
+.
+.P
+We could use just the hash to match the device\. However, using the name and serial attributes allows the policy creator to quickly assign rules to specific devices without computing the hash\. On the other hand, the hash is the most specific value we can use to identify a device in USBGuard so it\'s the best attribute to use if you want a rule to match just one device\.
+.
+.SS "\fIExample 3: Reject devices with suspicious combination of interfaces\fR"
+A USB flash disk which implements a keyboard or a network interface is very suspicious\. The following set of rules forms a policy which allows USB flash disks and explicitly rejects devices with an additional and suspicious (as defined before) interface\.
+.
+.IP "" 4
+.
+.nf
+allow with\-interface equals { 08:*:* }
+reject with\-interface all\-of { 08:*:* 03:00:* }
+reject with\-interface all\-of { 08:*:* 03:01:* }
+reject with\-interface all\-of { 08:*:* e0:*:* }
+reject with\-interface all\-of { 08:*:* 02:*:* }
+.
+.fi
+.
+.IP "" 0
+.
+.P
+The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes\. Please note that blacklisting is the wrong approach and you shouldn\'t just blacklist a set of devices and allow the rest\. The policy above assumes that blocking is the implicit default\. Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible\.
+.
+.SH "BUGS"
+If you find a bug in this software or if you\'d like to request a feature to be implemented, please file a ticket at https://github\.com/dkopecek/usbguard/issues/new \fI\fR\|\.
+.
+.SH "AUTHOR"
+Daniel Kopeček \fIdkopecek@redhat\.com\fR
+.
+.SH "COPYRIGHT"
+Copyright © 2015 Red Hat, Inc\.  License GPLv2+: GNU GPL version 2 or later \fIhttp://gnu\.org/licenses/gpl\.html\fR\|\. This is free software: you are free to change and redistribute it\.  There is NO WARRANTY, to the extent permitted by law\.
+.
+.SH "SEE ALSO"
+usbguard\-daemon(8), usbguard\-daemon\.conf(5)
