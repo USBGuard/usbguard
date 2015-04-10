@@ -110,5 +110,4 @@ usbguard_daemon_LDADD=\
 EXTRA_DIST +=\
 	README.md \
 	src/ThirdParty/spdlog \
-	src/ThirdParty/cppformat/format.h \
 	src/ThirdParty/json/src/json.hpp
