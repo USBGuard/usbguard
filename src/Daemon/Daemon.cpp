@@ -435,8 +435,17 @@ namespace usbguard
       static_cast<Daemon*>(qb_ipcs_connection_service_context_get(conn));
 
     const bool auth = daemon->qbIPCConnectionAllowed(uid, gid);
-    log->debug("Connection {}", (auth ? "authenticated" : "NOT authenticated"));
-    return (auth ? 0 : -1);
+
+    if (auth) {
+      log->debug("IPC Connection accepted. "
+		 "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
+      qb_ipcs_connection_auth_set(conn, uid, 0, 0660);
+      return 0;
+    }
+    else {
+      log->debug("IPC Connection rejected");
+      return -1;
+    }
   }
 
   bool Daemon::qbIPCConnectionAllowed(uid_t uid, gid_t gid)
