@@ -1,7 +1,7 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.3
+Version:        0.3p2
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
@@ -22,6 +22,8 @@ BuildRequires: libqb-devel
 BuildRequires: libsodium-devel
 BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
+BuildRequires: json-static
+BuildRequires: spdlog-static
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
@@ -43,11 +45,15 @@ developing applications that use %{name}.
 
 %prep
 %setup -q
+# Remove bundled library sources before build
+rm -rf src/ThirdParty/{json,spdlog}
 
 %build
 %configure \
     --disable-silent-rules \
-    --disable-static
+    --disable-static \
+    --without-bundled-json \
+    --without-bundled-spdlog
 
 make %{?_smp_mflags}
 
@@ -96,6 +102,14 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Sat Apr 11 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p2-1
+- Update to version 0.3p2
+- use system-wide json and spdlog packages
+
+* Fri Apr 10 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p1-1
+- Update to version 0.3p1
+- removed bundled cppformat copylib
+
 * Thu Apr 09 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3-1
 - Update to version 0.3
 - disabled silent rules
