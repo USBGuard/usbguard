@@ -17,5 +17,5 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#include "ThirdParty/json/src/json.hpp"
+#include <json.hpp>
 using json = nlohmann::json;

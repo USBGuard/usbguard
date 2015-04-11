@@ -18,7 +18,7 @@
 //
 #pragma once
 #include "Typedefs.hpp"
-#include "ThirdParty/spdlog/include/spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 namespace usbguard
 {

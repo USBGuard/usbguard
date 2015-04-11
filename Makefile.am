@@ -23,14 +23,18 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
 	-I$(top_srcdir)/src/Library/RuleParser \
-	@qb_CFLAGS@
+	@qb_CFLAGS@ \
+	@json_CFLAGS@ \
+	@spdlog_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 
 libusbguard_la_LIBADD=\
-	@qb_LIBS@
+	@qb_LIBS@ \
+	@spdlog_LIBS@ \
+	@json_LIBS@
 
 libusbguard_la_SOURCES=\
 	src/Library/ConfigFile.cpp \
@@ -100,12 +104,16 @@ usbguard_daemon_SOURCES=\
 usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	@udev_CFLAGS@ \
-	@sodium_CFLAGS@
+	@sodium_CFLAGS@ \
+	@spdlog_CFLAGS@ \
+	@json_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@udev_LIBS@ \
-	@sodium_LIBS@
+	@sodium_LIBS@ \
+	@spdlog_LIBS@ \
+	@json_LIBS@
 
 EXTRA_DIST +=\
 	README.md \

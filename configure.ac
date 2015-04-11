@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([usbguard], [0.3p1], [dkopecek@redhat.com])
+AC_INIT([usbguard], [0.3p2], [dkopecek@redhat.com])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/build-config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -61,6 +61,30 @@ PKG_CHECK_MODULES([qb], [libqb >= 0.16.0], [],
                   AC_MSG_FAILURE([libqb development files not found!]))
 PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5], [],
                   AC_MSG_FAILURE([libsodium development files not found!]))
+
+AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]))
+
+if test "x$with_bundled_json" = "xyes"; then
+	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
+	json_LIBS=""
+	AC_SUBST([json_CFLAGS])
+	AC_SUBST([json_LIBS])
+	AC_MSG_NOTICE([Using bundled json library])
+else
+	PKG_CHECK_MODULES([json], [json])
+fi
+
+AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]))
+
+if test "x$with_bundled_spdlog" = "xyes"; then
+	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
+	spdlog_LIBS=""
+	AC_SUBST([spdlog_CFLAGS])
+	AC_SUBST([json_LIBS])
+	AC_MSG_NOTICE([Using bundled spdlog library])
+else
+	PKG_CHECK_MODULES([spdlog], [spdlog])
+fi
 
 # Checks for header files.
 AC_FUNC_ALLOCA
