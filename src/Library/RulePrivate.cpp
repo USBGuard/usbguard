@@ -31,7 +31,33 @@ namespace usbguard {
     _interface_types_op = Rule::SetOperator::Match;
     return;
   }
+
+  RulePrivate::RulePrivate(Rule& p_instance, const RulePrivate& rhs)
+    : _p_instance(p_instance)
+  {
+    *this = rhs;
+    return;
+  }
   
+  const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
+  {
+    _seqn = rhs._seqn;
+    _vendor_id = rhs._vendor_id;
+    _product_id = rhs._product_id;
+    _serial_number = rhs._serial_number;
+    _device_name = rhs._device_name;
+    _device_hash = rhs._device_hash;
+    _device_ports = rhs._device_ports;
+    _device_ports_op = rhs._device_ports_op;
+    _interface_types = rhs._interface_types;
+    _interface_types_op = rhs._interface_types_op;
+    _target = rhs._target;
+    _action = rhs._action;
+    _tp_added = rhs._tp_added;
+    _timeout_seconds = rhs._timeout_seconds;
+    return *this;
+  }
+
   uint32_t RulePrivate::getSeqn() const
   {
     return _seqn;

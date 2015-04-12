@@ -41,11 +41,11 @@ namespace usbguard {
     };
 
     /**< Sequence number of the (fake) root rule */
-    static const uint32_t SeqnRoot = std::numeric_limits<uint32_t>::min();
+    static const uint32_t SeqnRoot;
     /**< Sequence number assigned to default constructed rules. Cannot be used for searching. */
-    static const uint32_t SeqnDefault = std::numeric_limits<uint32_t>::max();
+    static const uint32_t SeqnDefault;
     /**< Sequence number for specifying that the last rule in the ruleset should be used in context of the operation */
-    static const uint32_t SeqnLast = std::numeric_limits<uint32_t>::max() - 1;
+    static const uint32_t SeqnLast;
 
     enum class SetOperator {
       AllOf,
@@ -64,6 +64,7 @@ namespace usbguard {
     Rule();
     ~Rule();
     Rule(const Rule& rhs);
+    const Rule& operator=(const Rule& rhs);
 
     uint32_t getSeqn() const;
     const String& getVendorID() const;

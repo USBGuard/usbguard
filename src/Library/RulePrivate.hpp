@@ -25,6 +25,8 @@ namespace usbguard {
   {
   public:
     RulePrivate(Rule& p_instance);
+    RulePrivate(Rule& p_instance, const RulePrivate& rhs);
+    const RulePrivate& operator=(const RulePrivate& rhs);
 
     uint32_t getSeqn() const;
     const String& getVendorID() const;

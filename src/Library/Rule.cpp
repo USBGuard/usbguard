@@ -20,6 +20,10 @@
 #include <utility>
 
 namespace usbguard {
+  const uint32_t Rule::SeqnRoot = std::numeric_limits<uint32_t>::min();
+  const uint32_t Rule::SeqnDefault = std::numeric_limits<uint32_t>::max();
+  const uint32_t Rule::SeqnLast = std::numeric_limits<uint32_t>::max() - 1;
+
   Rule::Rule()
   {
     d_pointer = new RulePrivate(*this);
@@ -28,12 +32,21 @@ namespace usbguard {
   Rule::~Rule()
   {
     delete d_pointer;
+    d_pointer = nullptr;
   }
 
   Rule::Rule(const Rule& rhs)
   {
-    d_pointer = new RulePrivate(*rhs.d_pointer);
+    d_pointer = new RulePrivate(*this, *rhs.d_pointer);
     return;
+  }
+
+  const Rule& Rule::operator=(const Rule& rhs)
+  {
+    RulePrivate* n_pointer = new RulePrivate(*this, *rhs.d_pointer);
+    delete d_pointer;
+    d_pointer = n_pointer;
+    return *this;
   }
 
   uint32_t Rule::getSeqn() const
