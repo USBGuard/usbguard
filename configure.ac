@@ -129,5 +129,5 @@ else
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
 fi
 
-AC_CONFIG_FILES([Makefile libusbguard.pc])
+AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
