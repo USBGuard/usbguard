@@ -15,3 +15,6 @@ test_unit_SOURCES=\
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la
+
+EXTRA_DIST=\
+	$(top_srcdir)/src/ThirdParty/Catch
