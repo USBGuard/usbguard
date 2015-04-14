@@ -1,11 +1,13 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.3p2
+Version:        0.3p3
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
+## Not installed
+# src/ThirdParty/Catch: Boost Software License - Version 1.0
 URL:            https://dkopecek.github.io/usbguard
 Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
 Source1:        usbguard-daemon.conf
@@ -35,9 +37,7 @@ Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 Requires:       pkgconfig
-Requires:       libqb-devel
-Requires:       libsodium-devel
-Requires:       systemd-devel
+Requires:       libstdc++-devel
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -56,6 +56,9 @@ rm -rf src/ThirdParty/{json,spdlog}
     --without-bundled-spdlog
 
 make %{?_smp_mflags}
+
+%check
+make check
 
 %install
 make install INSTALL='install -p' DESTDIR=%{buildroot}
@@ -102,6 +105,13 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Apr 14 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p3-1
+- Update to version 0.3p3
+- added %check section
+- removed explicit -devel requires on systemd, libqb and
+  libsodium devel files
+- added -devel requires on libstdc++-devel
+
 * Sat Apr 11 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p2-1
 - Update to version 0.3p2
 - use system-wide json and spdlog packages
