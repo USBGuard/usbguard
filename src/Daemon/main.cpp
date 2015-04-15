@@ -33,6 +33,7 @@
 # include <sys/resource.h>
 # include <sys/socket.h>
 # include <linux/netlink.h>
+# include <sys/mman.h>
 # if defined(HAVE_LIBCAPNG)
 #  include <sys/prctl.h>
 # endif
@@ -201,7 +202,15 @@ int main(int argc, char *argv[])
    /* memory */
    ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
    ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 0);
+
+   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
+			   SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
+   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
+			   SCMP_A2(SCMP_CMP_EQ, PROT_READ));
+   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
+			   SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
+   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
+			   SCMP_A2(SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
 
    /* clock */
    ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_gettime), 0);
