@@ -61,6 +61,12 @@ PKG_CHECK_MODULES([qb], [libqb >= 0.16.0], [],
                   AC_MSG_FAILURE([libqb development files not found!]))
 PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5], [],
                   AC_MSG_FAILURE([libsodium development files not found!]))
+PKG_CHECK_MODULES([seccomp], [libseccomp >= 2.0.0],
+		  AC_DEFINE([HAVE_SECCOMP], [1], [seccomp API usable]),
+                  AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF]))
+PKG_CHECK_MODULES([libcapng], [libcap-ng >= 0.7.0],
+		  AC_DEFINE([HAVE_LIBCAPNG], [1], [cap-ng API usable]),
+                  AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF]))
 
 AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]))
 

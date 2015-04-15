@@ -36,6 +36,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* cap-ng API usable */
+#undef HAVE_LIBCAPNG
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -67,6 +70,9 @@
 
 /* Define to 1 if you have the `regcomp' function. */
 #undef HAVE_REGCOMP
+
+/* seccomp API usable */
+#undef HAVE_SECCOMP
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE

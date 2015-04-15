@@ -108,14 +108,18 @@ usbguard_daemon_CPPFLAGS=\
 	@udev_CFLAGS@ \
 	@sodium_CFLAGS@ \
 	@spdlog_CFLAGS@ \
-	@json_CFLAGS@
+	@json_CFLAGS@ \
+	@seccomp_CFLAGS@ \
+	@libcapng_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@udev_LIBS@ \
 	@sodium_LIBS@ \
 	@spdlog_LIBS@ \
-	@json_LIBS@
+	@json_LIBS@ \
+	@seccomp_LIBS@ \
+	@libcapng_LIBS@
 
 EXTRA_DIST +=\
 	README.md \
