@@ -42,6 +42,11 @@ If you want to compile the sources from a release tarball, you'll have to instal
  * [libsodium](http://libsodium.org) - used for hashing
  * systemd-devel - used for udev
 
+Optionally, you may want to install:
+
+ * [libseccomp](https://github.com/seccomp/libseccomp) - used to implement a syscall whitelist
+ * [libcap-ng](https://people.redhat.com/sgrubb/libcap-ng/) - used to drop process capabalities
+
 And then do:
 
     $ ./configure
