@@ -59,10 +59,12 @@ namespace usbguard
       throw;
     }
 
-    if (qb_loop_signal_add(_qb_loop, QB_LOOP_HIGH, SIGINT, _qb_loop, Daemon::qbSignalHandlerFn, NULL) != 0 ||
-	qb_loop_signal_add(_qb_loop, QB_LOOP_HIGH, SIGTERM, _qb_loop, Daemon::qbSignalHandlerFn, NULL) != 0) {
-      log->debug("Cannot register signal handlers.");
-      throw std::runtime_error("signal init error");
+    for (int signum : { SIGINT, SIGTERM, SIGSYS }) {
+      if (qb_loop_signal_add(_qb_loop, QB_LOOP_HIGH, signum,
+			     _qb_loop, Daemon::qbSignalHandlerFn, NULL) != 0) {
+	log->debug("Cannot register signal #{} handler", signum);
+	throw std::runtime_error("signal init error");
+      }
     }
 
     _ipc_dac_acl = false;
@@ -426,6 +428,11 @@ namespace usbguard
     qb_loop_t *qb_loop = (qb_loop_t *)arg;
     log->debug("Stopping main loop from signal handler");
     qb_loop_stop(qb_loop);
+
+    if (signal == SIGSYS) {
+      log->warn("Stopped due to SIGSYS: A system call was used which is not whitelisted.");
+    }
+
     return QB_FALSE;
   }
 
