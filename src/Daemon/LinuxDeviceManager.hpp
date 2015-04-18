@@ -62,6 +62,8 @@ namespace usbguard {
     Pointer<Device> applyDevicePolicy(uint32_t seqn, Rule::Target target);
     void thread();
     void udevReceiveDevice();
+    void udevEnumerateDevices();
+    void processDevicePresence(struct udev_device *dev);
     void processDeviceInsertion(struct udev_device *dev);
     void processDeviceRemoval(struct udev_device *dev);
 

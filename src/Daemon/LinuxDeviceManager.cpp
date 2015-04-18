@@ -272,6 +272,7 @@ namespace usbguard {
     fd_set readset;
 
     udev_monitor_enable_receiving(_umon);
+    udevEnumerateDevices();
 
     while (!_thread.stopRequested()) {
       struct timeval tv_timeout = { 5, 0 };
@@ -331,6 +332,46 @@ namespace usbguard {
     }
 
     udev_device_unref(dev);
+    return;
+  }
+
+  void LinuxDeviceManager::udevEnumerateDevices()
+  {
+    struct udev_enumerate *enumerate = udev_enumerate_new(_udev);
+
+    if (enumerate == nullptr) {
+      log->debug("udev_enumerate_new returned NULL");
+      throw std::runtime_error("udev_enumerate_new returned NULL");
+    }
+
+    udev_enumerate_add_match_subsystem(enumerate, "usb");
+    udev_enumerate_scan_devices(enumerate);
+
+    struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
+    struct udev_list_entry *dlentry = nullptr;
+
+    udev_list_entry_foreach(dlentry, devices) {
+      const char *syspath = udev_list_entry_get_name(dlentry);
+      struct udev_device *device = udev_device_new_from_syspath(_udev, syspath);
+      const char *devtype = udev_device_get_devtype(device);
+
+      if (strcmp(devtype, "usb_device") == 0) {
+	processDevicePresence(device);
+      }
+
+      udev_device_unref(device);
+    }
+
+    udev_enumerate_unref(enumerate);
+    return;
+  }
+
+  void LinuxDeviceManager::processDevicePresence(struct udev_device *dev)
+  {
+    log->debug("Processing device presence");
+    Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
+    insertDevice(device);
+    DevicePresent(device);
     return;
   }
 
