@@ -135,6 +135,17 @@ namespace usbguard {
     return _syspath;
   }
 
+  bool LinuxDevice::isController() const
+  {
+    if (getPort().substr(0, 3) != "usb" || getInterfaceTypes().size() != 1) {
+      return false;
+    }
+
+    const USBInterfaceType hub_interface("09:00:*");
+
+    return hub_interface.appliesTo(getInterfaceTypes()[0]);
+  }
+
   /*
    * Manager
    */

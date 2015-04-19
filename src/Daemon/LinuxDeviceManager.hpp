@@ -33,6 +33,7 @@ namespace usbguard {
   public:
     LinuxDevice(struct udev_device* dev);
     const String& getSysPath() const;
+    bool isController() const;
 
   protected:
     void readDescriptors(std::istream& stream);

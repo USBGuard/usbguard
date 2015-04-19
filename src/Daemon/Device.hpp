@@ -33,6 +33,11 @@ namespace usbguard {
     Pointer<Rule> getDeviceRule(bool include_port = false);
     uint32_t getSeqn() const;
     String getDeviceHash(bool include_port = false) const;
+    const String getPort() const;
+    const std::vector<USBInterfaceType>& getInterfaceTypes() const;
+
+    virtual bool isController() const = 0;
+
     void setSeqn(uint32_t seqn);
     void setTarget(Rule::Target target);
     void setDeviceName(const String& name);

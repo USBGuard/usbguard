@@ -94,6 +94,16 @@ namespace usbguard {
     return String(hexval, hexlen - 1);
   }
 
+  const String Device::getPort() const
+  {
+    return _port;
+  }
+
+  const std::vector<USBInterfaceType>& Device::getInterfaceTypes() const
+  {
+    return _interface_types;
+  }
+
   void Device::setSeqn(uint32_t seqn)
   {
     _seqn = seqn;
