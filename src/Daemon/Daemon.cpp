@@ -68,6 +68,9 @@ namespace usbguard
     }
 
     _ipc_dac_acl = false;
+    _implicit_policy_target = Rule::Target::Block;
+    _present_device_policy = PresentDevicePolicy::Keep;
+    _present_controller_policy = PresentDevicePolicy::Allow;
     return;
   }
 
@@ -97,6 +100,27 @@ namespace usbguard
       }
     } else {
       log->debug("No rules file path specified.");
+    }
+
+    /* ImplicitPolicyTarget */
+    if (_config.hasSettingValue("ImplicitPolicyTarget")) {
+      const String& target_string = _config.getSettingValue("ImplicitPolicyTarget");
+      Rule::Target target = Rule::targetFromString(target_string);
+      setImplicitPolicyTarget(target);
+    }
+
+    /* PresentDevicePolicy */
+    if (_config.hasSettingValue("PresentDevicePolicy")) {
+      const String& policy_string = _config.getSettingValue("PresentDevicePolicy");
+      PresentDevicePolicy policy = Daemon::presentDevicePolicyFromString(policy_string);
+      setPresentDevicePolicy(policy);
+    }
+
+    /* PresentControllerPolicy */
+    if (_config.hasSettingValue("PresentControllerPolicy")) {
+      const String& policy_string = _config.getSettingValue("PresentControllerPolicy");
+      PresentDevicePolicy policy = Daemon::presentDevicePolicyFromString(policy_string);
+      setPresentControllerPolicy(policy);
     }
 
     /* IPCAllowedUsers */
@@ -132,6 +156,25 @@ namespace usbguard
   void Daemon::loadRules(const String& path)
   {
     _ruleset.load(path);
+    return;
+  }
+
+  void Daemon::setImplicitPolicyTarget(Rule::Target target)
+  {
+    _implicit_policy_target = target;
+    _ruleset.setDefaultTarget(target);
+    return;
+  }
+
+  void Daemon::setPresentDevicePolicy(PresentDevicePolicy policy)
+  {
+    _present_device_policy = policy;
+    return;
+  }
+
+  void Daemon::setPresentControllerPolicy(PresentDevicePolicy policy)
+  {
+    _present_controller_policy = policy;
     return;
   }
 
@@ -392,6 +435,70 @@ namespace usbguard
     return;
   }
 
+  void Daemon::dmDevicePresent(Pointer<Device> device)
+  {
+    Pointer<Rule> device_rule = device->getDeviceRule();
+    std::map<std::string,std::string> attributes;
+
+    attributes["name"] = device_rule->getDeviceName();
+    attributes["vendor_id"] = device_rule->getVendorID();
+    attributes["product_id"] = device_rule->getProductID();
+    attributes["serial"] = device_rule->getSerialNumber();
+    attributes["hash"] = device_rule->getDeviceHash();
+
+    const PresentDevicePolicy policy = \
+      device->isController() ? _present_controller_policy : _present_device_policy;
+
+    Rule::Target target = Rule::Target::Invalid;
+    Pointer<const Rule> matched_rule = nullptr;
+
+    switch (policy) {
+    case PresentDevicePolicy::Allow:
+      target = Rule::Target::Allow;
+      break;
+    case PresentDevicePolicy::Block:
+      target = Rule::Target::Block;
+      break;
+    case PresentDevicePolicy::Reject:
+      target = Rule::Target::Reject;
+      break;
+    case PresentDevicePolicy::Keep:
+      target = Rule::Target::Allow; /* FIXME */
+      break;
+    case PresentDevicePolicy::ApplyPolicy:
+      matched_rule = _ruleset.getFirstMatchingRule(device_rule);
+      target = matched_rule->getTarget();
+      break;
+    }
+
+    DevicePresent(device_rule->getSeqn(),
+		  attributes,
+		  device_rule->refInterfaceTypes(),
+		  target);
+
+    if (matched_rule == nullptr) {
+      auto rule = makePointer<Rule>();
+      rule->setTarget(target);
+      matched_rule = rule;
+    }
+
+    switch(target) {
+    case Rule::Target::Allow:
+      allowDevice(device_rule->getSeqn(), matched_rule);
+      break;
+    case Rule::Target::Block:
+      blockDevice(device_rule->getSeqn(), matched_rule);
+      break;
+    case Rule::Target::Reject:
+      rejectDevice(device_rule->getSeqn(), matched_rule);
+      break;
+    default:
+      throw std::runtime_error("BUG: Wrong matched_rule target");
+    }
+
+    return;
+  }
+
   void Daemon::dmDeviceRemoved(Pointer<Device> device)
   {
     Pointer<Rule> device_rule = device->getDeviceRule();
@@ -466,6 +573,25 @@ namespace usbguard
       log->debug("IPC authentication is turned off.");
       return true;
     }
+  }
+
+  Daemon::PresentDevicePolicy Daemon::presentDevicePolicyFromString(const String& policy_string)
+  {
+    const std::vector<std::pair<String,Daemon::PresentDevicePolicy> > policy_ttable = {
+      { "allow", PresentDevicePolicy::Allow },
+      { "block", PresentDevicePolicy::Block },
+      { "reject", PresentDevicePolicy::Reject },
+      { "keep", PresentDevicePolicy::Keep },
+      { "apply-policy", PresentDevicePolicy::ApplyPolicy }
+    };
+
+    for (auto ttable_entry : policy_ttable) {
+      if (ttable_entry.first == policy_string) {
+	return ttable_entry.second;
+      }
+    }
+
+    throw std::runtime_error("Invalid present device policy string");
   }
 
   void Daemon::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)

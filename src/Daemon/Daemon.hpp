@@ -38,11 +38,23 @@ namespace usbguard
   class Daemon : public IPC
   {
   public:
+    enum PresentDevicePolicy {
+      Allow,
+      Block,
+      Reject,
+      Keep,
+      ApplyPolicy
+    };
+
     Daemon();
     ~Daemon();
 
     void loadConfiguration(const String& path);
     void loadRules(const String& path);
+
+    void setImplicitPolicyTarget(Rule::Target target);
+    void setPresentDevicePolicy(PresentDevicePolicy policy);
+    void setPresentControllerPolicy(PresentDevicePolicy policy);
 
     /* Start the daemon */
     void run();
@@ -91,7 +103,7 @@ namespace usbguard
 
     /* Device manager hooks */
     void dmDeviceInserted(Pointer<Device> device);
-    void dmDevicePresent(Pointer<Device> device) {}
+    void dmDevicePresent(Pointer<Device> device);
     void dmDeviceRemoved(Pointer<Device> device);
     void dmDeviceAllowed(Pointer<Device> device);
     void dmDeviceBlocked(Pointer<Device> device);
@@ -101,6 +113,7 @@ namespace usbguard
     json processMethodCallJSON(const json& jobj);
     bool qbIPCConnectionAllowed(uid_t uid, gid_t gid);
 
+    static PresentDevicePolicy presentDevicePolicyFromString(const String& policy_string);
   protected:
     static void qbIPCSendJSON(qb_ipcs_connection_t *qb_conn, const json& jobj);
     static int32_t qbSignalHandlerFn(int32_t signal, void *arg);
@@ -140,8 +153,15 @@ namespace usbguard
     qb_loop_t *_qb_loop;
     qb_ipcs_service_t *_qb_service;
     
+    /*
+     * == Runtime parameters ==
+     */
     bool _ipc_dac_acl;
     std::vector<uid_t> _ipc_allowed_uids;
     std::vector<gid_t> _ipc_allowed_gids;
+
+    Rule::Target _implicit_policy_target;
+    PresentDevicePolicy _present_device_policy;
+    PresentDevicePolicy _present_controller_policy;
   };
 } /* namespace usbguard */

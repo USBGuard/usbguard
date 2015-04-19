@@ -144,6 +144,9 @@ namespace usbguard
 				       "LogToFile",
 				       "WritePID",
 				       "DebugMode",
+				       "ImplicitPolicyTarget",
+				       "PresentDevicePolicy",
+				       "PresentControllerPolicy",
 				       "IPCAllowedUsers",
 				       "IPCAllowedGroups" };
 
