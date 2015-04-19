@@ -363,8 +363,26 @@ namespace usbguard {
 
     udev_list_entry_foreach(dlentry, devices) {
       const char *syspath = udev_list_entry_get_name(dlentry);
+
+      if (syspath == nullptr) {
+	log->warn("Received NULL syspath for en UDev enumerated device. Ignoring.");
+	continue;
+      }
+
       struct udev_device *device = udev_device_new_from_syspath(_udev, syspath);
+
+      if (device == nullptr) {
+	log->warn("Cannot create a new device from syspath {}. Ignoring.", syspath);
+	continue;
+      }
+
       const char *devtype = udev_device_get_devtype(device);
+
+      if (devtype == nullptr) {
+	log->warn("Cannot get device type for device at syspath {}. Ignoring.", syspath);
+	udev_device_unref(device);
+	continue;
+      }
 
       if (strcmp(devtype, "usb_device") == 0) {
 	processDevicePresence(device);
