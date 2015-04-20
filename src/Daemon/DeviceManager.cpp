@@ -103,4 +103,19 @@ namespace usbguard {
     _daemon.dmDeviceRejected(device);
     return;
   }
+
 } /* namespace usbguard */
+
+#if defined(__linux__)
+# include "LinuxDeviceManager.hpp"
+#endif
+
+usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(Daemon& daemon)
+{
+#if defined(__linux__)
+  auto dm = usbguard::makePointer<usbguard::LinuxDeviceManager>(daemon);
+#else
+# error "No DeviceManager implementation available"
+#endif
+  return std::move(dm);
+}

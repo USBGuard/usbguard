@@ -19,8 +19,6 @@
 #include <build-config.h>
 
 #include "Daemon.hpp"
-#include "LinuxDeviceManager.hpp"
-
 #include "Common/Logging.hpp"
 #include "Common/Utility.hpp"
 
@@ -51,7 +49,7 @@ namespace usbguard
     }
 
     try {
-      _dm = new LinuxDeviceManager(*this);
+      _dm = DeviceManager::create(*this);
       initIPC();
     } catch(...) {
       qb_loop_destroy(_qb_loop);
@@ -77,7 +75,6 @@ namespace usbguard
   Daemon::~Daemon()
   {
     finiIPC();
-    delete _dm;
     _config.close();
     qb_loop_destroy(_qb_loop);
     G_qb_loop = nullptr;

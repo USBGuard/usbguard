@@ -149,7 +149,7 @@ namespace usbguard
   private:
     ConfigFile _config;
     RuleSet _ruleset;
-    DeviceManager *_dm;
+    Pointer<DeviceManager> _dm;
     qb_loop_t *_qb_loop;
     qb_ipcs_service_t *_qb_service;
     

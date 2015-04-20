@@ -53,6 +53,7 @@ namespace usbguard {
     void DeviceBlocked(Pointer<Device> device);
     void DeviceRejected(Pointer<Device> device);
 
+    static Pointer<DeviceManager> create(Daemon& daemon);
   private:
     Daemon& _daemon;
     std::mutex _device_map_mutex;
