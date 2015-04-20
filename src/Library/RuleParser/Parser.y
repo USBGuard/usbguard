@@ -94,6 +94,7 @@ device_attribute ::= KEYWORD_VIAPORT ports_set_op(O) CURLYBRACE_OPEN stringvec(V
 
 ports_set_op(O) ::= SET_OPERATOR(V). {
 		    O = Rule::setOperatorFromString(quex::unicode_to_char(V->get_text()));
+		    delete V;
 }
 
 ports_set_op(O) ::= . {
@@ -123,6 +124,7 @@ device_attribute ::= KEYWORD_WITHINTERFACE usbif_set_op(O) CURLYBRACE_OPEN usbif
 
 usbif_set_op(O) ::= SET_OPERATOR(V). {
 		    O = Rule::setOperatorFromString(quex::unicode_to_char(V->get_text()));
+		    delete V;
 }
 
 usbif_set_op(O) ::= . {
