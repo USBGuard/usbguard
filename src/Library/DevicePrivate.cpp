@@ -59,7 +59,7 @@ namespace usbguard {
     return _mutex;
   }
 
-  Pointer<Rule> DevicePrivate::getDeviceRule(bool include_port)
+  Pointer<Rule> DevicePrivate::getDeviceRule(const bool include_port)
   {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
@@ -88,11 +88,10 @@ namespace usbguard {
     return _seqn;
   }
 
-  String DevicePrivate::getDeviceHash(bool include_port) const
+  String DevicePrivate::getDeviceHash(const bool include_port) const
   {
     unsigned char hash[crypto_generichash_BYTES_MIN];
     crypto_generichash_state state;
-    std::string hash_string;
 
     if (_vendor_id.empty() || _product_id.empty()) {
       throw std::runtime_error("Cannot compute device hash value. Vendor ID and/or Product ID empty.");
@@ -114,7 +113,8 @@ namespace usbguard {
     char hexval[hexlen];
     sodium_bin2hex(hexval, hexlen, hash, sizeof hash);
 
-    return String(hexval, hexlen - 1);
+    const std::string hash_string(hexval, hexlen - 1);
+    return std::move(hash_string);
   }
 
   const String DevicePrivate::getPort() const
@@ -127,13 +127,13 @@ namespace usbguard {
     return _interface_types;
   }
 
-  void DevicePrivate::setSeqn(uint32_t seqn)
+  void DevicePrivate::setSeqn(const uint32_t seqn)
   {
     _seqn = seqn;
     return;
   }
 
-  void DevicePrivate::setTarget(Rule::Target target)
+  void DevicePrivate::setTarget(const Rule::Target target)
   {
     _target = target;
     return;
@@ -141,30 +141,45 @@ namespace usbguard {
 
   void DevicePrivate::setDeviceName(const String& name)
   {
+    if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setDeviceName: value size out-of-range");
+    }
     _name = name;
     return;
   }
 
   void DevicePrivate::setVendorID(const String& vendor_id)
   {
+    if (vendor_id.size() > USB_VID_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setVendorID: value size out-of-range");
+    }
     _vendor_id = vendor_id;
     return;
   }
 
   void DevicePrivate::setProductID(const String& product_id)
   {
+    if (product_id.size() > USB_PID_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setProductID: value size out-of-range");
+    }
     _product_id = product_id;
     return;
   }
 
   void DevicePrivate::setDevicePort(const String& port)
   {
+    if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setDevicePort: value size out-of-range");
+    }
     _port = port;
     return;
   }
 
   void DevicePrivate::setSerialNumber(const String& serial_number)
   {
+    if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setSerialNumber: value size out-of-range");
+    }
     _serial_number = serial_number;
     return;
   }
@@ -174,23 +189,42 @@ namespace usbguard {
     return _interface_types;
   }
 
-  void DevicePrivate::loadDeviceDescriptor(const USBDeviceDescriptor* descriptor)
+  void DevicePrivate::loadDeviceDescriptor(const USBDeviceDescriptor* const descriptor)
   {
+    if (descriptor == nullptr) {
+      throw std::runtime_error("loadDeviceDescriptor: NULL descriptor");
+    }
     _num_configurations = descriptor->bNumConfigurations;
     return;
   }
 
-  void DevicePrivate::loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor)
+  void DevicePrivate::loadConfigurationDescriptor(const int c_num, const USBConfigurationDescriptor* const descriptor)
   {
+    if (c_num < 0 || c_num >= _num_configurations) {
+      throw std::runtime_error("loadConfigurationDescriptor: configuration index out-of-range");
+    }
+    if (descriptor == nullptr) {
+      throw std::runtime_error("loadConfigurationDescriptor: NULL descriptor");
+    }
     _num_interfaces += descriptor->bNumInterfaces;
     return;
   }
 
-  void DevicePrivate::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
+  void DevicePrivate::loadInterfaceDescriptor(const int c_num, const int i_num, const USBInterfaceDescriptor* const descriptor)
   {
-    USBInterfaceType interface_type(*descriptor);
+    if (c_num < 0 || c_num >= _num_configurations) {
+      throw std::runtime_error("loadInterfaceDescriptor: configuration index out-of-range");
+    }
+    if (i_num < 0 || i_num >= _num_interfaces) {
+      throw std::runtime_error("loadInterfaceDescriptor: interface index out-of-range");
+    }
+    if (descriptor == nullptr) {
+      throw std::runtime_error("loadInterfaceDescriptor: NULL descriptor");
+    }
+
+    const USBInterfaceType interface_type(*descriptor);
     _interface_types.push_back(interface_type);
-    //log->debug("Added interface type: {}", interface_type.typeString());
+
     return;
   }
 

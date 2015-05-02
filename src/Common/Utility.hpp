@@ -29,7 +29,6 @@
 
 namespace usbguard
 {
-
   /**
    * Create a background process.
    *
@@ -101,7 +100,7 @@ namespace usbguard
    * representation.
    */
   template<typename T>
-  String numberToString(T number, const String& prefix = String(), int base = 10, int align = -1, char align_char = ' ')
+  String numberToString(const T number, const String& prefix = String(), const int base = 10, const int align = -1, const char align_char = ' ')
   {
     std::ostringstream ss;
     if (!prefix.empty()) {
@@ -112,7 +111,7 @@ namespace usbguard
 
     const String number_string = ss.str();
 
-    if (align > 0 && number_string.size() < align) {
+    if (align > 0 && number_string.size() < (size_t)align) {
       const size_t chars_to_add = (size_t)align - number_string.size();
       const String alignment(chars_to_add, align_char);
       return alignment + number_string;
@@ -123,14 +122,14 @@ namespace usbguard
   }
 
   template<>
-  String numberToString(uint8_t number, const String& prefix, int base, int align, char align_char);
+  String numberToString(const uint8_t number, const String& prefix, const int base, const int align, const char align_char);
 
   /**
    * Convert a string representation of a number
    * to a number of type T.
    */
   template<typename T>
-  T stringToNumber(const String& s, int base = 10)
+  T stringToNumber(const String& s, const int base = 10)
   {
     std::istringstream ss(s);
     T num;
@@ -139,7 +138,7 @@ namespace usbguard
   }
 
   template<>
-  uint8_t stringToNumber(const String& s, int base);
+  uint8_t stringToNumber(const String& s, const int base);
 
   /**
    * Return the filename part of a path. If include_extension is set to
@@ -160,7 +159,7 @@ namespace usbguard
   template<class StringType>
   StringType trimRight(const StringType& s, const StringType& delimiters = " \f\n\r\t\v" )
   {
-    size_t substr_to = s.find_last_not_of(delimiters)+1;
+    const size_t substr_to = s.find_last_not_of(delimiters)+1;
     return s.substr(0, substr_to);
   }
 
@@ -170,7 +169,7 @@ namespace usbguard
   template<class StringType>
   StringType trimLeft(const StringType& s, const StringType& delimiters = " \f\n\r\t\v" )
   {
-    size_t substr_from = s.find_first_not_of(delimiters);
+    const size_t substr_from = s.find_first_not_of(delimiters);
     if (substr_from == StringType::npos) {
       return s;
     } else {
@@ -210,8 +209,8 @@ namespace usbguard
 	// No more directory entries
 	break;
       } else {
-	String filename(entry_ptr->d_name);
-	String fullpath = directory + "/" + filename;
+	const String filename(entry_ptr->d_name);
+	const String fullpath = directory + "/" + filename;
 #if defined(_DIRENT_HAVE_D_TYPE)
 	if (entry_ptr->d_type != DT_UNKNOWN) {
 	  if (entry_ptr->d_type != DT_REG) {

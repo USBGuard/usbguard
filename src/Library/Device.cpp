@@ -52,7 +52,7 @@ namespace usbguard {
     return d_pointer->refDeviceMutex();
   }
 
-  Pointer<Rule> Device::getDeviceRule(bool include_port)
+  Pointer<Rule> Device::getDeviceRule(const bool include_port)
   {
     return std::move(d_pointer->getDeviceRule(include_port));
   }
@@ -62,7 +62,7 @@ namespace usbguard {
     return d_pointer->getSeqn();
   }
 
-  String Device::getDeviceHash(bool include_port) const
+  String Device::getDeviceHash(const bool include_port) const
   {
     return d_pointer->getDeviceHash(include_port);
   }
@@ -77,13 +77,13 @@ namespace usbguard {
     return d_pointer->getInterfaceTypes();
   }
 
-  void Device::setSeqn(uint32_t seqn)
+  void Device::setSeqn(const uint32_t seqn)
   {
     d_pointer->setSeqn(seqn);
     return;
   }
 
-  void Device::setTarget(Rule::Target target)
+  void Device::setTarget(const Rule::Target target)
   {
     d_pointer->setTarget(target);
     return;
@@ -124,19 +124,19 @@ namespace usbguard {
     return d_pointer->refInterfaceTypes();
   }
 
-  void Device::loadDeviceDescriptor(const USBDeviceDescriptor* descriptor)
+  void Device::loadDeviceDescriptor(const USBDeviceDescriptor* const descriptor)
   {
     d_pointer->loadDeviceDescriptor(descriptor);
     return;
   }
 
-  void Device::loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor)
+  void Device::loadConfigurationDescriptor(const int c_num, const USBConfigurationDescriptor* const descriptor)
   {
     d_pointer->loadConfigurationDescriptor(c_num, descriptor);
     return;
   }
 
-  void Device::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
+  void Device::loadInterfaceDescriptor(const int c_num, const int i_num, const USBInterfaceDescriptor* const descriptor)
   {
     d_pointer->loadInterfaceDescriptor(c_num, i_num, descriptor);
     return;

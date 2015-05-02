@@ -19,8 +19,27 @@
 #pragma once
 #include "Typedefs.hpp"
 #include <cstdint>
+#include <climits>
 
 namespace usbguard {
+  /*
+   * Maximum lenght of a string that is read from a USB descriptor
+   * Since the string descriptors have an 8-bit length field, the
+   * maximum lenght of a string stored in a string descriptor is
+   * UINT8_MAX minus the size of the length field (1 byte) and the
+   * size of the type field (1 byte).
+   */
+  const size_t USB_GENERIC_STRING_MAX_LENGTH = UINT8_MAX - 2;
+
+  /* Maximum lenght of the vendor id in string form */
+  const size_t USB_VID_STRING_MAX_LENGTH = 4;
+
+  /* Maximum lenght of the product id in string form */
+  const size_t USB_PID_STRING_MAX_LENGTH = 4;
+
+  /* Maximum lenght of the port in string form */
+  const size_t USB_PORT_STRING_MAX_LENGTH = PATH_MAX;
+
   /*
    * NOTE: The USB specification dictates that all multibyte data fields
    *       are in little-endian form. The structures defined bellow are
@@ -28,7 +47,6 @@ namespace usbguard {
    *       data to the Device class. The Device class assumes that the
    *       values are in host-specific endianness.
    */
-
   struct USBDeviceDescriptor
   {
     uint8_t bLength;

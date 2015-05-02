@@ -36,10 +36,9 @@ namespace usbguard
 
   void daemonize()
   {
-    ::pid_t pid;
-    ::pid_t sid;
+    const ::pid_t pid = fork();
 
-    switch(pid = ::fork()) {
+    switch(pid) {
     case  0: /* child */
       break;
     case -1: /* error */
@@ -59,7 +58,8 @@ namespace usbguard
     if (::chdir("/") != 0) {
       ::exit(EXIT_FAILURE);
     }
-    if ((sid = ::setsid()) != 0) {
+    const ::pid_t sid = ::setsid();
+    if (sid != 0) {
       ::exit(EXIT_FAILURE);
     }
     ::umask(::umask(077)|022);
@@ -67,11 +67,10 @@ namespace usbguard
     if (::getrlimit(RLIMIT_NOFILE, &rlim) != 0) {
       ::exit(EXIT_FAILURE);
     }
-    int maxfd = (rlim.rlim_max == RLIM_INFINITY ? 1024 : rlim.rlim_max);
+    const int maxfd = (rlim.rlim_max == RLIM_INFINITY ? 1024 : rlim.rlim_max);
     for (int fd = 0; fd < maxfd; ++fd) {
       ::close(fd);
     }
-
     return;
   }
 
@@ -87,17 +86,16 @@ namespace usbguard
 
   static void runCommandExecChild(const String& path, const std::vector<String>& args)
   {
-    int maxfd = 0;
-    int nullfd;
     struct rlimit rlim;
 
     // Find out what the maxfd value could be
     if (::getrlimit(RLIMIT_NOFILE, &rlim) == -1) {
       return;
     }
-    maxfd = (rlim.rlim_max == RLIM_INFINITY ? 4096 : rlim.rlim_max);
 
-    nullfd = ::open("/dev/null", O_RDWR);
+    const int maxfd = (rlim.rlim_max == RLIM_INFINITY ? 4096 : rlim.rlim_max);
+    const int nullfd = ::open("/dev/null", O_RDWR);
+
     if (nullfd < 0) {
       return;
     }
@@ -131,7 +129,7 @@ namespace usbguard
     // +1 ... for argv[0]
     // +1 ... for nullptr termination of the array
     //
-    char **args_cstr = (char **)(::alloca(sizeof(const char *) * (args.size() + 2)));
+    char ** const args_cstr = (char **)(::alloca(sizeof(const char *) * (args.size() + 2)));
     unsigned int i;
 
     args_cstr[0] = const_cast<char *>(path.c_str());
@@ -144,14 +142,14 @@ namespace usbguard
     (void)::execv(path.c_str(), args_cstr);
   }
 
-  int runCommand(const char *path, const char *arg1, int timeout_secs)
+  int runCommand(const char * const path, const char * const arg1, const int timeout_secs)
   {
     std::vector<String> args;
     args.push_back(arg1);
     return runCommand(path, args, timeout_secs);
   }
 
-  int runCommand(const char *path, const char *arg1, const char *arg2, int timeout_secs)
+  int runCommand(const char * const path, const char * const arg1, const char * const arg2, const int timeout_secs)
   {
     std::vector<String> args;
     args.push_back(arg1);
@@ -159,13 +157,14 @@ namespace usbguard
     return runCommand(path, args, timeout_secs);
   }
 
-  int runCommand(const String& path, const std::vector<String>& args, int timeout_secs)
+  int runCommand(const String& path, const std::vector<String>& args, const int timeout_secs)
   {
-    int retval = 0, status = 0, waitpid_time_usec;
-    pid_t child_pid, waitpid_retval = 0;
+    int retval = 0, status = 0;
     bool timedout = false;
 
-    switch (child_pid = ::fork()) {
+    const pid_t child_pid = ::fork();
+
+    switch (child_pid) {
     case 0:
       // Child
       runCommandExecChild(path, args);
@@ -174,11 +173,13 @@ namespace usbguard
       break;
     }
     // Parent - wait for the child to exit (up to timeout seconds)
-    waitpid_time_usec = timeout_secs * 1000 * 1000;
+    int waitpid_time_usec = timeout_secs * 1000 * 1000;
 
     while (waitpid_time_usec > 0) {
+      const pid_t waitpid_retval = ::waitpid(child_pid, &status, WNOHANG);
       timedout = false;
-      switch(waitpid_retval = ::waitpid(child_pid, &status, WNOHANG)) {
+
+      switch(waitpid_retval) {
       case 0: // Not exited yet; Sleep & retry
 	timedout = true;
 	waitpid_time_usec -= 500;
@@ -213,7 +214,7 @@ namespace usbguard
     return retval;
   }
 
-  String filenameFromPath(const String& filepath, bool include_extension)
+  String filenameFromPath(const String& filepath, const bool include_extension)
   {
     const String directory_separator = "/";
     StringVector path_tokens;
@@ -224,13 +225,13 @@ namespace usbguard
       return String();
     }
 
-    String& filename = path_tokens.back();
+    const String& filename = path_tokens.back();
 
     if (include_extension) {
       return filename;
     }
 
-    size_t substr_to = filename.find_last_of('.');
+    const size_t substr_to = filename.find_last_of('.');
 
     return filename.substr(0, substr_to);
   }
@@ -242,13 +243,13 @@ namespace usbguard
    * an unsigned int.
    */
   template<>
-  String numberToString(uint8_t number, const String& prefix, int base, int align, char align_char)
+  String numberToString(const uint8_t number, const String& prefix, const int base, const int align, const char align_char)
   {
     return numberToString((unsigned int)number, prefix, base, align, align_char);
   }
 
   template<>
-  uint8_t stringToNumber(const String& s, int base)
+  uint8_t stringToNumber(const String& s, const int base)
   {
     const unsigned int num = stringToNumber<unsigned int>(s, base);
     return (uint8_t)num;
