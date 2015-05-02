@@ -27,7 +27,9 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src/Library/RuleParser \
 	@qb_CFLAGS@ \
 	@json_CFLAGS@ \
-	@spdlog_CFLAGS@
+	@spdlog_CFLAGS@ \
+	@udev_CFLAGS@ \
+	@sodium_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
@@ -36,7 +38,9 @@ libusbguard_la_LDFLAGS=\
 libusbguard_la_LIBADD=\
 	@qb_LIBS@ \
 	@spdlog_LIBS@ \
-	@json_LIBS@
+	@json_LIBS@ \
+	@udev_LIBS@ \
+	@sodium_LIBS@
 
 libusbguard_la_SOURCES=\
 	src/Library/ConfigFile.cpp \
@@ -65,7 +69,18 @@ libusbguard_la_SOURCES=\
 	src/Common/ByteOrder.hpp \
 	src/Library/Typedefs.cpp \
 	src/Common/Utility.hpp \
-	src/Common/Utility.cpp
+	src/Common/Utility.cpp \
+	src/Library/DeviceManagerHooks.cpp \
+	src/Library/Device.cpp \
+	src/Library/DevicePrivate.hpp \
+	src/Library/DevicePrivate.cpp \
+	src/Library/DeviceManager.cpp \
+	src/Library/DeviceManagerPrivate.hpp \
+	src/Library/DeviceManagerPrivate.cpp \
+	src/Library/LinuxDeviceManager.cpp \
+	src/Library/LinuxDeviceManager.hpp \
+	src/Library/LinuxSysIO.hpp \
+	src/Library/LinuxSysIO.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -74,7 +89,10 @@ pkginclude_HEADERS=\
 	src/Library/USB.hpp \
 	src/Library/Rule.hpp \
 	src/Library/RuleSet.hpp \
-	src/Library/Typedefs.hpp
+	src/Library/Typedefs.hpp \
+	src/Library/DeviceManagerHooks.hpp \
+	src/Library/Device.hpp \
+	src/Library/DeviceManager.hpp
 
 EXTRA_DIST +=\
 	src/Library/RuleParser/Lexer.qx \
@@ -90,14 +108,6 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
 	src/Daemon/Exceptions.hpp \
-	src/Daemon/SysIO.cpp \
-	src/Daemon/SysIO.hpp \
-	src/Daemon/Device.hpp \
-	src/Daemon/Device.cpp \
-	src/Daemon/DeviceManager.hpp \
-	src/Daemon/DeviceManager.cpp \
-	src/Daemon/LinuxDeviceManager.hpp \
-	src/Daemon/LinuxDeviceManager.cpp \
 	src/Daemon/main.cpp \
 	src/Common/Logging.cpp \
 	src/Common/Logging.hpp \
@@ -105,8 +115,6 @@ usbguard_daemon_SOURCES=\
 
 usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
-	@udev_CFLAGS@ \
-	@sodium_CFLAGS@ \
 	@spdlog_CFLAGS@ \
 	@json_CFLAGS@ \
 	@seccomp_CFLAGS@ \
@@ -114,8 +122,6 @@ usbguard_daemon_CPPFLAGS=\
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
-	@udev_LIBS@ \
-	@sodium_LIBS@ \
 	@spdlog_LIBS@ \
 	@json_LIBS@ \
 	@seccomp_LIBS@ \
@@ -124,4 +130,5 @@ usbguard_daemon_LDADD=\
 EXTRA_DIST +=\
 	README.md \
 	src/ThirdParty/spdlog \
-	src/ThirdParty/json/src/json.hpp
+	src/ThirdParty/json/src/json.hpp \
+	src/ThirdParty/Catch

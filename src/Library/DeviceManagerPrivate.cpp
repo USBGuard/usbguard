@@ -16,29 +16,42 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include "DeviceManager.hpp"
-#include "Daemon.hpp"
+#include "DeviceManagerPrivate.hpp"
+#include <DeviceManagerHooks.hpp>
 
 namespace usbguard {
-  DeviceManager::DeviceManager(Daemon& daemon)
-    : _daemon(daemon)
+  DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks)
+    : _p_instance(p_instance),
+      _hooks(hooks)
   {
   }
 
-  DeviceManager::~DeviceManager()
+  DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, const DeviceManagerPrivate& rhs)
+    : _p_instance(p_instance),
+      _hooks(rhs._hooks)
   {
+    *this = rhs;
+    return;
+  }
+  
+  const DeviceManagerPrivate& DeviceManagerPrivate::operator=(const DeviceManagerPrivate& rhs)
+  {
+    std::unique_lock<std::mutex> local_device_map_lock(_device_map_mutex);
+    std::unique_lock<std::mutex> remote_device_map_lock(rhs._device_map_mutex);
+    _device_map = rhs._device_map;
+    return *this;
   }
 
-  void DeviceManager::insertDevice(Pointer<Device> device)
+  void DeviceManagerPrivate::insertDevice(Pointer<Device> device)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    const uint32_t seqn = _daemon.assignSeqn();
+    const uint32_t seqn = _hooks.dmHookAssignSeqn();
     device->setSeqn(seqn);
     _device_map[seqn] = device;
     return;
   }
 
-  Pointer<Device> DeviceManager::removeDevice(uint32_t seqn)
+  Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t seqn)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     auto it = _device_map.find(seqn);
@@ -50,7 +63,7 @@ namespace usbguard {
     return device;
   }
 
-  PointerVector<Device> DeviceManager::getDeviceList()
+  PointerVector<Device> DeviceManagerPrivate::getDeviceList()
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     PointerVector<Device> devices;
@@ -62,60 +75,45 @@ namespace usbguard {
     return std::move(devices);
   }
 
-  Pointer<Device> DeviceManager::getDevice(uint32_t seqn)
+  Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t seqn)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     return _device_map.at(seqn);
   }
 
-  void DeviceManager::DeviceInserted(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceInserted(Pointer<Device> device)
   {
-    _daemon.dmDeviceInserted(device);
+    _hooks.dmHookDeviceInserted(device);
     return;
   }
 
-  void DeviceManager::DevicePresent(Pointer<Device> device)
+  void DeviceManagerPrivate::DevicePresent(Pointer<Device> device)
   {
-    _daemon.dmDevicePresent(device);
+    _hooks.dmHookDevicePresent(device);
     return;
   }
 
-  void DeviceManager::DeviceRemoved(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceRemoved(Pointer<Device> device)
   {
-    _daemon.dmDeviceRemoved(device);
+    _hooks.dmHookDeviceRemoved(device);
     return;
   }
 
-  void DeviceManager::DeviceAllowed(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceAllowed(Pointer<Device> device)
   {
-    _daemon.dmDeviceAllowed(device);
+    _hooks.dmHookDeviceAllowed(device);
     return;
   }
 
-  void DeviceManager::DeviceBlocked(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceBlocked(Pointer<Device> device)
   {
-    _daemon.dmDeviceBlocked(device);
+    _hooks.dmHookDeviceBlocked(device);
     return;
   }
 
-  void DeviceManager::DeviceRejected(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceRejected(Pointer<Device> device)
   {
-    _daemon.dmDeviceRejected(device);
+    _hooks.dmHookDeviceRejected(device);
     return;
   }
-
 } /* namespace usbguard */
-
-#if defined(__linux__)
-# include "LinuxDeviceManager.hpp"
-#endif
-
-usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(Daemon& daemon)
-{
-#if defined(__linux__)
-  auto dm = usbguard::makePointer<usbguard::LinuxDeviceManager>(daemon);
-#else
-# error "No DeviceManager implementation available"
-#endif
-  return std::move(dm);
-}

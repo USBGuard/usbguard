@@ -396,7 +396,7 @@ namespace usbguard
     return;
   }
 
-  void Daemon::dmDeviceInserted(Pointer<Device> device)
+  void Daemon::dmHookDeviceInserted(Pointer<Device> device)
   {
     Pointer<Rule> device_rule = device->getDeviceRule();
     Pointer<const Rule> matched_rule = _ruleset.getFirstMatchingRule(device_rule);
@@ -432,7 +432,7 @@ namespace usbguard
     return;
   }
 
-  void Daemon::dmDevicePresent(Pointer<Device> device)
+  void Daemon::dmHookDevicePresent(Pointer<Device> device)
   {
     Pointer<Rule> device_rule = device->getDeviceRule();
     std::map<std::string,std::string> attributes;
@@ -496,7 +496,7 @@ namespace usbguard
     return;
   }
 
-  void Daemon::dmDeviceRemoved(Pointer<Device> device)
+  void Daemon::dmHookDeviceRemoved(Pointer<Device> device)
   {
     Pointer<Rule> device_rule = device->getDeviceRule();
 
@@ -512,19 +512,24 @@ namespace usbguard
     return;
   }
 
-  void Daemon::dmDeviceAllowed(Pointer<Device> device)
+  void Daemon::dmHookDeviceAllowed(Pointer<Device> device)
   {
     return;
   }
 
-  void Daemon::dmDeviceBlocked(Pointer<Device> device)
+  void Daemon::dmHookDeviceBlocked(Pointer<Device> device)
   {
     return;
   }
 
-  void Daemon::dmDeviceRejected(Pointer<Device> device)
+  void Daemon::dmHookDeviceRejected(Pointer<Device> device)
   {
     return;
+  }
+
+  uint32_t Daemon::dmHookAssignSeqn()
+  {
+    return assignSeqn();
   }
 
   int32_t Daemon::qbSignalHandlerFn(int32_t signal, void *arg)

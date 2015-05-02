@@ -17,47 +17,47 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "LinuxDeviceManager.hpp"
-#include "Daemon.hpp"
-#include "SysIO.hpp"
+#include "LinuxSysIO.hpp"
 #include "Common/Logging.hpp"
-#include "USB.hpp"
+#include <USB.hpp>
 #include <sys/eventfd.h>
 #include <sys/select.h>
 #include <stdexcept>
 #include <fstream>
+#include <unistd.h>
 
 namespace usbguard {
 
   LinuxDevice::LinuxDevice(struct udev_device* dev)
   {
-    log->debug("Creating a new LinuxDevice instance");
+    //log->debug("Creating a new LinuxDevice instance");
     const char *name = udev_device_get_sysattr_value(dev, "product");
     if (name) {
-      log->debug("DeviceName={}", name);
+      //log->debug("DeviceName={}", name);
       setDeviceName(name);
     }
     
     const char *id_vendor = udev_device_get_sysattr_value(dev, "idVendor");
     if (id_vendor) {
-      log->debug("VendorID={}", id_vendor);
+      //log->debug("VendorID={}", id_vendor);
       setVendorID(id_vendor);
     }
 
     const char *id_product = udev_device_get_sysattr_value(dev, "idProduct");
     if (id_product) {
-      log->debug("ProductID={}", id_product);
+      //log->debug("ProductID={}", id_product);
       setProductID(id_product);
     }
 
     const char *serial = udev_device_get_sysattr_value(dev, "serial");
     if (serial) {
-      log->debug("Serial={}", serial);
+      //log->debug("Serial={}", serial);
       setSerialNumber(serial);
     }
 
     const char *syspath = udev_device_get_syspath(dev);
     if (syspath) {
-      log->debug("Syspath={}", syspath);
+      //log->debug("Syspath={}", syspath);
       _syspath = syspath;
     } else {
       throw std::runtime_error("device wihtout syspath");
@@ -65,13 +65,13 @@ namespace usbguard {
 
     const char *sysname = udev_device_get_sysname(dev);
     if (sysname) {
-      log->debug("Sysname={}", sysname);
+      //log->debug("Sysname={}", sysname);
       setDevicePort(sysname);
     } else {
       throw std::runtime_error("device wihtout sysname");
     }
 
-    log->debug("DeviceHash={}", getDeviceHash());
+    //log->debug("DeviceHash={}", getDeviceHash());
 
     setTarget(Rule::Target::Unknown);
 
@@ -149,8 +149,8 @@ namespace usbguard {
   /*
    * Manager
    */
-  LinuxDeviceManager::LinuxDeviceManager(Daemon& daemon)
-    : DeviceManager(daemon),
+  LinuxDeviceManager::LinuxDeviceManager(DeviceManagerHooks& hooks)
+    : DeviceManager(hooks),
       _thread(this, &LinuxDeviceManager::thread)
   {
     setDefaultBlockedState(/*state=*/true);
@@ -211,34 +211,34 @@ namespace usbguard {
 
   Pointer<Device> LinuxDeviceManager::allowDevice(uint32_t seqn)
   {
-    log->debug("Allowing device {}", seqn);
+    //log->debug("Allowing device {}", seqn);
     Pointer<Device> device = applyDevicePolicy(seqn, Rule::Target::Allow);
-    log->debug("Calling DeviceAllowed hook");
+    //log->debug("Calling DeviceAllowed hook");
     DeviceAllowed(device);
     return device;
   }
 
   Pointer<Device> LinuxDeviceManager::blockDevice(uint32_t seqn)
   {
-    log->debug("Blocking device {}", seqn);
+    //log->debug("Blocking device {}", seqn);
     Pointer<Device> device = applyDevicePolicy(seqn, Rule::Target::Block);
-    log->debug("Calling DeviceBlocked hook");
+    //log->debug("Calling DeviceBlocked hook");
     DeviceBlocked(device);
     return device;
   }
 
   Pointer<Device> LinuxDeviceManager::rejectDevice(uint32_t seqn)
   {
-    log->debug("Rejecting device {}", seqn);
+    //log->debug("Rejecting device {}", seqn);
     Pointer<Device> device = applyDevicePolicy(seqn, Rule::Target::Reject);
-    log->debug("Calling DeviceRejected hook");
+    //log->debug("Calling DeviceRejected hook");
     DeviceRejected(device);
     return device;
   }
 
   Pointer<Device> LinuxDeviceManager::applyDevicePolicy(uint32_t seqn, Rule::Target target)
   {
-    log->debug("Applying device policy {} to device {}", target, seqn);
+    //log->debug("Applying device policy {} to device {}", target, seqn);
     Pointer<LinuxDevice> device = std::static_pointer_cast<LinuxDevice>(getDevice(seqn));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
 
@@ -260,7 +260,7 @@ namespace usbguard {
 	target_value = 1;
 	break;
       default:
-	log->critical("BUG: unknown rule target");
+	//log->critical("BUG: unknown rule target");
 	throw std::runtime_error("Uknown rule target in applyDevicePolicy");
       }
 
@@ -268,7 +268,7 @@ namespace usbguard {
     snprintf(sysio_path, SYSIO_PATH_MAX, "%s/%s",
 	     device->getSysPath().c_str(), target_file);
     /* FIXME: check that snprintf wrote the whole path */
-    log->debug("SysIO: writing '{}' to {}", target_value, sysio_path);
+    //log->debug("SysIO: writing '{}' to {}", target_value, sysio_path);
     sysioWrite(sysio_path, target_value);
 
     return std::move(device);
@@ -276,7 +276,7 @@ namespace usbguard {
 
   void LinuxDeviceManager::thread()
   {
-    log->debug("Entering LinuxDeviceManager thread");
+    //log->debug("Entering LinuxDeviceManager thread");
 
     const int umon_fd = udev_monitor_get_fd(_umon);
     const int max_fd = umon_fd > _event_fd ? umon_fd : _event_fd;
@@ -296,11 +296,11 @@ namespace usbguard {
       case 1: /* Device or event */
       case 2: /* Device and event */
 	if (FD_ISSET(_event_fd, &readset)) {
-	  log->debug("Wakeup event received");
+	  //log->debug("Wakeup event received");
 	  continue;
 	}
 	if (FD_ISSET(umon_fd, &readset)) {
-	  log->debug("Handling UDev read event");
+	  //log->debug("Handling UDev read event");
 	  udevReceiveDevice();
 	}
 	break;
@@ -308,11 +308,11 @@ namespace usbguard {
 	continue;
       case -1: /* Error */
       default:
-	log->debug("Select failure: {}", errno);
+	//log->debug("Select failure: {}", errno);
 	_thread.stop();
       }
     } /* Thread main loop */
-    log->debug("Returning from LinuxDeviceManager thread");
+    //log->debug("Returning from LinuxDeviceManager thread");
     return;
   }
 
@@ -327,7 +327,7 @@ namespace usbguard {
     const char *action_cstr = udev_device_get_action(dev);
 
     if (!action_cstr) {
-      log->warn("BUG? Device event witout action value.");
+      //log->warn("BUG? Device event witout action value.");
       udev_device_unref(dev);
       return;
     }
@@ -339,7 +339,7 @@ namespace usbguard {
       processDeviceRemoval(dev);
     }
     else {
-      log->warn("BUG? Unknown device action value \"{}\"", action_cstr);
+      //log->warn("BUG? Unknown device action value \"{}\"", action_cstr);
     }
 
     udev_device_unref(dev);
@@ -351,7 +351,7 @@ namespace usbguard {
     struct udev_enumerate *enumerate = udev_enumerate_new(_udev);
 
     if (enumerate == nullptr) {
-      log->debug("udev_enumerate_new returned NULL");
+      //log->debug("udev_enumerate_new returned NULL");
       throw std::runtime_error("udev_enumerate_new returned NULL");
     }
 
@@ -365,21 +365,21 @@ namespace usbguard {
       const char *syspath = udev_list_entry_get_name(dlentry);
 
       if (syspath == nullptr) {
-	log->warn("Received NULL syspath for en UDev enumerated device. Ignoring.");
+	//log->warn("Received NULL syspath for en UDev enumerated device. Ignoring.");
 	continue;
       }
 
       struct udev_device *device = udev_device_new_from_syspath(_udev, syspath);
 
       if (device == nullptr) {
-	log->warn("Cannot create a new device from syspath {}. Ignoring.", syspath);
+	//log->warn("Cannot create a new device from syspath {}. Ignoring.", syspath);
 	continue;
       }
 
       const char *devtype = udev_device_get_devtype(device);
 
       if (devtype == nullptr) {
-	log->warn("Cannot get device type for device at syspath {}. Ignoring.", syspath);
+	//log->warn("Cannot get device type for device at syspath {}. Ignoring.", syspath);
 	udev_device_unref(device);
 	continue;
       }
@@ -397,7 +397,7 @@ namespace usbguard {
 
   void LinuxDeviceManager::processDevicePresence(struct udev_device *dev)
   {
-    log->debug("Processing device presence");
+    //log->debug("Processing device presence");
     Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
     insertDevice(device);
     DevicePresent(device);
@@ -406,7 +406,7 @@ namespace usbguard {
 
   void LinuxDeviceManager::processDeviceInsertion(struct udev_device *dev)
   {
-    log->debug("Processing device insertion");
+    //log->debug("Processing device insertion");
     Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
     insertDevice(device);
     DeviceInserted(device);
@@ -423,7 +423,7 @@ namespace usbguard {
 
   void LinuxDeviceManager::processDeviceRemoval(struct udev_device *dev)
   {
-    log->debug("Processing device removal");
+    //log->debug("Processing device removal");
     const char *syspath_cstr = udev_device_get_syspath(dev);
     if (!syspath_cstr) {
       return;
@@ -434,7 +434,7 @@ namespace usbguard {
       DeviceRemoved(device);
     } catch(...) {
       /* Ignore for now */
-      log->debug("Removal of an unknown device ignored.");
+      //log->debug("Removal of an unknown device ignored.");
       return;
     }
     return;

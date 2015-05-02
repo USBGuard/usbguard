@@ -18,11 +18,11 @@
 //
 #pragma once
 
-#include "Typedefs.hpp"
-#include "Device.hpp"
 #include "DeviceManager.hpp"
-#include "Rule.hpp"
-#include "SysIO.hpp"
+#include <Typedefs.hpp>
+#include <Device.hpp>
+#include <Rule.hpp>
+#include "LinuxSysIO.hpp"
 #include "Common/Thread.hpp"
 #include <libudev.h>
 #include <istream>
@@ -47,7 +47,7 @@ namespace usbguard {
   class LinuxDeviceManager : public DeviceManager
   {
   public:
-    LinuxDeviceManager(Daemon& daemon);
+    LinuxDeviceManager(DeviceManagerHooks& hooks);
     ~LinuxDeviceManager();
 
     void setDefaultBlockedState(bool state);

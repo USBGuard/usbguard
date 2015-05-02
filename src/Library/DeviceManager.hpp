@@ -17,17 +17,21 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#include "Typedefs.hpp"
-#include "RuleSet.hpp"
-#include "Device.hpp"
+#include <Typedefs.hpp>
+#include <RuleSet.hpp>
+#include <Device.hpp>
 #include <mutex>
 
 namespace usbguard {
-  class Daemon;
+  class DeviceManagerHooks;
+  class DeviceManagerPrivate;
   class DeviceManager
   {
   public:
-    DeviceManager(Daemon& daemon);
+    DeviceManager(DeviceManagerHooks& hooks);
+    DeviceManager(const DeviceManager& rhs);
+    const DeviceManager& operator=(const DeviceManager& rhs);
+    
     virtual ~DeviceManager();
 
     virtual void setDefaultBlockedState(bool state) = 0;
@@ -53,11 +57,10 @@ namespace usbguard {
     void DeviceBlocked(Pointer<Device> device);
     void DeviceRejected(Pointer<Device> device);
 
-    static Pointer<DeviceManager> create(Daemon& daemon);
+    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks);
+
   private:
-    Daemon& _daemon;
-    std::mutex _device_map_mutex;
-    PointerMap<uint32_t, Device> _device_map;
+    DeviceManagerPrivate *d_pointer;
   };
 
 } /* namespace usbguard */

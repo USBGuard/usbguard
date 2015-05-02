@@ -16,13 +16,14 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include "Device.hpp"
+#include "DevicePrivate.hpp"
 #include "Common/Logging.hpp"
 #include <mutex>
 #include <sodium.h>
 
 namespace usbguard {
-  Device::Device()
+  DevicePrivate::DevicePrivate(Device& p_instance)
+    : _p_instance(p_instance)
   {
     _seqn = Rule::SeqnDefault;
     _target = Rule::Target::Unknown;
@@ -31,12 +32,34 @@ namespace usbguard {
     return;
   }
 
-  std::mutex& Device::refDeviceMutex()
+  DevicePrivate::DevicePrivate(Device& p_instance, const DevicePrivate& rhs)
+    : _p_instance(p_instance)
+  {
+    *this = rhs;
+    return;
+  }
+  
+  const DevicePrivate& DevicePrivate::operator=(const DevicePrivate& rhs)
+  {
+    _seqn = rhs._seqn;
+    _target = rhs._target;
+    _name = rhs._name;
+    _vendor_id = rhs._vendor_id;
+    _product_id = rhs._product_id;
+    _serial_number = rhs._serial_number;
+    _port = rhs._port;
+    _interface_types = rhs._interface_types;
+    _num_configurations = rhs._num_configurations;
+    _num_interfaces = rhs._num_interfaces;
+    return *this;
+  }
+  
+  std::mutex& DevicePrivate::refDeviceMutex()
   {
     return _mutex;
   }
 
-  Pointer<Rule> Device::getDeviceRule(bool include_port)
+  Pointer<Rule> DevicePrivate::getDeviceRule(bool include_port)
   {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
@@ -60,12 +83,12 @@ namespace usbguard {
     return std::move(device_rule);
   }
 
-  uint32_t Device::getSeqn() const
+  uint32_t DevicePrivate::getSeqn() const
   {
     return _seqn;
   }
 
-  String Device::getDeviceHash(bool include_port) const
+  String DevicePrivate::getDeviceHash(bool include_port) const
   {
     unsigned char hash[crypto_generichash_BYTES_MIN];
     crypto_generichash_state state;
@@ -94,80 +117,80 @@ namespace usbguard {
     return String(hexval, hexlen - 1);
   }
 
-  const String Device::getPort() const
+  const String DevicePrivate::getPort() const
   {
     return _port;
   }
 
-  const std::vector<USBInterfaceType>& Device::getInterfaceTypes() const
+  const std::vector<USBInterfaceType>& DevicePrivate::getInterfaceTypes() const
   {
     return _interface_types;
   }
 
-  void Device::setSeqn(uint32_t seqn)
+  void DevicePrivate::setSeqn(uint32_t seqn)
   {
     _seqn = seqn;
     return;
   }
 
-  void Device::setTarget(Rule::Target target)
+  void DevicePrivate::setTarget(Rule::Target target)
   {
     _target = target;
     return;
   }
 
-  void Device::setDeviceName(const String& name)
+  void DevicePrivate::setDeviceName(const String& name)
   {
     _name = name;
     return;
   }
 
-  void Device::setVendorID(const String& vendor_id)
+  void DevicePrivate::setVendorID(const String& vendor_id)
   {
     _vendor_id = vendor_id;
     return;
   }
 
-  void Device::setProductID(const String& product_id)
+  void DevicePrivate::setProductID(const String& product_id)
   {
     _product_id = product_id;
     return;
   }
 
-  void Device::setDevicePort(const String& port)
+  void DevicePrivate::setDevicePort(const String& port)
   {
     _port = port;
     return;
   }
 
-  void Device::setSerialNumber(const String& serial_number)
+  void DevicePrivate::setSerialNumber(const String& serial_number)
   {
     _serial_number = serial_number;
     return;
   }
 
-  std::vector<USBInterfaceType>& Device::refInterfaceTypes()
+  std::vector<USBInterfaceType>& DevicePrivate::refInterfaceTypes()
   {
     return _interface_types;
   }
 
-  void Device::loadDeviceDescriptor(const USBDeviceDescriptor* descriptor)
+  void DevicePrivate::loadDeviceDescriptor(const USBDeviceDescriptor* descriptor)
   {
     _num_configurations = descriptor->bNumConfigurations;
     return;
   }
 
-  void Device::loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor)
+  void DevicePrivate::loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor)
   {
     _num_interfaces += descriptor->bNumInterfaces;
     return;
   }
 
-  void Device::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
+  void DevicePrivate::loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor)
   {
     USBInterfaceType interface_type(*descriptor);
     _interface_types.push_back(interface_type);
-    log->debug("Added interface type: {}", interface_type.typeString());
+    //log->debug("Added interface type: {}", interface_type.typeString());
     return;
   }
 

@@ -18,17 +18,21 @@
 //
 #pragma once
 
-#include "Typedefs.hpp"
-#include "Rule.hpp"
-#include "USB.hpp"
+#include <Typedefs.hpp>
+#include <Rule.hpp>
+#include <USB.hpp>
 #include <mutex>
 
 namespace usbguard {
+  class DevicePrivate;
   class Device
   {
   public:
     Device();
-
+    ~Device();
+    Device(const Device& rhs);
+    const Device& operator=(const Device& rhs);
+    
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = false);
     uint32_t getSeqn() const;
@@ -52,16 +56,6 @@ namespace usbguard {
     void loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor);
 
   private:
-    std::mutex _mutex;
-    uint32_t _seqn;
-    Rule::Target _target;
-    String _name;
-    String _vendor_id;
-    String _product_id;
-    String _serial_number;
-    String _port;
-    std::vector<USBInterfaceType> _interface_types;
-    int _num_configurations;
-    int _num_interfaces;
+    DevicePrivate *d_pointer;
   };
 } /* namespace usbguard */

@@ -25,6 +25,7 @@
 #include "Rule.hpp"
 #include "Device.hpp"
 #include "DeviceManager.hpp"
+#include "DeviceManagerHooks.hpp"
 
 #include "Common/Thread.hpp"
 #include "Common/JSON.hpp"
@@ -35,7 +36,7 @@
 
 namespace usbguard
 {
-  class Daemon : public IPC
+  class Daemon : public IPC, public DeviceManagerHooks
   {
   public:
     enum PresentDevicePolicy {
@@ -102,12 +103,13 @@ namespace usbguard
 			uint32_t rule_seqn);
 
     /* Device manager hooks */
-    void dmDeviceInserted(Pointer<Device> device);
-    void dmDevicePresent(Pointer<Device> device);
-    void dmDeviceRemoved(Pointer<Device> device);
-    void dmDeviceAllowed(Pointer<Device> device);
-    void dmDeviceBlocked(Pointer<Device> device);
-    void dmDeviceRejected(Pointer<Device> device);
+    void dmHookDeviceInserted(Pointer<Device> device);
+    void dmHookDevicePresent(Pointer<Device> device);
+    void dmHookDeviceRemoved(Pointer<Device> device);
+    void dmHookDeviceAllowed(Pointer<Device> device);
+    void dmHookDeviceBlocked(Pointer<Device> device);
+    void dmHookDeviceRejected(Pointer<Device> device);
+    uint32_t dmHookAssignSeqn();
 
     json processJSON(const json& jobj);
     json processMethodCallJSON(const json& jobj);
