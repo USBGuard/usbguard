@@ -25,7 +25,7 @@
 
 namespace usbguard {
   class RulePrivate;
-  class Rule
+  class DLL_PUBLIC Rule
   {
   public:
     /**

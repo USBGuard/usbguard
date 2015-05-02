@@ -21,7 +21,7 @@
 
 namespace usbguard {
   class ConfigFilePrivate;
-  class ConfigFile
+  class DLL_PUBLIC ConfigFile
   {
   public:
     ConfigFile();

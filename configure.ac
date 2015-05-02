@@ -13,7 +13,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 #
 # Compiler flags
 #
-CXXFLAGS="-std=c++11 -Wall -Wformat=2 $CXXFLAGS"
+CXXFLAGS="-std=c++11 -Wall -Wformat=2 -fvisibility=hidden $CXXFLAGS"
 
 #
 # Additional CXXFLAGS used when --enable-debug-build is used

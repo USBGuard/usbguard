@@ -24,7 +24,7 @@
 
 namespace usbguard
 {
-  class DeviceManagerHooks
+  class DLL_PUBLIC DeviceManagerHooks
   {
   public:
     virtual void dmHookDeviceInserted(Pointer<Device> device);

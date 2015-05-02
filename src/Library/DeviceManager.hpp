@@ -25,7 +25,7 @@
 namespace usbguard {
   class DeviceManagerHooks;
   class DeviceManagerPrivate;
-  class DeviceManager
+  class DLL_PUBLIC DeviceManager
   {
   public:
     DeviceManager(DeviceManagerHooks& hooks);

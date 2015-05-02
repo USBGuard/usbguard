@@ -43,6 +43,11 @@ libusbguard_la_LIBADD=\
 	@sodium_LIBS@
 
 libusbguard_la_SOURCES=\
+	src/Common/Thread.hpp \
+	src/Common/JSON.hpp \
+	src/Common/ByteOrder.hpp \
+	src/Common/Utility.hpp \
+	src/Common/Utility.cpp \
 	src/Library/ConfigFile.cpp \
 	src/Library/ConfigFilePrivate.cpp \
 	src/Library/ConfigFilePrivate.hpp \
@@ -64,12 +69,7 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleParser/Lexer-token.hpp \
 	src/Library/RuleParser/Lexer-token_ids.hpp \
 	src/Library/RuleParser/Parser.h \
-	src/Common/Thread.hpp \
-	src/Common/JSON.hpp \
-	src/Common/ByteOrder.hpp \
 	src/Library/Typedefs.cpp \
-	src/Common/Utility.hpp \
-	src/Common/Utility.cpp \
 	src/Library/DeviceManagerHooks.cpp \
 	src/Library/Device.cpp \
 	src/Library/DevicePrivate.hpp \
@@ -111,7 +111,9 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/main.cpp \
 	src/Common/Logging.cpp \
 	src/Common/Logging.hpp \
-	src/Common/CCBQueue.hpp
+	src/Common/CCBQueue.hpp \
+	src/Common/Utility.hpp \
+	src/Common/Utility.cpp
 
 usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \

@@ -25,7 +25,7 @@
 
 namespace usbguard {
   class DevicePrivate;
-  class Device
+  class DLL_PUBLIC Device
   {
   public:
     Device();

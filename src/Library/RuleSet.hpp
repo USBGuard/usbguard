@@ -17,13 +17,14 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
+#include <Typedefs.hpp>
 #include <Rule.hpp>
 #include <istream>
 #include <ostream>
 
 namespace usbguard {
   class RuleSetPrivate;
-  class RuleSet
+  class DLL_PUBLIC RuleSet
   {
   public:
     /**

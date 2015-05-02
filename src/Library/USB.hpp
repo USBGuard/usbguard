@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#include "Typedefs.hpp"
+#include <Typedefs.hpp>
 #include <cstdint>
 #include <climits>
 
@@ -90,7 +90,7 @@ namespace usbguard {
     uint8_t iInterface;
   } __attribute__((packed));
 
-  class USBInterfaceType
+  class DLL_PUBLIC USBInterfaceType
   {
   public:
     static const uint8_t MatchClass = 1<<0;
@@ -119,8 +119,8 @@ namespace usbguard {
   template<>
   bool matches(const USBInterfaceType& a, const USBInterfaceType& b);
 
-  const USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
-  const USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
-  const USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  const DLL_PUBLIC USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  const DLL_PUBLIC USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  const DLL_PUBLIC USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
 
 } /* namespace usbguard */
