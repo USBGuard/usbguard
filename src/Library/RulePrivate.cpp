@@ -392,7 +392,7 @@ namespace usbguard {
     /* Interface types */
     if (_interface_types.size() == 1
 	&& _interface_types_op == Rule::SetOperator::OneOf) {
-      toString_addNonEmptyField(rule_string, "with-interface", _device_ports[0]);
+      toString_addNonEmptyField(rule_string, "with-interface", _interface_types[0].typeString());
     }
     else if (_interface_types.size() > 0) {
       rule_string.append(" with-interface ");
