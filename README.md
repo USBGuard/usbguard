@@ -53,7 +53,7 @@ And then do:
     $ make
     $ sudo make install
 
-The testsuite can be run by executing:
+After the sources are successfully built, you can run the testsuite by executing:
 
     $ make check
 
