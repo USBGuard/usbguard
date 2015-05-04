@@ -17,6 +17,7 @@ header {
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include "Common/Utility.hpp"
 }
 
 start = RULE;
@@ -78,6 +79,9 @@ mode DQ_STRING_READER :
 	// Escaped escape character
 	"\\\\" { self_accumulator_add(Lexeme, LexemeEnd); }
 
+	// Byte encoded in hex
+	"\\x"[0-9a-fA-F]{2} { self_accumulator_add(Lexeme, LexemeEnd); }
+
 	"\"" {
 	     self << RULE;
 	     RETURN;
@@ -86,6 +90,6 @@ mode DQ_STRING_READER :
 	. { self_accumulator_add(Lexeme, LexemeEnd); }
 
 	<<FAIL>> {
-		 self_accumulator_add(Lexeme, LexemeEnd);
+		 throw std::runtime_error("Invalid string");
 	}
 }

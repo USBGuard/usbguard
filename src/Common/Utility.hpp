@@ -72,7 +72,7 @@ namespace usbguard
    * in the vector.
    */
   template<typename StringType>
-  void tokenizeString(const StringType& str, std::vector<StringType>& tokens, const typename std::vector<StringType>::value_type delimiters, bool trim_empty = false)
+  void tokenizeString(const StringType& str, std::vector<StringType>& tokens, const typename std::vector<StringType>::value_type delimiters, const bool trim_empty = false)
   {
     typename StringType::size_type pos, last_pos = 0;
     while(true) {
@@ -103,22 +103,23 @@ namespace usbguard
   String numberToString(const T number, const String& prefix = String(), const int base = 10, const int align = -1, const char align_char = ' ')
   {
     std::ostringstream ss;
-    if (!prefix.empty()) {
-      ss << prefix;
-    }
+
     ss << std::setbase(base);
     ss << number;
 
     const String number_string = ss.str();
+    String result;
+    result.append(prefix);
 
     if (align > 0 && number_string.size() < (size_t)align) {
-      const size_t chars_to_add = (size_t)align - number_string.size();
-      const String alignment(chars_to_add, align_char);
-      return alignment + number_string;
+      size_t chars_to_add = (size_t)align - number_string.size();
+      for (;chars_to_add > 0; --chars_to_add) {
+	result += align_char;
+      }
     }
-    else {
-      return ss.str();
-    }
+
+    result.append(number_string);
+    return result;
   }
 
   template<>

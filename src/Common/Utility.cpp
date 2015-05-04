@@ -245,7 +245,8 @@ namespace usbguard
   template<>
   String numberToString(const uint8_t number, const String& prefix, const int base, const int align, const char align_char)
   {
-    return numberToString((unsigned int)number, prefix, base, align, align_char);
+    const uint16_t n = static_cast<uint16_t>(number);
+    return numberToString(n, prefix, base, align, align_char);
   }
 
   template<>

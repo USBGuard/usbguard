@@ -18,7 +18,7 @@
 //
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
-#include <iostream>
+#include "Common/Utility.hpp"
 
 namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)
@@ -382,9 +382,8 @@ namespace usbguard {
       rule_string.append(Rule::setOperatorToString(_device_ports_op));
       rule_string.append(" { ");
       for (auto const& port : _device_ports) {
-	rule_string.append("\"");
-	rule_string.append(port);
-	rule_string.append("\" ");
+	rule_string.append(quoteEscapeString(port));
+	rule_string.append(" ");
       }
       rule_string.append("}");
     }
@@ -433,23 +432,10 @@ namespace usbguard {
   String RulePrivate::quoteEscapeString(const String& value)
   {
     String result;
-    result.append("\"");
-    for (auto c : value) {
-      switch(c) {
-      case '"':
-	result.append("\\");
-	result.append("\"");
-	continue;
-      case '\\':
-	result.append("\\");
-	result.append("\\");
-	continue;
-      default:
-	result.append(&c, 1);
-      }
-    }
-    result.append("\"");
-    return std::move(result);
+    result.push_back('"');
+    result.append(Rule::escapeString(value));
+    result.push_back('"');
+    return result;
   }
 
 } /* namespace usbguard */

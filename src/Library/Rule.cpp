@@ -17,7 +17,9 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "RulePrivate.hpp"
+#include "Common/Utility.hpp"
 #include <utility>
+#include <cctype>
 
 namespace usbguard {
   const uint32_t Rule::SeqnRoot = std::numeric_limits<uint32_t>::min();
@@ -308,4 +310,101 @@ namespace usbguard {
 
     throw std::runtime_error("Invalid rule target string");
   }
+
+  const String Rule::escapeString(const String& string)
+  {
+    String result;
+
+    for (auto it = string.cbegin(); it != string.cend(); ++it) {
+      const int c = *it;
+
+      /*
+       * Escape any double-quote and backslash characters.
+       */
+      if (c == '"') {
+	result.append("\\");
+	result.append("\"");
+	continue;
+      }
+      if (c == '\\') {
+	result.append("\\");
+	result.append("\\");
+	continue;
+      }
+      /*
+       * If the current character is printable, append it.
+       * Otherwise convert it to \xHH form, where HH is the
+       * hexadecimal representation of the character value.
+       */
+      if (::isascii(c) && ::isprint(c) && ::isalnum(c)) {
+	result.push_back((char)c);
+      } else {
+	const String hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
+	result.append(hexbyte);
+      }
+    }
+
+    return result;
+  }
+
+  const String Rule::unescapeString(const String& string)
+  {
+    String result;
+    bool escaped = false;
+
+    for (auto it = string.cbegin(); it < string.cend(); ++it) {
+      const char c = *it;
+      /*
+       * Handle an escape sequence if needed, otherwise just
+       * append the current character.
+       */
+      if (escaped) {
+	switch (c) {
+	case '"':
+	  result.append("\"");
+	  break;
+	case '\\':
+	  result.append("\\");
+	  break;
+	case 'x':
+	  {
+	    /* hexadecimal representation of a byte \xHH */
+	    if (std::distance(string.end(), it) >=2) {
+	      throw std::runtime_error("Invalid escape sequence");
+	    }
+
+	    const char hb[] = { *(it + 1), *(it + 2) };
+	    if (!::isxdigit((int)hb[0]) || !::isxdigit((int)hb[1])) {
+	      throw std::runtime_error("Invalid \\xHH escape sequence: HH is not a hexadecimal number");
+	    }
+
+	    const String hexbyte(hb, 2);
+	    result.push_back((char)stringToNumber<uint8_t>(hexbyte, 16));
+
+	    ++it;
+	    ++it;
+	  }
+	  break;
+	default:
+	  throw std::runtime_error("Unknown escape sequence");
+	}
+	escaped = false;
+      }
+      else {
+	if (c == '\\') {
+	  escaped = true;
+	}
+	else {
+	  result.push_back(c);
+	}
+      }
+    }
+
+    if (escaped) {
+      throw std::runtime_error("Invalid escape sequence");
+    }
+
+    return result;
+  }
+
 } /* namespace usbguard */

@@ -110,6 +110,9 @@ namespace usbguard {
     static Target targetFromString(const String& target_string);
     static const String targetToString(Target target);
 
+    static const String escapeString(const String& string);
+    static const String unescapeString(const String& string);
+
   private:
     RulePrivate* d_pointer;
   };

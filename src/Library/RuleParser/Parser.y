@@ -175,6 +175,8 @@ action ::= KEYWORD_ACTION string(S). {
 action ::= .
 
 string(S) ::= DQ_STRING_BEGIN DQ_STRING(V) DQ_STRING_END. {
-	  S = new String(quex::unicode_to_char(V->get_text()));
+	  const String from_unicode = quex::unicode_to_char(V->get_text());
+	  const String unescaped = Rule::unescapeString(from_unicode);
+	  S = new String(unescaped);
 	  delete V;
 }

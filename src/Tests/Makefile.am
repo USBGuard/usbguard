@@ -11,7 +11,8 @@ check_PROGRAMS=\
 
 test_unit_SOURCES=\
 	Unit/main.cpp \
-	Unit/test_Rule.cpp
+	Unit/test_Rule.cpp \
+	Unit/test_RuleParser.cpp
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la

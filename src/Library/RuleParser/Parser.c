@@ -1017,12 +1017,14 @@ static void yy_reduce(
       case 33: /* string ::= DQ_STRING_BEGIN DQ_STRING DQ_STRING_END */
 #line 177 "Parser.y"
 {
-	  yygotominor.yy20 = new String(quex::unicode_to_char(yymsp[-1].minor.yy0->get_text()));
+	  const String from_unicode = quex::unicode_to_char(yymsp[-1].minor.yy0->get_text());
+	  const String unescaped = Rule::unescapeString(from_unicode);
+	  yygotominor.yy20 = new String(unescaped);
 	  delete yymsp[-1].minor.yy0;
   yy_destructor(yypParser,19,&yymsp[-2].minor);
   yy_destructor(yypParser,21,&yymsp[0].minor);
 }
-#line 1026 "Parser.c"
+#line 1028 "Parser.c"
         break;
       default:
       /* (0) rule ::= rule_spec */ yytestcase(yyruleno==0);
@@ -1095,7 +1097,7 @@ static void yy_syntax_error(
 #line 26 "Parser.y"
 
   throw std::runtime_error("rule syntax error");
-#line 1099 "Parser.c"
+#line 1101 "Parser.c"
   RuleParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
