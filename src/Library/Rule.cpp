@@ -332,11 +332,12 @@ namespace usbguard {
 	continue;
       }
       /*
-       * If the current character is printable, append it.
-       * Otherwise convert it to \xHH form, where HH is the
-       * hexadecimal representation of the character value.
+       * If the current character is a 7-bit printable alphanumeric
+       * or space character, append it. Otherwise convert it to
+       * \xHH form, where HH is the hexadecimal representation of
+       * the character value.
        */
-      if (::isascii(c) && ::isprint(c) && ::isalnum(c)) {
+      if (::isascii(c) && ::isprint(c) && (::isalnum(c) || c == ' ')) {
 	result.push_back((char)c);
       } else {
 	const String hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
