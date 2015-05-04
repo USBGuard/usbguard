@@ -53,6 +53,10 @@ And then do:
     $ make
     $ sudo make install
 
+The testsuite can be run by executing:
+
+    $ make check
+
 If you want to compile the sources in a cloned repository, there are additional step required:
 
     $ git submodule init
