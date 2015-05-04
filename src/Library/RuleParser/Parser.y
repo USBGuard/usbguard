@@ -83,6 +83,7 @@ device_attribute ::= KEYWORD_SERIAL string(S). {
 
 device_attribute ::= KEYWORD_VIAPORT string(S). {
 		 rule->refDevicePorts().push_back(*S);
+		 rule->setDevicePortsSetOperator(Rule::SetOperator::OneOf);
 		 delete S;
 }
 
@@ -98,7 +99,7 @@ ports_set_op(O) ::= SET_OPERATOR(V). {
 }
 
 ports_set_op(O) ::= . {
-		    O = Rule::SetOperator::EqualsOrdered;
+		    O = Rule::SetOperator::OneOf;
 }
 
 stringvec(D) ::= stringvec(S) string(V). {
