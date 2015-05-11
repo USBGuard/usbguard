@@ -18,15 +18,11 @@
 //
 #pragma once
 
-#include <Rule.hpp>
-#include <USB.hpp>
-#include <cstdint>
-#include <stdexcept>
-#include <sodium.h>
-#include <atomic>
-#include <map>
-#include <vector>
+#include <Interface.hpp>
 #include <string>
+#include <stdexcept>
+#include <atomic>
+#include <cstdint>
 
 namespace usbguard
 {
@@ -85,58 +81,9 @@ namespace usbguard
     ReasonCode _code;
   };
 
-  class IPC
+  class IPC : public Interface
   {
   public:
-    /* IPC methods */
-    virtual uint32_t appendRule(const std::string& rule_spec,
-				uint32_t parent_seqn,
-				uint32_t timeout_sec) = 0;
-
-    virtual void removeRule(uint32_t seqn) = 0;
-
-    virtual void allowDevice(uint32_t seqn,
-			     bool append,
-			     uint32_t timeout_sec) = 0;
-
-    virtual void blockDevice(uint32_t seqn,
-			     bool append,
-			     uint32_t timeout_sec) = 0;
-
-    virtual void rejectDevice(uint32_t seqn,
-			      bool append,
-			      uint32_t timeout_sec) = 0;
-
-    /* IPC Signals */
-    virtual void DeviceInserted(uint32_t seqn,
-				const std::map<std::string,std::string>& attributes,
-				const std::vector<USBInterfaceType>& interfaces,
-				bool rule_match,
-				uint32_t rule_seqn) = 0;
-
-    virtual void DevicePresent(uint32_t seqn,
-			       const std::map<std::string,std::string>& attributes,
-			       const std::vector<USBInterfaceType>& interfaces,
-			       Rule::Target target) = 0;
-
-    virtual void DeviceRemoved(uint32_t seqn,
-			       const std::map<std::string,std::string>& attributes) = 0;
-
-    virtual void DeviceAllowed(uint32_t seqn,
-			       const std::map<std::string,std::string>& attributes,
-			       bool rule_match,
-			       uint32_t rule_seqn) = 0;
-
-    virtual void DeviceBlocked(uint32_t seqn,
-			       const std::map<std::string,std::string>& attributes,
-			       bool rule_match,
-			       uint32_t rule_seqn) = 0;
-
-    virtual void DeviceRejected(uint32_t seqn,
-				const std::map<std::string,std::string>& attributes,
-				bool rule_match,
-				uint32_t rule_seqn) = 0;
-
     static uint64_t uniqueID(void)
     {
       static std::atomic<uint64_t> id(0);

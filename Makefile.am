@@ -84,6 +84,7 @@ libusbguard_la_SOURCES=\
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
+	src/Library/Interface.hpp \
 	src/Library/IPC.hpp \
 	src/Library/IPCClient.hpp \
 	src/Library/USB.hpp \
