@@ -372,7 +372,7 @@ namespace usbguard {
 
     /* Device Ports */
     if (_device_ports.size() == 1
-	&& _device_ports_op == Rule::SetOperator::OneOf) {
+	&& _device_ports_op == Rule::SetOperator::Equals) {
       toString_addNonEmptyField(rule_string, "via-port", _device_ports[0]);
     }
     else if (_device_ports.size() > 0) {
@@ -388,7 +388,7 @@ namespace usbguard {
 
     /* Interface types */
     if (_interface_types.size() == 1
-	&& _interface_types_op == Rule::SetOperator::OneOf) {
+	&& _interface_types_op == Rule::SetOperator::Equals) {
       toString_addNonEmptyField(rule_string, "with-interface", _interface_types[0].typeString());
     }
     else if (_interface_types.size() > 0) {
