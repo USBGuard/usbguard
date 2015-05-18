@@ -38,6 +38,7 @@ namespace usbguard {
     uint32_t getSeqn() const;
     String getDeviceHash(bool include_port = false) const;
     const String getPort() const;
+    const String& getSerialNumber() const;
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
 
     virtual bool isController() const = 0;

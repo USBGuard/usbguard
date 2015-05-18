@@ -122,6 +122,11 @@ namespace usbguard {
     return _port;
   }
 
+  const String& DevicePrivate::getSerialNumber() const
+  {
+    return _serial_number;
+  }
+
   const std::vector<USBInterfaceType>& DevicePrivate::getInterfaceTypes() const
   {
     return _interface_types;
