@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "DevicePrivate.hpp"
-#include <Logger.hpp>
+#include "LoggerPrivate.hpp"
 #include <mutex>
 #include <sodium.h>
 
@@ -63,6 +63,9 @@ namespace usbguard {
   {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
+
+    logger->trace("Generating rule for device {}:{}@{} (name={}); include_port={}",
+		  _vendor_id, _product_id, _port, _name, include_port);
 
     device_rule->setSeqn(_seqn);
     device_rule->setTarget(_target);
@@ -196,6 +199,9 @@ namespace usbguard {
 
   void DevicePrivate::loadDeviceDescriptor(const USBDeviceDescriptor* const descriptor)
   {
+    logger->trace("Loading device descriptor for device {}:{}@{} (name={}); descriptor={:p}",
+		  _vendor_id, _product_id, _port, _name, (void *)descriptor);
+
     if (descriptor == nullptr) {
       throw std::runtime_error("loadDeviceDescriptor: NULL descriptor");
     }
@@ -205,18 +211,31 @@ namespace usbguard {
 
   void DevicePrivate::loadConfigurationDescriptor(const int c_num, const USBConfigurationDescriptor* const descriptor)
   {
+    logger->trace("Loading configuration descriptor {} for device {}:{}@{} (name={}); descriptor={:p}",
+		  c_num, _vendor_id, _product_id, _port, _name, (void *)descriptor);
+
     if (c_num < 0 || c_num >= _num_configurations) {
       throw std::runtime_error("loadConfigurationDescriptor: configuration index out-of-range");
     }
     if (descriptor == nullptr) {
       throw std::runtime_error("loadConfigurationDescriptor: NULL descriptor");
     }
+
+    logger->debug("Increasing interface count");
+    logger->debug(" from: {}", _num_interfaces);
+    //
     _num_interfaces += descriptor->bNumInterfaces;
+    //
+    logger->debug(" to: {} (+{:d})", _num_interfaces, descriptor->bNumInterfaces);
+
     return;
   }
 
   void DevicePrivate::loadInterfaceDescriptor(const int c_num, const int i_num, const USBInterfaceDescriptor* const descriptor)
   {
+    logger->trace("Loading interface descriptor {}-{} for device {}:{}@{} (name={}); descriptor={:p}",
+		  c_num, i_num, _vendor_id, _product_id, _port, _name, (void *)descriptor);
+
     if (c_num < 0 || c_num >= _num_configurations) {
       throw std::runtime_error("loadInterfaceDescriptor: configuration index out-of-range");
     }

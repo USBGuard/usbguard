@@ -19,6 +19,7 @@
 #include "USB.hpp"
 #include "Common/ByteOrder.hpp"
 #include "Common/Utility.hpp"
+#include "LoggerPrivate.hpp"
 #include <stdexcept>
 #include <iostream>
 
@@ -174,7 +175,12 @@ namespace usbguard {
     USBDeviceDescriptor descriptor;
     const USBDeviceDescriptor* rawptr;
 
+    logger->trace("Parsing device descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
+		  data, size, (void *)real_size);
+
     if (size < sizeof(USBDeviceDescriptor)) {
+      logger->debug("Provided buffer doesn't have a sufficient size to hold a device descriptor");
+      logger->debug("Expected size is at least {} bytes", sizeof(USBDeviceDescriptor));
       throw std::runtime_error("Invalid binary descriptor data: too small");
     }
     else {
@@ -189,8 +195,18 @@ namespace usbguard {
     descriptor.idProduct = busEndianToHost(rawptr->idProduct);
     descriptor.bcdDevice = busEndianToHost(rawptr->bcdDevice);
 
+    logger->debug("Device descriptor values (host endian):");
+    logger->debug(" bcdUSB: {:x}", descriptor.bcdUSB);
+    logger->debug(" idVendor: {:x}", descriptor.idVendor);
+    logger->debug(" idProduct: {:x}", descriptor.idProduct);
+    logger->debug(" bcdDevice: {:x}", descriptor.bcdDevice);
+    logger->debug(" bDeviceClass: {:x}", descriptor.bDeviceClass);
+    logger->debug(" bDeviceSubClass: {:x}", descriptor.bDeviceSubClass);
+
     /* Sanity checks */
     if (descriptor.bLength != sizeof(USBDeviceDescriptor)) {
+      logger->debug("Device descriptor bLength value ({:d} bytes) doesn't match descriptor size ({})",
+		    descriptor.bLength, sizeof(USBDeviceDescriptor));
       throw std::runtime_error("Invalid binary descriptor data: invalid bLenght value");
     }
 
@@ -202,7 +218,12 @@ namespace usbguard {
     USBConfigurationDescriptor descriptor;
     const USBConfigurationDescriptor* rawptr;
 
+    logger->trace("Parsing configuration descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
+		  data, size, (void*)real_size);
+
     if (size < sizeof(USBConfigurationDescriptor)) {
+      logger->debug("Provided buffer doesn't have a sufficient size to hold a configuration descriptor");
+      logger->debug("Expected size is at least {} bytes", sizeof(USBConfigurationDescriptor));
       throw std::runtime_error("Invalid binary descriptor data: too small");
     }
     else {
@@ -213,6 +234,11 @@ namespace usbguard {
     descriptor = *rawptr;
     descriptor.wTotalLength = busEndianToHost(rawptr->wTotalLength);
 
+    logger->debug("Configuration descriptor data (host endian)");
+    logger->debug(" bNumInterfaces: {:d}", descriptor.bNumInterfaces);
+    logger->debug(" wTotalLength: {:d}", descriptor.wTotalLength);
+    logger->debug(" bConfigurationValue: {:d}", descriptor.bConfigurationValue);
+
     return std::move(descriptor);
   }
 
@@ -221,7 +247,12 @@ namespace usbguard {
     USBInterfaceDescriptor descriptor;
     const USBInterfaceDescriptor* rawptr;
 
+    logger->trace("Parsing interface descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
+		  data, size, (void *)real_size);
+
     if (size < sizeof(USBInterfaceDescriptor)) {
+      logger->debug("Provided buffer doesn't have a sufficient size to hold an interface descriptor");
+      logger->debug("Expected size is at least {} bytes", sizeof(USBInterfaceDescriptor));
       throw std::runtime_error("Invalid binary descriptor data: too small");
     }
     else {
@@ -230,6 +261,12 @@ namespace usbguard {
 
     /* 1:1 copy */
     descriptor = *rawptr;
+
+    logger->debug("Interface descriptor data (host endian):");
+    logger->debug(" bInterfaceClass: {:x}", descriptor.bInterfaceClass);
+    logger->debug(" bInterfaceSubClass: {:x}", descriptor.bInterfaceSubClass);
+    logger->debug(" bInterfaceProtocol: {:x}", descriptor.bInterfaceProtocol);
+    logger->debug(" bInterfaceNumber: {:d}", descriptor.bInterfaceNumber);
 
     return std::move(descriptor);
   }
