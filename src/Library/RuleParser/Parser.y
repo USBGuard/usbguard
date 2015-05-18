@@ -83,7 +83,7 @@ device_attribute ::= KEYWORD_SERIAL string(S). {
 
 device_attribute ::= KEYWORD_VIAPORT string(S). {
 		 rule->refDevicePorts().push_back(*S);
-		 rule->setDevicePortsSetOperator(Rule::SetOperator::OneOf);
+		 rule->setDevicePortsSetOperator(Rule::SetOperator::Equals);
 		 delete S;
 }
 
@@ -114,6 +114,7 @@ stringvec(V) ::= . {
 
 device_attribute ::= KEYWORD_WITHINTERFACE usbiftype(T). {
 	  rule->refInterfaceTypes().push_back(*T);
+	  rule->setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
 	  delete T;
 }
 

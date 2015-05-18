@@ -57,7 +57,7 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]") {
     const std::vector<String> one_non_printable_string = { non_printable_string };
     rule.setTarget(Rule::Target::Allow);
     rule.setDevicePorts(one_non_printable_string);
-    rule.setDevicePortsSetOperator(Rule::SetOperator::OneOf);
+    rule.setDevicePortsSetOperator(Rule::SetOperator::Equals);
 
     REQUIRE_NOTHROW(rule_string = rule.toString());
     REQUIRE(rule_string == "allow via-port \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
@@ -140,7 +140,7 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     const std::vector<String> one_dqb_string = { dqb_string };
     rule.setTarget(Rule::Target::Allow);
     rule.setDevicePorts(one_dqb_string);
-    rule.setDevicePortsSetOperator(Rule::SetOperator::OneOf);
+    rule.setDevicePortsSetOperator(Rule::SetOperator::Equals);
 
     REQUIRE_NOTHROW(rule_string = rule.toString());
     REQUIRE(rule_string == "allow via-port \"" + dqb_string_escaped + "\"");
