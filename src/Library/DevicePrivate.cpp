@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "DevicePrivate.hpp"
-#include "Common/Logging.hpp"
+#include <Logger.hpp>
 #include <mutex>
 #include <sodium.h>
 

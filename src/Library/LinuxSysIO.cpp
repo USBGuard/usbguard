@@ -17,8 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "LinuxSysIO.hpp"
-#include "Common/Logging.hpp"
-
+#include <Logger.hpp>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

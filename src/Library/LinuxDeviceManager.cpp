@@ -18,7 +18,7 @@
 //
 #include "LinuxDeviceManager.hpp"
 #include "LinuxSysIO.hpp"
-#include "Common/Logging.hpp"
+#include <Logger.hpp>
 #include <USB.hpp>
 #include <sys/eventfd.h>
 #include <sys/select.h>

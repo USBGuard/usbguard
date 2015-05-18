@@ -16,12 +16,11 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#ifndef USBFW_THREAD_HPP
-#define USBFW_THREAD_HPP
+#pragma once
 
-#include "Logging.hpp"
 #include <thread>
 #include <atomic>
+#include <system_error>
 
 namespace usbguard
 {
@@ -104,5 +103,3 @@ namespace usbguard
   };
 
 } /* namespace usbguard */
-
-#endif /* USBFW_THREAD_HPP */

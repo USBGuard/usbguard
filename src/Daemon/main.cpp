@@ -18,10 +18,11 @@
 //
 #include <build-config.h>
 
-#include "Common/Logging.hpp"
-#include "Common/Utility.hpp"
-#include "Typedefs.hpp"
+#include <Typedefs.hpp>
+
+#include "LoggerPrivate.hpp"
 #include "Daemon.hpp"
+#include "Common/Utility.hpp"
 
 #include <iostream>
 #include <getopt.h>
@@ -76,9 +77,10 @@ int main(int argc, char *argv[])
   bool debug_mode = false;
   bool log_syslog = false;
   bool log_console = false;
+  bool log_file = false;
   bool use_seccomp_whitelist = true;
   bool drop_capabilities = true;
-  String log_file;
+  String log_file_path;
   String pid_file;
   String conf_file = "/etc/usbguard/usbguard-daemon.conf";
   int opt;
@@ -96,7 +98,8 @@ int main(int argc, char *argv[])
 	log_console = true;
 	break;
       case 'l':
-	log_file = String(optarg);
+	log_file = true;
+	log_file_path = String(optarg);
 	break;
       case 'p':
 	pid_file = String(optarg);
@@ -121,14 +124,20 @@ int main(int argc, char *argv[])
       }
   }
 
+
+  
+
   /* Initialize */
-  usbguard::setupLogger(debug_mode,
-		     log_syslog,
-		     log_console,
-		     log_file);
+  Logger::setSyslogOutput(log_syslog, "usbguard-daemon");
+  Logger::setConsoleOutput(log_console);
+  Logger::setFileOutput(log_file, log_file_path);
+
+  if (debug_mode) {
+    Logger::setVerbosityLevel(Logger::Level::Trace);
+  }
 
   if (sodium_init() == -1) {
-    usbguard::log->error("Cannot initialize the sodium library");
+    logger->error("Cannot initialize the sodium library");
     return EXIT_FAILURE;
   }
 
@@ -137,8 +146,8 @@ int main(int argc, char *argv[])
 #if defined(HAVE_SECCOMP)
     setupSeccompWhitelist();
 #else
-    usbguard::log->error("Cannot setup seccomp whitelist, compiled without seccomp support!"
-			 " Re-run with the -W option to run the daemon anyway.");
+    logger->error("Cannot setup seccomp whitelist, compiled without seccomp support!"
+		  " Re-run with the -W option to run the daemon anyway.");
     return EXIT_FAILURE;
 #endif
   }
@@ -147,8 +156,8 @@ int main(int argc, char *argv[])
 #if defined(HAVE_LIBCAPNG)
     setupCapabilities();
 #else
-    usbguard::log->error("Cannot drop capabilities, compiled without libcap-ng support!"
-			 " Re-run with the -C option to run the daemon anyway.");
+    logger->error("Cannot drop capabilities, compiled without libcap-ng support!"
+		  " Re-run with the -C option to run the daemon anyway.");
     return EXIT_FAILURE;
 #endif
   }
@@ -162,7 +171,7 @@ int main(int argc, char *argv[])
     }
     daemon.run();
   } catch(const std::exception& ex) {
-    usbguard::log->critical("Exception: {}", ex.what());
+    logger->critical("Exception: {}", ex.what());
     ret = EXIT_FAILURE;
   }
 
@@ -172,12 +181,12 @@ int main(int argc, char *argv[])
 #if defined(HAVE_SECCOMP)
  static void setupSeccompWhitelist(void)
  {
-   usbguard::log->debug("Applying seccomp whitelist");
+   logger->debug("Applying seccomp whitelist");
    /* TODO: Use SCMP_ACT_TRAP. Switch to EACCES for 1.x releases */
    scmp_filter_ctx ctx = seccomp_init(/*SCMP_ACT_ERRNO(EACCES)*/SCMP_ACT_TRAP);
 
    if (!ctx) {
-     usbguard::log->error("Cannot initialize seccomp filter context");
+     logger->error("Cannot initialize seccomp filter context");
      throw std::runtime_error("Cannot initialize seccomp filter context");
    }
 
@@ -290,12 +299,12 @@ int main(int argc, char *argv[])
    //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0);
 
    if (ret != 0) {
-     usbguard::log->error("Cannot initialize seccomp whitelist");
+     logger->error("Cannot initialize seccomp whitelist");
      throw std::runtime_error("Cannot initialize seccomp whitelist");
    }
 
    if (seccomp_load(ctx) != 0) {
-     usbguard::log->error("Cannot load seccomp whitelist into the kernel");
+     logger->error("Cannot load seccomp whitelist into the kernel");
      throw std::runtime_error("Cannot load seccomp whitelist into the kernel");
    }
 
@@ -307,7 +316,7 @@ int main(int argc, char *argv[])
 #if defined(HAVE_LIBCAPNG)
  static void setupCapabilities(void)
  {
-   usbguard::log->debug("Dropping capabilities");
+   logger->debug("Dropping capabilities");
    capng_clear(CAPNG_SELECT_BOTH);
    capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE|CAPNG_PERMITTED),
 		 CAP_CHOWN, CAP_FOWNER,-1);

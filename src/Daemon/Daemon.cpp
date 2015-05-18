@@ -19,7 +19,7 @@
 #include <build-config.h>
 
 #include "Daemon.hpp"
-#include "Common/Logging.hpp"
+#include "LoggerPrivate.hpp"
 #include "Common/Utility.hpp"
 
 #include <sys/select.h>
@@ -60,7 +60,7 @@ namespace usbguard
     for (int signum : { SIGINT, SIGTERM, SIGSYS }) {
       if (qb_loop_signal_add(_qb_loop, QB_LOOP_HIGH, signum,
 			     _qb_loop, Daemon::qbSignalHandlerFn, NULL) != 0) {
-	log->debug("Cannot register signal #{} handler", signum);
+	logger->debug("Cannot register signal #{} handler", signum);
 	throw std::runtime_error("signal init error");
       }
     }
@@ -83,20 +83,20 @@ namespace usbguard
 
   void Daemon::loadConfiguration(const String& path)
   {
-    log->debug("Loading configuration from {}", path);
+    logger->debug("Loading configuration from {}", path);
     _config.open(path);
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
-      log->debug("Setting rules file path from configuration file");
+      logger->debug("Setting rules file path from configuration file");
       const String& rule_file = _config.getSettingValue("RuleFile");
       try {
 	loadRules(rule_file);
       } catch(const std::exception& ex) {
-	log->warn("The configured rule file doesn't yet exists. Starting with an empty rule set.");
+	logger->warn("The configured rule file doesn't yet exists. Starting with an empty rule set.");
       }
     } else {
-      log->debug("No rules file path specified.");
+      logger->debug("No rules file path specified.");
     }
 
     /* ImplicitPolicyTarget */
@@ -122,12 +122,12 @@ namespace usbguard
 
     /* IPCAllowedUsers */
     if (_config.hasSettingValue("IPCAllowedUsers")) {
-      log->debug("Setting allowed IPC users");
+      logger->debug("Setting allowed IPC users");
       StringVector usernames;
       tokenizeString(_config.getSettingValue("IPCAllowedUsers"),
 		     usernames, " ", /*trim_empty=*/true);
       for (auto const& username : usernames) {
-	log->debug("Allowed IPC user: {}", username);
+	logger->debug("Allowed IPC user: {}", username);
 	DACAddAllowedUID(username);
       }
       _ipc_dac_acl = true;
@@ -135,18 +135,18 @@ namespace usbguard
 
     /* IPCAllowedGroups */
     if (_config.hasSettingValue("IPCAllowedGroups")) {
-      log->debug("Setting allowed IPC groups");
+      logger->debug("Setting allowed IPC groups");
       StringVector groupnames;
       tokenizeString(_config.getSettingValue("IPCAllowedGroups"),
 		     groupnames, " ", /*trim_empty=*/true);
       for (auto const& groupname : groupnames) {
-	log->debug("Allowed IPC group: {}", groupname);
+	logger->debug("Allowed IPC group: {}", groupname);
 	DACAddAllowedGID(groupname);
       }
       _ipc_dac_acl = true;
     }
 
-    log->debug("Configuration loaded successfully");
+    logger->debug("Configuration loaded successfully");
     return;
   }
 
@@ -203,7 +203,7 @@ namespace usbguard
     (void)timeout_sec; /* TODO */
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
-    log->debug("Appending rule: {}", rule_spec);
+    logger->debug("Appending rule: {}", rule_spec);
     const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
@@ -213,7 +213,7 @@ namespace usbguard
 
   void Daemon::removeRule(uint32_t seqn)
   {
-    log->debug("Removing rule: seqn={}", seqn);
+    logger->debug("Removing rule: seqn={}", seqn);
     _ruleset.removeRule(seqn);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
@@ -223,7 +223,7 @@ namespace usbguard
   
   void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
-    log->debug("Allowing device: {}", seqn);
+    logger->debug("Allowing device: {}", seqn);
     Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Allow, timeout_sec);
@@ -237,7 +237,7 @@ namespace usbguard
 
   void Daemon::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
-    log->debug("Blocking device: {}", seqn);
+    logger->debug("Blocking device: {}", seqn);
     Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Block, timeout_sec);
@@ -251,7 +251,7 @@ namespace usbguard
 
   void Daemon::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
-    log->debug("Rejecting device: {}", seqn);
+    logger->debug("Rejecting device: {}", seqn);
     Pointer<const Rule> rule;
     if (append) {
       rule = appendDeviceRule(seqn, Rule::Target::Reject, timeout_sec);
@@ -269,8 +269,8 @@ namespace usbguard
 			      bool rule_match,
 			      uint32_t rule_seqn)
   {
-    log->debug("DeviceInserted: seqn={}, rule_match={}, rule_seqn={}",
-	       seqn, rule_match, rule_seqn);
+    logger->debug("DeviceInserted: seqn={}, rule_match={}, rule_seqn={}",
+		  seqn, rule_match, rule_seqn);
 
     json interfaces_json;
     for (auto const& type : interfaces) {
@@ -296,7 +296,7 @@ namespace usbguard
 			     const std::vector<USBInterfaceType>& interfaces,
 			     Rule::Target target)
   {
-    log->debug("DeviceInserted: seqn={}, target={}", seqn, Rule::targetToString(target));
+    logger->debug("DeviceInserted: seqn={}, target={}", seqn, Rule::targetToString(target));
 
     json interfaces_json;
     for (auto const& type : interfaces) {
@@ -320,7 +320,7 @@ namespace usbguard
 			     const std::map<std::string,std::string>& attributes)
 
   {
-    log->debug("DeviceRemoved: seqn={}", seqn);
+    logger->debug("DeviceRemoved: seqn={}", seqn);
 
     const json j = {
       {         "_s", "DeviceRemoved" },
@@ -338,8 +338,8 @@ namespace usbguard
 			     bool rule_match,
 			     uint32_t rule_seqn)
   {
-    log->debug("DeviceAllowed: seqn={}, rule_match={}, rule_seqn={}",
-	       seqn, rule_match, rule_seqn);
+    logger->debug("DeviceAllowed: seqn={}, rule_match={}, rule_seqn={}",
+		  seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceAllowed" },
@@ -359,8 +359,8 @@ namespace usbguard
 			     bool rule_match,
 			     uint32_t rule_seqn)
   {
-    log->debug("DeviceBlocked: seqn={}, rule_match={}, rule_seqn={}",
-	       seqn, rule_match, rule_seqn);
+    logger->debug("DeviceBlocked: seqn={}, rule_match={}, rule_seqn={}",
+		  seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceBlocked" },
@@ -380,8 +380,8 @@ namespace usbguard
 			      bool rule_match,
 			      uint32_t rule_seqn)
   {
-    log->debug("DeviceRejected: seqn={}, rule_match={}, rule_seqn={}",
-	       seqn, rule_match, rule_seqn);
+    logger->debug("DeviceRejected: seqn={}, rule_match={}, rule_seqn={}",
+		  seqn, rule_match, rule_seqn);
 
     const json j = {
       {         "_s", "DeviceRejected" },
@@ -535,11 +535,11 @@ namespace usbguard
   int32_t Daemon::qbSignalHandlerFn(int32_t signal, void *arg)
   {
     qb_loop_t *qb_loop = (qb_loop_t *)arg;
-    log->debug("Stopping main loop from signal handler");
+    logger->debug("Stopping main loop from signal handler");
     qb_loop_stop(qb_loop);
 
     if (signal == SIGSYS) {
-      log->warn("Stopped due to SIGSYS: A system call was used which is not whitelisted.");
+      logger->warn("Stopped due to SIGSYS: A system call was used which is not whitelisted.");
     }
 
     return QB_FALSE;
@@ -553,13 +553,13 @@ namespace usbguard
     const bool auth = daemon->qbIPCConnectionAllowed(uid, gid);
 
     if (auth) {
-      log->debug("IPC Connection accepted. "
-		 "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
+      logger->debug("IPC Connection accepted. "
+		    "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
       qb_ipcs_connection_auth_set(conn, uid, 0, 0660);
       return 0;
     }
     else {
-      log->debug("IPC Connection rejected");
+      logger->debug("IPC Connection rejected");
       return -1;
     }
   }
@@ -567,12 +567,12 @@ namespace usbguard
   bool Daemon::qbIPCConnectionAllowed(uid_t uid, gid_t gid)
   {
     if (_ipc_dac_acl) {
-      log->debug("Using DAC IPC ACL");
-      log->debug("Connection request from uid={} gid={}", uid, gid);
+      logger->debug("Using DAC IPC ACL");
+      logger->debug("Connection request from uid={} gid={}", uid, gid);
       return DACAuthenticateIPCConnection(uid, gid);
     }
     else {
-      log->debug("IPC authentication is turned off.");
+      logger->debug("IPC authentication is turned off.");
       return true;
     }
   }
@@ -598,23 +598,23 @@ namespace usbguard
 
   void Daemon::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)
   {
-    log->debug("Connection created");
+    logger->debug("Connection created");
   }
 
   void Daemon::qbIPCConnectionDestroyedFn(qb_ipcs_connection_t *conn)
   {
-    log->debug("Connection destroyed");
+    logger->debug("Connection destroyed");
   }
 
   int32_t Daemon::qbIPCConnectionClosedFn(qb_ipcs_connection_t *conn)
   {
-    log->debug("Connection closed");
+    logger->debug("Connection closed");
     return 0;
   }
 
   json Daemon::processJSON(const json& jobj)
   {
-    log->debug("Processing JSON object: {}", jobj);
+    logger->debug("Processing JSON object: {}", jobj);
 
     if (!jobj["_e"].is_null()) {
       //processExceptionJSON(jobj);
@@ -636,12 +636,12 @@ namespace usbguard
 
   json Daemon::processMethodCallJSON(const json& jobj)
   {
-    log->debug("Processing method call");
+    logger->debug("Processing method call");
     json retval = {{ "_i", jobj["_i"]}};
 
     try {
       const std::string name = jobj["_m"];
-      log->debug("Method name = {}", name);
+      logger->debug("Method name = {}", name);
 
       if (name == "appendRule") {
 	uint32_t val = appendRule(jobj["rule_spec"], jobj["parent_seqn"], jobj["timeout_sec"]);
@@ -664,11 +664,11 @@ namespace usbguard
       }
       retval["_r"] = name;
     } catch(const std::exception& ex) {
-      log->error("Exception: {}", ex.what());
+      logger->error("Exception: {}", ex.what());
       throw IPCException(IPCException::ProtocolError, "Invalid IPC method call");
     }
 
-    log->debug("Returning JSON object: {}", retval);
+    logger->debug("Returning JSON object: {}", retval);
     return std::move(retval);
   }
 
@@ -692,12 +692,12 @@ namespace usbguard
 
     if (rc < 0) {
       /* FIXME: There's no client identification value in the message */
-      log->warn("Failed to send data: {}", strerror((int)-rc));
+      logger->warn("Failed to send data: {}", strerror((int)-rc));
     }
     else if ((size_t)rc != total_size) {
       /* FIXME: There's no client identification value in the message */
-      log->warn("Sent less data than expected. Expected {}, send {}.",
-		total_size, rc);
+      logger->warn("Sent less data than expected. Expected {}, send {}.",
+		   total_size, rc);
     }
 
     return;
@@ -706,7 +706,7 @@ namespace usbguard
   int32_t Daemon::qbIPCMessageProcessFn(qb_ipcs_connection_t *conn, void *data, size_t size)
   {
     if (size <= sizeof (struct qb_ipc_request_header)) {
-      log->error("Received invalid IPC data. Disconnecting from the client.");
+      logger->error("Received invalid IPC data. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
       return 0;
     }
@@ -715,12 +715,12 @@ namespace usbguard
       (const struct qb_ipc_request_header *)data;
 
     if (size != (size_t)hdr->size) {
-      log->error("Invalid size in IPC header. Disconnecting from the client.");
+      logger->error("Invalid size in IPC header. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
       return 0;
     }
     if (size > 1<<20) {
-      log->error("Message too large. Disconnecting from the client.");
+      logger->error("Message too large. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
       return 0;
     }
@@ -731,7 +731,7 @@ namespace usbguard
       const std::string json_string((const char *)jdata, jsize);
       const json jobj = json::parse(json_string);
 
-      log->debug("Received JSON object: {}", jobj.dump());
+      logger->debug("Received JSON object: {}", jobj.dump());
 
       Daemon* daemon = \
 	static_cast<Daemon*>(qb_ipcs_connection_service_context_get(conn));
@@ -742,8 +742,8 @@ namespace usbguard
 	qbIPCSendJSON(conn, retval);
       }
     } catch(const std::exception& ex) {
-      log->error("Exception: {}", ex.what());
-      log->error("Invalid JSON object received. Disconnecting from the client.");
+      logger->error("Exception: {}", ex.what());
+      logger->error("Invalid JSON object received. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
       return 0;
     }
@@ -803,7 +803,7 @@ namespace usbguard
 
     auto rc = qb_ipcs_run(_qb_service);
     if (rc != 0) {
-      log->error("Cannot start the IPC server: qb_ipcs_run failed: {}", strerror((int)-rc));
+      logger->error("Cannot start the IPC server: qb_ipcs_run failed: {}", strerror((int)-rc));
       throw std::runtime_error("IPC server error");
     }
 
@@ -826,7 +826,7 @@ namespace usbguard
       total_size += iov[i].iov_len;
     }
 
-    log->debug("Sending data of total size {}.", total_size);
+    logger->debug("Sending data of total size {}.", total_size);
 
     while (qb_conn != nullptr) {
       /* Send the data */
@@ -834,12 +834,12 @@ namespace usbguard
 
       if (rc < 0) {
 	/* FIXME: There's no client identification value in the message */
-	log->warn("Failed to send broadcast data to: {}", strerror((int)-rc));
+	logger->warn("Failed to send broadcast data to: {}", strerror((int)-rc));
       }
       else if ((size_t)rc != total_size) {
 	/* FIXME: There's no client identification value in the message */
-	log->warn("Sent less data than expected to. Expected {}, send {}.",
-		  total_size, rc);
+	logger->warn("Sent less data than expected to. Expected {}, send {}.",
+		     total_size, rc);
       }
       
       /* Get the next connection */
@@ -929,9 +929,9 @@ namespace usbguard
     Pointer<Rule> device_rule = device->getDeviceRule();
     device_rule->setTarget(target);
     const String rule_string = device_rule->toString();
-    log->debug("Appending rule: {}", rule_string);
+    logger->debug("Appending rule: {}", rule_string);
     const uint32_t rule_seqn = appendRule(rule_string, Rule::SeqnLast, timeout_sec);
-    log->debug("Rule seqn is: {}", rule_seqn);
+    logger->debug("Rule seqn is: {}", rule_seqn);
     return _ruleset.getRule(rule_seqn);
   }
 
@@ -940,7 +940,7 @@ namespace usbguard
     /* Check for UID match */
     for (auto allowed_uid : _ipc_allowed_uids) {
       if (allowed_uid == uid) {
-	log->debug("uid {} is an allowed uid", uid);
+	logger->debug("uid {} is an allowed uid", uid);
 	return true;
       }
     }
@@ -952,14 +952,14 @@ namespace usbguard
 
     if (getpwuid_r(uid, &pw,
 		   pw_string_buffer, sizeof pw_string_buffer, &pwptr) != 0) {
-      log->warn("Cannot lookup username for uid {}. Won't check group membership.", uid);
+      logger->warn("Cannot lookup username for uid {}. Won't check group membership.", uid);
       check_group_membership = false;
     }
 
     /* Check for GID match or group member match */
     for (auto allowed_gid : _ipc_allowed_gids) {
       if (allowed_gid == gid) {
-	log->debug("gid {} is an allowed gid", gid);
+	logger->debug("gid {} is an allowed gid", gid);
 	return true;
       }
       else if (check_group_membership) {
@@ -969,16 +969,16 @@ namespace usbguard
 	/* Fetch list of current group members of group with a gid == allowed_gid */
 	if (getgrgid_r(allowed_gid, &gr,
 		       gr_string_buffer, sizeof gr_string_buffer, &grptr) != 0) {
-	  log->warn("Cannot lookup groupname for gid {}. "
-		    "Won't check group membership of uid {}", allowed_gid, uid);
+	  logger->warn("Cannot lookup groupname for gid {}. "
+		       "Won't check group membership of uid {}", allowed_gid, uid);
 	  continue;
 	}
 
 	/* Check for username match among group members */
 	for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
 	  if (strcmp(pw.pw_name, gr.gr_mem[i]) == 0) {
-	    log->debug("uid {} ({}) is a member of an allowed group with gid {} ({})",
-		       uid, pw.pw_name, allowed_gid, gr.gr_name);
+	    logger->debug("uid {} ({}) is a member of an allowed group with gid {} ({})",
+			  uid, pw.pw_name, allowed_gid, gr.gr_name);
 	    return true;
 	  }
 	}

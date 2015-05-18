@@ -80,7 +80,9 @@ libusbguard_la_SOURCES=\
 	src/Library/LinuxDeviceManager.cpp \
 	src/Library/LinuxDeviceManager.hpp \
 	src/Library/LinuxSysIO.hpp \
-	src/Library/LinuxSysIO.cpp
+	src/Library/LinuxSysIO.cpp \
+	src/Library/LoggerPrivate.hpp \
+	src/Library/LoggerPrivate.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -93,7 +95,8 @@ pkginclude_HEADERS=\
 	src/Library/Typedefs.hpp \
 	src/Library/DeviceManagerHooks.hpp \
 	src/Library/Device.hpp \
-	src/Library/DeviceManager.hpp
+	src/Library/DeviceManager.hpp \
+	src/Library/Logger.hpp
 
 EXTRA_DIST +=\
 	src/Library/RuleParser/Lexer.qx \
@@ -110,8 +113,6 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.hpp \
 	src/Daemon/Exceptions.hpp \
 	src/Daemon/main.cpp \
-	src/Common/Logging.cpp \
-	src/Common/Logging.hpp \
 	src/Common/CCBQueue.hpp \
 	src/Common/Utility.hpp \
 	src/Common/Utility.cpp
