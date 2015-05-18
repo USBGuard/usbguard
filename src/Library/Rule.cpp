@@ -19,7 +19,7 @@
 #include "RulePrivate.hpp"
 #include "Common/Utility.hpp"
 #include <utility>
-#include <cctype>
+#include <locale>
 
 namespace usbguard {
   const uint32_t Rule::SeqnRoot = std::numeric_limits<uint32_t>::min();
@@ -314,9 +314,10 @@ namespace usbguard {
   const String Rule::escapeString(const String& string)
   {
     String result;
+    const std::locale c_locale("C");
 
     for (auto it = string.cbegin(); it != string.cend(); ++it) {
-      const int c = *it;
+      const char c = *it;
 
       /*
        * Escape any double-quote and backslash characters.
@@ -332,12 +333,11 @@ namespace usbguard {
 	continue;
       }
       /*
-       * If the current character is a 7-bit printable alphanumeric
-       * or space character, append it. Otherwise convert it to
-       * \xHH form, where HH is the hexadecimal representation of
-       * the character value.
+       * If the current character is printable in the "C" locale,
+       * append it. Otherwise convert it to \xHH form, where HH is
+       * the hexadecimal representation of the character value.
        */
-      if (::isascii(c) && ::isprint(c) && (::isalnum(c) || c == ' ')) {
+      if (std::isprint(c, c_locale)) {
 	result.push_back((char)c);
       } else {
 	const String hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
@@ -352,6 +352,7 @@ namespace usbguard {
   {
     String result;
     bool escaped = false;
+    const std::locale c_locale("C");
 
     for (auto it = string.cbegin(); it < string.cend(); ++it) {
       const char c = *it;
@@ -375,7 +376,7 @@ namespace usbguard {
 	    }
 
 	    const char hb[] = { *(it + 1), *(it + 2) };
-	    if (!::isxdigit((int)hb[0]) || !::isxdigit((int)hb[1])) {
+	    if (!std::isxdigit(hb[0], c_locale) || !std::isxdigit(hb[1], c_locale)) {
 	      throw std::runtime_error("Invalid \\xHH escape sequence: HH is not a hexadecimal number");
 	    }
 
