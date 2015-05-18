@@ -152,3 +152,36 @@ usbguard_generate_policy_CPPFLAGS=\
 usbguard_generate_policy_LDADD=\
 	$(top_builddir)/libusbguard.la
 
+#usbguard_SOURCES=\
+#	src/CLI/usbguard.cpp \
+#	src/CLI/usbguard-cli-parser.h \
+#	src/CLI/CLICommand.cpp \
+#	src/CLI/CLICommand.hpp \
+#	src/CLI/RuleAppend.cpp \
+#	src/CLI/RuleAppend.hpp \
+#	src/CLI/DeviceSetPolicy.cpp \
+#	src/CLI/DeviceSetPolicy.hpp \
+#	src/CLI/CLIArgv_Lexer-configuration.hpp \
+#	src/CLI/CLIArgv_Lexer.cpp \
+#	src/CLI/CLIArgv_Lexer.hpp \
+#	src/CLI/CLIArgv_Lexer-token.hpp \
+#	src/CLI/CLIArgv_Lexer-token_ids.hpp \
+#	src/CLI/CLILine_Lexer-configuration.hpp \
+#	src/CLI/CLILine_Lexer.cpp \
+#	src/CLI/CLILine_Lexer.hpp \
+#	src/CLI/CLILine_Lexer-token.hpp \
+#	src/CLI/CLILine_Lexer-token_ids.hpp
+
+#usbguard_CPPFLAGS=\
+#	$(AM_CPPFLAGS) \
+#	-I$(top_srcdir)/src/CLI \
+#	-DQUEX_OPTION_MULTI
+
+#usbguard_LDADD=\
+#	$(top_builddir)/libusbguard.la
+
+#EXTRA_DIST+=\
+#	usbguard-cli-argv-lexer.qx \
+#	usbguard-cli-lexer.qx \
+#	usbguard-cli-parser.y \
+#	usbguard-cli-parser.c
