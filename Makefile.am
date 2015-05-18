@@ -136,3 +136,19 @@ EXTRA_DIST +=\
 	src/ThirdParty/spdlog \
 	src/ThirdParty/json/src/json.hpp \
 	src/ThirdParty/Catch
+
+bin_PROGRAMS=\
+	usbguard-generate-policy
+
+usbguard_generate_policy_SOURCES=\
+	src/CLI/usbguard-generate-policy.cpp \
+	src/CLI/PolicyGenerator.hpp \
+	src/CLI/PolicyGenerator.cpp \
+	src/Common/Utility.cpp
+
+usbguard_generate_policy_CPPFLAGS=\
+	$(AM_CPPFLAGS)
+
+usbguard_generate_policy_LDADD=\
+	$(top_builddir)/libusbguard.la
+
