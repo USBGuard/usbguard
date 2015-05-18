@@ -37,6 +37,7 @@ namespace usbguard {
     virtual void setDefaultBlockedState(bool state) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
+    virtual void scan() = 0;
     virtual Pointer<Device> allowDevice(uint32_t seqn) = 0;
     virtual Pointer<Device> blockDevice(uint32_t seqn) = 0;
     virtual Pointer<Device> rejectDevice(uint32_t seqn) = 0;

@@ -209,6 +209,16 @@ namespace usbguard {
     return;
   }
 
+  void LinuxDeviceManager::scan()
+  {
+    if (!_thread.running()) {
+      udevEnumerateDevices();
+    } else {
+      throw std::runtime_error("DeviceManager thread is running, cannot perform a scan");
+    }
+    return;
+  }
+
   Pointer<Device> LinuxDeviceManager::allowDevice(uint32_t seqn)
   {
     //log->debug("Allowing device {}", seqn);
@@ -283,7 +293,7 @@ namespace usbguard {
     fd_set readset;
 
     udev_monitor_enable_receiving(_umon);
-    udevEnumerateDevices();
+    udevEnumerateDevices(); /* scan() without thread state check */
 
     while (!_thread.stopRequested()) {
       struct timeval tv_timeout = { 5, 0 };
