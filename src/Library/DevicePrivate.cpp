@@ -206,6 +206,7 @@ namespace usbguard {
       throw std::runtime_error("loadDeviceDescriptor: NULL descriptor");
     }
     _num_configurations = descriptor->bNumConfigurations;
+    _num_interfaces = 0;
     return;
   }
 
