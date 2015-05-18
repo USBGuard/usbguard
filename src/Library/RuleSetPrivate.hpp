@@ -32,8 +32,8 @@ namespace usbguard {
 
     void load(const String& path);
     void load(std::istream& stream);
-    void save(const String& path);
-    void save(std::ostream& stream);
+    void save(const String& path) const;
+    void save(std::ostream& stream) const;
     void setDefaultTarget(Rule::Target target);
     void setDefaultAction(const String& action);
     uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
@@ -45,8 +45,8 @@ namespace usbguard {
     uint32_t assignSeqn();
 
   private:
-    std::mutex _io_mutex; /* mutex for load/save */
-    std::mutex _op_mutex; /* mutex for operations on the rule set */
+    mutable std::mutex _io_mutex; /* mutex for load/save */
+    mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
     RuleSet& _p_instance;
     Rule::Target _default_target;
     String _default_action;

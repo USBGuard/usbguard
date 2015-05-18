@@ -42,13 +42,13 @@ namespace usbguard {
     return;
   }
   
-  void RuleSet::save(const String& path)
+  void RuleSet::save(const String& path) const
   {
     d_pointer->save(path);
     return;
   }
   
-  void RuleSet::save(std::ostream& stream)
+  void RuleSet::save(std::ostream& stream) const
   {
     d_pointer->save(stream);
     return;

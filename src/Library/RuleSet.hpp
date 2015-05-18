@@ -51,14 +51,14 @@ namespace usbguard {
      * If a file exists at `path', it will be overwritten. Internally, this opens an output
      * stream and calls save(std::ostream& stream).
      */
-    void save(const String& path);
+    void save(const String& path) const;
 
     /**
      * Write the ruleset to an output stream.
      * Each rule is serialized to it's string representation and written line by line to
      * the output stream.
      */
-    void save(std::ostream& stream);
+    void save(std::ostream& stream) const;
 
     /**
      * Set an implicit default target which will be used if there's no match for a device

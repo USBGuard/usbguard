@@ -60,7 +60,7 @@ namespace usbguard {
     return;
   }
   
-  void RuleSetPrivate::save(const String& path)
+  void RuleSetPrivate::save(const String& path) const
   {
     std::ofstream stream(path, std::fstream::trunc);
     if (!stream.is_open()) {
@@ -70,7 +70,7 @@ namespace usbguard {
     return;
   }
   
-  void RuleSetPrivate::save(std::ostream& stream)
+  void RuleSetPrivate::save(std::ostream& stream) const
   {
     std::unique_lock<std::mutex> io_lock(_io_mutex);
     std::unique_lock<std::mutex> op_lock(_op_mutex);
