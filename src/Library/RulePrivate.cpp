@@ -369,8 +369,6 @@ namespace usbguard {
     toString_addNonEmptyField(rule_string, "serial", _serial_number);
     /* Device Name */
     toString_addNonEmptyField(rule_string, "name", _device_name);
-    /* Device Hash */
-    toString_addNonEmptyField(rule_string, "hash", _device_hash);
 
     /* Device Ports */
     if (_device_ports.size() == 1
@@ -404,6 +402,9 @@ namespace usbguard {
       rule_string.append("}");
     }
 
+    /* Device Hash */
+    toString_addNonEmptyField(rule_string, "hash", _device_hash);
+    
     /* Action */
     toString_addNonEmptyField(rule_string, "action", _action);
 
