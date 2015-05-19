@@ -4,6 +4,8 @@
 %name RuleParser
 %extra_argument { Rule* rule }
 
+%default_destructor { (void)rule; }
+
 %token_prefix RULE_TOKEN_
 %token_type { quex::Token* }
 %token_destructor { delete $$; }

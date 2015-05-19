@@ -26,6 +26,7 @@ namespace usbguard {
   RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance)
     : _p_instance(p_instance)
   {
+    (void)_p_instance;
     _default_target = Rule::Target::Block;
     _default_action = String();
     _seqn_next = Rule::SeqnRoot + 1;

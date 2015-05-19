@@ -28,6 +28,7 @@ namespace usbguard
     : _p_instance(p_instance),
       _known_names(known_names)
   {
+    (void)_p_instance;
     _dirty = false;
     return;
   }

@@ -24,6 +24,7 @@ namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)
     : _p_instance(p_instance)
   {
+    (void)_p_instance;
     _seqn = Rule::SeqnDefault;
     _target = Rule::Target::Invalid;
     _timeout_seconds = 0;

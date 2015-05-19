@@ -25,6 +25,7 @@ namespace usbguard {
   DevicePrivate::DevicePrivate(Device& p_instance)
     : _p_instance(p_instance)
   {
+    (void)_p_instance;
     _seqn = Rule::SeqnDefault;
     _target = Rule::Target::Unknown;
     _num_configurations = -1;
