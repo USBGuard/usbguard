@@ -43,7 +43,7 @@ namespace usbguard {
     virtual Pointer<Device> rejectDevice(uint32_t seqn) = 0;
 
     virtual void insertDevice(Pointer<Device> device);
-    virtual Pointer<Device> removeDevice(uint32_t seqn);
+    Pointer<Device> removeDevice(uint32_t seqn);
 
     /* Returns a copy of the list of active USB devices */
     PointerVector<Device> getDeviceList();
