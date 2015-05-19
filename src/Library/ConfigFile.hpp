@@ -24,7 +24,7 @@ namespace usbguard {
   class DLL_PUBLIC ConfigFile
   {
   public:
-    ConfigFile();
+    ConfigFile(const StringVector& known_names);
     ~ConfigFile();
 
     void open(const String& path);

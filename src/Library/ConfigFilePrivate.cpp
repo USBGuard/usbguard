@@ -19,12 +19,14 @@
 
 #include "ConfigFilePrivate.hpp"
 #include "Common/Utility.hpp"
+#include "LoggerPrivate.hpp"
 #include <stdexcept>
 
 namespace usbguard
 {
-  ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance)
-    : _p_instance(p_instance)
+  ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const StringVector& known_names)
+    : _p_instance(p_instance),
+      _known_names(known_names)
   {
     _dirty = false;
     return;
@@ -123,6 +125,7 @@ namespace usbguard
       }
 
       if (!checkNVPair(name, value)) {
+	logger->warn("Uknown setting name: {}", name);
 	continue;
       }
 
@@ -138,19 +141,7 @@ namespace usbguard
 
   bool ConfigFilePrivate::checkNVPair(const String& name, const String& value) const
   {
-    const StringVector known_names = { "RuleFile",
-				       "LogToSylog",
-				       "LogToConsole",
-				       "LogToFile",
-				       "WritePID",
-				       "DebugMode",
-				       "ImplicitPolicyTarget",
-				       "PresentDevicePolicy",
-				       "PresentControllerPolicy",
-				       "IPCAllowedUsers",
-				       "IPCAllowedGroups" };
-
-    for (auto const& known_name : known_names) {
+    for (auto const& known_name : _known_names) {
       if (name == known_name) {
 	return true;
       }

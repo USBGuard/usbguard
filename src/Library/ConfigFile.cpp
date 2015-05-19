@@ -20,9 +20,9 @@
 
 namespace usbguard
 {
-  ConfigFile::ConfigFile()
+  ConfigFile::ConfigFile(const StringVector& known_names)
   {
-    d_pointer = new ConfigFilePrivate(*this);
+    d_pointer = new ConfigFilePrivate(*this, known_names);
   }
 
   ConfigFile::~ConfigFile()

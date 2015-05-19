@@ -40,7 +40,22 @@ namespace usbguard
 {
   qb_loop_t *G_qb_loop = nullptr;
 
+  /*
+   * Recognized configuration option names. If an
+   * unknown setting is found in the config file,
+   * a warning message will be displayed.
+   */
+  const StringVector G_config_known_names = {
+    "RuleFile",
+    "ImplicitPolicyTarget",
+    "PresentDevicePolicy",
+    "PresentControllerPolicy",
+    "IPCAllowedUsers",
+    "IPCAllowedGroups"
+  };
+
   Daemon::Daemon()
+    : _config(G_config_known_names)
   {
     G_qb_loop = _qb_loop = qb_loop_create();
 

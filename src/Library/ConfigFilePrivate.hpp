@@ -25,7 +25,7 @@ namespace usbguard {
   class ConfigFilePrivate
   {
   public:
-    ConfigFilePrivate(ConfigFile& p_instance);
+    ConfigFilePrivate(ConfigFile& p_instance, const StringVector& known_names);
     ~ConfigFilePrivate();
 
     void open(const String& path);
@@ -54,5 +54,6 @@ namespace usbguard {
     StringVector _lines;
     StringKeyMap<NVPair> _settings;
     bool _dirty;
+    const StringVector& _known_names;
   };
 }
