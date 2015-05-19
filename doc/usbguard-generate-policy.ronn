@@ -1,0 +1,46 @@
+usbguard-generate-policy(1) -- Initial policy generator for USBGuard
+=============================================
+
+## SYNOPSIS
+
+`usbguard-generate-policy` [<options>]
+
+## DESCRIPTION
+
+The `usbguard-generate-policy` tool serves for generating an initial policy for your system instead of writing one from scratch. The tool generates an **allow** policy for all devices connected to the system at the moment of execution. The policy will be printed out on the standard output.
+
+## OPTIONS
+
+ * `-P`
+   Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a via-port attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time.
+
+ * `-t <target>`
+   Generate an explicit "catch all" rule with the specified target. The target can be one of the following values: `allow`, `block`, `reject`.
+
+ * `-h`
+   Show the help/usage screen.
+
+## EXAMPLES
+
+The typical workflow for generating an initial policy:
+
+	$ sudo usbguard-generate-policy > rules.conf
+    $ vi rules.conf
+    (review/modify the rule set)
+    $ sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
+
+## BUGS
+
+If you find a bug in this software or if you'd like to request a feature to be implemented, please file a ticket at [https://github.com/dkopecek/usbguard/issues/new]().
+
+## AUTHOR
+
+Daniel Kopeček <dkopecek@redhat.com>
+
+## COPYRIGHT
+
+Copyright © 2015 Red Hat, Inc.  License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
+
+## SEE ALSO
+
+usbguard-rules.conf(5), usbguard-daemon(8), usbguard-daemon.conf(5)

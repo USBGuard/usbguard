@@ -11,6 +11,9 @@ dist_man5_MANS=\
 	doc/usbguard-daemon.conf.roff \
 	doc/usbguard-rules.conf.roff
 
+dist_man1_MANS=\
+	doc/usbguard-generate-policy.roff
+
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library
