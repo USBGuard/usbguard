@@ -1,7 +1,7 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.3p3
+Version:        0.4
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
@@ -42,6 +42,15 @@ Requires:       libstdc++-devel
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
+
+%package        tools
+Summary:        USBGuard Tools
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description    tools
+The %{name}-tools package contains optional tools from the USBGuard
+software framework.
 
 %prep
 %setup -q
@@ -104,7 +113,17 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 
+%files tools
+%defattr(-,root,root,-)
+%{_bindir}/usbguard-generate-policy
+%{_datadir}/man/man1/usbguard-generate-policy.1.gz
+
 %changelog
+* Tue May 19 2015 Daniel Kopecek <dkopecek@redhat.com> 0.4-1
+- Update to version 0.4
+- Added a tools subpackage which contains the usbguard-generate-policy
+  tool
+
 * Tue Apr 14 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p3-1
 - Update to version 0.3p3
 - added %check section
