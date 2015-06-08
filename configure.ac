@@ -29,14 +29,7 @@ CXXFLAGS_DEBUG_ENABLED="-g -O0"
 #
 CXXFLAGS_DEBUG_DISABLED=""
 
-# Checks for programs.
-AC_PROG_CXX
-AC_PROG_INSTALL
-AC_PROG_MAKE_SET
-AM_PROG_LIBTOOL
-AC_PROG_LIBTOOL
-
-# libtool versioning
+# Libtool Versioning
 # See http://sources.redhat.com/autobook/autobook/autobook_91.html#SEC91 for details
 
 ## increment if the interface has additions, changes, removals.
@@ -54,19 +47,66 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-# Checks for libraries.
-PKG_CHECK_MODULES([udev], [libudev >= 200], [],
-                  AC_MSG_FAILURE([libudev development files not found!]))
-PKG_CHECK_MODULES([qb], [libqb >= 0.16.0], [],
-                  AC_MSG_FAILURE([libqb development files not found!]))
-PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5], [],
-                  AC_MSG_FAILURE([libsodium development files not found!]))
+#
+# Checks for programs.
+#
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
+
+#
+# Checks for required libraries.
+#
+PKG_CHECK_MODULES([udev], [libudev >= 200],
+[libudev_summary="system-wide; $udev_LIBS"],
+[AC_MSG_FAILURE([libudev development files not found!])]
+)
+
+#
+# Check for system-wide qb and sodium libraries. If they are not present,
+# configure the build system to use the bundled versions.
+#
+PKG_CHECK_MODULES([qb], [libqb >= 0.16.0],
+[libqb_summary="system-wide; $qb_LIBS"
+use_bundled_libqb=no],
+[AC_MSG_NOTICE([System-wide libqb development files not found! Using bundled version.])
+use_bundled_libqb=yes
+qb_LIBS="\$(top_builddir)/src/ThirdParty/libqb/lib/libqb.la"
+qb_CFLAGS="-I\$(top_builddir)/src/ThirdParty/libqb/include -I\$(top_srcdir)/src/ThirdParty/libqb/include"
+AC_SUBST([qb_LIBS])
+AC_SUBST([qb_CFLAGS])
+libqb_summary="bundled; $qb_LIBS"]
+)
+
+PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
+[libsodium_summary="system-wide; $sodium_LIBS"
+use_bundled_libsodium=no],
+[AC_MSG_NOTICE([System-wide libsodium development files not found! Using bundled version.])
+use_bundled_libsodium=yes
+sodium_LIBS="\$(top_builddir)/src/ThirdParty/libsodium/src/libsodium/libsodium.la"
+sodium_CFLAGS="-I\$(top_builddir)/src/ThirdParty/libsodium/src/libsodium/include -I\$(top_srcdir)/src/ThirdParty/libsodium/src/libsodium/include -I\$(top_srcdir)/src/ThirdParty/libsodium/src/libsodium/include/sodium"
+AC_SUBST([sodium_LIBS])
+AC_SUBST([sodium_CFLAGS])
+libsodium_summary="bundled; $sodium_LIBS"]
+)
+
+#
+# Check for optional libraries
+#
 PKG_CHECK_MODULES([seccomp], [libseccomp >= 2.0.0],
-		  AC_DEFINE([HAVE_SECCOMP], [1], [seccomp API usable]),
-                  AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF]))
+[AC_DEFINE([HAVE_SECCOMP], [1], [seccomp API usable])
+libseccomp_summary="system-wide; $seccomp_LIBS"],
+[AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])]
+)
+
 PKG_CHECK_MODULES([libcapng], [libcap-ng >= 0.7.0],
-		  AC_DEFINE([HAVE_LIBCAPNG], [1], [cap-ng API usable]),
-                  AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF]))
+[AC_DEFINE([HAVE_LIBCAPNG], [1], [cap-ng API usable])
+libcap_ng_summary="system-wide; $libcapng_LIBS"],
+[AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])
+libcap_ng_summary="not found"]
+)
 
 AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]))
 
@@ -74,6 +114,7 @@ if test "x$with_bundled_json" = "xyes"; then
 	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
 	json_LIBS=""
 	AC_MSG_NOTICE([Using bundled json library])
+	json_summary="bundled; $json_LIBS"
 else
 	SAVE_CPPFLAGS=$CPPFLAGS
 	CPPFLAGS="-std=c++11 $CPPFLAGS"
@@ -83,6 +124,7 @@ else
 	json_CFLAGS=""
 	json_LIBS=""
 	CPPFLAGS=$SAVE_CPPFLAGS
+	json_summary="system-wide; $json_LIBS"
 fi
 
 AC_SUBST([json_CFLAGS])
@@ -94,6 +136,7 @@ if test "x$with_bundled_spdlog" = "xyes"; then
 	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
 	spdlog_LIBS=""
 	AC_MSG_NOTICE([Using bundled spdlog library])
+	spdlog_summary="bundled; $spdlog_CFLAGS"
 else
 	SAVE_CPPFLAGS=$CPPFLAGS
 	CPPFLAGS="-std=c++11 $CPPFLAGS"
@@ -103,6 +146,7 @@ else
 	spdlog_CFLAGS=""
 	spdlog_LIBS=""
 	CPPFLAGS=$SAVE_CPPFLAGS
+	spdlog_summary="system-wide; $spdlog_CFLAGS"
 fi
 
 AC_SUBST([spdlog_CFLAGS])
@@ -151,5 +195,55 @@ else
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
 fi
 
+if test "$use_bundled_libqb" = "yes"; then
+   ac_configure_args_pre="$ac_configure_args"
+   ac_configure_args_post="$ac_configure_args --disable-shared --enable-static --with-pic --disable-slow-tests --disable-coverage"
+   ac_configure_args="$ac_configure_args_post"
+   AC_CONFIG_COMMANDS_PRE([ac_configure_args="$ac_configure_args_pre"])
+   AC_CONFIG_COMMANDS_POST([ac_configure_args="$ac_configure_args_post"])
+   AC_CONFIG_SUBDIRS([src/ThirdParty/libqb])
+   ac_configure_args="$ac_configure_args_pre"
+fi
+
+if test "$use_bundled_libsodium" = "yes"; then
+   ac_configure_args_pre="$ac_configure_args"
+   ac_configure_args_post="$ac_configure_args --disable-shared --enable-static --enable-minimal --with-pic"
+   ac_configure_args="$ac_configure_args_post"
+   AC_CONFIG_COMMANDS_PRE([ac_configure_args="$ac_configure_args_pre"])
+   AC_CONFIG_COMMANDS_POST([ac_configure_args="$ac_configure_args_post"])
+   AC_CONFIG_SUBDIRS([src/ThirdParty/libsodium])
+   ac_configure_args="$ac_configure_args_pre"
+fi
+
+AM_CONDITIONAL([BUILD_BUNDLED_LIBSODIUM], [test "$use_bundled_libsodium" = "yes"])
+AM_CONDITIONAL([BUILD_BUNDLED_LIBQB], [test "$use_bundled_libqb" = "yes"])
+
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
+
+echo
+echo "    Build Configuration Summary    "
+echo "==================================="
+echo
+echo "## Libraries"
+echo
+echo "    libudev: $libudev_summary"
+echo "      libqb: $libqb_summary"
+echo "  libsodium: $libsodium_summary"
+echo " libseccomp: $libseccomp_summary"
+echo "  libcap-ng: $libcap_ng_summary"
+echo "       json: $json_summary"
+echo "     spdlog: $spdlog_summary"
+echo
+echo "## Compilation Flags"
+echo
+echo " Debug Mode: $debug"
+echo "   CXXFLAGS: $CXXFLAGS"
+echo "   CPPFLAGS: $CPPFLAGS"
+echo "    LDFLAGS: $LDFLAGS"
+echo
+echo "## Compile-Time Parameter Values"
+echo
+echo ""
+echo ""
+echo

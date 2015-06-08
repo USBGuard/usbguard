@@ -1,5 +1,13 @@
 SUBDIRS=src/Tests/
 
+if BUILD_BUNDLED_LIBQB
+SUBDIRS += src/ThirdParty/libqb
+endif
+
+if BUILD_BUNDLED_LIBSODIUM
+SUBDIRS += src/ThirdParty/libsodium
+endif
+
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST=\
 	LICENSE
@@ -85,7 +93,8 @@ libusbguard_la_SOURCES=\
 	src/Library/LinuxSysIO.hpp \
 	src/Library/LinuxSysIO.cpp \
 	src/Library/LoggerPrivate.hpp \
-	src/Library/LoggerPrivate.cpp
+	src/Library/LoggerPrivate.cpp \
+	src/Library/Init.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -125,20 +134,24 @@ usbguard_daemon_CPPFLAGS=\
 	@spdlog_CFLAGS@ \
 	@json_CFLAGS@ \
 	@seccomp_CFLAGS@ \
-	@libcapng_CFLAGS@
+	@libcapng_CFLAGS@ \
+	@qb_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@spdlog_LIBS@ \
 	@json_LIBS@ \
 	@seccomp_LIBS@ \
-	@libcapng_LIBS@
+	@libcapng_LIBS@ \
+	@qb_LIBS@
 
 EXTRA_DIST +=\
 	README.md \
 	src/ThirdParty/spdlog \
 	src/ThirdParty/json/src/json.hpp \
-	src/ThirdParty/Catch
+	src/ThirdParty/Catch \
+	src/ThirdParty/libqb \
+	src/ThirdParty/libsodium
 
 bin_PROGRAMS=\
 	usbguard-generate-policy

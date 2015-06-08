@@ -26,7 +26,6 @@
 
 #include <iostream>
 #include <getopt.h>
-#include <sodium.h>
 
 #if defined(HAVE_SECCOMP)
 # include <seccomp.h>
@@ -124,21 +123,13 @@ int main(int argc, char *argv[])
       }
   }
 
-
-  
-
-  /* Initialize */
+  /* Initialize logging */
   Logger::setSyslogOutput(log_syslog, "usbguard-daemon");
   Logger::setConsoleOutput(log_console);
   Logger::setFileOutput(log_file, log_file_path);
 
   if (debug_mode) {
     Logger::setVerbosityLevel(Logger::Level::Trace);
-  }
-
-  if (sodium_init() == -1) {
-    logger->error("Cannot initialize the sodium library");
-    return EXIT_FAILURE;
   }
 
   /* Setup seccomp whitelist & drop capabilities */
