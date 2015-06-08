@@ -7,3 +7,9 @@
 [submodule "src/ThirdParty/Catch"]
 	path = src/ThirdParty/Catch
 	url = https://github.com/philsquared/Catch
+[submodule "src/ThirdParty/libsodium"]
+	path = src/ThirdParty/libsodium
+	url = https://github.com/jedisct1/libsodium
+[submodule "src/ThirdParty/libqb"]
+	path = src/ThirdParty/libqb
+	url = https://github.com/ClusterLabs/libqb
