@@ -301,8 +301,7 @@ namespace usbguard
       {  "rule_seqn", rule_seqn }
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
+    qbIPCBroadcastJSON(j);
     return;
   }
 
@@ -326,8 +325,7 @@ namespace usbguard
       {     "target", Rule::targetToString(target) },
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
+    qbIPCBroadcastJSON(j);
     return;
   }
 
@@ -343,9 +341,8 @@ namespace usbguard
       { "attributes", attributes }
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
-    return;    
+    qbIPCBroadcastJSON(j);
+    return;
   }
 
   void Daemon::DeviceAllowed(uint32_t seqn,
@@ -364,8 +361,7 @@ namespace usbguard
       {  "rule_seqn", rule_seqn }
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
+    qbIPCBroadcastJSON(j);
     return;
   }
 
@@ -385,8 +381,7 @@ namespace usbguard
       {  "rule_seqn", rule_seqn }
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
+    qbIPCBroadcastJSON(j);
     return;
   }
 
@@ -406,8 +401,7 @@ namespace usbguard
       {  "rule_seqn", rule_seqn }
     };
 
-    const std::string json_string = j.dump();
-    qbIPCBroadcastString(json_string);
+    qbIPCBroadcastJSON(j);
     return;
   }
 
@@ -863,6 +857,25 @@ namespace usbguard
       qb_conn = qb_conn_next;
     }
 
+    return;
+  }
+
+  void Daemon::qbIPCBroadcastJSON(const json& jobj)
+  {
+    const std::string jobj_string = jobj.dump();
+    struct qb_ipc_response_header hdr;
+    struct iovec iov[2];
+
+    hdr.id = 0;
+    hdr.size = sizeof hdr + jobj_string.size();
+    hdr.error = 0;
+
+    iov[0].iov_base = &hdr;
+    iov[0].iov_len = sizeof hdr;
+    iov[1].iov_base = (void *)jobj_string.c_str();
+    iov[1].iov_len = jobj_string.size();
+
+    qbIPCBroadcastData(iov, 2);
     return;
   }
 

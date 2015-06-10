@@ -135,6 +135,7 @@ namespace usbguard
 
     void qbIPCBroadcastData(const struct iovec *iov, size_t iov_len);
     void qbIPCBroadcastString(const std::string& s);
+    void qbIPCBroadcastJSON(const json& jobj);
 
     void allowDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
     void blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
