@@ -8,31 +8,31 @@ on Ubuntu 14.04.
 
 ## 1. Install packages required to fetch and build the sources
 
-    $ sudo apt-get install build-essential git checkinstall
+    $ sudo apt-get install autoconf automake libtool g++ git checkinstall
 
 ## 2. Fetch, build and install the USBGuard daemon and CLI tools
 
-	$ sudo apt-get install libudev-dev libqb-dev libcap-ng-dev libseccomp-dev
-	$ git clone https://github.com/dkopecek/usbguard
-	$ cd usbguard/
-	$ ./autogen.sh
-	$ ./configure \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--with-bundled-json \
-		--with-bundled-spdlog \
-		--with-bundled-sodium \
-	$ make
-	$ sudo checkinstall -t debian --nodoc --pkgname=usbguard --pkgversion=0.git
+    $ sudo apt-get install libudev-dev libqb-dev libcap-ng-dev libseccomp-dev
+    $ git clone https://github.com/dkopecek/usbguard
+    $ cd usbguard/
+    $ ./autogen.sh
+    $ ./configure \
+        --prefix=/usr \
+        --sysconfdir=/etc \
+        --with-bundled-json \
+        --with-bundled-spdlog \
+        --with-bundled-sodium
+    $ make
+    $ sudo checkinstall -t debian --nodoc --pkgname=usbguard --pkgversion=0.git
 
 ## 3. Fetch, build and install the USBGuard Qt applet
 
-	$ sudo apt-get install cmake libqt4-dev
+    $ sudo apt-get install cmake libqt4-dev
     $ git clone https://github.com/dkopecek/usbguard-applet-qt
-	$ cd usbguard-applet-qt/
+    $ cd usbguard-applet-qt/
     $ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
-	$ make
-	$ sudo checkinstall -t debian --nodoc --pkgname=usbguard-applet-qt --pkgversion=0.git
+    $ make
+    $ sudo checkinstall -t debian --nodoc --pkgname=usbguard-applet-qt --pkgversion=0.git
 
 ## 4. Customize the configuration files
 
