@@ -3,19 +3,28 @@ AM_CPPFLAGS=\
 	-I$(top_srcdir)/src/Library\
 	-I$(top_srcdir)/src/ThirdParty/Catch/include
 
+EXTRA_DIST=\
+	$(top_srcdir)/src/ThirdParty/Catch
+
 TESTS=\
-	test-unit
+	test-unit \
+	test-regression
 
 check_PROGRAMS=\
-	test-unit
+	test-unit \
+	test-regression
 
 test_unit_SOURCES=\
-	Unit/main.cpp \
+	main.cpp \
 	Unit/test_Rule.cpp \
 	Unit/test_RuleParser.cpp
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la
 
-EXTRA_DIST=\
-	$(top_srcdir)/src/ThirdParty/Catch
+test_regression_SOURCES=\
+	main.cpp \
+	Regression/test_Rule_ghi37.cpp
+
+test_regression_LDADD=\
+	$(top_builddir)/libusbguard.la

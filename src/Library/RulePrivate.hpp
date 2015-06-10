@@ -66,7 +66,7 @@ namespace usbguard {
     /*** Static methods ***/
     static Rule fromString(const String& rule_string);
   protected:
-    static void toString_addNonEmptyField(String& rule, const String& name, const String& value);
+    static void toString_addNonEmptyField(String& rule, const String& name, const String& value, bool quote_escape = true);
     static String quoteEscapeString(const String& value);
 
     /*
