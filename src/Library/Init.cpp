@@ -18,6 +18,7 @@
 //
 #include <sodium.h>
 #include <stdexcept>
+#include <clocale>
 
 namespace usbguard
 {
@@ -26,6 +27,8 @@ namespace usbguard
   public:
     LibraryInit()
     {
+      std::setlocale(LC_NUMERIC, "C");
+
       if (sodium_init() == -1) {
 	throw std::runtime_error("Cannot initialize the sodium library");
       }
