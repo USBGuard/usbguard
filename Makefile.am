@@ -166,7 +166,8 @@ usbguard_generate_policy_CPPFLAGS=\
 	$(AM_CPPFLAGS)
 
 usbguard_generate_policy_LDADD=\
-	$(top_builddir)/libusbguard.la
+	$(top_builddir)/libusbguard.la \
+	@qb_LIBS@
 
 #usbguard_SOURCES=\
 #	src/CLI/usbguard.cpp \
