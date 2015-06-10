@@ -24,6 +24,8 @@ on Ubuntu 14.04.
         --with-bundled-sodium
     $ make
     $ sudo checkinstall -t debian --nodoc --pkgname=usbguard --pkgversion=0.git
+    $ sudo mkdir -p /etc/usbguard
+    $ sudo cp dist/usbguard-daemon.conf /etc/usbguard
 
 ## 3. Fetch, build and install the USBGuard Qt applet
 
@@ -44,3 +46,11 @@ that will use the Qt applet to this group, change the *IPCAllowedUsers* or
 There's no policy installed by default. If you'd like to generate an initial one from
 the currently connected USB devices to your system, see
 [Rule Language/Initial policy](https://dkopecek.github.io/usbguard/documentation/rule-language.html#initial-policy)
+
+## 5. Run the daemon
+
+Use the following command to start the daemon process:
+
+    $ sudo usbguard-daemon -d -k -W
+   
+The options used are for enabling debug logging to console (`-d -k`) and to disable the seccomp whitelist (`-W`)
