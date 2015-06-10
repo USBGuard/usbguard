@@ -68,7 +68,7 @@ PKG_CHECK_MODULES([udev], [libudev >= 200],
 # qb library
 #
 AC_ARG_WITH([bundled-qb], AS_HELP_STRING([--with-bundled-qb], [Build using the bundled qb library]))
-if test "x$with_bundled_sodium" = "xyes"; then
+if test "x$with_bundled_qb" = "xyes"; then
    qb_LIBS="\$(top_builddir)/src/ThirdParty/libqb/lib/libqb.la"
    qb_CFLAGS="-I\$(top_builddir)/src/ThirdParty/libqb/include -I\$(top_srcdir)/src/ThirdParty/libqb/include"
    AC_SUBST([qb_LIBS])
