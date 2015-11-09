@@ -975,7 +975,37 @@ namespace usbguard
   Pointer<const Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec)
   {
     Pointer<Device> device = _dm->getDevice(seqn);
-    Pointer<Rule> device_rule = device->getDeviceRule();
+
+    bool include_port = true;
+    /*
+     * Generate a port specific or agnostic rule depending on the target
+     */
+    switch(target) {
+      case Rule::Target::Allow:
+        include_port = true;
+        break;
+      case Rule::Target::Block:
+        /*
+         * Block the device using a port agnostic rule, so that the same device
+         * inserted in a different port is still blocked. Note that allowDevice
+         * generates a port specific rule and the same device won't be allowed
+         * when inserted in a different port.
+         */
+        include_port = false;
+        break;
+      case Rule::Target::Reject:
+        /*
+         * Reject the device using a port agnostic port. When we explicitly
+         * reject a device, we don't want to reject it again when the same
+         * device is inserted in a different port.
+         */
+        include_port = false;
+        break;
+      default:
+        throw std::runtime_error("appendDeviceRule: invalid device rule target");
+    }
+
+    Pointer<Rule> device_rule = device->getDeviceRule(include_port);
     device_rule->setTarget(target);
     const String rule_string = device_rule->toString();
     logger->debug("Appending rule: {}", rule_string);
