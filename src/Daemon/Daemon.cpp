@@ -407,7 +407,11 @@ namespace usbguard
 
   void Daemon::dmHookDeviceInserted(Pointer<Device> device)
   {
-    Pointer<Rule> device_rule = device->getDeviceRule();
+    /*
+     * Since we search for a matching rule later, we have to generate a port
+     * specific rule here.
+     */
+    Pointer<Rule> device_rule = device->getDeviceRule(/*include_port=*/true);
     Pointer<const Rule> matched_rule = _ruleset.getFirstMatchingRule(device_rule);
 
     std::map<std::string,std::string> attributes;
@@ -443,7 +447,11 @@ namespace usbguard
 
   void Daemon::dmHookDevicePresent(Pointer<Device> device)
   {
-    Pointer<Rule> device_rule = device->getDeviceRule();
+    /*
+     * Since we search for a matching rule later, we have to generate a port
+     * specific rule here.
+     */
+    Pointer<Rule> device_rule = device->getDeviceRule(/*include_port=*/true);
     std::map<std::string,std::string> attributes;
 
     attributes["name"] = device_rule->getDeviceName();
@@ -507,6 +515,7 @@ namespace usbguard
 
   void Daemon::dmHookDeviceRemoved(Pointer<Device> device)
   {
+    /* We don't care about ports here, use the default */
     Pointer<Rule> device_rule = device->getDeviceRule();
 
     std::map<std::string,std::string> attributes;
@@ -900,6 +909,10 @@ namespace usbguard
   void Daemon::allowDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
   {
     Pointer<Device> device = _dm->allowDevice(seqn);
+    /*
+     * We don't care about include_port value here, the generated rule isn't
+     * used for policy evaluation.
+     */
     Pointer<Rule> device_rule = device->getDeviceRule();
 
     std::map<std::string,std::string> attributes;
@@ -918,6 +931,10 @@ namespace usbguard
   void Daemon::blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
   {
     Pointer<Device> device = _dm->blockDevice(seqn);
+    /*
+     * We don't care about include_port value here, the generated rule isn't
+     * used for policy evaluation.
+     */
     Pointer<Rule> device_rule = device->getDeviceRule();
 
     std::map<std::string,std::string> attributes;
@@ -936,6 +953,10 @@ namespace usbguard
   void Daemon::rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
   {
     Pointer<Device> device = _dm->rejectDevice(seqn);
+    /*
+     * We don't care about include_port value here, the generated rule isn't
+     * used for policy evaluation.
+     */
     Pointer<Rule> device_rule = device->getDeviceRule();
 
     std::map<std::string,std::string> attributes;
