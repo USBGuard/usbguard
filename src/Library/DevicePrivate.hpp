@@ -33,7 +33,7 @@ namespace usbguard {
     const DevicePrivate& operator=(const DevicePrivate& rhs);
 
     std::mutex& refDeviceMutex();
-    Pointer<Rule> getDeviceRule(bool include_port = false);
+    Pointer<Rule> getDeviceRule(bool include_port = true);
     uint32_t getSeqn() const;
     String getDeviceHash(bool include_port = false) const;
     const String getPort() const;
