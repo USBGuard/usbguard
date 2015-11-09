@@ -18,6 +18,7 @@
 //
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
+#include "LoggerPrivate.hpp"
 #include "Common/Utility.hpp"
 
 namespace usbguard {
@@ -126,33 +127,40 @@ namespace usbguard {
   
   bool RulePrivate::appliesTo(const Rule& rhs) const
   {
+    logger->trace("Checking applicability of rule [{}] to rule [{}]",
+        this->toString(/*invalid=*/true), rhs.toString(/*invalid=*/true));
     /*
      * If a this set of rules contains the rhs rule, return true. Otherwise false.
      * Ignored fields: rule_seqn, target, action, ts_added, timeout_sec, ref_syspath
      */
     if (!_vendor_id.empty()) {
       if (_vendor_id != rhs.getVendorID()) {
-	return false;
+        logger->debug("Vendor IDs don't match: {} != {}", _vendor_id, rhs.getVendorID());
+        return false;
       }
     }
     if (!_product_id.empty()) {
       if (_product_id != rhs.getProductID()) {
-	return false;
+        logger->debug("Product IDs don't match: {} != {}", _product_id, rhs.getProductID());
+        return false;
       }
     }
     if (!_device_name.empty()) {
       if (_device_name != rhs.getDeviceName()) {
-	return false;
+        logger->debug("Device names don't match: {} != {}", _device_name, rhs.getDeviceName());
+        return false;
       }
     }
     if (!_device_hash.empty()) {
       if (_device_hash != rhs.getDeviceHash()) {
-	return false;
+        logger->debug("Device hashes don't match: {} != {}", _device_hash, rhs.getDeviceHash());
+        return false;
       }
     }
     if (!_serial_number.empty()) {
       if (_serial_number != rhs.getSerialNumber()) {
-	return false;
+        logger->debug("Serial numbers don't match: {} != {}", _serial_number, rhs.getSerialNumber());
+        return false;
       }
     }
 
@@ -162,30 +170,36 @@ namespace usbguard {
     switch (_device_ports_op) {
     case Rule::SetOperator::Match:
       /* Skip device ports matching */
+      logger->debug("Skipping device port matching {}", "(operator Match)");
       break;
     case Rule::SetOperator::AllOf:
       if (!setSolveAllOf(_device_ports, rhs.getDevicePorts())) {
-	return false;
+        logger->debug("Device ports don't match {}", "(operator AllOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::OneOf:
       if (!setSolveOneOf(_device_ports, rhs.getDevicePorts())) {
-	return false;
+        logger->debug("Device ports don't match {}", "(operator OneOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::NoneOf:
       if (!setSolveNoneOf(_device_ports, rhs.getDevicePorts())) {
-	return false;
+        logger->debug("Device ports don't match {}", "(operator NoneOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::Equals:
       if (!setSolveEquals(_device_ports, rhs.getDevicePorts())) {
-	return false;
+        logger->debug("Device ports don't match {}", "(operator Equals)");
+        return false;
       }
       break;
     case Rule::SetOperator::EqualsOrdered:
       if (!setSolveEqualsOrdered(_device_ports, rhs.getDevicePorts())) {
-	return false;
+        logger->debug("Device ports don't match {}", "(operator EqualsOrdered)");
+        return false;
       }
       break;
     }
@@ -196,37 +210,44 @@ namespace usbguard {
     switch (_interface_types_op) {
     case Rule::SetOperator::Match:
       /* Skip interface type matching */
+      logger->debug("Skipping device interface types matching {}", "(operator Match)");
       break;
     case Rule::SetOperator::AllOf:
       if (!setSolveAllOf(_interface_types, rhs.getInterfaceTypes())) {
-	return false;
+        logger->debug("Device interface types don't match {}", "(operator AllOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::OneOf:
       if (!setSolveOneOf(_interface_types, rhs.getInterfaceTypes())) {
-	return false;
+        logger->debug("Device interface types don't match {}", "(operator OneOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::NoneOf:
       if (!setSolveNoneOf(_interface_types, rhs.getInterfaceTypes())) {
-	return false;
+        logger->debug("Device interface types don't match {}", "(operator NoneOf)");
+        return false;
       }
       break;
     case Rule::SetOperator::Equals:
       if (!setSolveEquals(_interface_types, rhs.getInterfaceTypes())) {
-	return false;
+        logger->debug("Device interface types don't match {}", "(operator Equals)");
+        return false;
       }
       break;
     case Rule::SetOperator::EqualsOrdered:
       if (!setSolveEqualsOrdered(_interface_types, rhs.getInterfaceTypes())) {
-	return false;
+        logger->debug("Device interface types don't match {}", "(operator EqualsOrdered)");
+        return false;
       }
       break;
     }
 
+    logger->debug("Rule applies.");
     return true;
   }
-  
+
   void RulePrivate::setSeqn(uint32_t seqn)
   {
     _seqn = seqn;
