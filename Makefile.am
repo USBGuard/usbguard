@@ -179,6 +179,7 @@ usbguard_SOURCES=\
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/CLI \
+	@spdlog_CFLAGS@ \
 	-DQUEX_OPTION_MULTI
 
 usbguard_LDADD=\
