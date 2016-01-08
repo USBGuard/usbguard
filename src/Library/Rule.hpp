@@ -35,8 +35,9 @@ namespace usbguard {
       Allow, /**< Devices matching this rule will be authorized */
       Block, /**< Devices matching this rule will not be authorized */
       Reject, /**< Devices matching this rule will not be authorized and will be detached */
-      Match, /**< Special target can be used to trigger actions. The rule wont affect the final decision. */
+      Match, /**< Special target which can be used to trigger actions. The rule wont affect the final decision. */
       Unknown, /**< Unknown target. Used for default constructed rules. */
+      Device, /**< Special target which can only be used for a rule that represents a single device */
       Invalid
     };
 
@@ -73,6 +74,7 @@ namespace usbguard {
     const String& getDeviceName() const;
     const String& getDeviceHash() const;
     const StringVector& getDevicePorts() const;
+    const int getDeviceConfigurations() const;
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
     Target getTarget() const;
     const String& getAction() const;
@@ -90,6 +92,7 @@ namespace usbguard {
     void setDeviceName(const String& device_name);
     void setDeviceHash(const String& device_hash);
     void setDevicePorts(const StringVector& device_ports);
+    void setDeviceConfigurations(int num_configurations);
     void setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types);
     StringVector& refDevicePorts();
     std::vector<USBInterfaceType>& refInterfaceTypes();

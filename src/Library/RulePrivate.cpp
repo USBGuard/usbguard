@@ -95,6 +95,11 @@ namespace usbguard {
     return _device_ports;
   }
   
+  const int RulePrivate::getDeviceConfigurations() const
+  {
+    return _device_configurations;
+  }
+
   const std::vector<USBInterfaceType>& RulePrivate::getInterfaceTypes() const
   {
     return _interface_types;
@@ -290,6 +295,12 @@ namespace usbguard {
     return;
   }
   
+  void RulePrivate::setDeviceConfigurations(int num_configurations)
+  {
+    _device_configurations = num_configurations;
+    return;
+  }
+
   void RulePrivate::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
   {
     _interface_types = interface_types;

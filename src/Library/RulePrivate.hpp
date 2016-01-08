@@ -35,6 +35,7 @@ namespace usbguard {
     const String& getDeviceName() const;
     const String& getDeviceHash() const;
     const StringVector& getDevicePorts() const;
+    const int getDeviceConfigurations() const;
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
     Rule::Target getTarget() const;
     const String& getAction() const;
@@ -43,7 +44,7 @@ namespace usbguard {
 
     bool appliesTo(Pointer<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
-    
+
     void setSeqn(uint32_t seqn);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
@@ -51,7 +52,9 @@ namespace usbguard {
     void setDeviceName(const String& device_name);
     void setDeviceHash(const String& device_hash);
     void setDevicePorts(const StringVector& device_ports);
+    void setDeviceConfigurations(int num_configurations);
     void setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types);
+
     StringVector& refDevicePorts();
     std::vector<USBInterfaceType>& refInterfaceTypes();
     void setDevicePortsSetOperator(Rule::SetOperator op);
@@ -60,7 +63,7 @@ namespace usbguard {
     void setAction(const String& action);
     void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
-    
+
     String toString(bool invalid = false) const;
 
     /*** Static methods ***/
@@ -181,6 +184,7 @@ namespace usbguard {
     String _device_hash;
     StringVector _device_ports;
     Rule::SetOperator _device_ports_op;
+    int _device_configurations;
     std::vector<USBInterfaceType> _interface_types;
     Rule::SetOperator _interface_types_op;
     Rule::Target _target;

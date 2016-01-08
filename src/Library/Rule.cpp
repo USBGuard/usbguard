@@ -86,6 +86,11 @@ namespace usbguard {
     return d_pointer->getDevicePorts();
   }
   
+  const int Rule::getDeviceConfigurations() const
+  {
+    return d_pointer->getDeviceConfigurations();
+  }
+
   const std::vector<USBInterfaceType>& Rule::getInterfaceTypes() const
   {
     return d_pointer->getInterfaceTypes();
@@ -161,13 +166,19 @@ namespace usbguard {
     d_pointer->setDeviceHash(device_hash);
     return;
   }
-  
+
   void Rule::setDevicePorts(const StringVector& device_ports)
   {
     d_pointer->setDevicePorts(device_ports);
     return;
   }
-  
+
+  void Rule::setDeviceConfigurations(int num_configurations)
+  {
+    d_pointer->setDeviceConfigurations(num_configurations);
+    return;
+  }
+
   void Rule::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
   {
     d_pointer->setInterfaceTypes(interface_types);
