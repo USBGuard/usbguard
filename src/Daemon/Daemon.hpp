@@ -67,10 +67,12 @@ namespace usbguard
     /* IPC methods */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);
+    const std::vector<std::string> listRules();
 
     void allowDevice(uint32_t seqn, bool append,  uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
+    const std::vector<std::string> listDevices();
 
     /* IPC Signals */
     void DeviceInserted(uint32_t seqn,

@@ -65,6 +65,11 @@ namespace usbguard
     return;
   }
 
+  const std::vector<std::string> IPCClient::listRules()
+  {
+    return d_pointer->listRules();
+  }
+
   void IPCClient::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     d_pointer->allowDevice(seqn, append, timeout_sec);
@@ -81,5 +86,10 @@ namespace usbguard
   {
     d_pointer->rejectDevice(seqn, append, timeout_sec);
     return;
+  }
+
+  const std::vector<std::string> IPCClient::listDevices()
+  {
+    return d_pointer->listDevices();
   }
 } /* namespace usbguard */

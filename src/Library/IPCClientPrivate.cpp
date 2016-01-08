@@ -352,6 +352,24 @@ namespace usbguard
     return;
   }
 
+  const std::vector<std::string> IPCClientPrivate::listRules()
+  {
+    const json jreq = {
+      { "_m", "listRules" },
+      { "_i", IPC::uniqueID() }
+    };
+
+    const json jrep = qbIPCSendRecvJSON(jreq);
+
+    try {
+      const std::vector<std::string> retval = jrep["retval"];
+      return std::move(retval);
+    } catch(...) {
+      throw IPCException(IPCException::ProtocolError,
+                         "Invalid or missing return value after calling listRules");
+    }
+  }
+
   void IPCClientPrivate::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
@@ -392,6 +410,24 @@ namespace usbguard
 
     qbIPCSendRecvJSON(jreq);
     return;
+  }
+
+  const std::vector<std::string> IPCClientPrivate::listDevices()
+  {
+    const json jreq = {
+      { "_m", "listDevices" },
+      { "_i", IPC::uniqueID() }
+    };
+
+    const json jrep = qbIPCSendRecvJSON(jreq);
+
+    try {
+      const std::vector<std::string> retval = jrep["retval"];
+      return std::move(retval);
+    } catch(...) {
+      throw IPCException(IPCException::ProtocolError,
+                         "Invalid or missing return value after calling listDevices");
+    }
   }
 
   void IPCClientPrivate::thread()

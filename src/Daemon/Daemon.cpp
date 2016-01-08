@@ -235,7 +235,18 @@ namespace usbguard
     }
     return;
   }
-  
+
+  const std::vector<std::string> Daemon::listRules()
+  {
+    std::vector<std::string> rules;
+
+    for(auto const& rule : _ruleset.getRules()) {
+      rules.push_back(rule->toString());
+    }
+
+    return rules;
+  }
+
   void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
   {
     logger->debug("Allowing device: {}", seqn);
@@ -655,30 +666,39 @@ namespace usbguard
   json Daemon::processMethodCallJSON(const json& jobj)
   {
     logger->debug("Processing method call");
-    json retval = {{ "_i", jobj["_i"]}};
+
+    json retval = {
+      { "_i", jobj["_i"]}
+    };
 
     try {
       const std::string name = jobj["_m"];
       logger->debug("Method name = {}", name);
 
       if (name == "appendRule") {
-	uint32_t val = appendRule(jobj["rule_spec"], jobj["parent_seqn"], jobj["timeout_sec"]);
-	retval["retval"] = val;
+        uint32_t val = appendRule(jobj["rule_spec"], jobj["parent_seqn"], jobj["timeout_sec"]);
+        retval["retval"] = val;
       }
       else if (name == "removeRule") {
-	removeRule(jobj["seqn"]);
+        removeRule(jobj["seqn"]);
+      }
+      else if (name == "listRules") {
+        retval["retval"] = listRules();
       }
       else if (name == "allowDevice") {
-	allowDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        allowDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "blockDevice") {
-	blockDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        blockDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "rejectDevice") {
-	rejectDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        rejectDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+      }
+      else if (name == "listDevices") {
+        retval["retval"] = listDevices();
       }
       else {
-	throw 0;
+        throw 0;
       }
       retval["_r"] = name;
     } catch(const std::exception& ex) {
@@ -970,6 +990,17 @@ namespace usbguard
 		   (matched_rule->getSeqn() != Rule::SeqnDefault),
 		   matched_rule->getSeqn());
     return;
+  }
+
+  const std::vector<std::string> Daemon::listDevices()
+  {
+    std::vector<std::string> device_rules;
+
+    for (auto const& device : _dm->getDeviceList()) {
+      device_rules.push_back(device->getDeviceRule()->toString());
+    }
+
+    return std::move(device_rules);
   }
 
   Pointer<const Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec)
