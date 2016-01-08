@@ -182,6 +182,17 @@ namespace usbguard {
     return default_rule;
   }
 
+  PointerVector<const Rule> RuleSetPrivate::getRules()
+  {
+    PointerVector<const Rule> rules;
+
+    for (auto const& rule : _rules) {
+      rules.push_back(rule);
+    }
+
+    return rules;
+  }
+
   Pointer<Rule> RuleSetPrivate::getTimedOutRule()
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);

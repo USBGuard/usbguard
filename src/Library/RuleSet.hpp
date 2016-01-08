@@ -99,6 +99,11 @@ namespace usbguard {
     Pointer<const Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1);
 
     /**
+     * Get all rules from the set.
+     */
+    PointerVector<const Rule> getRules();
+
+    /**
      * Get the oldest rule that timed out and should be removed from the ruleset.
      * Returns nullptr if there are not timed out rules.
      */

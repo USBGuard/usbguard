@@ -86,6 +86,11 @@ namespace usbguard {
     return d_pointer->getFirstMatchingRule(device_rule, from_seqn);
   }
 
+  PointerVector<const Rule> RuleSet::getRules()
+  {
+    return d_pointer->getRules();
+  }
+
   Pointer<Rule> RuleSet::getTimedOutRule()
   {
     return d_pointer->getTimedOutRule();
