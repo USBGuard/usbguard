@@ -2,4 +2,9 @@
 #include <cstdlib>
 #include <getopt.h>
 
-extern const char *usbguard_arg0;
+#include "LoggerPrivate.hpp"
+
+namespace usbguard
+{
+  extern const char *usbguard_arg0;
+} /* namespace usbguard */
