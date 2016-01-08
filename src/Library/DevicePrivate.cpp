@@ -39,7 +39,26 @@ namespace usbguard {
     *this = rhs;
     return;
   }
-  
+
+  DevicePrivate::DevicePrivate(Device& p_instance, const Rule& device_rule)
+    : _p_instance(p_instance)
+  {
+    // TODO: Check that the device_rule is of type "Device"
+
+    _seqn = device_rule.getSeqn();
+    _target = Rule::Target::Unknown;
+    _name = device_rule.getDeviceName();
+    _vendor_id = device_rule.getVendorID();
+    _product_id = device_rule.getProductID();
+    _serial_number = device_rule.getSerialNumber();
+    _port = device_rule.getDevicePorts()[0]; /* NOTE: A device rule can contain only one port */
+    _interface_types = device_rule.getInterfaceTypes();
+    _num_configurations = device_rule.getDeviceConfigurations();
+    _num_interfaces = device_rule.getInterfaceTypes().size();
+
+    return;
+  }
+
   const DevicePrivate& DevicePrivate::operator=(const DevicePrivate& rhs)
   {
     _seqn = rhs._seqn;

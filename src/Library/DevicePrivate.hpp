@@ -30,6 +30,7 @@ namespace usbguard {
   public:
     DevicePrivate(Device& p_instance);
     DevicePrivate(Device& p_instance, const DevicePrivate& rhs);
+    DevicePrivate(Device& p_instance, const Rule& rhs);
     const DevicePrivate& operator=(const DevicePrivate& rhs);
 
     std::mutex& refDeviceMutex();

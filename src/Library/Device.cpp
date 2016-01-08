@@ -39,6 +39,12 @@ namespace usbguard {
     return;
   }
 
+  Device::Device(const Rule& device_rule)
+  {
+    d_pointer = new DevicePrivate(*this, device_rule);
+    return;
+  }
+
   const Device& Device::operator=(const Device &rhs)
   {
     DevicePrivate* n_pointer = new DevicePrivate(*this, *rhs.d_pointer);
