@@ -37,6 +37,8 @@ namespace usbguard
 
     virtual void removeRule(uint32_t seqn) = 0;
 
+    virtual const std::vector<std::string> listRules() = 0;
+
     virtual void allowDevice(uint32_t seqn,
 			     bool append,
 			     uint32_t timeout_sec) = 0;
@@ -48,6 +50,8 @@ namespace usbguard
     virtual void rejectDevice(uint32_t seqn,
 			      bool append,
 			      uint32_t timeout_sec) = 0;
+
+    virtual const std::vector<std::string> listDevices() = 0;
 
     /* Signals */
     virtual void DeviceInserted(uint32_t seqn,
