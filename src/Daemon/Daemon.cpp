@@ -645,20 +645,11 @@ namespace usbguard
   {
     logger->debug("Processing JSON object: {}", jobj);
 
-    if (!jobj["_e"].is_null()) {
-      //processExceptionJSON(jobj);
-    }
-    else if (!jobj["_s"].is_null()) {
-      //processSignalJSON(jobj);
-    }
-    else if (!jobj["_r"].is_null()) {
-      //processMethodReturnJSON(jobj);
-    }
-    else if (!jobj["_m"].is_null()) {
+    if (jobj.count("_m")) {
       return processMethodCallJSON(jobj);
     }
     else {
-      throw IPCException(IPCException::ProtocolError, "Unknown message");
+      throw IPCException(IPCException::ProtocolError, "Invalid message");
     }
     return std::move(json());
   }

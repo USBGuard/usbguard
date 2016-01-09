@@ -67,16 +67,16 @@ namespace usbguard
 
   void IPCClientPrivate::processOne(const json& jobj)
   {
-    if (!jobj["_e"].is_null()) {
+    if (jobj.count("_e")) {
       processExceptionJSON(jobj);
     }
-    else if (!jobj["_s"].is_null()) {
+    else if (jobj.count("_s")) {
       processSignalJSON(jobj);
     }
-    else if (!jobj["_r"].is_null()) {
+    else if (jobj.count("_r")) {
       processMethodReturnJSON(jobj);
     }
-    else if (!jobj["_m"].is_null()) {
+    else if (jobj.count("_m")) {
       processMethodCallJSON(jobj);
     }
     else {
@@ -104,7 +104,7 @@ namespace usbguard
 
   void IPCClientPrivate::processExceptionJSON(const json& jobj)
   {
-    if (!jobj["_i"].is_null()) {
+    if (jobj.count("_i")) {
       processReturnValue(jobj);
     }
     else {
@@ -229,10 +229,11 @@ namespace usbguard
 
   void IPCClientPrivate::processMethodReturnJSON(const json& jobj)
   {
-    if (!jobj["_i"].is_null()) {
+    if (jobj.count("_i")) {
       processReturnValue(jobj);
     }
     else {
+      logger->warn("Missing return value id in the response");
     }
     return;
   }
