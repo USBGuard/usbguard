@@ -41,7 +41,7 @@ namespace usbguard
 
     IPCException(ReasonCode code, const std::string& message)
       : _message(message),
-	_code(code)
+        _code(code)
     {
     }
 
@@ -59,25 +59,25 @@ namespace usbguard
     {
       switch(_code) {
       case InvalidArgument:
-	return "Invalid Argument";
+        return "Invalid Argument";
       case NotFound:
-	return "Not Found";
+        return "Not Found";
       case SyscallFailure:
-	return "Syscall Failure";
+        return "Syscall Failure";
       case PermissionDenied:
-	return "Permission Denied";
+        return "Permission Denied";
       case TransientError:
-	return "Transient Error";
+        return "Transient Error";
       case ProtocolError:
-	return "Protocol Error";
+        return "Protocol Error";
       case ConnectionError:
-	return "Connection Error";
+        return "Connection Error";
       }
-      return "";
+      return "<unknown error code>";
     }
 
   private:
-    const std::string& _message;
+    const std::string _message;
     ReasonCode _code;
   };
 
