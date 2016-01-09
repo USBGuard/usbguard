@@ -154,33 +154,24 @@ EXTRA_DIST +=\
 	src/ThirdParty/libsodium
 
 bin_PROGRAMS=\
-	usbguard \
-	usbguard-generate-policy
-
-usbguard_generate_policy_SOURCES=\
-	src/CLI/usbguard-generate-policy.cpp \
-	src/CLI/PolicyGenerator.hpp \
-	src/CLI/PolicyGenerator.cpp \
-	src/Common/Utility.cpp
-
-usbguard_generate_policy_CPPFLAGS=\
-	$(AM_CPPFLAGS)
-
-usbguard_generate_policy_LDADD=\
-	$(top_builddir)/libusbguard.la \
-	@qb_LIBS@
+	usbguard
 
 usbguard_SOURCES=\
 	src/CLI/usbguard.cpp \
 	src/CLI/usbguard.hpp \
 	src/CLI/usbguard-list-devices.hpp \
-	src/CLI/usbguard-list-devices.cpp
+	src/CLI/usbguard-list-devices.cpp \
+	src/CLI/usbguard-list-rules.hpp \
+	src/CLI/usbguard-list-rules.cpp \
+	src/CLI/usbguard-generate-policy.cpp \
+	src/CLI/usbguard-generate-policy.hpp \
+	src/CLI/PolicyGenerator.hpp \
+	src/CLI/PolicyGenerator.cpp
 
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/CLI \
-	@spdlog_CFLAGS@ \
-	-DQUEX_OPTION_MULTI
+	@spdlog_CFLAGS@
 
 usbguard_LDADD=\
 	$(top_builddir)/libusbguard.la

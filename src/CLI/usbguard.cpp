@@ -6,13 +6,17 @@
 
 #include "usbguard.hpp"
 #include "usbguard-list-devices.hpp"
+#include "usbguard-list-rules.hpp"
+#include "usbguard-generate-policy.hpp"
 
 namespace usbguard
 {
   const char *usbguard_arg0 = nullptr;
 
   static const std::map<const std::string,int(*)(int, char**)> cmd_handler_map = {
-    { "list-devices", &usbguard_list_devices }
+    { "list-devices", &usbguard_list_devices },
+    { "list-rules", &usbguard_list_rules },
+    { "generate-policy", &usbguard_generate_policy }
   };
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)

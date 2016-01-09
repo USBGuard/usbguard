@@ -20,64 +20,30 @@
 #include <DeviceManager.hpp>
 #include <unistd.h>
 
+#include "usbguard.hpp"
+#include "usbguard-generate-policy.hpp"
 #include "PolicyGenerator.hpp"
 #include "Common/Utility.hpp"
 
-using namespace std;
-using namespace usbguard;
-
-static void printUsage(std::ostream& stream, const char *arg0)
+namespace usbguard
 {
-  stream << std::endl;
-  stream << "Usage: " << filenameFromPath(arg0) << " [OPTIONS]" << std::endl;
-  stream << std::endl;
-  stream << "\t -P           " << "Don't generate port specific rules for devices without an iSerial value." << std::endl;
-  stream << "\t -t <target>  " << "Generate an explicit \"catch all\" rule with the specified target." << std::endl;
-  stream << "\t -H           " << "Don't include the hash attribute in the generated rules." << std::endl;
-  stream << "\t -h           " << "Show this help screen." << std::endl;
-  stream << std::endl;
-  return;
-}
+  int usbguard_generate_policy(int argc, char **argv)
+  {
+    bool port_specific = true;
+    bool with_catchall = false;
+    std::string catchall_target = "block";
+    bool with_hashes = true;
+    PolicyGenerator generator;
 
-int main(int argc, char *argv[])
-{
-  int opt;
-  bool port_specific = true;
-  bool with_catchall = false;
-  std::string catchall_target = "block";
-  bool with_hashes = true;
+    generator.setWithHashAttribute(with_hashes);
+    generator.setPortSpecificRules(port_specific);
+    generator.setExplicitCatchAllRule(with_catchall,
+                                      Rule::targetFromString(catchall_target));
+    generator.generate();
+    const RuleSet& ruleset = generator.refRuleSet();
 
-  while ((opt = ::getopt(argc, argv, "Pt:H")) != -1) {
-    switch (opt) {
-    case 'P':
-      port_specific = false;
-      break;
-    case 't':
-      with_catchall = true;
-      catchall_target = optarg;
-      break;
-    case 'H':
-      with_hashes = false;
-      break;
-    case 'h':
-      printUsage(std::cout, argv[0]);
-      return EXIT_SUCCESS;
-    default: /* '?' */
-      printUsage(std::cerr, argv[0]);
-      return EXIT_FAILURE;
-    }
+    ruleset.save(std::cout);
+
+    return EXIT_SUCCESS;
   }
-
-  PolicyGenerator generator;
-
-  generator.setWithHashAttribute(with_hashes);
-  generator.setPortSpecificRules(port_specific);
-  generator.setExplicitCatchAllRule(with_catchall,
-				    Rule::targetFromString(catchall_target));
-  generator.generate();
-  const RuleSet& ruleset = generator.refRuleSet();
-
-  ruleset.save(std::cout);
-
-  return EXIT_SUCCESS;
-}
+} /* namespace usbguard */
