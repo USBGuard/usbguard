@@ -88,7 +88,7 @@ namespace usbguard {
 		  _vendor_id, _product_id, _port, _name, include_port);
 
     device_rule->setSeqn(_seqn);
-    device_rule->setTarget(_target);
+    device_rule->setTarget(Rule::Target::Device);
     device_rule->setVendorID(_vendor_id);
     device_rule->setProductID(_product_id);
     device_rule->setSerialNumber(_serial_number);

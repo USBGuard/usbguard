@@ -367,6 +367,9 @@ namespace usbguard {
     case Rule::Target::Reject:
       rule_string = "reject";
       break;
+    case Rule::Target::Device:
+      rule_string = "device";
+      break;
     default:
       if (!invalid) {
 	throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
