@@ -3,14 +3,14 @@
 
 #include <Logger.hpp>
 #include "usbguard.hpp"
-#include "usbguard-device-list.hpp"
+#include "usbguard-list-devices.hpp"
 
 namespace usbguard
 {
   const char *usbguard_arg0 = nullptr;
 
   static const std::map<const std::string,int(*)(int, char**)> cmd_handler_map = {
-    { "device-list", &usbguard_device_list }
+    { "list-devices", &usbguard_list_devices }
   };
 
   static void showTopLevelHelp()

@@ -173,8 +173,8 @@ usbguard_generate_policy_LDADD=\
 usbguard_SOURCES=\
 	src/CLI/usbguard.cpp \
 	src/CLI/usbguard.hpp \
-	src/CLI/usbguard-device-list.hpp \
-	src/CLI/usbguard-device-list.cpp
+	src/CLI/usbguard-list-devices.hpp \
+	src/CLI/usbguard-list-devices.cpp
 
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \

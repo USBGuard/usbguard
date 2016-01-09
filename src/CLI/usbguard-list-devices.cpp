@@ -8,7 +8,7 @@ static const struct ::option options_long[] = {
   { "allowed", no_argument, nullptr, 'b' }
 };
 
-int usbguard_device_list(int argc, char *argv[])
+int usbguard_list_devices(int argc, char *argv[])
 {
   
   return EXIT_FAILURE;
