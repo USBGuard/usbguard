@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "IPCClientPrivate.hpp"
+#include "LoggerPrivate.hpp"
 
 #include <sys/poll.h>
 #include <sys/eventfd.h>

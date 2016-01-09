@@ -352,7 +352,7 @@ namespace usbguard {
     _timeout_seconds = timeout_seconds;
     return;
   }
-  
+
   String RulePrivate::toString(bool invalid) const
   {
     String rule_string;
@@ -372,10 +372,10 @@ namespace usbguard {
       break;
     default:
       if (!invalid) {
-	throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
+        throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
       }
       else {
-	rule_string = "<INVALID>";
+        rule_string = "<INVALID>";
       }
     }
 
@@ -392,10 +392,10 @@ namespace usbguard {
     }
     else if (_vendor_id.empty() && !_product_id.empty()) {
       if (!invalid) {
-	throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
+        throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
       }
       else {
-	rule_string.append("<INVALID>:<INVALID>");
+        rule_string.append("<INVALID>:<INVALID>");
       }
     }
     else {
@@ -408,7 +408,7 @@ namespace usbguard {
 
     /* Device Ports */
     if (_device_ports.size() == 1
-	&& _device_ports_op == Rule::SetOperator::Equals) {
+        && _device_ports_op == Rule::SetOperator::Equals) {
       toString_addNonEmptyField(rule_string, "via-port", _device_ports[0]);
     }
     else if (_device_ports.size() > 0) {
@@ -416,33 +416,33 @@ namespace usbguard {
       rule_string.append(Rule::setOperatorToString(_device_ports_op));
       rule_string.append(" { ");
       for (auto const& port : _device_ports) {
-	rule_string.append(quoteEscapeString(port));
-	rule_string.append(" ");
+        rule_string.append(quoteEscapeString(port));
+        rule_string.append(" ");
       }
       rule_string.append("}");
     }
 
     /* Interface types */
     if (_interface_types.size() == 1
-	&& _interface_types_op == Rule::SetOperator::Equals) {
+        && _interface_types_op == Rule::SetOperator::Equals) {
       toString_addNonEmptyField(rule_string, "with-interface",
-				_interface_types[0].typeString(),
-				/*quote_escape=*/false);
+                                _interface_types[0].typeString(),
+                                /*quote_escape=*/false);
     }
     else if (_interface_types.size() > 0) {
       rule_string.append(" with-interface ");
       rule_string.append(Rule::setOperatorToString(_interface_types_op));
       rule_string.append(" { ");
       for (auto const& type : _interface_types) {
-	rule_string.append(type.typeString());
-	rule_string.append(" ");
+        rule_string.append(type.typeString());
+        rule_string.append(" ");
       }
       rule_string.append("}");
     }
 
     /* Device Hash */
     toString_addNonEmptyField(rule_string, "hash", _device_hash);
-    
+
     /* Action */
     toString_addNonEmptyField(rule_string, "action", _action);
 
