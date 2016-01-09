@@ -34,7 +34,7 @@ namespace usbguard {
   class IPCClientPrivate
   {
   public:
-    IPCClientPrivate(IPCClient& p_instance);
+    IPCClientPrivate(IPCClient& p_instance, bool connected);
     ~IPCClientPrivate();
 
     void connect();
@@ -53,6 +53,7 @@ namespace usbguard {
     const std::vector<std::string> listDevices();
 
   protected:
+    void destruct();
     void thread();
     void stop();
 

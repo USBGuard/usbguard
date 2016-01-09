@@ -253,7 +253,7 @@ namespace usbguard
     return 0;
   }
 
-  IPCClientPrivate::IPCClientPrivate(IPCClient& p_instance)
+  IPCClientPrivate::IPCClientPrivate(IPCClient& p_instance, bool connected)
     : _p_instance(p_instance),
       _thread(this, &IPCClientPrivate::thread)
   {
@@ -263,16 +263,31 @@ namespace usbguard
     _qb_loop = qb_loop_create();
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _eventfd, POLLIN, NULL, qbPollEventFn);
     _thread.start();
+
+    if (connected) {
+      try {
+        connect();
+      }
+      catch(...) {
+        destruct();
+        throw;
+      }
+    }
     return;
+  }
+
+  void IPCClientPrivate::destruct()
+  {
+    stop();
+    qb_loop_poll_del(_qb_loop, _eventfd);
+    close(_eventfd);
+    qb_loop_destroy(_qb_loop);
   }
 
   IPCClientPrivate::~IPCClientPrivate()
   {
     disconnect();
-    stop();
-    qb_loop_poll_del(_qb_loop, _eventfd);
-    close(_eventfd);
-    qb_loop_destroy(_qb_loop);
+    destruct();
     return;
   }
 

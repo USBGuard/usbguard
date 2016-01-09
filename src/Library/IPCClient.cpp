@@ -20,9 +20,9 @@
 
 namespace usbguard
 {
-  IPCClient::IPCClient()
+  IPCClient::IPCClient(bool connected)
   {
-    d_pointer = new IPCClientPrivate(*this);
+    d_pointer = new IPCClientPrivate(*this, connected);
     return;
   }
 
