@@ -1,7 +1,9 @@
 #include <build-config.h>
 #include <map>
-
+#include <iostream>
 #include <Logger.hpp>
+#include <IPC.hpp>
+
 #include "usbguard.hpp"
 #include "usbguard-list-devices.hpp"
 
@@ -13,7 +15,7 @@ namespace usbguard
     { "list-devices", &usbguard_list_devices }
   };
 
-  static void showTopLevelHelp()
+  static void showTopLevelHelp(std::ostream& stream = std::cout)
   {
   }
 
@@ -47,5 +49,50 @@ namespace usbguard
 
 int main(int argc, char *argv[])
 {
-  return usbguard::usbguard_cli(argc, argv);
+  try {
+    return usbguard::usbguard_cli(argc, argv);
+  }
+  catch(const usbguard::IPCException& ex) {
+    std::cerr << "ERROR: ";
+
+    switch(ex.code()) {
+      case usbguard::IPCException::ConnectionError:
+        std::cerr << "Unable to connect to the IPC socket! ";
+        std::cerr << "The requested action cannot be completed without a running usbguard-daemon instance." << std::endl;
+        std::cerr << std::endl;
+        std::cerr << "Possible reasons:" << std::endl;
+        std::cerr << " 1) usbguard-daemon is NOT running." << std::endl;
+        std::cerr << " 2) You don't have permissions to use the usbguard IPC interface." << std::endl;
+        std::cerr << "    Check/Set the IPCAllowedUsers and IPCAllowedGroups settings" << std::endl;
+        std::cerr << "    of the usbguard-daemon component." << std::endl;
+        std::cerr << std::endl;
+        break;
+      case usbguard::IPCException::ProtocolError:
+        std::cerr << "IPC protocol violation! The CLI and the usbguard-daemon aren't compatible." << std::endl;
+        break;
+      case usbguard::IPCException::InvalidArgument:
+        std::cerr << "Invalid argument.";
+        break;
+      case usbguard::IPCException::PermissionDenied:
+        std::cerr << "Permission denied: the usbguard-daemon cannot perform the requested action." << std::endl;
+        break;
+      case usbguard::IPCException::TransientError:
+        std::cerr << "Transient error. Please try again." << std::endl;
+        break;
+      case usbguard::IPCException::NotFound:
+        std::cerr << "Not found: the requested resource WAS NOT found." << std::endl;
+        break;
+      default:
+        std::cerr << "BUG: Unknown error code. Please file a bug report at: " << std::endl;
+        std::cerr << "    https://github.com/dkopecek/usbguard/issues." << std::endl;
+        std::cerr << std::endl;
+    }
+  }
+  catch(const std::exception& ex) {
+    std::cerr << "EXCEPTION: " << ex.what() << std::endl;
+  }
+  catch(...) {
+
+  }
+  return EXIT_FAILURE;
 }

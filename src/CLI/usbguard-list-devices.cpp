@@ -1,4 +1,6 @@
 #include "usbguard.hpp"
+#include <IPCClient.hpp>
+#include <iostream>
 
 static const char *options_short = "hab";
 
@@ -10,6 +12,11 @@ static const struct ::option options_long[] = {
 
 int usbguard_list_devices(int argc, char *argv[])
 {
-  
-  return EXIT_FAILURE;
+  usbguard::IPCClient ipc(/*connected=*/true);
+
+  for (auto device : ipc.listDevices()) {
+    std::cout << device << std::endl;
+  }
+
+  return EXIT_SUCCESS;
 }
