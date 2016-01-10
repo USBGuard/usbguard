@@ -1,5 +1,5 @@
 #include "usbguard.hpp"
-#include "usbguard-list-devices.hpp"
+#include "usbguard-block-device.hpp"
 
 #include <IPCClient.hpp>
 #include <iostream>
@@ -10,17 +10,16 @@ namespace usbguard
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
-    { "blocked", no_argument, nullptr, 'a' },
-    { "allowed", no_argument, nullptr, 'b' }
   };
 
-  int usbguard_list_devices(int argc, char *argv[])
+  int usbguard_block_device(int argc, char *argv[])
   {
     usbguard::IPCClient ipc(/*connected=*/true);
 
-    for (auto map_entry : ipc.listDevices()) {
-      std::cout << map_entry.first << ": " << map_entry.second << std::endl;
-    }
+    const uint32_t seqn = std::stoul(argv[1]);
+    const bool append = false;
+
+    ipc.blockDevice(seqn, append, 0);
 
     return EXIT_SUCCESS;
   }

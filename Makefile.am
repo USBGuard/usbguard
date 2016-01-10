@@ -161,8 +161,18 @@ usbguard_SOURCES=\
 	src/CLI/usbguard.hpp \
 	src/CLI/usbguard-list-devices.hpp \
 	src/CLI/usbguard-list-devices.cpp \
+	src/CLI/usbguard-allow-device.hpp \
+	src/CLI/usbguard-allow-device.cpp \
+	src/CLI/usbguard-block-device.hpp \
+	src/CLI/usbguard-block-device.cpp \
+	src/CLI/usbguard-reject-device.hpp \
+	src/CLI/usbguard-reject-device.cpp \
 	src/CLI/usbguard-list-rules.hpp \
 	src/CLI/usbguard-list-rules.cpp \
+	src/CLI/usbguard-append-rule.hpp \
+	src/CLI/usbguard-append-rule.cpp \
+	src/CLI/usbguard-remove-rule.hpp \
+	src/CLI/usbguard-remove-rule.cpp \
 	src/CLI/usbguard-generate-policy.cpp \
 	src/CLI/usbguard-generate-policy.hpp \
 	src/CLI/PolicyGenerator.hpp \

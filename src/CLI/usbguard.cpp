@@ -8,6 +8,11 @@
 #include "usbguard-list-devices.hpp"
 #include "usbguard-list-rules.hpp"
 #include "usbguard-generate-policy.hpp"
+#include "usbguard-allow-device.hpp"
+#include "usbguard-block-device.hpp"
+#include "usbguard-reject-device.hpp"
+#include "usbguard-append-rule.hpp"
+#include "usbguard-remove-rule.hpp"
 
 namespace usbguard
 {
@@ -15,7 +20,12 @@ namespace usbguard
 
   static const std::map<const std::string,int(*)(int, char**)> cmd_handler_map = {
     { "list-devices", &usbguard_list_devices },
+    { "allow-device", &usbguard_allow_device },
+    { "block-device", &usbguard_block_device },
+    { "reject-device", &usbguard_reject_device },
     { "list-rules", &usbguard_list_rules },
+    { "append-rule", &usbguard_append_rule },
+    { "remove-rule", &usbguard_remove_rule },
     { "generate-policy", &usbguard_generate_policy }
   };
 

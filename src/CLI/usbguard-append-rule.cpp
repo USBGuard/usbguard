@@ -1,5 +1,5 @@
 #include "usbguard.hpp"
-#include "usbguard-list-devices.hpp"
+#include "usbguard-append-rule.hpp"
 
 #include <IPCClient.hpp>
 #include <iostream>
@@ -10,17 +10,17 @@ namespace usbguard
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
-    { "blocked", no_argument, nullptr, 'a' },
-    { "allowed", no_argument, nullptr, 'b' }
   };
 
-  int usbguard_list_devices(int argc, char *argv[])
+  int usbguard_append_rule(int argc, char *argv[])
   {
     usbguard::IPCClient ipc(/*connected=*/true);
 
-    for (auto map_entry : ipc.listDevices()) {
-      std::cout << map_entry.first << ": " << map_entry.second << std::endl;
-    }
+    const std::string rule_spec = argv[1];
+    const uint32_t parent_seqn = usbguard::Rule::SeqnLast;
+    const uint32_t seqn = ipc.appendRule(rule_spec, parent_seqn, 0);
+
+    std::cout << seqn << std::endl;
 
     return EXIT_SUCCESS;
   }

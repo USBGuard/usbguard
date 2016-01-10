@@ -236,12 +236,12 @@ namespace usbguard
     return;
   }
 
-  const std::vector<std::string> Daemon::listRules()
+  const std::map<std::string, std::string> Daemon::listRules()
   {
-    std::vector<std::string> rules;
+    std::map<std::string, std::string> rules;
 
     for(auto const& rule : _ruleset.getRules()) {
-      rules.push_back(rule->toString());
+      rules[std::to_string(rule->getSeqn())] = rule->toString();
     }
 
     return rules;
@@ -983,12 +983,12 @@ namespace usbguard
     return;
   }
 
-  const std::vector<std::string> Daemon::listDevices()
+  const std::map<std::string, std::string> Daemon::listDevices()
   {
-    std::vector<std::string> device_rules;
+    std::map<std::string, std::string> device_rules;
 
     for (auto const& device : _dm->getDeviceList()) {
-      device_rules.push_back(device->getDeviceRule()->toString());
+      device_rules[std::to_string(device->getSeqn())] = device->getDeviceRule()->toString();
     }
 
     return std::move(device_rules);

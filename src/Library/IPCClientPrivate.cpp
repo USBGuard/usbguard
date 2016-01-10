@@ -369,7 +369,7 @@ namespace usbguard
     return;
   }
 
-  const std::vector<std::string> IPCClientPrivate::listRules()
+  const std::map<std::string, std::string> IPCClientPrivate::listRules()
   {
     const json jreq = {
       { "_m", "listRules" },
@@ -379,7 +379,12 @@ namespace usbguard
     const json jrep = qbIPCSendRecvJSON(jreq);
 
     try {
-      const std::vector<std::string> retval = jrep["retval"];
+      std::map<std::string, std::string> retval;
+
+      for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
+        retval[it.key()] = it.value();
+      }
+
       return std::move(retval);
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
@@ -429,7 +434,7 @@ namespace usbguard
     return;
   }
 
-  const std::vector<std::string> IPCClientPrivate::listDevices()
+  const std::map<std::string, std::string> IPCClientPrivate::listDevices()
   {
     const json jreq = {
       { "_m", "listDevices" },
@@ -439,7 +444,12 @@ namespace usbguard
     const json jrep = qbIPCSendRecvJSON(jreq);
 
     try {
-      const std::vector<std::string> retval = jrep["retval"];
+      std::map<std::string, std::string> retval;
+
+      for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
+        retval[it.key()] = it.value();
+      }
+
       return std::move(retval);
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
