@@ -65,6 +65,8 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCClient.cpp \
 	src/Library/IPCClientPrivate.hpp \
 	src/Library/IPCClientPrivate.cpp \
+	src/Library/IPCPrivate.hpp \
+	src/Library/IPCPrivate.cpp \
 	src/Library/USB.cpp \
 	src/Library/Rule.cpp \
 	src/Library/RuleParser.cpp \
