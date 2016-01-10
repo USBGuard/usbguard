@@ -177,6 +177,10 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-remove-rule.cpp \
 	src/CLI/usbguard-generate-policy.cpp \
 	src/CLI/usbguard-generate-policy.hpp \
+	src/CLI/usbguard-watch.hpp \
+	src/CLI/usbguard-watch.cpp \
+	src/CLI/IPCSignalWatcher.hpp \
+	src/CLI/IPCSignalWatcher.cpp \
 	src/CLI/PolicyGenerator.hpp \
 	src/CLI/PolicyGenerator.cpp
 
