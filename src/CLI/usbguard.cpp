@@ -13,6 +13,7 @@
 #include "usbguard-reject-device.hpp"
 #include "usbguard-append-rule.hpp"
 #include "usbguard-remove-rule.hpp"
+#include "usbguard-watch.hpp"
 
 namespace usbguard
 {
@@ -26,7 +27,8 @@ namespace usbguard
     { "list-rules", &usbguard_list_rules },
     { "append-rule", &usbguard_append_rule },
     { "remove-rule", &usbguard_remove_rule },
-    { "generate-policy", &usbguard_generate_policy }
+    { "generate-policy", &usbguard_generate_policy },
+    { "watch", &usbguard_watch }
   };
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)
