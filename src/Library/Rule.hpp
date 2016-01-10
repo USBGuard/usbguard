@@ -84,7 +84,7 @@ namespace usbguard {
     bool appliesTo(Pointer<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
     bool isImplicit() const;
-    
+
     void setSeqn(uint32_t seqn);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);

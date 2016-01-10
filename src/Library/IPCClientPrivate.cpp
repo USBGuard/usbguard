@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "IPCClientPrivate.hpp"
+#include "IPCPrivate.hpp"
 #include "LoggerPrivate.hpp"
 
 #include <sys/poll.h>
@@ -247,10 +248,7 @@ namespace usbguard
   static int32_t qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data)
   {
     IPCClientPrivate *client = static_cast<IPCClientPrivate*>(data);
-    try {
-      client->processEvent();
-    } catch(const IPCException& ex) {
-    }
+    client->processEvent();
     return 0;
   }
 
@@ -536,11 +534,11 @@ namespace usbguard
        * We might have caused an exception. Check whether
        * that's the case and if true, throw it here.
        */
-      if (isExceptionJSON(retval)) {
-	throw IPCException(IPCException::ProtocolError, "The remote end sent an exception");
+      if (IPCPrivate::isExceptionJSON(retval)) {
+        throw IPCPrivate::jsonToIPCException(retval);
       }
       else {
-	return std::move(retval);
+        return std::move(retval);
       }
     }
     return json();
@@ -548,7 +546,6 @@ namespace usbguard
 
   bool IPCClientPrivate::isExceptionJSON(const json& jval) const
   {
-    return false;
+    return (jval.count("_e") == 1);
   }
-
 } /* namespace usbguard */

@@ -37,11 +37,13 @@ namespace usbguard
       TransientError, /**< The requested action cannot be executed at the moment, try again */
       ProtocolError, /**< An IPC protocol error (missing attribute, return value, incorrect type */
       ConnectionError,
+      InternalError,
     };
 
-    IPCException(ReasonCode code, const std::string& message)
+    IPCException(ReasonCode code, const std::string& message, uint64_t request_id = 0)
       : _message(message),
-        _code(code)
+        _code(code),
+        _request_id(request_id)
     {
     }
 
@@ -55,30 +57,69 @@ namespace usbguard
       return _code;
     }
 
+    uint64_t requestID() const
+    {
+      return _request_id;
+    }
+
+    void setRequestID(uint64_t id)
+    {
+      _request_id = id;
+    }
+
     const char * const codeAsString() const
     {
       switch(_code) {
       case InvalidArgument:
-        return "Invalid Argument";
+        return "InvalidArgument";
       case NotFound:
-        return "Not Found";
+        return "NotFound";
       case SyscallFailure:
-        return "Syscall Failure";
+        return "SyscallFailure";
       case PermissionDenied:
-        return "Permission Denied";
+        return "PermissionDenied";
       case TransientError:
-        return "Transient Error";
+        return "TransientError";
       case ProtocolError:
-        return "Protocol Error";
+        return "ProtocolError";
       case ConnectionError:
-        return "Connection Error";
+        return "ConnectionError";
+      case InternalError:
+        return "InternalError";
       }
       return "<unknown error code>";
+    }
+
+    static ReasonCode codeFromString(const std::string& code_string)
+    {
+      if (code_string == "InvalidArgument") {
+        return InvalidArgument;
+      }
+      else if(code_string == "NotFound") {
+        return NotFound;
+      }
+      else if(code_string == "SyscallFailure") {
+        return PermissionDenied;
+      }
+      else if(code_string == "TransientError") {
+        return TransientError;
+      }
+      else if(code_string == "ProtocolError") {
+        return ProtocolError;
+      }
+      else if(code_string == "ConnectionError") {
+        return ConnectionError;
+      }
+      else if(code_string == "InternalError") {
+        return InternalError;
+      }
+      throw std::runtime_error("Invalid IPCException::ReasonCode string");
     }
 
   private:
     const std::string _message;
     ReasonCode _code;
+    mutable uint64_t _request_id;
   };
 
   class IPC : public Interface
@@ -86,7 +127,7 @@ namespace usbguard
   public:
     static uint64_t uniqueID(void)
     {
-      static std::atomic<uint64_t> id(0);
+      static std::atomic<uint64_t> id(1);
       return id++;
     }
   };

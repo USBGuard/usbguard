@@ -155,12 +155,12 @@ namespace usbguard {
     for (auto it = _rules.begin(); it != _rules.end(); ++it) {
       auto const& rule_ptr = *it;
       if (rule_ptr->getSeqn() == seqn) {
-	_rules.erase(it);
-	return true;
+        _rules.erase(it);
+        return true;
       }
     }
     /* FIXME: Remove the rule from the priority queue too */
-    return false;
+    throw std::out_of_range("Rule not found");
   }
 
   Pointer<const Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn)

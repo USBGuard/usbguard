@@ -21,6 +21,7 @@
 #include "Daemon.hpp"
 #include "LoggerPrivate.hpp"
 #include "Common/Utility.hpp"
+#include "IPCPrivate.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -692,9 +693,20 @@ namespace usbguard
         throw 0;
       }
       retval["_r"] = name;
-    } catch(const std::exception& ex) {
+    }
+    catch(IPCException& ex) {
+      /* Set request id and forward to upper levels */
+      ex.setRequestID(jobj["_i"]);
+      throw;
+    }
+    catch(const std::out_of_range& ex) {
+      throw IPCException(IPCException::NotFound,
+                         "Requested action depends on a resource which is not available",
+                         jobj["_i"]);
+    }
+    catch(const std::exception& ex) {
       logger->error("Exception: {}", ex.what());
-      throw IPCException(IPCException::ProtocolError, "Invalid IPC method call");
+      throw IPCException(IPCException::InternalError, ex.what(), jobj["_i"]);
     }
 
     logger->debug("Returning JSON object: {}", retval);
@@ -763,18 +775,28 @@ namespace usbguard
       logger->debug("Received JSON object: {}", jobj.dump());
 
       Daemon* daemon = \
-	static_cast<Daemon*>(qb_ipcs_connection_service_context_get(conn));
+        static_cast<Daemon*>(qb_ipcs_connection_service_context_get(conn));
 
       const json retval = daemon->processJSON(jobj);
 
       if (!retval.is_null()) {
-	qbIPCSendJSON(conn, retval);
+        qbIPCSendJSON(conn, retval);
       }
-    } catch(const std::exception& ex) {
+    }
+    catch(const IPCException& ex) {
+      logger->warn("IPCException: {}: {}", ex.codeAsString(), ex.what());
+      qbIPCSendJSON(conn, IPCPrivate::IPCExceptionToJSON(ex));
+    }
+    catch(const std::out_of_range& ex) {
+      logger->warn("Out-of-range exception caught while processing IPC message.");
+      const IPCException ipc_exception(IPCException::NotFound, "Not found");
+      qbIPCSendJSON(conn, IPCPrivate::IPCExceptionToJSON(ipc_exception));
+    }
+    catch(const std::exception& ex) {
       logger->error("Exception: {}", ex.what());
       logger->error("Invalid JSON object received. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
-      return 0;
+      /* FALLTHROUGH */
     }
 
     return 0;
