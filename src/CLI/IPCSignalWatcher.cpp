@@ -11,7 +11,6 @@ namespace usbguard
   void IPCSignalWatcher::IPCDisconnected()
   {
     std::cout << "[IPC] Disconnected" << std::endl;
-    stop();
   }
 
   void IPCSignalWatcher::DeviceInserted(uint32_t seqn, const std::map< std::string, std::string >& attributes, const std::vector< USBInterfaceType >& interfaces, bool rule_match, uint32_t rule_seqn)
@@ -27,7 +26,7 @@ namespace usbguard
     }
     std::cout << "}";
     std::cout << " rule_match=" << rule_match;
-    std::cout << " target=foo";
+    std::cout << " rule_seqn=" << rule_seqn << std::endl;
   }
 
   void IPCSignalWatcher::DevicePresent(uint32_t seqn, const std::map< std::string, std::string >& attributes, const std::vector< USBInterfaceType >& interfaces, Rule::Target target)
@@ -42,7 +41,7 @@ namespace usbguard
       std::cout << " " << interface.typeString();
     }
     std::cout << "}";
-    std::cout << " target=foo";
+    std::cout << " target=" << Rule::targetToString(target) << std::endl;
   }
 
   void IPCSignalWatcher::DeviceRemoved(uint32_t seqn, const std::map< std::string, std::string >& attributes)
@@ -51,6 +50,7 @@ namespace usbguard
     for (auto attribute : attributes) {
       std::cout << " " << attribute.first << "=" << attribute.second;
     }
+    std::cout << std::endl;
   }
 
   void IPCSignalWatcher::DeviceAllowed(uint32_t seqn, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_seqn)
@@ -61,7 +61,7 @@ namespace usbguard
     }
 
     std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_seqn=" << rule_seqn;
+    std::cout << " rule_seqn=" << rule_seqn << std::endl;
   }
 
   void IPCSignalWatcher::DeviceBlocked(uint32_t seqn, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_seqn)
@@ -72,7 +72,7 @@ namespace usbguard
     }
 
     std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_seqn=" << rule_seqn;
+    std::cout << " rule_seqn=" << rule_seqn << std::endl;
   }
 
   void IPCSignalWatcher::DeviceRejected(uint32_t seqn, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_seqn)
@@ -83,6 +83,6 @@ namespace usbguard
     }
 
     std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_seqn=" << rule_seqn;
+    std::cout << " rule_seqn=" << rule_seqn << std::endl;
   }
 } /* namespace usbguard */
