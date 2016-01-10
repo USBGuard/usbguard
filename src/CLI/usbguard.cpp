@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
         break;
       default:
         std::cerr << "BUG: Unknown error code. Please file a bug report at: " << std::endl;
+        std::cerr << std::endl;
         std::cerr << "    https://github.com/dkopecek/usbguard/issues." << std::endl;
         std::cerr << std::endl;
     }
