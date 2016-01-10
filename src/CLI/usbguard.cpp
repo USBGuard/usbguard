@@ -4,6 +4,11 @@
 #include <Logger.hpp>
 #include <IPC.hpp>
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+#include <cstring> /* GNU version of basename(3) */
+
 #include "usbguard.hpp"
 #include "usbguard-list-devices.hpp"
 #include "usbguard-list-rules.hpp"
@@ -33,6 +38,26 @@ namespace usbguard
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)
   {
+    stream << " USAGE: " << ::basename(usbguard_arg0)
+           << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
+    stream << std::endl;
+    stream << " OPTIONS" << std::endl;
+    stream << " =======" << std::endl;
+    stream << "" << std::endl;
+    stream << " COMMANDS" << std::endl;
+    stream << " ========" << std::endl;
+    stream << "\tlist-devices        List all USB devices recognized by the USBGuard daemon." << std::endl;
+    stream << "\tallow-device <id>   Authorize a device to interact with the system." << std::endl;
+    stream << "\tblock-device <id>   Deauthorize a device." << std::endl;
+    stream << "\treject-device <id>  Deauthorize and remove a device from the system." << std::endl;
+    stream << std::endl;
+    stream << "\tlist-rules          List the rule set (policy) used by the USBGuard daemon." << std::endl;
+    stream << "\tappend-rule <rule>  Append a rule to the rule set." << std::endl;
+    stream << "\tremove-rule <id>    Remove a rule from the rule set." << std::endl;
+    stream << std::endl;
+    stream << "\tgenerate-policy     Generate a rule set (policy) based on the connected USB devices." << std::endl;
+    stream << "\twatch               Watch for IPC interface events and print them to stdout." << std::endl;
+    stream << std::endl;
   }
 
   static int usbguard_cli(int argc, char *argv[])
@@ -79,7 +104,7 @@ int main(int argc, char *argv[])
         std::cerr << "Possible reasons:" << std::endl;
         std::cerr << " 1) usbguard-daemon is NOT running." << std::endl;
         std::cerr << " 2) You don't have permissions to use the usbguard IPC interface." << std::endl;
-        std::cerr << "    Check/Set the IPCAllowedUsers and IPCAllowedGroups settings" << std::endl;
+        std::cerr << "    Check/Set the IPCAllowedUsers and/or IPCAllowedGroups settings" << std::endl;
         std::cerr << "    of the usbguard-daemon component." << std::endl;
         std::cerr << std::endl;
         break;
