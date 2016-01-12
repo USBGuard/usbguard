@@ -380,7 +380,7 @@ namespace usbguard
       std::map<std::string, std::string> retval;
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-        retval[it.key()] = it.value();
+	retval.emplace(it.key(), it.value().get<std::string>());
       }
 
       return std::move(retval);
@@ -445,7 +445,7 @@ namespace usbguard
       std::map<std::string, std::string> retval;
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-        retval[it.key()] = it.value();
+        retval.emplace(it.key(), it.value().get<std::string>());
       }
 
       return std::move(retval);
