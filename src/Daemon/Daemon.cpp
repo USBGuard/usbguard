@@ -660,11 +660,12 @@ namespace usbguard
     logger->debug("Processing method call");
 
     json retval = {
-      { "_i", jobj["_i"]}
+      { "_i", jobj.at("_i").get<uint64_t>() }
     };
 
     try {
-      const std::string name = jobj["_m"];
+      const std::string name = jobj.at("_m").get<std::string>();
+
       logger->debug("Method name = {}", name);
 
       if (name == "appendRule") {
@@ -696,17 +697,17 @@ namespace usbguard
     }
     catch(IPCException& ex) {
       /* Set request id and forward to upper levels */
-      ex.setRequestID(jobj["_i"]);
+      ex.setRequestID(jobj.at("_i").get<uint64_t>());
       throw;
     }
     catch(const std::out_of_range& ex) {
       throw IPCException(IPCException::NotFound,
                          "Requested action depends on a resource which is not available",
-                         jobj["_i"]);
+                         jobj.at("_i").get<uint64_t>());
     }
     catch(const std::exception& ex) {
       logger->error("Exception: {}", ex.what());
-      throw IPCException(IPCException::InternalError, ex.what(), jobj["_i"]);
+      throw IPCException(IPCException::InternalError, ex.what(), jobj.at("_i").get<uint64_t>());
     }
 
     logger->debug("Returning JSON object: {}", retval);
