@@ -19,8 +19,82 @@
 #pragma once
 #include "Typedefs.hpp"
 #include "Rule.hpp"
+#include <stdexcept>
 
 namespace usbguard
 {
+  class RuleParserError : public std::exception
+  {
+  public:
+    RuleParserError(const std::string& rule_spec, const std::string& hint,
+                    const std::string& file = "", unsigned int file_row = 0, unsigned int file_col = 0)
+      : _rule_spec(rule_spec),
+        _hint(hint),
+        _file(file),
+        _file_row(file_row),
+        _file_col(file_col)
+    {
+    }
+
+    void setHint(const std::string& hint)
+    {
+      _hint = hint;
+    }
+
+    void setFileInfo(const std::string& file, unsigned int row, unsigned int col = 0)
+    {
+      _file = file;
+      _file_row = row;
+      _file_col = col;
+    }
+
+    const char *what() const noexcept
+    {
+      return "RuleParserError";
+    }
+
+    const std::string& rule() const
+    {
+      return _rule_spec;
+    }
+
+    const std::string& hint() const
+    {
+      return _hint;
+    }
+
+    bool hasFileInfo() const
+    {
+      return !_file.empty();
+    }
+
+    const std::string fileInfo() const
+    {
+      return _file + ": line=" + std::to_string(_file_row) + ": column=" + std::to_string(_file_col);
+    }
+
+    const std::string& file() const
+    {
+      return _file;
+    }
+
+    unsigned int fileRow() const
+    {
+      return _file_row;
+    }
+
+    unsigned int fileColumn() const
+    {
+      return _file_col;
+    }
+
+  protected:
+    const std::string _rule_spec;
+    std::string _hint;
+    std::string _file;
+    unsigned int _file_row;
+    unsigned int _file_col;
+  };
+
   Rule parseRuleSpecification(const String& rule_spec);
 } /* namespace usbguard */
