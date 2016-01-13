@@ -322,7 +322,7 @@ namespace usbguard
 			     const std::vector<USBInterfaceType>& interfaces,
 			     Rule::Target target)
   {
-    logger->debug("DeviceInserted: seqn={}, target={}", seqn, Rule::targetToString(target));
+    logger->debug("DevicePresent: seqn={}, target={}", seqn, Rule::targetToString(target));
 
     json interfaces_json;
     for (auto const& type : interfaces) {
@@ -330,7 +330,7 @@ namespace usbguard
     }
 
     const json j = {
-      {         "_s", "DeviceInserted" },
+      {         "_s", "DevicePresent" },
       {       "seqn", seqn },
       { "attributes", attributes },
       { "interfaces", interfaces_json },
