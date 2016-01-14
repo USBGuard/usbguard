@@ -26,7 +26,25 @@
 %type usbif_set_op { Rule::SetOperator }
 
 %syntax_error {
-  throw std::runtime_error("rule syntax error");
+  std::string possible_tokens;
+  const size_t n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
+  for (size_t i = 0; i < n; ++i) {
+    const int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
+    if (a < YYNSTATE + YYNRULE) {
+      if (!possible_tokens.empty()) {
+        possible_tokens.append(", ");
+      }
+      possible_tokens.append(yyTokenName[i]);
+    }
+  }
+  const std::string hint_prefix = "Syntax error!";
+  if (!possible_tokens.empty()) {
+    state->error.setHint(hint_prefix + " Possible tokens: " + possible_tokens);
+  }
+  else {
+    state->error.setHint(hint_prefix);
+  }
+  throw state->error;
 }
 
 %nonassoc TERMINATION UNINITIALIZED.
@@ -37,29 +55,29 @@ rule_spec ::= target device_spec action.
 rule_spec ::= .
 
 target ::= KEYWORD_ALLOW. {
-       state->rule.setTarget(Rule::Target::Allow);
+  state->rule.setTarget(Rule::Target::Allow);
 }
 
 target ::= KEYWORD_BLOCK. {
-       state->rule.setTarget(Rule::Target::Block);
+  state->rule.setTarget(Rule::Target::Block);
 }
 
 target ::= KEYWORD_REJECT. {
-       state->rule.setTarget(Rule::Target::Reject);
+  state->rule.setTarget(Rule::Target::Reject);
 }
 
 device_spec ::= device_id device_attributes.
 
 device_id ::= HEXCHAR4(V) COLON ASTERISK. { // 1234:*
-  	  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
-	  delete V;
+  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
+  delete V;
 }
 
 device_id ::= HEXCHAR4(V) COLON HEXCHAR4(P). { // 1234:5678
-	  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
-	  state->rule.setProductID(quex::unicode_to_char(P->get_text()));
-	  delete V;
-	  delete P;
+  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
+  state->rule.setProductID(quex::unicode_to_char(P->get_text()));
+  delete V;
+  delete P;
 }
 
 device_id ::= ASTERISK COLON ASTERISK.
@@ -69,8 +87,15 @@ device_attributes ::= device_attributes device_attribute.
 device_attributes ::= .
 
 device_attribute ::= KEYWORD_HASH string(S). {
-		 state->rule.setDeviceHash(*S);
-		 delete S;
+  try {
+    state->rule.setDeviceHash(*S);
+    delete S;
+  }
+  catch(...) {
+    state->error.setHint("Invalid device hash value: " + *S);
+    delete S;
+    throw state->error;
+  }
 }
 
 device_attribute ::= KEYWORD_NAME string(S). {
