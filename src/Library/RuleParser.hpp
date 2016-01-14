@@ -96,5 +96,5 @@ namespace usbguard
     unsigned int _file_col;
   };
 
-  Rule parseRuleSpecification(const String& rule_spec, const std::string * const file = nullptr, unsigned int line = 0);
+  DLL_PUBLIC Rule parseRuleSpecification(const String& rule_spec, const std::string * const file = nullptr, unsigned int line = 0);
 } /* namespace usbguard */
