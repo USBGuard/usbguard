@@ -156,7 +156,8 @@ EXTRA_DIST +=\
 	src/ThirdParty/libsodium
 
 bin_PROGRAMS=\
-	usbguard
+	usbguard \
+	usbguard-rule-parser
 
 usbguard_SOURCES=\
 	src/CLI/usbguard.cpp \
@@ -190,4 +191,15 @@ usbguard_CPPFLAGS=\
 	@spdlog_CFLAGS@
 
 usbguard_LDADD=\
+	$(top_builddir)/libusbguard.la
+
+usbguard_rule_parser_SOURCES=\
+	src/CLI/usbguard-rule-parser.cpp
+
+usbguard_rule_parser_CPPFLAGS=\
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/src/CLI \
+	@spdlog_CFLAGS@
+
+usbguard_rule_parser_LDADD=\
 	$(top_builddir)/libusbguard.la
