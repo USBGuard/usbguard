@@ -24,6 +24,7 @@
 #include "USB.hpp"
 #include "Lexer.hpp"
 #include "Common/Utility.hpp"
+#include "LoggerPrivate.hpp"
 
 #include <cstddef>
 #include <stdexcept>
@@ -33,34 +34,62 @@
 
 namespace usbguard
 {
+  struct RuleParserState
+  {
+    RuleParserState(const String& rule_spec)
+      : error(rule_spec)
+      {}
+    Rule rule;
+    RuleParserError error;
+  };
+
 #include "RuleParser/Parser.c"
 
   static void RuleParserDeleter(void *p)
   {
-    RuleParserFree(p, &free);    
+    RuleParserFree(p, &free);
   }
 
-  Rule parseRuleSpecification(const String& rule_spec)
+  Rule parseRuleSpecification(const String& rule_spec, const std::string * const file, unsigned int line)
   {
-    Rule rule;
-    std::istringstream ss(rule_spec);
-    quex::Lexer lexer(&ss);
-    quex::Token *token_ptr = nullptr;
-    UniquePointer<void,void(*)(void *)> parser_data(RuleParserAlloc(&malloc),
-						    RuleParserDeleter);
+    std::istringstream stream(rule_spec);
+    UniquePointer<void,void(*)(void *)> parser_data(RuleParserAlloc(&malloc), RuleParserDeleter);
 
-    for (;;) {
-      lexer.receive(&token_ptr);
-      if (token_ptr->type_id() != RULE_TOKEN_TERMINATION) {
-	RuleParser(parser_data.get(),
-		   token_ptr->type_id(), new QUEX_TYPE_TOKEN(*token_ptr), &rule);
-      } else {
-	RuleParser(parser_data.get(), 0, nullptr, &rule);
-	break;
+    logger->debug("Trying to parse rule: \"{}\"", rule_spec);
+
+    try {
+      RuleParserState state(rule_spec);
+      quex::Lexer lexer(&stream);
+      quex::Token *token_ptr = nullptr;
+
+      for (;;) {
+        lexer.receive(&token_ptr);
+        if (token_ptr->type_id() != RULE_TOKEN_TERMINATION) {
+          RuleParser(parser_data.get(), token_ptr->type_id(), new QUEX_TYPE_TOKEN(*token_ptr), &state);
+        } else {
+          RuleParser(parser_data.get(), 0, nullptr, &state);
+          break;
+        }
       }
+
+      return std::move(state.rule);
+    }
+    catch(RuleParserError& ex) {
+      logger->debug("Caught RuleParserError: {}", ex.what());
+      /*
+       * If the caller provided a file context, add it to the
+       * exception.
+       */
+      if (file == nullptr) {
+        ex.setFileInfo(*file, line);
+      }
+      throw ex;
+    }
+    catch(const std::exception& ex) {
+      logger->debug("Caught std::exception: {}", ex.what());
+      throw;
     }
 
-    return std::move(rule);
+    throw std::runtime_error("BUG in parseRuleSpecification");
   }
-
 } /* namespace usbguard */

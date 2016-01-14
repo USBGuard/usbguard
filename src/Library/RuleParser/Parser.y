@@ -2,9 +2,9 @@
 }
 
 %name RuleParser
-%extra_argument { Rule* rule }
+%extra_argument { RuleParserState* state }
 
-%default_destructor { (void)rule; }
+%default_destructor { (void)state; }
 
 %token_prefix RULE_TOKEN_
 %token_type { quex::Token* }
@@ -37,27 +37,27 @@ rule_spec ::= target device_spec action.
 rule_spec ::= .
 
 target ::= KEYWORD_ALLOW. {
-       rule->setTarget(Rule::Target::Allow);
+       state->rule.setTarget(Rule::Target::Allow);
 }
 
 target ::= KEYWORD_BLOCK. {
-       rule->setTarget(Rule::Target::Block);
+       state->rule.setTarget(Rule::Target::Block);
 }
 
 target ::= KEYWORD_REJECT. {
-       rule->setTarget(Rule::Target::Reject);
+       state->rule.setTarget(Rule::Target::Reject);
 }
 
 device_spec ::= device_id device_attributes.
 
 device_id ::= HEXCHAR4(V) COLON ASTERISK. { // 1234:*
-  	  rule->setVendorID(quex::unicode_to_char(V->get_text()));
+  	  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
 	  delete V;
 }
 
 device_id ::= HEXCHAR4(V) COLON HEXCHAR4(P). { // 1234:5678
-	  rule->setVendorID(quex::unicode_to_char(V->get_text()));
-	  rule->setProductID(quex::unicode_to_char(P->get_text()));
+	  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
+	  state->rule.setProductID(quex::unicode_to_char(P->get_text()));
 	  delete V;
 	  delete P;
 }
@@ -69,35 +69,35 @@ device_attributes ::= device_attributes device_attribute.
 device_attributes ::= .
 
 device_attribute ::= KEYWORD_HASH string(S). {
-		 rule->setDeviceHash(*S);
+		 state->rule.setDeviceHash(*S);
 		 delete S;
 }
 
 device_attribute ::= KEYWORD_NAME string(S). {
-		 rule->setDeviceName(*S);
+		 state->rule.setDeviceName(*S);
 		 delete S;
 }
 
 device_attribute ::= KEYWORD_SERIAL string(S). {
-		 rule->setSerialNumber(*S);
+		 state->rule.setSerialNumber(*S);
 		 delete S;
 }
 
 device_attribute ::= KEYWORD_VIAPORT string(S). {
-		 rule->refDevicePorts().push_back(*S);
-		 rule->setDevicePortsSetOperator(Rule::SetOperator::Equals);
+		 state->rule.refDevicePorts().push_back(*S);
+		 state->rule.setDevicePortsSetOperator(Rule::SetOperator::Equals);
 		 delete S;
 }
 
 device_attribute ::= KEYWORD_VIAPORT ports_set_op(O) CURLYBRACE_OPEN stringvec(V) CURLYBRACE_CLOSE. {
-		 rule->refDevicePorts().insert(rule->refDevicePorts().end(), V->begin(), V->end());
-		 rule->setDevicePortsSetOperator(O);
+		 state->rule.refDevicePorts().insert(state->rule.refDevicePorts().end(), V->begin(), V->end());
+		 state->rule.setDevicePortsSetOperator(O);
 		 delete V;
 }
 
 ports_set_op(O) ::= SET_OPERATOR(V). {
-		    O = Rule::setOperatorFromString(quex::unicode_to_char(V->get_text()));
-		    delete V;
+		 O = Rule::setOperatorFromString(quex::unicode_to_char(V->get_text()));
+		 delete V;
 }
 
 ports_set_op(O) ::= . {
@@ -115,14 +115,14 @@ stringvec(V) ::= . {
 }
 
 device_attribute ::= KEYWORD_WITHINTERFACE usbiftype(T). {
-	  rule->refInterfaceTypes().push_back(*T);
-	  rule->setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
+	  state->rule.refInterfaceTypes().push_back(*T);
+	  state->rule.setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
 	  delete T;
 }
 
 device_attribute ::= KEYWORD_WITHINTERFACE usbif_set_op(O) CURLYBRACE_OPEN usbiftypevec(V) CURLYBRACE_CLOSE. {
-	  rule->refInterfaceTypes().insert(rule->refInterfaceTypes().end(), V->begin(), V->end());
-	  rule->setInterfaceTypesSetOperator(O);
+	  state->rule.refInterfaceTypes().insert(state->rule.refInterfaceTypes().end(), V->begin(), V->end());
+	  state->rule.setInterfaceTypesSetOperator(O);
 	  delete V;
 }
 
@@ -172,7 +172,7 @@ usbiftypevec(V) ::= . {
 }
 
 action ::= KEYWORD_ACTION string(S). {
-       rule->setAction(*S);
+       state->rule.setAction(*S);
        delete S;
 }
 

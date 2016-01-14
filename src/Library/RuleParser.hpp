@@ -26,7 +26,7 @@ namespace usbguard
   class RuleParserError : public std::exception
   {
   public:
-    RuleParserError(const std::string& rule_spec, const std::string& hint,
+    RuleParserError(const std::string& rule_spec, const std::string& hint = "",
                     const std::string& file = "", unsigned int file_row = 0, unsigned int file_col = 0)
       : _rule_spec(rule_spec),
         _hint(hint),
@@ -96,5 +96,5 @@ namespace usbguard
     unsigned int _file_col;
   };
 
-  Rule parseRuleSpecification(const String& rule_spec);
+  Rule parseRuleSpecification(const String& rule_spec, const std::string * const file = nullptr, unsigned int line = 0);
 } /* namespace usbguard */

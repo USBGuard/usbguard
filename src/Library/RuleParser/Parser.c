@@ -1,61 +1,90 @@
-/* Driver template for the LEMON parser generator.
-** The author disclaims copyright to this source code.
+/*
+** 2000-05-29
+**
+** The author disclaims copyright to this source code.  In place of
+** a legal notice, here is a blessing:
+**
+**    May you do good and not evil.
+**    May you find forgiveness for yourself and forgive others.
+**    May you share freely, never taking more than you give.
+**
+*************************************************************************
+** Driver template for the LEMON parser generator.
+**
+** The "lemon" program processes an LALR(1) input grammar file, then uses
+** this template to construct a parser.  The "lemon" program inserts text
+** at each "%%" line.  Also, any "P-a-r-s-e" identifer prefix (without the
+** interstitial "-" characters) contained in this template is changed into
+** the value of the %name directive from the grammar.  Otherwise, the content
+** of this template is copied straight through into the generate parser
+** source file.
+**
+** The following is the concatenation of all %include directives from the
+** input grammar file:
 */
-/* First off, code is included that follows the "include" declaration
-** in the input grammar file. */
 #include <stdio.h>
+/************ Begin %include sections from the grammar ************************/
 #line 1 "Parser.y"
 
-#line 10 "Parser.c"
-/* Next is all token values, in a form suitable for use by makeheaders.
-** This section will be null unless lemon is run with the -m switch.
-*/
-/* 
-** These constants (all generated automatically by the parser generator)
-** specify the various kinds of tokens (terminals) that the parser
-** understands. 
-**
-** Each symbol here is a terminal symbol in the grammar.
-*/
-/* Make sure the INTERFACE macro is defined.
-*/
-#ifndef INTERFACE
-# define INTERFACE 1
-#endif
-/* The next thing included is series of defines which control
+#line 30 "Parser.c"
+/**************** End of %include directives **********************************/
+/* These constants specify the various numeric values for terminal symbols
+** in a format understandable to "makeheaders".  This section is blank unless
+** "lemon" is run with the "-m" command-line option.
+***************** Begin makeheaders token definitions *************************/
+/**************** End makeheaders token definitions ***************************/
+
+/* The next sections is a series of control #defines.
 ** various aspects of the generated parser.
-**    YYCODETYPE         is the data type used for storing terminal
-**                       and nonterminal numbers.  "unsigned char" is
-**                       used if there are fewer than 250 terminals
-**                       and nonterminals.  "int" is used otherwise.
-**    YYNOCODE           is a number of type YYCODETYPE which corresponds
-**                       to no legal terminal or nonterminal number.  This
-**                       number is used to fill in empty slots of the hash 
-**                       table.
+**    YYCODETYPE         is the data type used to store the integer codes
+**                       that represent terminal and non-terminal symbols.
+**                       "unsigned char" is used if there are fewer than
+**                       256 symbols.  Larger types otherwise.
+**    YYNOCODE           is a number of type YYCODETYPE that is not used for
+**                       any terminal or nonterminal symbol.
 **    YYFALLBACK         If defined, this indicates that one or more tokens
-**                       have fall-back values which should be used if the
-**                       original value of the token will not parse.
-**    YYACTIONTYPE       is the data type used for storing terminal
-**                       and nonterminal numbers.  "unsigned char" is
-**                       used if there are fewer than 250 rules and
-**                       states combined.  "int" is used otherwise.
-**    RuleParserTOKENTYPE     is the data type used for minor tokens given 
-**                       directly to the parser from the tokenizer.
-**    YYMINORTYPE        is the data type used for all minor tokens.
+**                       (also known as: "terminal symbols") have fall-back
+**                       values which should be used if the original symbol
+**                       would not parse.  This permits keywords to sometimes
+**                       be used as identifiers, for example.
+**    YYACTIONTYPE       is the data type used for "action codes" - numbers
+**                       that indicate what to do in response to the next
+**                       token.
+**    RuleParserTOKENTYPE     is the data type used for minor type for terminal
+**                       symbols.  Background: A "minor type" is a semantic
+**                       value associated with a terminal or non-terminal
+**                       symbols.  For example, for an "ID" terminal symbol,
+**                       the minor type might be the name of the identifier.
+**                       Each non-terminal can have a different minor type.
+**                       Terminal symbols all have the same minor type, though.
+**                       This macros defines the minor type for terminal 
+**                       symbols.
+**    YYMINORTYPE        is the data type used for all minor types.
 **                       This is typically a union of many types, one of
 **                       which is RuleParserTOKENTYPE.  The entry in the union
-**                       for base tokens is called "yy0".
+**                       for terminal symbols is called "yy0".
 **    YYSTACKDEPTH       is the maximum depth of the parser's stack.  If
 **                       zero the stack is dynamically sized using realloc()
 **    RuleParserARG_SDECL     A static variable declaration for the %extra_argument
 **    RuleParserARG_PDECL     A parameter declaration for the %extra_argument
 **    RuleParserARG_STORE     Code to store %extra_argument into yypParser
 **    RuleParserARG_FETCH     Code to extract %extra_argument from yypParser
-**    YYNSTATE           the combined number of states.
-**    YYNRULE            the number of rules in the grammar
 **    YYERRORSYMBOL      is the code number of the error symbol.  If not
 **                       defined, then do no error processing.
+**    YYNSTATE           the combined number of states.
+**    YYNRULE            the number of rules in the grammar
+**    YY_MAX_SHIFT       Maximum value for shift actions
+**    YY_MIN_SHIFTREDUCE Minimum value for shift-reduce actions
+**    YY_MAX_SHIFTREDUCE Maximum value for shift-reduce actions
+**    YY_MIN_REDUCE      Maximum value for reduce actions
+**    YY_ERROR_ACTION    The yy_action[] code for syntax error
+**    YY_ACCEPT_ACTION   The yy_action[] code for accept
+**    YY_NO_ACTION       The yy_action[] code for no-op
 */
+#ifndef INTERFACE
+# define INTERFACE 1
+#endif
+/************* Begin control #defines *****************************************/
 #define YYCODETYPE unsigned char
 #define YYNOCODE 38
 #define YYACTIONTYPE unsigned char
@@ -72,15 +101,21 @@ typedef union {
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
 #endif
-#define RuleParserARG_SDECL  Rule* rule ;
-#define RuleParserARG_PDECL , Rule* rule 
-#define RuleParserARG_FETCH  Rule* rule  = yypParser->rule 
-#define RuleParserARG_STORE yypParser->rule  = rule 
-#define YYNSTATE 54
-#define YYNRULE 34
-#define YY_NO_ACTION      (YYNSTATE+YYNRULE+2)
-#define YY_ACCEPT_ACTION  (YYNSTATE+YYNRULE+1)
-#define YY_ERROR_ACTION   (YYNSTATE+YYNRULE)
+#define RuleParserARG_SDECL  RuleParserState* state ;
+#define RuleParserARG_PDECL , RuleParserState* state 
+#define RuleParserARG_FETCH  RuleParserState* state  = yypParser->state 
+#define RuleParserARG_STORE yypParser->state  = state 
+#define YYNSTATE             30
+#define YYNRULE              34
+#define YY_MAX_SHIFT         29
+#define YY_MIN_SHIFTREDUCE   54
+#define YY_MAX_SHIFTREDUCE   87
+#define YY_MIN_REDUCE        88
+#define YY_MAX_REDUCE        121
+#define YY_ERROR_ACTION      122
+#define YY_ACCEPT_ACTION     123
+#define YY_NO_ACTION         124
+/************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
 ** YYMINORTYPE objects to zero. */
@@ -107,16 +142,20 @@ static const YYMINORTYPE yyzerominor = { 0 };
 ** Suppose the action integer is N.  Then the action is determined as
 ** follows
 **
-**   0 <= N < YYNSTATE                  Shift N.  That is, push the lookahead
+**   0 <= N <= YY_MAX_SHIFT             Shift N.  That is, push the lookahead
 **                                      token onto the stack and goto state N.
 **
-**   YYNSTATE <= N < YYNSTATE+YYNRULE   Reduce by rule N-YYNSTATE.
+**   N between YY_MIN_SHIFTREDUCE       Shift to an arbitrary state then
+**     and YY_MAX_SHIFTREDUCE           reduce by rule N-YY_MIN_SHIFTREDUCE.
 **
-**   N == YYNSTATE+YYNRULE              A syntax error has occurred.
+**   N between YY_MIN_REDUCE            Reduce by rule N-YY_MIN_REDUCE
+**     and YY_MAX_REDUCE
+
+**   N == YY_ERROR_ACTION               A syntax error has occurred.
 **
-**   N == YYNSTATE+YYNRULE+1            The parser accepts its input.
+**   N == YY_ACCEPT_ACTION              The parser accepts its input.
 **
-**   N == YYNSTATE+YYNRULE+2            No such action.  Denotes unused
+**   N == YY_NO_ACTION                  No such action.  Denotes unused
 **                                      slots in the yy_action[] table.
 **
 ** The action table is constructed as a single large table named yy_action[].
@@ -145,54 +184,53 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_reduce_ofst[]   For each state, the offset into yy_action for
 **                     shifting non-terminals after a reduce.
 **  yy_default[]       Default action for each state.
-*/
-#define YY_ACTTAB_COUNT (65)
+**
+*********** Begin parsing tables **********************************************/
+#define YY_ACTTAB_COUNT (61)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */     9,    8,    7,    2,   89,   29,    3,    1,   32,   31,
- /*    10 */    30,   22,   39,   34,   45,   35,   11,   54,   14,   28,
- /*    20 */    23,   40,   41,   51,   13,   24,   20,   43,   19,   46,
- /*    30 */    36,   28,   24,   26,   42,   12,   27,   25,   17,   16,
- /*    40 */    21,   90,   38,   15,   18,    4,   33,    6,   10,   52,
- /*    50 */     5,   53,   49,   37,   28,   50,   90,   90,   90,   90,
- /*    60 */    90,   90,   48,   47,   44,
+ /*     0 */     9,    8,    7,    2,   57,   58,   59,    1,  123,   29,
+ /*    10 */     3,   78,   76,   24,   72,   25,   70,   20,   28,   19,
+ /*    20 */    26,   11,   77,   14,   71,   24,   62,   81,   61,   28,
+ /*    30 */    22,   65,   83,   28,   10,   74,   80,   55,   69,   23,
+ /*    40 */    68,   67,   63,   18,   85,   15,   12,   82,    6,    5,
+ /*    50 */    21,   16,   17,   13,   88,   90,   87,   27,   90,   90,
+ /*    60 */     4,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */     9,   10,   11,   12,   29,   30,   31,   16,    3,    4,
- /*    10 */     5,    8,    8,    6,   14,    8,   32,    0,   34,   19,
- /*    20 */    17,   17,   14,   21,   13,   17,    6,   15,    8,   23,
- /*    30 */    15,   19,   17,   27,   25,   13,   20,   28,    7,    7,
- /*    40 */     7,   37,    8,    7,    7,   35,    8,   24,   18,   23,
- /*    50 */    26,   33,   23,   25,   19,   36,   37,   37,   37,   37,
- /*    60 */    37,   37,   23,   23,   23,
+ /*     0 */     9,   10,   11,   12,    3,    4,    5,   16,   29,   30,
+ /*    10 */    31,   15,   25,   17,   15,   28,   23,    6,   19,    8,
+ /*    20 */    27,   32,   14,   34,   14,   17,    6,    8,    8,   19,
+ /*    30 */     8,   36,   25,   19,   18,   23,   17,   33,   23,   17,
+ /*    40 */    23,   23,    8,    7,   23,    7,   13,    8,   24,   26,
+ /*    50 */     7,    7,    7,   13,    0,   37,   21,   20,   37,   37,
+ /*    60 */    35,
 };
 #define YY_SHIFT_USE_DFLT (-10)
 #define YY_SHIFT_COUNT (29)
 #define YY_SHIFT_MIN   (-9)
-#define YY_SHIFT_MAX   (38)
+#define YY_SHIFT_MAX   (54)
 static const signed char yy_shift_ofst[] = {
- /*     0 */     5,   15,   12,   20,   -9,    8,    0,   35,   35,   35,
- /*    10 */    35,   30,  -10,  -10,  -10,    7,    4,    3,   38,   37,
- /*    20 */    36,   34,   33,   32,   31,   22,   11,    2,   16,   17,
+ /*     0 */     1,   -4,   -1,   11,   -9,    8,   10,   14,   14,   14,
+ /*    10 */    14,   16,  -10,  -10,  -10,   20,   19,   22,   34,   36,
+ /*    20 */    38,   39,   43,   44,   45,   33,   40,   35,   37,   54,
 };
-#define YY_REDUCE_USE_DFLT (-26)
+#define YY_REDUCE_USE_DFLT (-22)
 #define YY_REDUCE_COUNT (14)
-#define YY_REDUCE_MIN   (-25)
-#define YY_REDUCE_MAX   (41)
+#define YY_REDUCE_MIN   (-21)
+#define YY_REDUCE_MAX   (25)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */   -25,    9,    6,  -16,   19,   28,   41,   40,   39,   29,
- /*    10 */    26,   18,   24,   23,   10,
+ /*     0 */   -21,  -13,   -7,  -11,   -5,    7,   12,   15,   17,   18,
+ /*    10 */    21,    4,   23,   24,   25,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */    56,   79,   73,   64,   60,   88,   88,   88,   88,   88,
- /*    10 */    88,   86,   84,   75,   66,   88,   88,   88,   88,   88,
- /*    20 */    88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
- /*    30 */    59,   58,   57,   63,   62,   61,   78,   83,   82,   81,
- /*    40 */    80,   77,   76,   72,   74,   71,   70,   69,   68,   67,
- /*    50 */    65,   87,   85,   55,
+ /*     0 */    90,  113,  107,   98,   94,  122,  122,  122,  122,  122,
+ /*    10 */   122,  120,  118,  109,  100,  122,  122,  122,  122,  122,
+ /*    20 */   122,  122,  122,  122,  122,  122,  122,  122,  122,  122,
 };
+/********** End of lemon-generated parsing tables *****************************/
 
-/* The next table maps tokens into fallback tokens.  If a construct
-** like the following:
+/* The next table maps tokens (terminal symbols) into fallback tokens.  
+** If a construct like the following:
 ** 
 **      %fallback ID X Y Z.
 **
@@ -200,6 +238,10 @@ static const YYACTIONTYPE yy_default[] = {
 ** and Z.  Whenever one of the tokens X, Y, or Z is input to the parser
 ** but it does not parse, the type of the token is changed to ID and
 ** the parse is retried before an error is thrown.
+**
+** This feature can be used, for example, to cause some keywords in a language
+** to revert to identifiers if they keyword does not apply in the context where
+** it appears.
 */
 #ifdef YYFALLBACK
 static const YYCODETYPE yyFallback[] = {
@@ -217,9 +259,13 @@ static const YYCODETYPE yyFallback[] = {
 **   +  The semantic value stored at this level of the stack.  This is
 **      the information used by the action routines in the grammar.
 **      It is sometimes called the "minor" token.
+**
+** After the "shift" half of a SHIFTREDUCE action, the stateno field
+** actually contains the reduce action for the second half of the
+** SHIFTREDUCE.
 */
 struct yyStackEntry {
-  YYACTIONTYPE stateno;  /* The state-number */
+  YYACTIONTYPE stateno;  /* The state-number, or reduce action in SHIFTREDUCE */
   YYCODETYPE major;      /* The major token value.  This is the code
                          ** number for the token at this stack level */
   YYMINORTYPE minor;     /* The user-supplied minor token value.  This
@@ -359,6 +405,15 @@ static void yyGrowStack(yyParser *p){
 }
 #endif
 
+/* Datatype of the argument to the memory allocated passed as the
+** second argument to RuleParserAlloc() below.  This can be changed by
+** putting an appropriate #define in the %include section of the input
+** grammar.
+*/
+#ifndef YYMALLOCARGTYPE
+# define YYMALLOCARGTYPE size_t
+#endif
+
 /* 
 ** This function allocates a new parser.
 ** The only argument is a pointer to a function which works like
@@ -371,9 +426,9 @@ static void yyGrowStack(yyParser *p){
 ** A pointer to a parser.  This pointer is used in subsequent calls
 ** to RuleParser and RuleParserFree.
 */
-void *RuleParserAlloc(void *(*mallocProc)(size_t)){
+void *RuleParserAlloc(void *(*mallocProc)(YYMALLOCARGTYPE)){
   yyParser *pParser;
-  pParser = (yyParser*)(*mallocProc)( (size_t)sizeof(yyParser) );
+  pParser = (yyParser*)(*mallocProc)( (YYMALLOCARGTYPE)sizeof(yyParser) );
   if( pParser ){
     pParser->yyidx = -1;
 #ifdef YYTRACKMAXSTACKDEPTH
@@ -388,10 +443,12 @@ void *RuleParserAlloc(void *(*mallocProc)(size_t)){
   return pParser;
 }
 
-/* The following function deletes the value associated with a
-** symbol.  The symbol can be either a terminal or nonterminal.
-** "yymajor" is the symbol code, and "yypminor" is a pointer to
-** the value.
+/* The following function deletes the "minor type" or semantic value
+** associated with a symbol.  The symbol can be either a terminal
+** or nonterminal. "yymajor" is the symbol code, and "yypminor" is
+** a pointer to the value to be deleted.  The code used to do the 
+** deletions is derived from the %destructor and/or %token_destructor
+** directives of the input grammar.
 */
 static void yy_destructor(
   yyParser *yypParser,    /* The parser */
@@ -407,9 +464,10 @@ static void yy_destructor(
     ** being destroyed before it is finished parsing.
     **
     ** Note: during a reduce, the only symbols destroyed are those
-    ** which appear on the RHS of the rule, but which are not used
+    ** which appear on the RHS of the rule, but which are *not* used
     ** inside the C code.
     */
+/********* Begin destructor definitions ***************************************/
       /* TERMINAL Destructor */
     case 1: /* TERMINATION */
     case 2: /* UNINITIALIZED */
@@ -435,7 +493,7 @@ static void yy_destructor(
 {
 #line 11 "Parser.y"
  delete (yypminor->yy0); 
-#line 439 "Parser.c"
+#line 497 "Parser.c"
 }
       break;
       /* Default NON-TERMINAL Destructor */
@@ -452,38 +510,39 @@ static void yy_destructor(
     case 36: /* device_attribute */
 {
 #line 7 "Parser.y"
- (void)rule; 
-#line 457 "Parser.c"
+ (void)state; 
+#line 515 "Parser.c"
 }
       break;
     case 23: /* string */
 {
 #line 14 "Parser.y"
  delete (yypminor->yy20); 
-#line 464 "Parser.c"
+#line 522 "Parser.c"
 }
       break;
     case 24: /* stringvec */
 {
 #line 17 "Parser.y"
  delete (yypminor->yy49); 
-#line 471 "Parser.c"
+#line 529 "Parser.c"
 }
       break;
     case 25: /* usbiftype */
 {
 #line 20 "Parser.y"
  delete (yypminor->yy46); 
-#line 478 "Parser.c"
+#line 536 "Parser.c"
 }
       break;
     case 26: /* usbiftypevec */
 {
 #line 23 "Parser.y"
  delete (yypminor->yy18); 
-#line 485 "Parser.c"
+#line 543 "Parser.c"
 }
       break;
+/********* End destructor definitions *****************************************/
     default:  break;   /* If no destructor action specified: do nothing */
   }
 }
@@ -493,45 +552,37 @@ static void yy_destructor(
 **
 ** If there is a destructor routine associated with the token which
 ** is popped from the stack, then call it.
-**
-** Return the major token number for the symbol popped.
 */
-static int yy_pop_parser_stack(yyParser *pParser){
-  YYCODETYPE yymajor;
-  yyStackEntry *yytos = &pParser->yystack[pParser->yyidx];
-
-  if( pParser->yyidx<0 ) return 0;
+static void yy_pop_parser_stack(yyParser *pParser){
+  yyStackEntry *yytos;
+  assert( pParser->yyidx>=0 );
+  yytos = &pParser->yystack[pParser->yyidx--];
 #ifndef NDEBUG
-  if( yyTraceFILE && pParser->yyidx>=0 ){
+  if( yyTraceFILE ){
     fprintf(yyTraceFILE,"%sPopping %s\n",
       yyTracePrompt,
       yyTokenName[yytos->major]);
   }
 #endif
-  yymajor = yytos->major;
-  yy_destructor(pParser, yymajor, &yytos->minor);
-  pParser->yyidx--;
-  return yymajor;
+  yy_destructor(pParser, yytos->major, &yytos->minor);
 }
 
 /* 
-** Deallocate and destroy a parser.  Destructors are all called for
+** Deallocate and destroy a parser.  Destructors are called for
 ** all stack elements before shutting the parser down.
 **
-** Inputs:
-** <ul>
-** <li>  A pointer to the parser.  This should be a pointer
-**       obtained from RuleParserAlloc.
-** <li>  A pointer to a function used to reclaim memory obtained
-**       from malloc.
-** </ul>
+** If the YYPARSEFREENEVERNULL macro exists (for example because it
+** is defined in a %include section of the input grammar) then it is
+** assumed that the input pointer is never NULL.
 */
 void RuleParserFree(
   void *p,                    /* The parser to be deleted */
   void (*freeProc)(void*)     /* Function used to reclaim memory */
 ){
   yyParser *pParser = (yyParser*)p;
+#ifndef YYPARSEFREENEVERNULL
   if( pParser==0 ) return;
+#endif
   while( pParser->yyidx>=0 ) yy_pop_parser_stack(pParser);
 #if YYSTACKDEPTH<=0
   free(pParser->yystack);
@@ -552,10 +603,6 @@ int RuleParserStackPeak(void *p){
 /*
 ** Find the appropriate action for a parser given the terminal
 ** look-ahead token iLookAhead.
-**
-** If the look-ahead token is YYNOCODE, then check to see if the action is
-** independent of the look-ahead.  If it is, return the action, otherwise
-** return YY_NO_ACTION.
 */
 static int yy_find_shift_action(
   yyParser *pParser,        /* The parser */
@@ -564,63 +611,64 @@ static int yy_find_shift_action(
   int i;
   int stateno = pParser->yystack[pParser->yyidx].stateno;
  
-  if( stateno>YY_SHIFT_COUNT
-   || (i = yy_shift_ofst[stateno])==YY_SHIFT_USE_DFLT ){
-    return yy_default[stateno];
-  }
-  assert( iLookAhead!=YYNOCODE );
-  i += iLookAhead;
-  if( i<0 || i>=YY_ACTTAB_COUNT || yy_lookahead[i]!=iLookAhead ){
-    if( iLookAhead>0 ){
+  if( stateno>=YY_MIN_REDUCE ) return stateno;
+  assert( stateno <= YY_SHIFT_COUNT );
+  do{
+    i = yy_shift_ofst[stateno];
+    if( i==YY_SHIFT_USE_DFLT ) return yy_default[stateno];
+    assert( iLookAhead!=YYNOCODE );
+    i += iLookAhead;
+    if( i<0 || i>=YY_ACTTAB_COUNT || yy_lookahead[i]!=iLookAhead ){
+      if( iLookAhead>0 ){
 #ifdef YYFALLBACK
-      YYCODETYPE iFallback;            /* Fallback token */
-      if( iLookAhead<sizeof(yyFallback)/sizeof(yyFallback[0])
-             && (iFallback = yyFallback[iLookAhead])!=0 ){
-#ifndef NDEBUG
-        if( yyTraceFILE ){
-          fprintf(yyTraceFILE, "%sFALLBACK %s => %s\n",
-             yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[iFallback]);
-        }
-#endif
-        return yy_find_shift_action(pParser, iFallback);
-      }
-#endif
-#ifdef YYWILDCARD
-      {
-        int j = i - iLookAhead + YYWILDCARD;
-        if( 
-#if YY_SHIFT_MIN+YYWILDCARD<0
-          j>=0 &&
-#endif
-#if YY_SHIFT_MAX+YYWILDCARD>=YY_ACTTAB_COUNT
-          j<YY_ACTTAB_COUNT &&
-#endif
-          yy_lookahead[j]==YYWILDCARD
-        ){
+        YYCODETYPE iFallback;            /* Fallback token */
+        if( iLookAhead<sizeof(yyFallback)/sizeof(yyFallback[0])
+               && (iFallback = yyFallback[iLookAhead])!=0 ){
 #ifndef NDEBUG
           if( yyTraceFILE ){
-            fprintf(yyTraceFILE, "%sWILDCARD %s => %s\n",
-               yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[YYWILDCARD]);
+            fprintf(yyTraceFILE, "%sFALLBACK %s => %s\n",
+               yyTracePrompt, yyTokenName[iLookAhead], yyTokenName[iFallback]);
           }
-#endif /* NDEBUG */
-          return yy_action[j];
+#endif
+          assert( yyFallback[iFallback]==0 ); /* Fallback loop must terminate */
+          iLookAhead = iFallback;
+          continue;
         }
-      }
+#endif
+#ifdef YYWILDCARD
+        {
+          int j = i - iLookAhead + YYWILDCARD;
+          if( 
+#if YY_SHIFT_MIN+YYWILDCARD<0
+            j>=0 &&
+#endif
+#if YY_SHIFT_MAX+YYWILDCARD>=YY_ACTTAB_COUNT
+            j<YY_ACTTAB_COUNT &&
+#endif
+            yy_lookahead[j]==YYWILDCARD
+          ){
+#ifndef NDEBUG
+            if( yyTraceFILE ){
+              fprintf(yyTraceFILE, "%sWILDCARD %s => %s\n",
+                 yyTracePrompt, yyTokenName[iLookAhead],
+                 yyTokenName[YYWILDCARD]);
+            }
+#endif /* NDEBUG */
+            return yy_action[j];
+          }
+        }
 #endif /* YYWILDCARD */
+      }
+      return yy_default[stateno];
+    }else{
+      return yy_action[i];
     }
-    return yy_default[stateno];
-  }else{
-    return yy_action[i];
-  }
+  }while(1);
 }
 
 /*
 ** Find the appropriate action for a parser given the non-terminal
 ** look-ahead token iLookAhead.
-**
-** If the look-ahead token is YYNOCODE, then check to see if the action is
-** independent of the look-ahead.  If it is, return the action, otherwise
-** return YY_NO_ACTION.
 */
 static int yy_find_reduce_action(
   int stateno,              /* Current state number */
@@ -663,8 +711,30 @@ static void yyStackOverflow(yyParser *yypParser, YYMINORTYPE *yypMinor){
    while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
    /* Here code is inserted which will execute if the parser
    ** stack every overflows */
+/******** Begin %stack_overflow code ******************************************/
+/******** End %stack_overflow code ********************************************/
    RuleParserARG_STORE; /* Suppress warning about unused %extra_argument var */
 }
+
+/*
+** Print tracing information for a SHIFT action
+*/
+#ifndef NDEBUG
+static void yyTraceShift(yyParser *yypParser, int yyNewState){
+  if( yyTraceFILE ){
+    if( yyNewState<YYNSTATE ){
+      fprintf(yyTraceFILE,"%sShift '%s', go to state %d\n",
+         yyTracePrompt,yyTokenName[yypParser->yystack[yypParser->yyidx].major],
+         yyNewState);
+    }else{
+      fprintf(yyTraceFILE,"%sShift '%s'\n",
+         yyTracePrompt,yyTokenName[yypParser->yystack[yypParser->yyidx].major]);
+    }
+  }
+}
+#else
+# define yyTraceShift(X,Y)
+#endif
 
 /*
 ** Perform a shift action.
@@ -700,16 +770,7 @@ static void yy_shift(
   yytos->stateno = (YYACTIONTYPE)yyNewState;
   yytos->major = (YYCODETYPE)yyMajor;
   yytos->minor = *yypMinor;
-#ifndef NDEBUG
-  if( yyTraceFILE && yypParser->yyidx>0 ){
-    int i;
-    fprintf(yyTraceFILE,"%sShift %d\n",yyTracePrompt,yyNewState);
-    fprintf(yyTraceFILE,"%sStack:",yyTracePrompt);
-    for(i=1; i<=yypParser->yyidx; i++)
-      fprintf(yyTraceFILE," %s",yyTokenName[yypParser->yystack[i].major]);
-    fprintf(yyTraceFILE,"\n");
-  }
-#endif
+  yyTraceShift(yypParser, yyNewState);
 }
 
 /* The following table contains information about every rule that
@@ -775,28 +836,12 @@ static void yy_reduce(
 #ifndef NDEBUG
   if( yyTraceFILE && yyruleno>=0 
         && yyruleno<(int)(sizeof(yyRuleName)/sizeof(yyRuleName[0])) ){
-    fprintf(yyTraceFILE, "%sReduce [%s].\n", yyTracePrompt,
-      yyRuleName[yyruleno]);
+    yysize = yyRuleInfo[yyruleno].nrhs;
+    fprintf(yyTraceFILE, "%sReduce [%s], go to state %d.\n", yyTracePrompt,
+      yyRuleName[yyruleno], yymsp[-yysize].stateno);
   }
 #endif /* NDEBUG */
-
-  /* Silence complaints from purify about yygotominor being uninitialized
-  ** in some cases when it is copied into the stack after the following
-  ** switch.  yygotominor is uninitialized when a rule reduces that does
-  ** not set the value of its left-hand side nonterminal.  Leaving the
-  ** value of the nonterminal uninitialized is utterly harmless as long
-  ** as the value is never used.  So really the only thing this code
-  ** accomplishes is to quieten purify.  
-  **
-  ** 2007-01-16:  The wireshark project (www.wireshark.org) reports that
-  ** without this code, their parser segfaults.  I'm not sure what there
-  ** parser is doing to make this happen.  This is the second bug report
-  ** from wireshark this week.  Clearly they are stressing Lemon in ways
-  ** that it has not been previously stressed...  (SQLite ticket #2172)
-  */
-  /*memset(&yygotominor, 0, sizeof(yygotominor));*/
   yygotominor = yyzerominor;
-
 
   switch( yyruleno ){
   /* Beginning here are the reduction cases.  A typical example
@@ -807,12 +852,13 @@ static void yy_reduce(
   **  #line <lineno> <thisfile>
   **     break;
   */
+/********** Begin reduce actions **********************************************/
       case 0: /* rule ::= rule_spec */
 #line 34 "Parser.y"
 {
   yy_destructor(yypParser,30,&yymsp[0].minor);
 }
-#line 816 "Parser.c"
+#line 862 "Parser.c"
         break;
       case 1: /* rule_spec ::= target device_spec action */
 #line 36 "Parser.y"
@@ -821,31 +867,31 @@ static void yy_reduce(
   yy_destructor(yypParser,32,&yymsp[-1].minor);
   yy_destructor(yypParser,33,&yymsp[0].minor);
 }
-#line 825 "Parser.c"
+#line 871 "Parser.c"
         break;
       case 3: /* target ::= KEYWORD_ALLOW */
 #line 39 "Parser.y"
 {
-       rule->setTarget(Rule::Target::Allow);
+       state->rule.setTarget(Rule::Target::Allow);
   yy_destructor(yypParser,3,&yymsp[0].minor);
 }
-#line 833 "Parser.c"
+#line 879 "Parser.c"
         break;
       case 4: /* target ::= KEYWORD_BLOCK */
 #line 43 "Parser.y"
 {
-       rule->setTarget(Rule::Target::Block);
+       state->rule.setTarget(Rule::Target::Block);
   yy_destructor(yypParser,4,&yymsp[0].minor);
 }
-#line 841 "Parser.c"
+#line 887 "Parser.c"
         break;
       case 5: /* target ::= KEYWORD_REJECT */
 #line 47 "Parser.y"
 {
-       rule->setTarget(Rule::Target::Reject);
+       state->rule.setTarget(Rule::Target::Reject);
   yy_destructor(yypParser,5,&yymsp[0].minor);
 }
-#line 849 "Parser.c"
+#line 895 "Parser.c"
         break;
       case 6: /* device_spec ::= device_id device_attributes */
 #line 51 "Parser.y"
@@ -853,28 +899,28 @@ static void yy_reduce(
   yy_destructor(yypParser,34,&yymsp[-1].minor);
   yy_destructor(yypParser,35,&yymsp[0].minor);
 }
-#line 857 "Parser.c"
+#line 903 "Parser.c"
         break;
       case 7: /* device_id ::= HEXCHAR4 COLON ASTERISK */
 #line 53 "Parser.y"
 { // 1234:*
-  	  rule->setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
+  	  state->rule.setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
 	  delete yymsp[-2].minor.yy0;
   yy_destructor(yypParser,7,&yymsp[-1].minor);
   yy_destructor(yypParser,8,&yymsp[0].minor);
 }
-#line 867 "Parser.c"
+#line 913 "Parser.c"
         break;
       case 8: /* device_id ::= HEXCHAR4 COLON HEXCHAR4 */
 #line 58 "Parser.y"
 { // 1234:5678
-	  rule->setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
-	  rule->setProductID(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+	  state->rule.setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
+	  state->rule.setProductID(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
 	  delete yymsp[-2].minor.yy0;
 	  delete yymsp[0].minor.yy0;
   yy_destructor(yypParser,7,&yymsp[-1].minor);
 }
-#line 878 "Parser.c"
+#line 924 "Parser.c"
         break;
       case 9: /* device_id ::= ASTERISK COLON ASTERISK */
 #line 65 "Parser.y"
@@ -883,7 +929,7 @@ static void yy_reduce(
   yy_destructor(yypParser,7,&yymsp[-1].minor);
   yy_destructor(yypParser,8,&yymsp[0].minor);
 }
-#line 887 "Parser.c"
+#line 933 "Parser.c"
         break;
       case 11: /* device_attributes ::= device_attributes device_attribute */
 #line 68 "Parser.y"
@@ -891,72 +937,71 @@ static void yy_reduce(
   yy_destructor(yypParser,35,&yymsp[-1].minor);
   yy_destructor(yypParser,36,&yymsp[0].minor);
 }
-#line 895 "Parser.c"
+#line 941 "Parser.c"
         break;
       case 13: /* device_attribute ::= KEYWORD_HASH string */
 #line 71 "Parser.y"
 {
-		 rule->setDeviceHash(*yymsp[0].minor.yy20);
+		 state->rule.setDeviceHash(*yymsp[0].minor.yy20);
 		 delete yymsp[0].minor.yy20;
   yy_destructor(yypParser,9,&yymsp[-1].minor);
 }
-#line 904 "Parser.c"
+#line 950 "Parser.c"
         break;
       case 14: /* device_attribute ::= KEYWORD_NAME string */
 #line 76 "Parser.y"
 {
-		 rule->setDeviceName(*yymsp[0].minor.yy20);
+		 state->rule.setDeviceName(*yymsp[0].minor.yy20);
 		 delete yymsp[0].minor.yy20;
   yy_destructor(yypParser,10,&yymsp[-1].minor);
 }
-#line 913 "Parser.c"
+#line 959 "Parser.c"
         break;
       case 15: /* device_attribute ::= KEYWORD_SERIAL string */
 #line 81 "Parser.y"
 {
-		 rule->setSerialNumber(*yymsp[0].minor.yy20);
+		 state->rule.setSerialNumber(*yymsp[0].minor.yy20);
 		 delete yymsp[0].minor.yy20;
   yy_destructor(yypParser,11,&yymsp[-1].minor);
 }
-#line 922 "Parser.c"
+#line 968 "Parser.c"
         break;
       case 16: /* device_attribute ::= KEYWORD_VIAPORT string */
 #line 86 "Parser.y"
 {
-		 rule->refDevicePorts().push_back(*yymsp[0].minor.yy20);
-		 rule->setDevicePortsSetOperator(Rule::SetOperator::Equals);
+		 state->rule.refDevicePorts().push_back(*yymsp[0].minor.yy20);
+		 state->rule.setDevicePortsSetOperator(Rule::SetOperator::Equals);
 		 delete yymsp[0].minor.yy20;
   yy_destructor(yypParser,12,&yymsp[-1].minor);
 }
-#line 932 "Parser.c"
+#line 978 "Parser.c"
         break;
       case 17: /* device_attribute ::= KEYWORD_VIAPORT ports_set_op CURLYBRACE_OPEN stringvec CURLYBRACE_CLOSE */
 #line 92 "Parser.y"
 {
-		 rule->refDevicePorts().insert(rule->refDevicePorts().end(), yymsp[-1].minor.yy49->begin(), yymsp[-1].minor.yy49->end());
-		 rule->setDevicePortsSetOperator(yymsp[-3].minor.yy23);
+		 state->rule.refDevicePorts().insert(state->rule.refDevicePorts().end(), yymsp[-1].minor.yy49->begin(), yymsp[-1].minor.yy49->end());
+		 state->rule.setDevicePortsSetOperator(yymsp[-3].minor.yy23);
 		 delete yymsp[-1].minor.yy49;
   yy_destructor(yypParser,12,&yymsp[-4].minor);
   yy_destructor(yypParser,13,&yymsp[-2].minor);
   yy_destructor(yypParser,14,&yymsp[0].minor);
 }
-#line 944 "Parser.c"
+#line 990 "Parser.c"
         break;
       case 18: /* ports_set_op ::= SET_OPERATOR */
-      case 24: /* usbif_set_op ::= SET_OPERATOR */ yytestcase(yyruleno==24);
 #line 98 "Parser.y"
 {
-		    yygotominor.yy23 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
-		    delete yymsp[0].minor.yy0;
+		 yygotominor.yy23 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+		 delete yymsp[0].minor.yy0;
 }
-#line 953 "Parser.c"
+#line 998 "Parser.c"
         break;
       case 19: /* ports_set_op ::= */
 #line 103 "Parser.y"
 {
 		    yygotominor.yy23 = Rule::SetOperator::OneOf;
 }
-#line 960 "Parser.c"
+#line 1005 "Parser.c"
         break;
       case 20: /* stringvec ::= stringvec string */
 #line 107 "Parser.y"
@@ -965,43 +1010,51 @@ static void yy_reduce(
 	  yygotominor.yy49->push_back(*yymsp[0].minor.yy20);
 	  delete yymsp[0].minor.yy20;
 }
-#line 969 "Parser.c"
+#line 1014 "Parser.c"
         break;
       case 21: /* stringvec ::= */
 #line 113 "Parser.y"
 {
 	  yygotominor.yy49 = new StringVector();
 }
-#line 976 "Parser.c"
+#line 1021 "Parser.c"
         break;
       case 22: /* device_attribute ::= KEYWORD_WITHINTERFACE usbiftype */
 #line 117 "Parser.y"
 {
-	  rule->refInterfaceTypes().push_back(*yymsp[0].minor.yy46);
-	  rule->setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
+	  state->rule.refInterfaceTypes().push_back(*yymsp[0].minor.yy46);
+	  state->rule.setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
 	  delete yymsp[0].minor.yy46;
   yy_destructor(yypParser,16,&yymsp[-1].minor);
 }
-#line 986 "Parser.c"
+#line 1031 "Parser.c"
         break;
       case 23: /* device_attribute ::= KEYWORD_WITHINTERFACE usbif_set_op CURLYBRACE_OPEN usbiftypevec CURLYBRACE_CLOSE */
 #line 123 "Parser.y"
 {
-	  rule->refInterfaceTypes().insert(rule->refInterfaceTypes().end(), yymsp[-1].minor.yy18->begin(), yymsp[-1].minor.yy18->end());
-	  rule->setInterfaceTypesSetOperator(yymsp[-3].minor.yy23);
+	  state->rule.refInterfaceTypes().insert(state->rule.refInterfaceTypes().end(), yymsp[-1].minor.yy18->begin(), yymsp[-1].minor.yy18->end());
+	  state->rule.setInterfaceTypesSetOperator(yymsp[-3].minor.yy23);
 	  delete yymsp[-1].minor.yy18;
   yy_destructor(yypParser,16,&yymsp[-4].minor);
   yy_destructor(yypParser,13,&yymsp[-2].minor);
   yy_destructor(yypParser,14,&yymsp[0].minor);
 }
-#line 998 "Parser.c"
+#line 1043 "Parser.c"
+        break;
+      case 24: /* usbif_set_op ::= SET_OPERATOR */
+#line 129 "Parser.y"
+{
+		    yygotominor.yy23 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+		    delete yymsp[0].minor.yy0;
+}
+#line 1051 "Parser.c"
         break;
       case 25: /* usbif_set_op ::= */
 #line 134 "Parser.y"
 {
 		    yygotominor.yy23 = Rule::SetOperator::EqualsOrdered;
 }
-#line 1005 "Parser.c"
+#line 1058 "Parser.c"
         break;
       case 26: /* usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON HEXCHAR2 */
 #line 138 "Parser.y"
@@ -1015,7 +1068,7 @@ static void yy_reduce(
   yy_destructor(yypParser,7,&yymsp[-3].minor);
   yy_destructor(yypParser,7,&yymsp[-1].minor);
 }
-#line 1019 "Parser.c"
+#line 1072 "Parser.c"
         break;
       case 27: /* usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON ASTERISK */
 #line 147 "Parser.y"
@@ -1030,7 +1083,7 @@ static void yy_reduce(
   yy_destructor(yypParser,7,&yymsp[-1].minor);
   yy_destructor(yypParser,8,&yymsp[0].minor);
 }
-#line 1034 "Parser.c"
+#line 1087 "Parser.c"
         break;
       case 28: /* usbiftype ::= HEXCHAR2 COLON ASTERISK COLON ASTERISK */
 #line 156 "Parser.y"
@@ -1045,7 +1098,7 @@ static void yy_reduce(
   yy_destructor(yypParser,7,&yymsp[-1].minor);
   yy_destructor(yypParser,8,&yymsp[0].minor);
 }
-#line 1049 "Parser.c"
+#line 1102 "Parser.c"
         break;
       case 29: /* usbiftypevec ::= usbiftypevec usbiftype */
 #line 164 "Parser.y"
@@ -1054,23 +1107,23 @@ static void yy_reduce(
 	yygotominor.yy18->push_back(*yymsp[0].minor.yy46);
 	delete yymsp[0].minor.yy46;
 }
-#line 1058 "Parser.c"
+#line 1111 "Parser.c"
         break;
       case 30: /* usbiftypevec ::= */
 #line 170 "Parser.y"
 {
 	yygotominor.yy18 = new std::vector<USBInterfaceType>();
 }
-#line 1065 "Parser.c"
+#line 1118 "Parser.c"
         break;
       case 31: /* action ::= KEYWORD_ACTION string */
 #line 174 "Parser.y"
 {
-       rule->setAction(*yymsp[0].minor.yy20);
+       state->rule.setAction(*yymsp[0].minor.yy20);
        delete yymsp[0].minor.yy20;
   yy_destructor(yypParser,18,&yymsp[-1].minor);
 }
-#line 1074 "Parser.c"
+#line 1127 "Parser.c"
         break;
       case 33: /* string ::= DQ_STRING_BEGIN DQ_STRING DQ_STRING_END */
 #line 181 "Parser.y"
@@ -1082,7 +1135,7 @@ static void yy_reduce(
   yy_destructor(yypParser,19,&yymsp[-2].minor);
   yy_destructor(yypParser,21,&yymsp[0].minor);
 }
-#line 1086 "Parser.c"
+#line 1139 "Parser.c"
         break;
       default:
       /* (2) rule_spec ::= */ yytestcase(yyruleno==2);
@@ -1090,14 +1143,16 @@ static void yy_reduce(
       /* (12) device_attributes ::= */ yytestcase(yyruleno==12);
       /* (32) action ::= */ yytestcase(yyruleno==32);
         break;
+/********** End reduce actions ************************************************/
   };
+  assert( yyruleno>=0 && yyruleno<sizeof(yyRuleInfo)/sizeof(yyRuleInfo[0]) );
   yygoto = yyRuleInfo[yyruleno].lhs;
   yysize = yyRuleInfo[yyruleno].nrhs;
   yypParser->yyidx -= yysize;
   yyact = yy_find_reduce_action(yymsp[-yysize].stateno,(YYCODETYPE)yygoto);
-  if( yyact < YYNSTATE ){
-#ifdef NDEBUG
-    /* If we are not debugging and the reduce action popped at least
+  if( yyact <= YY_MAX_SHIFTREDUCE ){
+    if( yyact>YY_MAX_SHIFT ) yyact += YY_MIN_REDUCE - YY_MIN_SHIFTREDUCE;
+    /* If the reduce action popped at least
     ** one element off the stack, then we can push the new element back
     ** onto the stack here, and skip the stack overflow test in yy_shift().
     ** That gives a significant speed improvement. */
@@ -1107,13 +1162,12 @@ static void yy_reduce(
       yymsp->stateno = (YYACTIONTYPE)yyact;
       yymsp->major = (YYCODETYPE)yygoto;
       yymsp->minor = yygotominor;
-    }else
-#endif
-    {
+      yyTraceShift(yypParser, yyact);
+    }else{
       yy_shift(yypParser,yyact,yygoto,&yygotominor);
     }
   }else{
-    assert( yyact == YYNSTATE + YYNRULE + 1 );
+    assert( yyact == YY_ACCEPT_ACTION );
     yy_accept(yypParser);
   }
 }
@@ -1134,6 +1188,8 @@ static void yy_parse_failed(
   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
+/************ Begin %parse_failure code ***************************************/
+/************ End %parse_failure code *****************************************/
   RuleParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 #endif /* YYNOERRORRECOVERY */
@@ -1148,10 +1204,12 @@ static void yy_syntax_error(
 ){
   RuleParserARG_FETCH;
 #define TOKEN (yyminor.yy0)
+/************ Begin %syntax_error code ****************************************/
 #line 28 "Parser.y"
 
   throw std::runtime_error("rule syntax error");
-#line 1155 "Parser.c"
+#line 1212 "Parser.c"
+/************ End %syntax_error code ******************************************/
   RuleParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
@@ -1170,6 +1228,8 @@ static void yy_accept(
   while( yypParser->yyidx>=0 ) yy_pop_parser_stack(yypParser);
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
+/*********** Begin %parse_accept code *****************************************/
+/*********** End %parse_accept code *******************************************/
   RuleParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
@@ -1200,7 +1260,9 @@ void RuleParser(
 ){
   YYMINORTYPE yyminorunion;
   int yyact;            /* The parser action. */
+#if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   int yyendofinput;     /* True if we are at the end of input */
+#endif
 #ifdef YYERRORSYMBOL
   int yyerrorhit = 0;   /* True if yymajor has invoked an error */
 #endif
@@ -1221,26 +1283,34 @@ void RuleParser(
     yypParser->yyerrcnt = -1;
     yypParser->yystack[0].stateno = 0;
     yypParser->yystack[0].major = 0;
+#ifndef NDEBUG
+    if( yyTraceFILE ){
+      fprintf(yyTraceFILE,"%sInitialize. Empty stack. State 0\n",
+              yyTracePrompt);
+    }
+#endif
   }
   yyminorunion.yy0 = yyminor;
+#if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   yyendofinput = (yymajor==0);
+#endif
   RuleParserARG_STORE;
 
 #ifndef NDEBUG
   if( yyTraceFILE ){
-    fprintf(yyTraceFILE,"%sInput %s\n",yyTracePrompt,yyTokenName[yymajor]);
+    fprintf(yyTraceFILE,"%sInput '%s'\n",yyTracePrompt,yyTokenName[yymajor]);
   }
 #endif
 
   do{
     yyact = yy_find_shift_action(yypParser,(YYCODETYPE)yymajor);
-    if( yyact<YYNSTATE ){
-      assert( !yyendofinput );  /* Impossible to shift the $ token */
+    if( yyact <= YY_MAX_SHIFTREDUCE ){
+      if( yyact > YY_MAX_SHIFT ) yyact += YY_MIN_REDUCE - YY_MIN_SHIFTREDUCE;
       yy_shift(yypParser,yyact,yymajor,&yyminorunion);
       yypParser->yyerrcnt--;
       yymajor = YYNOCODE;
-    }else if( yyact < YYNSTATE + YYNRULE ){
-      yy_reduce(yypParser,yyact-YYNSTATE);
+    }else if( yyact <= YY_MAX_REDUCE ){
+      yy_reduce(yypParser,yyact-YY_MIN_REDUCE);
     }else{
       assert( yyact == YY_ERROR_ACTION );
 #ifdef YYERRORSYMBOL
@@ -1290,7 +1360,7 @@ void RuleParser(
           yymx != YYERRORSYMBOL &&
           (yyact = yy_find_reduce_action(
                         yypParser->yystack[yypParser->yyidx].stateno,
-                        YYERRORSYMBOL)) >= YYNSTATE
+                        YYERRORSYMBOL)) >= YY_MIN_REDUCE
         ){
           yy_pop_parser_stack(yypParser);
         }
@@ -1340,5 +1410,15 @@ void RuleParser(
 #endif
     }
   }while( yymajor!=YYNOCODE && yypParser->yyidx>=0 );
+#ifndef NDEBUG
+  if( yyTraceFILE ){
+    int i;
+    fprintf(yyTraceFILE,"%sReturn. Stack=",yyTracePrompt);
+    for(i=1; i<=yypParser->yyidx; i++)
+      fprintf(yyTraceFILE,"%c%s", i==1 ? '[' : ' ', 
+              yyTokenName[yypParser->yystack[i].major]);
+    fprintf(yyTraceFILE,"]\n");
+  }
+#endif
   return;
 }
