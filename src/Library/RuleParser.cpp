@@ -80,7 +80,7 @@ namespace usbguard
        * If the caller provided a file context, add it to the
        * exception.
        */
-      if (file == nullptr) {
+      if (file != nullptr) {
         ex.setFileInfo(*file, line);
       }
       throw ex;
