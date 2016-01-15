@@ -10,7 +10,20 @@ endif
 
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST=\
-	LICENSE
+	LICENSE \
+	dist/usbguard-daemon.service
+
+if SYSTEMD_SUPPORT_ENABLED
+SYSTEMD_UNIT_DIR= /lib/systemd/system
+
+install-data-hook:
+	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+	$(INSTALL) $(top_srcdir)/dist/usbguard.service \
+	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard-daemon.service
+endif
 
 dist_man8_MANS=\
 	doc/usbguard-daemon.roff

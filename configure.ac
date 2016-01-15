@@ -204,11 +204,23 @@ AC_ARG_ENABLE([debug-build],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug-build]) ;;
      esac], [debug=no])
 
+AC_ARG_ENABLE([systemd],
+     [AC_HELP_STRING([--enable-systemd], [install the systemd service unit file (default=no)])],
+     [case "${enableval}" in
+       yes) systemd=yes ;;
+       no)  systemd=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-systemd]) ;;
+     esac], [systemd=no])
+
 if test "$debug" = "yes"; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
 else
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_DISABLED"
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
+fi
+
+if test "$systemd" = "yes"; then
+   AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
 fi
 
 if test "$build_bundled_libqb" = "yes"; then
@@ -233,6 +245,7 @@ fi
 
 AM_CONDITIONAL([BUILD_BUNDLED_LIBSODIUM], [test "$build_bundled_libsodium" = "yes"])
 AM_CONDITIONAL([BUILD_BUNDLED_LIBQB], [test "$build_bundled_libqb" = "yes"])
+AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "$systemd" = "yes" ])
 
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
