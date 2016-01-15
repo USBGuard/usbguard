@@ -38,31 +38,29 @@ namespace usbguard
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)
   {
-    stream << " USAGE: " << ::basename(usbguard_arg0)
+    stream << " Usage: " << usbguard_arg0
            << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
     stream << std::endl;
-    stream << " OPTIONS" << std::endl;
-    stream << " =======" << std::endl;
+    stream << " Options:" << std::endl;
     stream << "" << std::endl;
-    stream << " COMMANDS" << std::endl;
-    stream << " ========" << std::endl;
-    stream << "\tlist-devices        List all USB devices recognized by the USBGuard daemon." << std::endl;
-    stream << "\tallow-device <id>   Authorize a device to interact with the system." << std::endl;
-    stream << "\tblock-device <id>   Deauthorize a device." << std::endl;
-    stream << "\treject-device <id>  Deauthorize and remove a device from the system." << std::endl;
+    stream << " Commands:" << std::endl;
+    stream << "  list-devices        List all USB devices recognized by the USBGuard daemon." << std::endl;
+    stream << "  allow-device <id>   Authorize a device to interact with the system." << std::endl;
+    stream << "  block-device <id>   Deauthorize a device." << std::endl;
+    stream << "  reject-device <id>  Deauthorize and remove a device from the system." << std::endl;
     stream << std::endl;
-    stream << "\tlist-rules          List the rule set (policy) used by the USBGuard daemon." << std::endl;
-    stream << "\tappend-rule <rule>  Append a rule to the rule set." << std::endl;
-    stream << "\tremove-rule <id>    Remove a rule from the rule set." << std::endl;
+    stream << "  list-rules          List the rule set (policy) used by the USBGuard daemon." << std::endl;
+    stream << "  append-rule <rule>  Append a rule to the rule set." << std::endl;
+    stream << "  remove-rule <id>    Remove a rule from the rule set." << std::endl;
     stream << std::endl;
-    stream << "\tgenerate-policy     Generate a rule set (policy) based on the connected USB devices." << std::endl;
-    stream << "\twatch               Watch for IPC interface events and print them to stdout." << std::endl;
+    stream << "  generate-policy     Generate a rule set (policy) based on the connected USB devices." << std::endl;
+    stream << "  watch               Watch for IPC interface events and print them to stdout." << std::endl;
     stream << std::endl;
   }
 
   static int usbguard_cli(int argc, char *argv[])
   {
-    usbguard_arg0 = argv[0];
+    usbguard_arg0 = ::basename(argv[0]);
 
     Logger::setVerbosityLevel(Logger::Debug);
     Logger::setConsoleOutput(true);

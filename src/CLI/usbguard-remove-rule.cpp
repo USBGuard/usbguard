@@ -6,17 +6,50 @@
 
 namespace usbguard
 {
-  static const char *options_short = "hab";
+  static const char *options_short = "h";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
+    { nullptr, 0, nullptr, 0 }
   };
+
+  static void showHelp(std::ostream& stream)
+  {
+    stream << " Usage: " << usbguard_arg0 << " remove-rule [OPTIONS] <id>" << std::endl;
+    stream << std::endl;
+    stream << " Options:" << std::endl;
+    stream << "  -h, --help  Show this help." << std::endl;
+    stream << std::endl;
+  }
 
   int usbguard_remove_rule(int argc, char *argv[])
   {
-    usbguard::IPCClient ipc(/*connected=*/true);
+    int opt = 0;
 
-    ipc.removeRule(std::stoul(argv[1]));
+    while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
+      switch(opt) {
+        case 'h':
+          showHelp(std::cout);
+          return EXIT_SUCCESS;
+        case '?':
+          showHelp(std::cerr);
+        default:
+          return EXIT_FAILURE;
+      }
+    }
+
+    argc -= optind;
+    argv += optind;
+
+    if (argc != 1) {
+      showHelp(std::cerr);
+      return EXIT_FAILURE;
+    }
+
+    const uint32_t seqn = std::stoul(argv[1]);
+
+    usbguard::IPCClient ipc(/*connected=*/true);
+    ipc.removeRule(seqn);
 
     return EXIT_SUCCESS;
   }

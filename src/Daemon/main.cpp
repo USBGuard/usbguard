@@ -57,16 +57,16 @@ void printUsage(std::ostream& stream, const char *arg0)
   stream << std::endl;
   stream << "Usage: " << filenameFromPath(String(arg0), true) << " [OPTIONS]" << std::endl;
   stream << std::endl;
-  stream << "   -d        \t Enabled debugging messages in the log." << std::endl;
-  stream << "   -s        \t Log to syslog." << std::endl;
-  stream << "   -k        \t Log to console." << std::endl;
-  stream << "   -l <path> \t Log to a file at `path'." << std::endl;
-  stream << "   -p <path> \t Write PID to a file at `path'." << std::endl;
-  stream << "   -c <path> \t Load configuration from a file at `path'." << std::endl;
-  stream << "             \t (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
-  stream << "   -C        \t Don't drop capabilities." << std::endl;
-  stream << "   -W        \t Don't setup seccomp whitelist." << std::endl;
-  stream << "   -h        \t Show this usage screen." << std::endl;
+  stream << "  -d         Enable debugging messages in the log." << std::endl;
+  stream << "  -s         Log to syslog." << std::endl;
+  stream << "  -k         Log to console." << std::endl;
+  stream << "  -l <path>  Log to a file at `path'." << std::endl;
+  stream << "  -p <path>  Write PID to a file at `path'." << std::endl;
+  stream << "  -c <path>  Load configuration from a file at `path'." << std::endl;
+  stream << "             (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
+  stream << "  -C         Don't drop capabilities." << std::endl;
+  stream << "  -W         Don't setup seccomp whitelist." << std::endl;
+  stream << "  -h         Show this usage screen." << std::endl;
   stream << std::endl;
 }
 
