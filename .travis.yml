@@ -1,15 +1,25 @@
+env:
+  global:
+  - secure: ZmM4qgsgTYcxgDaQQMhphPerUo9SYm2TKyxzA07ArEZf9Ur10taagze/sueNa4g5TxeoynxpxeyoUvPpqPrucNPE70uFimH1TW55Hi3WWzBVwNfvLFXIBUcXAmVi3BalNAXJvhyjZgRwP+39wRkJG2V9vZjtDzB7umb0RPjbwBs=
 language: cpp
 sudo: required
 dist: trusty
 compiler:
-  - clang
-  - gcc
-
+- clang
+- gcc
 os: linux
-
 before_install:
-  - sudo add-apt-repository -y ppa:chris-lea/libsodium
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
-
-script: ./autogen.sh && ./configure && make && make check
+- sudo add-apt-repository -y ppa:chris-lea/libsodium
+- sudo apt-get -qq update
+- sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
+script: "./autogen.sh && ./configure && make && make check"
+addons:
+  coverity_scan:
+    project:
+      name: dkopecek/usbguard
+      version: 0.4
+      description: USBGuard
+    notification_email: dnk1618@gmail.com
+    build_command_prepend: "./autogen.sh && ./configure"
+    build_command: make
+    branch_pattern: coverity_scan
