@@ -1,0 +1,13 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+  - clang
+  - gcc
+
+os: linux
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
+
