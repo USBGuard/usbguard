@@ -37,7 +37,13 @@ namespace usbguard
     _with_hash = state;
     return;
   }
-  
+
+  void PolicyGenerator::setHashOnly(bool state)
+  {
+    _hash_only = state;
+    return;
+  }
+
   void PolicyGenerator::setPortSpecificRules(bool state)
   {
     _port_specific = state;
@@ -47,7 +53,7 @@ namespace usbguard
   void PolicyGenerator::generate()
   {
     _dm->scan();
-    
+
     if (_with_catchall) {
       Rule catchall_rule;
       catchall_rule.setTarget(_catchall_target);

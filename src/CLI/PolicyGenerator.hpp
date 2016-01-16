@@ -29,6 +29,7 @@ namespace usbguard
     PolicyGenerator();
 
     void setWithHashAttribute(bool state);
+    void setHashOnly(bool state);
     void setPortSpecificRules(bool state);
     void setPortSpeficicRuleNoSerial(bool state);
     void setExplicitCatchAllRule(bool state, Rule::Target target = Rule::Target::Block);
@@ -49,6 +50,7 @@ namespace usbguard
     Pointer<DeviceManager> _dm;
 
     bool _with_hash;
+    bool _hash_only;
     bool _port_specific;
     bool _port_specific_noserial;
     bool _with_catchall;
