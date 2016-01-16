@@ -1,16 +1,7 @@
 SUBDIRS=src/Tests/
-EXTRA_DIST=
-
-if BUILD_BUNDLED_LIBQB
-SUBDIRS += src/ThirdParty/libqb
-endif
-
-if BUILD_BUNDLED_LIBSODIUM
-SUBDIRS += src/ThirdParty/libsodium
-endif
 
 ACLOCAL_AMFLAGS= -I m4
-EXTRA_DIST +=\
+EXTRA_DIST =\
 	LICENSE \
 	dist/usbguard.service
 
@@ -165,9 +156,7 @@ EXTRA_DIST +=\
 	README.md \
 	src/ThirdParty/spdlog \
 	src/ThirdParty/json/src/json.hpp \
-	src/ThirdParty/Catch \
-	src/ThirdParty/libqb \
-	src/ThirdParty/libsodium
+	src/ThirdParty/Catch
 
 bin_PROGRAMS=\
 	usbguard \

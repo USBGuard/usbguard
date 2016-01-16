@@ -60,51 +60,27 @@ AC_PROG_LIBTOOL
 # Checks for required libraries.
 #
 PKG_CHECK_MODULES([udev], [libudev >= 200],
-[libudev_summary="system-wide; $udev_LIBS"],
+[libudev_summary="system-wide; $udev_CFLAGS $udev_LIBS"],
 [AC_MSG_FAILURE([libudev development files not found!])]
 )
 
 #
 # qb library
 #
-AC_ARG_WITH([bundled-qb], AS_HELP_STRING([--with-bundled-qb], [Build using the bundled qb library]))
-if test "x$with_bundled_qb" = "xyes"; then
-   qb_LIBS="\$(top_builddir)/src/ThirdParty/libqb/lib/libqb.la"
-   qb_CFLAGS="-I\$(top_builddir)/src/ThirdParty/libqb/include -I\$(top_srcdir)/src/ThirdParty/libqb/include"
-   AC_SUBST([qb_LIBS])
-   AC_SUBST([qb_CFLAGS])
-   build_bundled_libqb=yes
-   libqb_summary="bundled; $qb_LIBS"
-else
-   PKG_CHECK_MODULES([qb], [libqb >= 0.16.0],
-   [build_bundled_libqb=no
-    libqb_summary="system-wide; $qb_LIBS"]
-   ,
-   [AC_MSG_FAILURE([System-wide libqb development files not found! Re-run with the --with-bundled-qb option or install libqb development files.])]
-   )
-fi
+PKG_CHECK_MODULES([qb], [libqb >= 0.16.0],
+[AC_DEFINE([HAVE_LIBQB], [1], [libqb API available])
+libqb_summary="system-wide; $qb_CFLAGS $qb_LIBS"],
+[AC_MSG_FAILURE([libqb development files not found!])]
+)
 
 #
 # sodium library
 #
-AC_ARG_WITH([bundled-sodium], AS_HELP_STRING([--with-bundled-sodium], [Build using the bundled sodium library]))
-if test "x$with_bundled_sodium" = "xyes"; then
-   sodium_LIBS="\$(top_builddir)/src/ThirdParty/libsodium/src/libsodium/libsodium.la"
-   sodium_CFLAGS="-I\$(top_builddir)/src/ThirdParty/libsodium/src/libsodium/include \
-                  -I\$(top_srcdir)/src/ThirdParty/libsodium/src/libsodium/include \
-                  -I\$(top_srcdir)/src/ThirdParty/libsodium/src/libsodium/include/sodium"
-   AC_SUBST([sodium_LIBS])
-   AC_SUBST([sodium_CFLAGS])
-   build_bundled_libsodium=yes
-   libsodium_summary="bundled; $sodium_LIBS"
-else
-   PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
-   [build_bundled_libsodium=no
-    libsodium_summary="system-wide; $sodium_LIBS"]
-   ,
-   [AC_MSG_FAILURE([System-wide libsodium development files not found! Re-run with the --with-bundled-sodium option or install libsodium development files.])]
-   )
-fi
+PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
+[AC_DEFINE([HAVE_LIBSODIUM], [1], [libsodium API available])
+libsodium_summary="system-wide; $sodium_CFLAGS $sodium_LIBS"],
+[AC_MSG_FAILURE([libsodium development files not found!])]
+)
 
 #
 # Check for optional libraries
@@ -112,7 +88,8 @@ fi
 PKG_CHECK_MODULES([seccomp], [libseccomp >= 2.0.0],
 [AC_DEFINE([HAVE_SECCOMP], [1], [seccomp API usable])
 libseccomp_summary="system-wide; $seccomp_LIBS"],
-[AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])]
+[AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])
+libseccomp_summary="not found"]
 )
 
 PKG_CHECK_MODULES([libcapng], [libcap-ng >= 0.7.0],
@@ -125,12 +102,13 @@ libcap_ng_summary="not found"]
 #
 # json C++ library
 #
+with_bundled_json=yes
 AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]))
 if test "x$with_bundled_json" = "xyes"; then
 	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
 	json_LIBS=""
 	AC_MSG_NOTICE([Using bundled json library])
-	json_summary="bundled; $json_LIBS"
+	json_summary="bundled; $json_CFLAGS $json_LIBS"
 else
 	SAVE_CPPFLAGS=$CPPFLAGS
 	CPPFLAGS="-std=c++11 $CPPFLAGS"
@@ -140,7 +118,7 @@ else
 	json_CFLAGS=""
 	json_LIBS=""
 	CPPFLAGS=$SAVE_CPPFLAGS
-	json_summary="system-wide; $json_LIBS"
+	json_summary="system-wide; $json_CFLAGS $json_LIBS"
 fi
 AC_SUBST([json_CFLAGS])
 AC_SUBST([json_LIBS])
@@ -148,12 +126,13 @@ AC_SUBST([json_LIBS])
 #
 # spdlog C++ library
 #
+with_bundled_spdlog=yes
 AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]))
 if test "x$with_bundled_spdlog" = "xyes"; then
 	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
 	spdlog_LIBS=""
 	AC_MSG_NOTICE([Using bundled spdlog library])
-	spdlog_summary="bundled; $spdlog_CFLAGS"
+	spdlog_summary="bundled; $spdlog_CFLAGS $spdlog_LIBS"
 else
 	SAVE_CPPFLAGS=$CPPFLAGS
 	CPPFLAGS="-std=c++11 $CPPFLAGS"
@@ -163,7 +142,7 @@ else
 	spdlog_CFLAGS=""
 	spdlog_LIBS=""
 	CPPFLAGS=$SAVE_CPPFLAGS
-	spdlog_summary="system-wide; $spdlog_CFLAGS"
+	spdlog_summary="system-wide; $spdlog_CFLAGS $spdlog_LIBS"
 fi
 AC_SUBST([spdlog_CFLAGS])
 AC_SUBST([spdlog_LIBS])
@@ -223,28 +202,6 @@ if test "$systemd" = "yes"; then
    AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
 fi
 
-if test "$build_bundled_libqb" = "yes"; then
-   ac_configure_args_pre="$ac_configure_args"
-   ac_configure_args_post="$ac_configure_args --disable-shared --enable-static --with-pic --disable-slow-tests --disable-coverage"
-   ac_configure_args="$ac_configure_args_post"
-   AC_CONFIG_COMMANDS_PRE([ac_configure_args="$ac_configure_args_pre"])
-   AC_CONFIG_COMMANDS_POST([ac_configure_args="$ac_configure_args_post"])
-   AC_CONFIG_SUBDIRS([src/ThirdParty/libqb])
-   ac_configure_args="$ac_configure_args_pre"
-fi
-
-if test "$build_bundled_libsodium" = "yes"; then
-   ac_configure_args_pre="$ac_configure_args"
-   ac_configure_args_post="$ac_configure_args --disable-shared --enable-static --enable-minimal --with-pic"
-   ac_configure_args="$ac_configure_args_post"
-   AC_CONFIG_COMMANDS_PRE([ac_configure_args="$ac_configure_args_pre"])
-   AC_CONFIG_COMMANDS_POST([ac_configure_args="$ac_configure_args_post"])
-   AC_CONFIG_SUBDIRS([src/ThirdParty/libsodium])
-   ac_configure_args="$ac_configure_args_pre"
-fi
-
-AM_CONDITIONAL([BUILD_BUNDLED_LIBSODIUM], [test "$build_bundled_libsodium" = "yes"])
-AM_CONDITIONAL([BUILD_BUNDLED_LIBQB], [test "$build_bundled_libqb" = "yes"])
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "$systemd" = "yes" ])
 
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
