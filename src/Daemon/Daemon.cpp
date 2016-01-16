@@ -644,7 +644,7 @@ namespace usbguard
 
   json Daemon::processJSON(const json& jobj)
   {
-    logger->debug("Processing JSON object: {}", jobj);
+    logger->debug("Processing JSON object: {}", jobj.dump());
 
     if (jobj.count("_m")) {
       return processMethodCallJSON(jobj);
@@ -710,7 +710,7 @@ namespace usbguard
       throw IPCException(IPCException::InternalError, ex.what(), jobj.at("_i").get<uint64_t>());
     }
 
-    logger->debug("Returning JSON object: {}", retval);
+    logger->debug("Returning JSON object: {}", retval.dump());
     return std::move(retval);
   }
 
