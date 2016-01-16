@@ -8,7 +8,7 @@ compiler:
 os: linux
 
 before_install:
-  - sudo add-apt-repository ppa:chris-lea/libsodium
+  - sudo add-apt-repository -y ppa:chris-lea/libsodium
   - sudo apt-get -qq update
   - sudo apt-get install libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
 
