@@ -33,7 +33,7 @@ dist_man5_MANS=\
 	doc/usbguard-rules.conf.roff
 
 dist_man1_MANS=\
-	doc/usbguard-generate-policy.roff
+	doc/usbguard.roff
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
