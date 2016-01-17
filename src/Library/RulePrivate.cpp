@@ -30,6 +30,7 @@ namespace usbguard {
     _target = Rule::Target::Invalid;
     _timeout_seconds = 0;
     _device_ports_op = Rule::SetOperator::Match;
+    _device_configurations = 0;
     _interface_types_op = Rule::SetOperator::Match;
     return;
   }
@@ -51,6 +52,7 @@ namespace usbguard {
     _device_hash = rhs._device_hash;
     _device_ports = rhs._device_ports;
     _device_ports_op = rhs._device_ports_op;
+    _device_configurations = rhs._device_configurations;
     _interface_types = rhs._interface_types;
     _interface_types_op = rhs._interface_types_op;
     _target = rhs._target;

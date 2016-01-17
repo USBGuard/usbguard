@@ -24,6 +24,7 @@ namespace usbguard
   PolicyGenerator::PolicyGenerator()
   {
     _with_hash = true;
+    _hash_only = false;
     _port_specific = false;
     _port_specific_noserial = true;
     _with_catchall = false;
