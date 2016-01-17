@@ -12,7 +12,7 @@ before_install:
 - sudo add-apt-repository -y ppa:chris-lea/libsodium
 - sudo apt-get -qq update
 - sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
-script: "./autogen.sh && ./configure && make && make check"
+script: "./autogen.sh && ./configure --enable-gcov && make && make check"
 addons:
   coverity_scan:
     project:
@@ -23,3 +23,5 @@ addons:
     build_command_prepend: "./autogen.sh && ./configure"
     build_command: make
     branch_pattern: coverity_scan
+after_success:
+- coveralls
