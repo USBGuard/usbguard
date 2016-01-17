@@ -47,6 +47,18 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
+AC_ARG_ENABLE([gcov],
+     [AC_HELP_STRING([--enable-gcov], [enable instrumented compilation for code coverage testing (default=no)])],
+     [case "${enableval}" in
+       yes) gcov=yes ;;
+       no)  gcov=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-gcov]) ;;
+     esac], [gcov=no])
+
+if test "$gcov" = "yes"; then
+   CXXFLAGS="$CXXFLAGS --coverage"
+fi
+
 #
 # Checks for programs.
 #
@@ -191,14 +203,6 @@ AC_ARG_ENABLE([systemd],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-systemd]) ;;
      esac], [systemd=no])
 
-AC_ARG_ENABLE([gcov],
-     [AC_HELP_STRING([--enable-gcov], [enable instrumented compilation for code coverage testing (default=no)])],
-     [case "${enableval}" in
-       yes) gcov=yes ;;
-       no)  gcov=no ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-gcov]) ;;
-     esac], [gcov=no])
-
 if test "$debug" = "yes"; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
 else
@@ -208,12 +212,6 @@ fi
 
 if test "$systemd" = "yes"; then
    AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
-fi
-
-if test "$gcov" = "yes"; then
-   CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage --coverage"
-   LDFLAGS="$LDFLAGS -fprofile-arcs -ftest-coverage"
-   LIBS="-lgcov $LIBS"
 fi
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "$systemd" = "yes" ])
