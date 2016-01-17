@@ -41,20 +41,6 @@ The \fBusbguard\fR command provides a command\-line interface (CLI) to the \fBus
 .
 .SH "OPTIONS"
 .
-.IP "\(bu" 4
-\fB\-P\fR
-Don\'t generate port specific rules for devices without an iSerial value\. Without this option, the tool will add a via\-port attribute to any device that doesn\'t provide a serial number\. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port\. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time\.
-.
-.IP "\(bu" 4
-\fB\-t <target>\fR
-Generate an explicit "catch all" rule with the specified target\. The target can be one of the following values: \fBallow\fR, \fBblock\fR, \fBreject\fR\|\.
-.
-.IP "\(bu" 4
-\fB\-h\fR
-Show the help/usage screen\.
-.
-.IP "" 0
-.
 .SH "SUB\-COMMANDS"
 \fBusbguard list\-devices\fR
 .
@@ -194,12 +180,24 @@ Generate a rule set (policy) which authorizes the currently connected USB device
 Available options:
 .
 .IP "\(bu" 4
-\fB\-P\fR
+\fB\-p\fR,\fB\-\-with\-ports\fR
+Generate port specific rules for all devices\. By default, port specific rules are generated only for devices which do not export an iSerial value\.
+.
+.IP "\(bu" 4
+\fB\-P\fR,\fB\-\-no\-ports\-sn\fR
 Don\'t generate port specific rules for devices without an iSerial value\. Without this option, the tool will add a via\-port attribute to any device that doesn\'t provide a serial number\. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port\. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time\.
 .
 .IP "\(bu" 4
-\fB\-t <target>\fR
+\fB\-t\fR,\fB\-\-target <target>\fR
 Generate an explicit "catch all" rule with the specified target\. The target can be one of the following values: \fBallow\fR, \fBblock\fR, \fBreject\fR\|\.
+.
+.IP "\(bu" 4
+\fB\-X\fR,\fB\-\-no\-hashes\fR
+Don\'t generate a hash attribute for each device\.
+.
+.IP "\(bu" 4
+\fB\-H\fR,\fB\-\-hash\-only\fR
+Generate a hash\-only policy\.
 .
 .IP "\(bu" 4
 \fB\-h\fR,\fB\-\-help\fR

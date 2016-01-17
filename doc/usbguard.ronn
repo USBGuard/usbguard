@@ -118,6 +118,9 @@ Generate a rule set (policy) which authorizes the currently connected USB device
 
 Available options:
 
+ * `-p`,`--with-ports`
+   Generate port specific rules for all devices. By default, port specific rules are generated only for devices which do not export an iSerial value.
+
  * `-P`,`--no-ports-sn`
    Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a via-port attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time.
 

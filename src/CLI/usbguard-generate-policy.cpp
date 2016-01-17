@@ -27,11 +27,12 @@
 
 namespace usbguard
 {
-  static const char *options_short = "hPt:HX";
+  static const char *options_short = "hpPt:HX";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
-    { "without-ports", no_argument, nullptr, 'P' },
+    { "with-ports", no_argument, nullptr, 'p' },
+    { "no-ports-sn", no_argument, nullptr, 'P' },
     { "target", required_argument, nullptr, 't' },
     { "hash-only", no_argument, nullptr, 'H' },
     { "no-hashes", no_argument, nullptr, 'X' },
@@ -43,6 +44,7 @@ namespace usbguard
     stream << " Usage: " << usbguard_arg0 << " generate-policy [OPTIONS]" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
+    stream << "  -p, --with-ports   Generate port specific rules for all devices." << std::endl;
     stream << "  -P, --no-ports-sn  Don't generate port specific rule for devices" << std::endl;
     stream << "                     without an iSerial value." << std::endl;
     stream << "  -t, --target <T>   Generate an explicit \"catch all\" rule with the" << std::endl;
@@ -55,7 +57,8 @@ namespace usbguard
 
   int usbguard_generate_policy(int argc, char **argv)
   {
-    bool port_specific = true;
+    bool port_specific = false;
+    bool port_specific_noserial = true;
     bool with_catchall = false;
     std::string catchall_target = "block";
     bool with_hashes = true;
@@ -67,8 +70,11 @@ namespace usbguard
         case 'h':
           showHelp(std::cout);
           return EXIT_SUCCESS;
+        case 'p':
+          port_specific = true;
+          break;
         case 'P':
-          port_specific = false;
+          port_specific_noserial = false;
           break;
         case 't':
           with_catchall = true;
@@ -92,6 +98,7 @@ namespace usbguard
     generator.setWithHashAttribute(with_hashes);
     generator.setHashOnly(only_hashes);
     generator.setPortSpecificRules(port_specific);
+    generator.setPortSpecificNoSerialRules(port_specific_noserial);
     generator.setExplicitCatchAllRule(with_catchall,
                                       Rule::targetFromString(catchall_target));
     generator.generate();

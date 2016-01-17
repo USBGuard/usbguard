@@ -31,7 +31,7 @@ namespace usbguard
     void setWithHashAttribute(bool state);
     void setHashOnly(bool state);
     void setPortSpecificRules(bool state);
-    void setPortSpeficicRuleNoSerial(bool state);
+    void setPortSpecificNoSerialRules(bool state);
     void setExplicitCatchAllRule(bool state, Rule::Target target = Rule::Target::Block);
 
     void generate();

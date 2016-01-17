@@ -51,6 +51,12 @@ namespace usbguard
     return;
   }
 
+  void PolicyGenerator::setPortSpecificNoSerialRules(bool state)
+  {
+    _port_specific_noserial = state;
+    return;
+  }
+
   void PolicyGenerator::generate()
   {
     _dm->scan();
@@ -89,6 +95,24 @@ namespace usbguard
     }
 
     Pointer<Rule> rule = device->getDeviceRule(/*include_port=*/port_specific);
+
+    /* Remove everything but the hash value for hash-only rules */
+    if (_hash_only) {
+      Pointer<Rule> rule_hashonly(new Rule());
+      rule_hashonly->setSeqn(rule->getSeqn());
+      rule_hashonly->setDeviceHash(rule->getDeviceHash());
+
+      if (port_specific) {
+        rule_hashonly->setDevicePorts(rule->getDevicePorts());
+      }
+
+      rule = rule_hashonly;
+    }
+    /* Remove the hash value if set to do so */
+    else if (!_with_hash) {
+      rule->setDeviceHash(std::string());
+    }
+
     rule->setTarget(Rule::Target::Allow);
     _ruleset.appendRule(*rule);
     return;
