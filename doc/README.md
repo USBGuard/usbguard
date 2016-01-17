@@ -6,7 +6,7 @@ convert it to roff or HTML using ronnjs:
     $ ronn-nodejs --build --roff --manual 8 usbguard-daemon.ronn
     $ ronn-nodejs --build --roff --manual 5 usbguard-daemon.conf.ronn
     $ ronn-nodejs --build --roff --manual 5 usbguard-rules.conf.ronn
-    $ ronn-nodejs --build --roff --manual 1 usbguard-generate-policy.ronn
+    $ ronn-nodejs --build --roff --manual 1 usbguard.ronn
 
 To view the generated files you can use the nroff(1) and less(1) commands:
 
