@@ -168,15 +168,21 @@ List of attributes:
 
 ### Initial policy
 
-Using the `usbguard-generate-policy` tool, you can generate an initial policy for your system instead of writing one from scratch. The tool generates an **allow** policy for all devices connected to the system at the moment of execution. It has several options to tweak the resulting policy:
+Using the `usbguard` CLI tool and its `generate-policy` subcommand, you can generate an initial policy for your system instead of writing one from scratch. The tool generates an **allow** policy for all devices connected to the system at the moment of execution. It has several options to tweak the resulting policy:
+
+ * `-p`: Generate port specific rules for all devices. By default, port specific rules are generated only for devices which do not export an iSerial value. See the `-P` option for more details.
 
  * `-P`: Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a `via-port` attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time.
 
  * `-t <target>`: Generate an explicit "catch all" rule with the specified target. The target can be one of the following values: `allow`, `block`, `reject`.
 
+ * `-X`: Don't generate a hash attribute for each device.
+
+ * `-H`: Generate a hash-only policy.
+
 The policy will be printed out on the standard output. It's a good idea to review the generated rules before using them on a system. The typical workflow for generating an initial policy could look like this:
 
-    # sudo usbguard-generate-policy > rules.conf
+    # usbguard generate-policy > rules.conf
     # vi rules.conf
     (review/modify the rule set)
     # sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
