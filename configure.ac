@@ -47,15 +47,15 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-AC_ARG_ENABLE([gcov],
-     [AC_HELP_STRING([--enable-gcov], [enable instrumented compilation for code coverage testing (default=no)])],
+AC_ARG_ENABLE([coverage],
+     [AC_HELP_STRING([--enable-coverage], [enable instrumented compilation for code coverage testing (default=no)])],
      [case "${enableval}" in
-       yes) gcov=yes ;;
-       no)  gcov=no ;;
-       *) AC_MSG_ERROR([bad value ${enableval} for --enable-gcov]) ;;
-     esac], [gcov=no])
+       yes) coverage=yes ;;
+       no)  coverage=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-coverage]) ;;
+     esac], [coverage=no])
 
-if test "$gcov" = "yes"; then
+if test "$coverage" = "yes"; then
    CXXFLAGS="$CXXFLAGS --coverage"
 fi
 

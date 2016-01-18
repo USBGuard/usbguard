@@ -12,7 +12,13 @@ before_install:
 - sudo add-apt-repository -y ppa:chris-lea/libsodium
 - sudo apt-get -qq update
 - sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
-script: "./autogen.sh && ./configure --enable-gcov && make && make check"
+- sudo apt-get install -y lcov
+- gem install coveralls-lcov
+before_script:
+- ./autogen.sh
+- ./configure --enable-coverage --disable-shared --disable-silent-rules
+script:
+- make && make check
 addons:
   coverity_scan:
     project:
@@ -24,4 +30,5 @@ addons:
     build_command: make
     branch_pattern: coverity_scan
 after_success:
-- coveralls
+- lcov --compat-libtool --directory . --capture --output-file coverage.info
+- coveralls-lcov coverage.info
