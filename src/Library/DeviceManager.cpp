@@ -61,7 +61,7 @@ namespace usbguard {
 
   PointerVector<Device> DeviceManager::getDeviceList()
   {
-    return std::move(d_pointer->getDeviceList());
+    return d_pointer->getDeviceList();
   }
 
   Pointer<Device> DeviceManager::getDevice(uint32_t seqn)

@@ -9,7 +9,7 @@ namespace usbguard
       { "_i", ex.requestID() },
       { "message", ex.what() }
     };
-    return std::move(object);
+    return object;
   }
 
   bool IPCPrivate::isExceptionJSON(const json& object)
@@ -23,10 +23,10 @@ namespace usbguard
     const IPCException::ReasonCode code = IPCException::codeFromString(code_string);
 
     if (object.find("message") != object.end()) {
-      return std::move(IPCException(code, object["message"], object["_i"]));
+      return IPCException(code, object["message"], object["_i"]);
     }
     else {
-      return std::move(IPCException(code, "", object["_i"]));
+      return IPCException(code, "", object["_i"]);
     }
   }
 } /* namespace usbguard */

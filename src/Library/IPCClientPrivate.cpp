@@ -64,7 +64,7 @@ namespace usbguard
     const std::string json_string(jdata, jsize);
     const json jobj = json::parse(json_string);
     delete [] data;
-    return std::move(jobj);
+    return jobj;
   }
 
   void IPCClientPrivate::processOne(const json& jobj)
@@ -383,7 +383,7 @@ namespace usbguard
 	retval.emplace(it.key(), it.value().get<std::string>());
       }
 
-      return std::move(retval);
+      return retval;
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
                          "Invalid or missing return value after calling listRules");
@@ -448,7 +448,7 @@ namespace usbguard
         retval.emplace(it.key(), it.value().get<std::string>());
       }
 
-      return std::move(retval);
+      return retval;
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
                          "Invalid or missing return value after calling listDevices");
@@ -538,7 +538,7 @@ namespace usbguard
         throw IPCPrivate::jsonToIPCException(retval);
       }
       else {
-        return std::move(retval);
+        return retval;
       }
     }
     return json();

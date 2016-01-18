@@ -161,7 +161,7 @@ namespace usbguard {
       throw std::runtime_error("BUG: cannot create type string, invalid mask");
     }
 
-    return std::move(type_string);
+    return type_string;
   }
 
   template<>
@@ -210,7 +210,7 @@ namespace usbguard {
       throw std::runtime_error("Invalid binary descriptor data: invalid bLenght value");
     }
 
-    return std::move(descriptor);
+    return descriptor;
   }
 
   const USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size)
@@ -239,7 +239,7 @@ namespace usbguard {
     logger->debug(" wTotalLength: {:d}", descriptor.wTotalLength);
     logger->debug(" bConfigurationValue: {:d}", descriptor.bConfigurationValue);
 
-    return std::move(descriptor);
+    return descriptor;
   }
 
   const USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size)
@@ -268,7 +268,7 @@ namespace usbguard {
     logger->debug(" bInterfaceProtocol: {:x}", descriptor.bInterfaceProtocol);
     logger->debug(" bInterfaceNumber: {:d}", descriptor.bInterfaceNumber);
 
-    return std::move(descriptor);
+    return descriptor;
   }
 
 } /* namespace usbguard */

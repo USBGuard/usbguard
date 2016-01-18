@@ -652,7 +652,7 @@ namespace usbguard
     else {
       throw IPCException(IPCException::ProtocolError, "Invalid message");
     }
-    return std::move(json());
+    return json();
   }
 
   json Daemon::processMethodCallJSON(const json& jobj)
@@ -711,7 +711,7 @@ namespace usbguard
     }
 
     logger->debug("Returning JSON object: {}", retval.dump());
-    return std::move(retval);
+    return retval;
   }
 
   void Daemon::qbIPCSendJSON(qb_ipcs_connection_t *qb_conn, const json& jobj)
@@ -1014,7 +1014,7 @@ namespace usbguard
       device_rules[std::to_string(device->getSeqn())] = device->getDeviceRule()->toString();
     }
 
-    return std::move(device_rules);
+    return device_rules;
   }
 
   Pointer<const Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec)

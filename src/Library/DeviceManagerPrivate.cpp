@@ -72,7 +72,7 @@ namespace usbguard {
       devices.push_back(map_entry.second);
     }
 
-    return std::move(devices);
+    return devices;
   }
 
   Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t seqn)

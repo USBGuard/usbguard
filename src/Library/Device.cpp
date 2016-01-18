@@ -60,7 +60,7 @@ namespace usbguard {
 
   Pointer<Rule> Device::getDeviceRule(const bool include_port)
   {
-    return std::move(d_pointer->getDeviceRule(include_port));
+    return d_pointer->getDeviceRule(include_port);
   }
 
   uint32_t Device::getSeqn() const

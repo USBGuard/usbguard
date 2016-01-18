@@ -103,7 +103,7 @@ namespace usbguard {
     device_rule->setDeviceName(_name);
     device_rule->setDeviceHash(getDeviceHash(/*include_port=*/false));
     
-    return std::move(device_rule);
+    return device_rule;
   }
 
   uint32_t DevicePrivate::getSeqn() const
@@ -137,7 +137,7 @@ namespace usbguard {
     sodium_bin2hex(hexval, hexlen, hash, sizeof hash);
 
     const std::string hash_string(hexval, hexlen - 1);
-    return std::move(hash_string);
+    return hash_string;
   }
 
   const String DevicePrivate::getPort() const
@@ -272,5 +272,4 @@ namespace usbguard {
 
     return;
   }
-
 } /* namespace usbguard */
