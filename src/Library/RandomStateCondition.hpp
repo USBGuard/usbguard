@@ -18,7 +18,6 @@ namespace usbguard
     std::mt19937 _rng_gen;
     double _true_probability;
     std::bernoulli_distribution _rng_dist;
-    Interface * _interface_ptr;
   };
 } /* namespace usbguard */
 
