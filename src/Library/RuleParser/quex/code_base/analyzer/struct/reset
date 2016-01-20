@@ -1,0 +1,80 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET
+#define __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET
+
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_MAIN_OPEN 
+
+#ifdef __QUEX_OPTION_PLAIN_C
+
+/* The constructor 'core' function is implemented per analyzer.
+ * It's implementation happens inside the generated source file.             */
+
+/* Level (0) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset)(QUEX_TYPE_ANALYZER* me);
+
+/* Level (1) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset_file_name)(QUEX_TYPE_ANALYZER* me,
+                                            const char* Filename, 
+                                            const char* CodecName /* = 0x0 */);
+
+/* Level (2) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset_FILE)(QUEX_TYPE_ANALYZER* me,
+                                       __QUEX_STD_FILE*    fh, 
+                                       const char*         CodecName   /* = 0x0   */,
+                                       bool                BinaryModeF /* = false */);
+
+#if defined(QUEX_OPTION_POSIX)
+QUEX_INLINE void QUEX_NAME(reset_POSIX)(QUEX_TYPE_ANALYZER* me,
+                                      __QUEX_STD_FILE*  fh, 
+                                      const char*       CodecName /* = 0x0  */);
+#endif
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void QUEX_NAME(reset_istream)(QUEX_TYPE_ANALYZER* me,
+                                      std::istream*  istream_p, 
+                                      const char*    CodecName /* = 0x0   */);
+
+#endif
+
+#if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void QUEX_NAME(reset_wistream)(QUEX_TYPE_ANALYZER* me,
+                                      std::wistream*  istream_p, 
+                                      const char*     CodecName /* = 0x0   */);
+#endif
+
+/* Level (3) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset_ByteLoader)(QUEX_TYPE_ANALYZER* me,
+                                             QUEX_NAME(ByteLoader)* byte_loader,
+                                             const char* CodecName);
+
+/* Level (4) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset_BufferFiller)(QUEX_TYPE_ANALYZER* me,
+                                               QUEX_NAME(BufferFiller)*); 
+
+/* Level (5) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE QUEX_TYPE_CHARACTER* 
+                 QUEX_NAME(reset_memory)(QUEX_TYPE_ANALYZER* me,
+                                         QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                         size_t               BufferMemorySize,
+                                         QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+
+/* Basic constructions ________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(basic_reset)(QUEX_TYPE_ANALYZER* me);
+QUEX_INLINE void QUEX_NAME(user_reset)(QUEX_TYPE_ANALYZER* me);
+
+#endif
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET */

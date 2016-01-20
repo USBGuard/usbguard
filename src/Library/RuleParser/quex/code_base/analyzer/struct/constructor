@@ -1,0 +1,77 @@
+/* -*- C++ -*- vim: set syntax=cpp:
+ * (C) 2005-2010 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY              */
+#ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR
+
+#include <quex/code_base/definitions>
+
+QUEX_NAMESPACE_MAIN_OPEN 
+#ifdef __QUEX_OPTION_PLAIN_C
+
+/* The constructor 'core' function is implemented per analyzer.
+ * It's implementation happens inside the generated source file.             */
+
+/* Level (1) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(from_file_name)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  const char* Filename, 
+                                  const char* CodecName /* = 0x0   */);
+
+/* Level (2) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(from_FILE)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  __QUEX_STD_FILE*  fh, 
+                                  const char*       CodecName   /* = 0x0   */,
+                                  bool              BinaryModeF /* false */);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void QUEX_NAME(from_istream)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  std::istream*  istream_p, 
+                                  const char*    CodecName /* = 0x0   */);
+
+#endif
+
+#if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void QUEX_NAME(from_wistream)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  std::wistream*  istream_p, 
+                                  const char*     CodecName /* = 0x0   */);
+#endif
+
+/* Level (3) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(from_ByteLoader)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  QUEX_NAME(ByteLoader)* byte_loader,
+                                  const char*            CodecName);
+
+/* Level (4) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(from_BufferFiller)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  QUEX_NAME(BufferFiller)*); 
+
+/* Level (5) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(from_memory)(
+                                  QUEX_TYPE_ANALYZER*,
+                                  QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                  size_t               BufferMemorySize,
+                                  QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+
+/* Basic constructions ________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(basic_constructor)(QUEX_TYPE_ANALYZER*);
+QUEX_INLINE void QUEX_NAME(user_constructor)(QUEX_TYPE_ANALYZER*);
+QUEX_INLINE void QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER*); 
+
+#endif
+QUEX_NAMESPACE_MAIN_CLOSE 
+
+
+#endif /*  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR */
+

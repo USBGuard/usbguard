@@ -39,7 +39,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(set_mode_brutally_by_id)(QUEX_TYPE_ANALYZER* me, const int ModeID)
-    { QUEX_NAME(set_mode_brutally)(me, me->mode_db[ModeID]); }
+    { 
+        __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N);
+        QUEX_NAME(set_mode_brutally)(me, QUEX_NAME(mode_db)[ModeID]); 
+    }
 
     QUEX_INLINE void    
     QUEX_NAME(enter_mode)(QUEX_TYPE_ANALYZER* me, /* NOT const*/ QUEX_NAME(Mode)* TargetMode) 
@@ -62,9 +65,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_NAME(Mode)*
     QUEX_NAME(map_mode_id_to_mode)(QUEX_TYPE_ANALYZER* me, const int ModeID)
     { 
+        (void)me;
         __quex_assert(ModeID >= 0);
         __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N); 
-        return me->mode_db[ModeID]; 
+        return QUEX_NAME(mode_db)[ModeID]; 
     }
 
     QUEX_INLINE int  

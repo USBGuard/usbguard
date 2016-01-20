@@ -6,30 +6,41 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/definitions>
 
+#ifndef QUEX_TYPE_DEFINITIONS_MEMORY_MANAGER
+#define QUEX_TYPE_DEFINITIONS_MEMORY_MANAGER
+typedef enum {
+    E_MemoryObjectType_BUFFER,
+    E_MemoryObjectType_BUFFER_MEMORY,
+    E_MemoryObjectType_BYTE_LOADER,
+    E_MemoryObjectType_BUFFER_FILLER,
+    E_MemoryObjectType_BUFFER_RAW,
+    E_MemoryObjectType_CONVERTER,
+    E_MemoryObjectType_MEMENTO,
+    E_MemoryObjectType_POST_CATEGORIZER_NODE,
+    E_MemoryObjectType_TEXT,
+    E_MemoryObjectType_TOKEN_ARRAY
+} E_MemoryObjectType;
+ 
+typedef enum {
+    E_Ownership_LEXICAL_ANALYZER,
+    E_Ownership_EXTERNAL
+} E_Ownership;
+#endif
+
 QUEX_NAMESPACE_QUEX_OPEN
 
-typedef enum {
-    QUEXED_DEF(MemoryObjectType_BUFFER),
-    QUEXED_DEF(MemoryObjectType_BUFFER_FILLER),
-    QUEXED_DEF(MemoryObjectType_BUFFER_RAW),
-    QUEXED_DEF(MemoryObjectType_CONVERTER),
-    QUEXED_DEF(MemoryObjectType_MEMENTO),
-    QUEXED_DEF(MemoryObjectType_POST_CATEGORIZER_NODE),
-    QUEXED_DEF(MemoryObjectType_TEXT),
-    QUEXED_DEF(MemoryObjectType_TOKEN_ARRAY)
-} QUEXED_DEF(MemoryObjectType);
- 
 extern uint8_t*
-QUEXED_DEF(MemoryManager_allocate)(const size_t ByteN, 
-                                   QUEXED_DEF(MemoryObjectType));
+QUEXED_DEF(MemoryManager_allocate)(const size_t ByteN, E_MemoryObjectType);
 
 extern void 
-QUEXED_DEF(MemoryManager_free)(void* Obj, 
-                               QUEXED_DEF(MemoryObjectType));
+QUEXED_DEF(MemoryManager_free)(void* Obj, E_MemoryObjectType);
 
 extern size_t
 QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                  uint8_t* source_begin_p, uint8_t* source_end_p);
+
+extern bool 
+QUEXED_DEF(system_is_little_endian)(void);
 
 QUEX_NAMESPACE_QUEX_CLOSE
  

@@ -144,12 +144,6 @@
 #   endif
 #endif
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
-#else
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
-#endif
-
 #if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   \
     || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) \
     || defined(QUEX_OPTION_INDENTATION_TRIGGER)       
@@ -318,6 +312,8 @@
 #   define QUEX_FUNCTION_DEF(NAME)                      NAME
 #   define QUEX_FUNCTION(NAME)                          QUEX_FUNCTION_PREFIX NAME
 
+    /* Avoid __VA_ARGS__ because some compilers still cannot handle it
+     * properly.                                                             */
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS  ## :: ## FUNCTION
 #   define QUEX_THIS_IS_ME(C)                           C* me = this;
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)()
@@ -325,6 +321,25 @@
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(ARG0, ARG1)
 #   define QUEX_MEMBERF3(C, F, ARG0, ARG1, ARG2)        QUEX_SIGNATURE(C, F)(ARG0, ARG1, ARG2)
 #   define QUEX_MEMBERF4(C, F, ARG0, ARG1, ARG2, ARG3)  QUEX_SIGNATURE(C, F)(ARG0, ARG1, ARG2, ARG3)
+
+#   define QUEX_DESTRUCTOR()                            QUEX_MEMBER(~QUEX_TYPE0_ANALYZER)()
+#   define QUEX_MEMBER_FUNCTION(N, SFX)                 QUEX_MEMBER(N)()
+#   define QUEX_MEMBER_FUNCTIONO(N)                     QUEX_MEMBER(N)()
+#   define QUEX_MEMBER_FUNCTION1(N, SFX, A)             QUEX_MEMBER(N)(A)      
+#   define QUEX_MEMBER_FUNCTIONO1(N, A)                 QUEX_MEMBER(N)(A)      
+#   define QUEX_MEMBER_FUNCTION2(N, SFX, A, B)          QUEX_MEMBER(N)(A, B)   
+#   define QUEX_MEMBER_FUNCTIONO2(N, A, B)              QUEX_MEMBER(N)(A, B)      
+#   define QUEX_MEMBER_FUNCTION3(N, SFX, A, B, C)       QUEX_MEMBER(N)(A, B, C)
+#   define QUEX_MEMBER_FUNCTION4(N, SFX, A, B, C, D)    QUEX_MEMBER(N)(A, B, C, D)
+#   define QUEX_MEMBER_FUNCTION_CALL(N, SFX)            this->N()
+#   define QUEX_MEMBER_FUNCTION_CALLO(N)                this->N()
+#   define QUEX_MEMBER_FUNCTION_CALL1(N, SFX, A)        this->N(A)      
+#   define QUEX_MEMBER_FUNCTION_CALLO1(N, A)            this->N(A)      
+#   define QUEX_MEMBER_FUNCTION_CALL2(N, SFX, A, B)     this->N(A, B)   
+#   define QUEX_MEMBER_FUNCTION_CALLO2(N, A, B)         this->N(A, B)      
+#   define QUEX_MEMBER_FUNCTION_CALL3(N, SFX, A, B, C)  this->N(A, B, C)
+#   define QUEX_MEMBER_FUNCTION_CALL4(N, SFX, A, B, C, D)  this->N(A, B, C, D)
+
 #else
     /* Go through '__QUEX_APPEND' to ensure macro expansion, before concatination. */
 #   define QUEX_FUNCTION_DEF(NAME)                      __QUEX_APPEND(QUEX_FUNCTION_DEF_PREFIX, NAME)
@@ -338,6 +353,27 @@
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1)
 #   define QUEX_MEMBERF3(C, F, ARG0, ARG1, ARG2)        QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1, ARG2)
 #   define QUEX_MEMBERF4(C, F, ARG0, ARG1, ARG2, ARG3)  QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1, ARG2, ARG3)
+
+    /* Avoid __VA_ARGS__ because some compilers still cannot handle it
+     * properly.                                                             */
+#   define QUEX_DESTRUCTOR()                            void QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me)
+#   define QUEX_MEMBER_FUNCTION(N, SFX)                 QUEX_NAME(N ## _ ## SFX)(QUEX_TYPE_ANALYZER* me)
+#   define QUEX_MEMBER_FUNCTIONO(N)                     QUEX_NAME(N)(QUEX_TYPE_ANALYZER* me)
+#   define QUEX_MEMBER_FUNCTION1(N, SFX, A)             QUEX_NAME(N ## _ ## SFX)(QUEX_TYPE_ANALYZER* me, A)      
+#   define QUEX_MEMBER_FUNCTIONO1(N, A)                 QUEX_NAME(N)(QUEX_TYPE_ANALYZER* me, A)      
+#   define QUEX_MEMBER_FUNCTION2(N, SFX, A, B)          QUEX_NAME(N ## _ ## SFX)(QUEX_TYPE_ANALYZER* me, A, B)   
+#   define QUEX_MEMBER_FUNCTIONO2(N, A, B)              QUEX_NAME(N)(QUEX_TYPE_ANALYZER* me, A, B)      
+#   define QUEX_MEMBER_FUNCTION3(N, SFX, A, B, C)       QUEX_NAME(N ## _ ## SFX)(QUEX_TYPE_ANALYZER* me, A, B, C)
+#   define QUEX_MEMBER_FUNCTION4(N, SFX, A, B, C, D)    QUEX_NAME(N ## _ ## SFX)(QUEX_TYPE_ANALYZER* me, A, B, C, D)
+#   define QUEX_MEMBER_FUNCTION_CALL(N, SFX)            QUEX_NAME(N ## _ ## SFX)(me)
+#   define QUEX_MEMBER_FUNCTION_CALLO(N)                QUEX_NAME(N)(me)
+#   define QUEX_MEMBER_FUNCTION_CALL1(N, SFX, A)        QUEX_NAME(N ## _ ## SFX)(me, A)      
+#   define QUEX_MEMBER_FUNCTION_CALLO1(N, A)            QUEX_NAME(N)(me, A)      
+#   define QUEX_MEMBER_FUNCTION_CALL2(N, SFX, A, B)     QUEX_NAME(N ## _ ## SFX)(me, A, B)   
+#   define QUEX_MEMBER_FUNCTION_CALLO2(N, A, B)         QUEX_NAME(N)(me, A, B)      
+#   define QUEX_MEMBER_FUNCTION_CALL3(N, SFX, A, B, C)  QUEX_NAME(N ## _ ## SFX)(me, A, B, C)
+#   define QUEX_MEMBER_FUNCTION_CALL4(N, SFX, A, B, C, D)  QUEX_NAME(N ## _ ## SFX)(me, A, B, C, D)
+
 #endif
 
 #define QUEX_A_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE0_ANALYZER, FUNCTION)
@@ -380,3 +416,24 @@
 #   define __QUEX_IF_ASSERT(X)  /* Ignore */
 #endif
 
+#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#    define __QUEX_IF_STRING_ACCUMULATOR(X) X
+#else
+#    define __QUEX_IF_STRING_ACCUMULATOR(X) /* No operation */
+#endif
+#ifdef QUEX_OPTION_POST_CATEGORIZER
+#    define __QUEX_IF_POST_CATEGORIZER(X) X
+#else
+#    define __QUEX_IF_POST_CATEGORIZER(X) /* No operation */
+#endif
+#ifdef  QUEX_OPTION_INCLUDE_STACK
+#    define __QUEX_IF_INCLUDE_STACK(X) X
+#else
+#    define __QUEX_IF_INCLUDE_STACK(X) /* No operation */
+#endif
+
+/* If the user does not define a class declaration epilog, 
+ * define it as empty.                                        */
+#ifndef     QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#    define QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#endif

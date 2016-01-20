@@ -1,0 +1,32 @@
+/*  -*- C++ -*-  vim: set syntax=cpp: */
+/* (C) 2008 Frank-Rene Schaefer*/
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__BUFFER_FILLER_PLAIN
+#define  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__BUFFER_FILLER_PLAIN
+/**/
+
+#if ! defined (__QUEX_OPTION_PLAIN_C)
+#   include <iostream> 
+#   include <cerrno>
+#   include <stdexcept>
+#endif
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/filler/BufferFiller>
+#include <quex/code_base/buffer/loader/ByteLoader>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(BufferFiller_Plain_tag) {
+        /* Derived BufferFiller from implemented as 'first member is base class'.
+         * (This is the 'C' way to express derivation) */
+        QUEX_NAME(BufferFiller)     base;
+    } QUEX_NAME(BufferFiller_Plain);
+
+    QUEX_INLINE QUEX_NAME(BufferFiller)*
+    QUEX_NAME(BufferFiller_Plain_new)(QUEX_NAME(ByteLoader)* byte_loader);
+    /* input_handle  is the file handle or pointer to the input stream from where the
+     *               incoming characters are to be read.                             */
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__ */

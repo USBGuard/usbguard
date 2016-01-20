@@ -231,6 +231,12 @@ namespace usbguard {
     return;
   }
 
+  void Rule::setConditionSetOperator(Rule::SetOperator op)
+  {
+    d_pointer->setConditionSetOperator(op);
+    return;
+  }
+
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||
@@ -420,4 +426,8 @@ namespace usbguard {
     return result;
   }
 
+  RulePrivate* Rule::internal()
+  {
+    return d_pointer;
+  }
 } /* namespace usbguard */

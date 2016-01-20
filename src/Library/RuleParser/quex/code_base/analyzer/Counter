@@ -13,7 +13,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 #   if defined(QUEX_OPTION_INDENTATION_TRIGGER)
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         QUEX_TYPE_INDENTATION   front[QUEX_SETTING_INDENTATION_STACK_SIZE];
         QUEX_TYPE_INDENTATION*  back;         /* pointer to last element */
         QUEX_TYPE_INDENTATION*  memory_end;
@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me);
 #   endif
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         size_t  _line_number_at_begin;    /* line where current pattern starts   */
         size_t  _line_number_at_end;      /* line after current pattern          */
@@ -39,8 +39,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
     QUEX_INLINE void  QUEX_NAME(Counter_construct)(QUEX_NAME(Counter)*  me); 
-    QUEX_INLINE void  QUEX_NAME(Counter_init)(QUEX_NAME(Counter)* me);
-    QUEX_INLINE void  QUEX_NAME(Counter_reset)(QUEX_NAME(Counter)* me);
     QUEX_INLINE void  QUEX_NAME(Counter_copy_construct)(QUEX_NAME(Counter)*      me, 
                                                        const QUEX_NAME(Counter)* That);
 

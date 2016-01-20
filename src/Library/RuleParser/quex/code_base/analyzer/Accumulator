@@ -21,7 +21,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   endif
 
     /* (*) pure text accumulation and flushing */
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         size_t  _begin_line;
 #       endif

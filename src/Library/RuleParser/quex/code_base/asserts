@@ -12,11 +12,18 @@
 #   define  __quex_assert_no_passage()    do { QUEX_ERROR_EXIT("Illegal 'drop-into' other state"); } while ( 0 )
 #   define  __quex_assert_msg(X, Y)       if( ! (X) ) do { QUEX_ERROR_EXIT(Y); } while ( 0 )
 #   define  __QUEX_IF_ASSERTS(EXPRESSION) EXPRESSION
+#   define  QUEX_IF_ASSERTS_poison(BEGIN, END) \
+            do { \
+                if( END > BEGIN )  \
+                __QUEX_STD_memset((uint8_t*)(BEGIN), (uint8_t)0xFF, \
+                                  (size_t)((const uint8_t*)END - (const uint8_t*)BEGIN)); \
+            } while(0)
 #else
 #   define  __quex_assert(X)              /* no assert */
 #   define  __quex_assert_msg(X, Y)       /* no assert, no message */
 #   define  __quex_assert_no_passage()    /* no assert */
 #   define  __QUEX_IF_ASSERTS(EXPRESSION) /* empty */
+#   define  QUEX_IF_ASSERTS_poison(BEGIN, END) /* empty */
 #endif
 
 #define __QUEX_INCLUDE_INDICATOR__ASSERTS

@@ -1,635 +1,886 @@
-/* -*- C++ -*- vim:set syntax=cpp: */
+/* vim:set ft=c: -*- C++ -*- */
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
 
-#include <quex/code_base/analyzer/configuration/validation>
 #include <quex/code_base/asserts>
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/MemoryManager>
-
-#include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void  QUEX_NAME(Buffer_init)(QUEX_NAME(Buffer)*  me, 
-                                             bool                ByteOrderReversionF); 
-    QUEX_INLINE void  QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*  me, 
-                                                      bool                ByteOrderReversionF);
-    QUEX_INLINE void 
-    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
-                                      QUEX_TYPE_CHARACTER*      Memory, 
-                                      const size_t              Size,
-                                      QUEX_TYPE_CHARACTER*      EndOfFileP);
-    QUEX_INLINE void 
-    QUEX_NAME(BufferMemory_init)(QUEX_NAME(BufferMemory)*  me, 
-                                 QUEX_TYPE_CHARACTER*      Memory, 
-                                 const size_t              Size,
-                                 QUEX_TYPE_CHARACTER*      EndOfFileP,
-                                 bool                      ExternalOwnerF);
-    QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
+QUEX_INLINE ptrdiff_t QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*  me, 
+                                                     ptrdiff_t           move_distance);
+QUEX_INLINE void      QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
+                                                          intmax_t           move_distance,
+                                                          ptrdiff_t          move_size);
+QUEX_INLINE ptrdiff_t QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, 
+                                                      ptrdiff_t          move_distance);
 
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*    me, 
-                                InputHandleT*         input_handle,
-                                QUEX_TYPE_CHARACTER*  InputMemory,
-                                const size_t          MemorySize,
-                                QUEX_TYPE_CHARACTER*  EndOfFileP,
-                                const char*           CharacterEncodingName, 
-                                const size_t          TranslationBufferMemorySize,
-                                bool                  ByteOrderReversionF)
-        /* The input can either come from MEMORY or from a STREAM. 
-         *
-         * input_handle == 0x0 => input via memory
-         *              != 0x0 => input via stream (spec. by input_handle)
-         *
-         * InputMemory != 0x0  => run directly on specified memory.
-         *             == 0x0  => get memory from memory manager.                              */ 
-    {
-#       ifdef QUEX_OPTION_ASSERTS
-        if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
-        if( InputMemory  != 0x0 ) { 
-            __quex_assert(input_handle == 0x0 );
-            /* If the input memory is provided, the content **must** be properly set up.       */
-            QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, EndOfFileP);
-        }
-#       endif
+QUEX_INLINE void*     QUEX_NAME(Buffer_fill)(QUEX_NAME(Buffer)*  me, 
+                                             const void*         ContentBegin,
+                                             const void*         ContentEnd);
+QUEX_INLINE void      QUEX_NAME(Buffer_fill_prepare)(QUEX_NAME(Buffer)*  me, 
+                                                     void**              begin_p, 
+                                                     const void**        end_p);
+QUEX_INLINE void      QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
+                                                    const void*        FilledEndP);
+QUEX_INLINE bool      QUEX_NAME(Buffer_is_end_of_stream_inside)(QUEX_NAME(Buffer)* me);
+QUEX_INLINE void      QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, 
+                                                     QUEX_TYPE_CHARACTER* EndOfFileP);
+QUEX_INLINE void      QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me);
 
-        /* No allocation of the base 'me->_memory' since it is a plain member of 'Buffer'.
-         * InputMemory == 0x0 => interact with memory manager to get memory.                   */
-        QUEX_NAME(BufferMemory_construct)(&(me->_memory), 
-                                          InputMemory, MemorySize, EndOfFileP);      
+QUEX_INLINE void      QUEX_NAME(Buffer_on_overflow_DEFAULT)(QUEX_NAME(Buffer)*, bool ForwardF);
+QUEX_INLINE void      QUEX_NAME(Buffer_on_content_change_DEFAULT)(const QUEX_TYPE_CHARACTER*, 
+                                                                  const QUEX_TYPE_CHARACTER*);
 
-        me->on_buffer_content_change = 0x0;
-
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, 
-                                                 CharacterEncodingName, 
-                                                 TranslationBufferMemorySize);
-        /* Until now, nothing is loaded into the buffer. */
-
-        QUEX_NAME(Buffer_init)(me, ByteOrderReversionF);
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-        __quex_assert(me->_input_p == me->_memory._front + 1);
-    }
-
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*  me, 
-                            InputHandleT*       input_handle, 
-                            const char*         CharacterEncodingName, 
-                            const size_t        TranslationBufferMemorySize)
-    /* NOTE:     me->_content_character_index_begin == 0 
-     *       and me->_content_character_index_end   == 0 
-     *       => buffer is filled the very first time.                                    
-     * NOTE: The reset of the buffer filler happens by 'delete' and 'new'. This is
-     *       done in order to keep the template decoupled from the rest. Only the
-     *       'new' functions (allocator + constructor) know about the template. The
-     *       'delete_self' function pointer is set to a template that knows how to
-     *       deallocate the object.
-     */
-    {
-        /* Setup the buffer filler for new analysis */
-        if( me->filler != 0x0 ) { 
-            /* If the same input handle is used, as before, than the following command
-             * ensures, that we start at the same position.                            */
-            me->filler->seek_character_index(me->filler, 0);
-            me->filler->delete_self(me->filler);
-        }
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
-
-        QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
-
-        if( me->filler != 0x0 ) {
-            /* We only have to reset the input stream, if we are not at position zero    */
-            QUEX_NAME(BufferFiller_initial_load)(me);   
-        } else {
-            me->_content_character_index_begin = 0; 
-            me->_content_character_index_end   = 0;
-        }
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-        __quex_assert(me->_input_p == me->_memory._front + 1);
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_init)(QUEX_NAME(Buffer)*  me, bool ByteOrderReversionF)
-    {
-        /* By setting begin and end to zero, we indicate to the loader that
-         * this is the very first load procedure.                           */
-        me->_content_character_index_end   = 0;
-        me->_content_character_index_begin = 0; 
-
-        QUEX_NAME(Buffer_init_analyzis)(me, ByteOrderReversionF);
-
-        if( me->filler != 0x0 ) {
-            /* We only have to reset the input stream, if we are not at position zero    */
-            QUEX_NAME(BufferFiller_initial_load)(me);   
-        } 
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*  me, bool ByteOrderReversionF)
-    {
-        me->_byte_order_reversion_active_f = ByteOrderReversionF;
-
-        /* Init is a special kind of reset, where some things might not be reset. */
-        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
-        /* NOTE: The terminating zero is stored in the first character **after** the  
-         *       lexeme (matching character sequence). The begin of line pre-condition  
-         *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.                          */
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
-#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
-#       endif
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me)
-    {
-        if( me->filler != 0x0 ) { 
-            me->filler->delete_self(me->filler); 
-            me->filler = 0x0;
-        }
-
-        QUEX_NAME(BufferMemory_destruct)(&me->_memory);
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_input_p_add_offset)(QUEX_NAME(Buffer)* buffer, const size_t Offset)
-    { 
-        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
-        buffer->_input_p += Offset; 
-        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION
-    QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)* buffer)
-    {
-        /* NOTE: We cannot check for general consistency here, because this function 
-         *       may be used by the range skippers, and they write possibly something on
-         *       the end of file pointer, that is different from the buffer limit code.
-         * NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer); */
-#       if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-        return QUEX_TYPE_CHARACTER_POSITION(buffer->_input_p, buffer->_content_character_index_begin);
-#       else
-        return (QUEX_TYPE_CHARACTER_POSITION)(buffer->_input_p);
-#       endif
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER_POSITION Position)
-    {
-#       if      defined (QUEX_OPTION_ASSERTS) \
-           && ! defined(__QUEX_OPTION_PLAIN_C)
-        /* Check whether the memory_position is relative to the current start position   
-         * of the stream. That means, that the tell_adr() command was called on the  
-         * same buffer setting or the positions have been adapted using the += operator.*/
-        __quex_assert(Position.buffer_start_position == (size_t)buffer->_content_character_index_begin);
-        buffer->_input_p = Position.address;
-#       else
-        buffer->_input_p = Position;
-#       endif
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER
-    QUEX_NAME(Buffer_input_get_offset)(QUEX_NAME(Buffer)* me, const ptrdiff_t Offset)
-    {
-        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
-        __quex_assert( me->_input_p + Offset > me->_memory._front );
-        __quex_assert( me->_input_p + Offset <= me->_memory._back );
-        return *(me->_input_p + Offset); 
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)* me)
-    {
-        return me->_memory._front + 1;
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)* me)
-    {
-        return me->_memory._back - 1;
-    }
-
-    QUEX_INLINE size_t
-    QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)* me)
-    {
-        return QUEX_NAME(BufferMemory_size)(&(me->_memory)) - 2;
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)* me)
-    {
-        /* Returns a pointer to the position after the last text content inside the buffer. */
-        if( me->_memory._end_of_file_p != 0 ) return me->_memory._end_of_file_p;
-        else                                  return me->_memory._back;   
-    }
-
-    QUEX_INLINE ptrdiff_t
-    QUEX_NAME(Buffer_distance_input_to_text_end)(QUEX_NAME(Buffer)* me)
-    {
-        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
-        return QUEX_NAME(Buffer_text_end)(me) - me->_input_p;
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)* me, QUEX_TYPE_CHARACTER* Position)
-    {
-        /* NOTE: The content starts at _front[1], since _front[0] contains 
-         *       the buffer limit code. */
-        me->_memory._end_of_file_p    = Position;
-        *(me->_memory._end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-
-        /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_NAME(Buffer)* buffer)
-    {
-        /* If the end of file pointer is to be 'unset' me must assume that the storage as been
-         * overidden with something useful. Avoid setting _memory._end_of_file_p = 0x0 while the 
-         * position pointed to still contains the buffer limit code.                             */
-        buffer->_memory._end_of_file_p = 0x0;
-        /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
-    }
-
-    QUEX_INLINE bool 
-    QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)* buffer)
-    { 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        return buffer->_input_p == buffer->_memory._end_of_file_p;
-    }
-
-    QUEX_INLINE bool                  
-    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)* buffer)
-    { 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        if     ( buffer->_input_p != buffer->_memory._front )  return false;
-        else if( buffer->_content_character_index_begin != 0 ) return false;
-        return true;
-    }
-
-    QUEX_INLINE void  
-    QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
-    {
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-       /* Why: __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1); ? fschaef 08y11m1d> */
-
-       if( CharacterN < QUEX_NAME(Buffer_distance_input_to_text_end)(me) ) {
-           /* _input_p + CharacterN < text_end, thus no reload necessary. */
-           me->_input_p += CharacterN;
-       }
-       else {
-           /* _input_p + CharacterN >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_memory._end_of_file_p != 0x0 ) {
-               me->_input_p = QUEX_NAME(Buffer_text_end)(me);  /* No reload possible */
-           } else {
-               /* Reload until delta is reachable inside buffer. */
-               ptrdiff_t delta    = CharacterN; 
-               ptrdiff_t distance = QUEX_NAME(Buffer_distance_input_to_text_end)(me);
-               do {
-                   delta -= distance;
-
-                   me->_input_p        = me->_memory._back; /* Prepare reload forward. */
-                   me->_lexeme_start_p = me->_input_p;
-                   if( QUEX_NAME(BufferFiller_load_forward)(me) == 0 ) {
-                       me->_input_p = QUEX_NAME(Buffer_text_end)(me);  /* No reload possible */
-                       break;
-                   } 
-                   /* After loading forward, we need to increment ... the way the game is to be played. */
-                   ++(me->_input_p);
-                   distance = QUEX_NAME(Buffer_distance_input_to_text_end)(me);
-
-                   if( delta < distance ) {
-                       /* _input_p + delta < text_end, thus no further reload necessary. */
-                       me->_input_p += delta;
-                       break;
-                   }
-               } while( 1 + 1 == 2 );
-           }
-       }
-       me->_lexeme_start_p            = me->_input_p;
-       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
-#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#      endif
-
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    }
+QUEX_INLINE void
+QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
+                            QUEX_NAME(BufferFiller)*  filler,
+                            QUEX_TYPE_CHARACTER*      memory,
+                            const size_t              MemorySize,
+                            QUEX_TYPE_CHARACTER*      EndOfFileP,
+                            E_Ownership               Ownership)
+{
+    /* Ownership of InputMemory is passed to 'me->_memory'.                  */
+    QUEX_NAME(BufferMemory_construct)(&me->_memory, memory, MemorySize, 
+                                      Ownership); 
     
-    QUEX_INLINE void  
-    QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
-    {
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    /* By setting begin and end to zero, we indicate to the loader that      
+     * this is the very first load procedure.                                */
+    me->filler = filler;
+    me->fill         = QUEX_NAME(Buffer_fill);
+    me->fill_prepare = QUEX_NAME(Buffer_fill_prepare);
+    me->fill_finish  = QUEX_NAME(Buffer_fill_finish);
 
-       /* When going backward, anyway a non-zero width distance is left ahead. */
-       if( CharacterN < (me->_input_p - QUEX_NAME(Buffer_content_front)(me)) ) {
-           /* _input_p - CharacterN < content_front, thus no reload necessary. */
-           me->_input_p -= CharacterN;
-       }
-       else {
-           /* _input_p - CharacterN < _front + 1 >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_content_character_index_begin == 0 ) { 
-               me->_input_p = QUEX_NAME(Buffer_content_front)(me);
-           } else {
-               /* Reload until delta is reachable inside buffer. */
-               ptrdiff_t delta    = (ptrdiff_t)CharacterN; 
-               ptrdiff_t distance = (ptrdiff_t)(me->_input_p - QUEX_NAME(Buffer_content_front)(me));
-               do {
-                   delta -= distance;
+    /* Event handlers.                                                       */
+    me->on_content_change = QUEX_NAME(Buffer_on_content_change_DEFAULT);
+    me->on_overflow       = QUEX_NAME(Buffer_on_overflow_DEFAULT);
 
-                   me->_input_p        = me->_memory._front; /* Prepare reload backward. */
-                   me->_lexeme_start_p = me->_input_p + 1;
-                   if( QUEX_NAME(BufferFiller_load_backward)(me) == 0 ) {
-                       me->_input_p = QUEX_NAME(Buffer_content_front)(me); /* No reload possible */
-                       break;
-                   } 
-                   /* After loading backwards, we need **not** to increment ... the way the game is to be played. */
-                   distance = (ptrdiff_t)(me->_input_p - QUEX_NAME(Buffer_content_front)(me));
+    /* Initialize.                                                           */
+    QUEX_NAME(Buffer_init_content)(me, EndOfFileP);
+    QUEX_NAME(Buffer_init_analyzis)(me);
 
-                   if( delta < distance ) {
-                       /* _input_p + delta < text_end, thus no further reload necessary. */
-                       me->_input_p -= delta;
-                       break;
-                   }
-               } while( 1 + 1 == 2 );
-           }
-       }
-       me->_lexeme_start_p = me->_input_p;
-       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
-#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#      endif
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+}
 
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+QUEX_INLINE void
+QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me)
+{
+    if( me->filler && me->filler->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        me->filler->delete_self(me->filler); 
     }
+    QUEX_NAME(BufferMemory_destruct)(&me->_memory);
+}
 
-    QUEX_INLINE ptrdiff_t  
-    QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)* me)
-    {
-        /* This function returns the character index that corresponds to the 
-         * current setting of the input pointer. Note, that the content starts
-         * at one position after the memory (buffer limitting char at _front.).         
-         */
-        const ptrdiff_t DeltaToBufferBegin = me->_input_p - me->_memory._front - 1;
-        /* Adding the current offset of the content of the buffer in the stream. 
-         * If there is no filler, there is no stream, then there is also no offset. */
-        if( me->filler == 0x0 ) 
-            return DeltaToBufferBegin;
-        else
-            return DeltaToBufferBegin + me->_content_character_index_begin;
-    }
+QUEX_INLINE void
+QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me) 
+/* Initialize:  _read_p                          
+ *              _lexeme_start_p                 
+ *              _character_at_lexeme_start     
+ *              _character_before_lexeme_start                               */
+{
+    QUEX_TYPE_CHARACTER*      BeginP           = &me->_memory._front[1];
 
-    QUEX_INLINE void    
-    QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterIndex)
-    {
-        /* This function sets the _input_p according to a character index of the
-         * input stream (if there is a stream). It is the inverse of 'tell()'.   */
-        const ptrdiff_t CurrentCharacterIndex = QUEX_NAME(Buffer_tell)(me);
-        if( CharacterIndex > CurrentCharacterIndex )
-            QUEX_NAME(Buffer_move_forward)(me, CharacterIndex - CurrentCharacterIndex);
-        else
-            QUEX_NAME(Buffer_move_backward)(me, CurrentCharacterIndex - CharacterIndex);
-    }
-
-    QUEX_INLINE void          
-    QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
-    /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
-     *
-     * Example:  
-     *
-     *   buffer before: 
-     *                         _input_p
-     *                            |
-     *            [case( x < 10 ) { print; } else ]
-     *
-     *   buffer after:   
-     *              _input_p
-     *                 |
-     *            [case( x < 10 ) { print; } else ]
-     *
-     *            |----|
-     *         fallback size                                                       */
-    { 
-        QUEX_TYPE_CHARACTER*  ContentFront      = QUEX_NAME(Buffer_content_front)(me);
-        QUEX_TYPE_CHARACTER*  RemainderBegin    = me->_input_p;
-        QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_memory._end_of_file_p;
-        QUEX_TYPE_CHARACTER*  MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
-        ptrdiff_t             MoveRegionSize    = (ptrdiff_t)(RemainderEnd - MoveRegionBegin);
-
-        /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(me->_content_character_index_begin == 0); 
-
-        /* If the distance to content front <= the fallback size, no move possible.  */
-        if( MoveRegionBegin <= ContentFront ) { return; }
-
-        __QUEX_STD_memmove((void*)ContentFront,
-                           (void*)MoveRegionBegin,
-                           (size_t)MoveRegionSize * sizeof(QUEX_TYPE_CHARACTER));
-
-
-        /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
-         * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
-
-        QUEX_NAME(Buffer_end_of_file_set)(me, ContentFront + MoveRegionSize);
-
-        /* (*) Pointer adaption:
-         *     IMPORTANT: This function is called outside the 'engine' so the 
-         *                next char to be read is: '_input_p' not '_input_p + 1'    */
-        me->_input_p        = ContentFront + QUEX_SETTING_BUFFER_MIN_FALLBACK_N;   
-        /* NOTE: This operation can only happen from outside the lexical analysis
-         *       process, i.e. either in a TERMINAL (pattern action) or outside the
-         *       receive function calls.                                            */
-        me->_lexeme_start_p = me->_input_p; 
-    }
-
-    QUEX_INLINE size_t          
-    QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)* me)
-    { return (size_t)(me->_back - me->_front + 1); }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
-    {
-        uint8_t              tmp = 0xFF;
-        QUEX_TYPE_CHARACTER* iterator = 0x0;
-
-        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-        default:
-            __quex_assert(false);
-            break;
-        case 1:
-            /* Nothing to be done */
-            break;
-        case 2:
-            for(iterator=Begin; iterator != End; ++iterator) {
-                tmp = *(((uint8_t*)iterator) + 0);
-                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 1);
-                *(((uint8_t*)iterator) + 1) = tmp;
-            }
-            break;
-        case 4:
-            for(iterator=Begin; iterator != End; ++iterator) {
-                tmp = *(((uint8_t*)iterator) + 0);
-                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 3);
-                *(((uint8_t*)iterator) + 3) = tmp;
-                tmp = *(((uint8_t*)iterator) + 1);
-                *(((uint8_t*)iterator) + 1) = *(((uint8_t*)iterator) + 2);
-                *(((uint8_t*)iterator) + 2) = tmp;
-            }
-            break;
-        }
-    }
-
-    QUEX_INLINE void 
-    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
-                                      QUEX_TYPE_CHARACTER*      Memory, 
-                                      const size_t              Size,
-                                      QUEX_TYPE_CHARACTER*      EndOfFileP)
-    /* InputMemory == 0x0 => Allocate memory yourself. Not externally owned.
-     * Else               => Use provided memory, mark that it is externally owned. */
-    {
-        QUEX_TYPE_CHARACTER*   chunk         = Memory;
-        QUEX_TYPE_CHARACTER*   end_of_file_p = EndOfFileP;
-        bool                   external_f    = true;
-
-        if( Memory == 0x0 ) { 
-            /* The actual 'memory chunk' is an 'owned member resource' accessed by pointer.
-             * Thus, it is allocated in the constructor.                                    */
-            chunk = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(Size * sizeof(QUEX_TYPE_CHARACTER), 
-                                                 QUEXED(MemoryObjectType_BUFFER));
-            end_of_file_p = 0x0;
-            external_f    = false; /* We own the memory, not someone outside. */
-        } 
-
-        QUEX_NAME(BufferMemory_init)(me, chunk, Size, end_of_file_p, external_f);
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER* 
-    QUEX_NAME(BufferMemory_reset)(QUEX_NAME(BufferMemory)*  me, 
-                                  QUEX_TYPE_CHARACTER*      Memory, 
-                                  const size_t              Size,
-                                  QUEX_TYPE_CHARACTER*      EndOfContentP)
-    /* Memory == 0x0 => no initialization, only return current pointer to memory. */
-    {
-        QUEX_TYPE_CHARACTER* old_memory = (me->_external_owner_f) ? me->_front : 0x0;
-
-        if( Memory == 0x0 ) return old_memory;
-
-        /* Destruct the current memory (if it is not externally owned. */
-        QUEX_NAME(BufferMemory_destruct)(me);
-
-        /* It is assumed that if memory is reset, it is owned externally not by the engine. */
-        __quex_assert(Memory != 0x0);
-
-        /* Content must be provided (event empty will do, i.e. EndOfContentP = Memory + 1) */
-        __quex_assert(EndOfContentP > Memory);
-        __quex_assert(EndOfContentP <= Memory + Size);
-
-        QUEX_NAME(BufferMemory_init)(me, Memory, Size, EndOfContentP, /* ExternalOwnerF */ true);
-
-        return old_memory;
-    }
-
-    QUEX_INLINE void 
-    QUEX_NAME(BufferMemory_init)(QUEX_NAME(BufferMemory)*  me, 
-                                 QUEX_TYPE_CHARACTER*      Memory, 
-                                 const size_t              Size,
-                                 QUEX_TYPE_CHARACTER*      EndOfFileP,
-                                 bool                      ExternalOwnerF) 
-    {
-        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
-         * one character to be read in forward direction.                                   */
-        __quex_assert(Memory != 0x0);
-        __quex_assert(Size != 0);
-#       ifdef QUEX_OPTION_ASSERTS
-        if( Size <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
-            QUEX_ERROR_EXIT("Error: Tried to initialize buffer memory with a size less or equal\n"
-                            "Error: to QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2. Maybe, define\n"
-                            "Error: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0, if no pre-contexts\n"
-                            "Error: are involved.");
-        }
-        else if( EndOfFileP != 0x0 ) {
-            __quex_assert(EndOfFileP > Memory);
-            __quex_assert(EndOfFileP <= Memory + Size);
-        }
+    if( ! me->_memory._front ) {
+        /* No memory => Analyzer is put into a non-functional state.         */
+        me->_read_p                             = (QUEX_TYPE_CHARACTER*)0;
+        me->_lexeme_start_p                     = (QUEX_TYPE_CHARACTER*)0;
+        me->_character_at_lexeme_start          = (QUEX_TYPE_CHARACTER)0;                                   
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                 
+        me->_character_before_lexeme_start      = (QUEX_TYPE_CHARACTER)0;
 #       endif
-
-        me->_front            = Memory;
-        me->_end_of_file_p    = EndOfFileP;
-        me->_back             = Memory + (Size - 1);
-        me->_external_owner_f = ExternalOwnerF;
-        *(me->_front)         = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        *(me->_back)          = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        if( me->_end_of_file_p != 0x0 ) {
-            *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        }
-
-#       ifdef QUEX_OPTION_ASSERTS
-        if( EndOfFileP != 0x0 ) {
-           if( EndOfFileP < me->_back - 1 ) {
-               __QUEX_STD_memset(EndOfFileP + 1, 0xFF, (size_t)((me->_back - EndOfFileP) - (ptrdiff_t)(1)));
-            }
-        } 
-#       endif 
     }
-
-    QUEX_INLINE void 
-    QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
-    {
-        if( me->_external_owner_f == false && me->_front != (QUEX_TYPE_CHARACTER*)0x0 ) {
-            QUEXED(MemoryManager_free)((void*)me->_front, QUEXED(MemoryObjectType_BUFFER));
-            /* me->_external_owner_f = false; */
-        }
-
-        me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
-    }
-
-    QUEX_INLINE void  
-    QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)* me)
-    {
-        QUEX_TYPE_CHARACTER*  Offset = me->_memory._front;
-
-        __QUEX_STD_printf("   Buffer:\n");
-        __QUEX_STD_printf("      Memory:\n");
-        __QUEX_STD_printf("      _front         =  0;\n");
-        __QUEX_STD_printf("      _back          = +0x%X;\n", (int)(me->_memory._back - Offset));
-        if( me->_memory._end_of_file_p != 0x0 ) 
-            __QUEX_STD_printf("      _end_of_file_p = +0x%X;\n", (int)(me->_memory._end_of_file_p - Offset));
-        else
-            __QUEX_STD_printf("      _end_of_file_p = <void>;\n");
-
-        /* Store whether the memory has an external owner */
-        __QUEX_STD_printf("      _external_owner_f = %s;\n", me->_memory._external_owner_f ? "true" : "false");
-
-        __QUEX_STD_printf("   _input_p        = +0x%X;\n", (int)(me->_input_p        - Offset));
-        __QUEX_STD_printf("   _lexeme_start_p = +0x%X;\n", (int)(me->_lexeme_start_p - Offset));
-
-        __QUEX_STD_printf("   _character_at_lexeme_start = %X;\n", (int)me->_character_at_lexeme_start);
-#       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
+    else {
+        /* The first state in the state machine does not increment. 
+         * => input pointer is set to the first position, not before.        */
+        me->_read_p                             = BeginP;                                
+        me->_lexeme_start_p                     = BeginP;                                
+        me->_character_at_lexeme_start          = '\0';  /* Nothing covered. */
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                     
+        /* When the buffer is initialized, a line begins. Set 'newline'.     */
+        me->_character_before_lexeme_start      = QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;
 #       endif
-        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)me->_content_character_index_begin);
-        __QUEX_STD_printf("   _content_character_index_end   = %i;\n", (int)me->_content_character_index_end);
-        __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->_byte_order_reversion_active_f ? "true" : "false");
     }
+}
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, QUEX_TYPE_CHARACTER* EndOfFileP)
+/*  Initialize: input.character_index_begin
+ *              input.character_index_end_of_stream                         
+ *              input.end_p                                                  */
+{
+    QUEX_TYPE_CHARACTER*      BeginP           = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*      EndP             = me->_memory._back;
+    const ptrdiff_t           ContentSize      = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    ptrdiff_t                 loaded_n;
+    bool                      end_of_stream_f  = false;
+    QUEX_TYPE_STREAM_POSITION ci_begin         = (QUEX_TYPE_STREAM_POSITION)0;
+    QUEX_TYPE_STREAM_POSITION ci_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
+    QUEX_TYPE_CHARACTER*      end_p            = (QUEX_TYPE_CHARACTER*)0;
+    (void)EndP;
+
+    if( ! me->_memory._front ) {
+        ci_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
+        end_p            = (QUEX_TYPE_CHARACTER*)0;
+        ci_begin         = (QUEX_TYPE_STREAM_POSITION)-1;
+    }
+    else if( me->filler && me->filler->byte_loader ) {
+        __quex_assert(! EndOfFileP);
+
+        loaded_n         = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, ContentSize,
+                                                        0, &end_of_stream_f);
+        ci_end_of_stream = ((! loaded_n) || end_of_stream_f) ? loaded_n 
+                                                             : (QUEX_TYPE_STREAM_POSITION)-1;
+        end_p            = &BeginP[loaded_n];
+    } 
+    else {
+        __quex_assert(me->_memory._front);           /* See first condition. */
+        __quex_assert(! EndOfFileP || (EndOfFileP >= BeginP && EndOfFileP <= EndP));
+
+        if( EndOfFileP ) {
+            ci_end_of_stream = EndOfFileP - BeginP;
+            end_p            = EndOfFileP;   
+        }
+        else {
+            ci_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
+            end_p            = BeginP;   
+        }
+    }
+    me->input.character_index_begin         = ci_begin;
+    me->input.character_index_end_of_stream = ci_end_of_stream;
+    me->input.end_p                         = end_p;
+    if( me->input.end_p ) {
+        *(me->input.end_p)                  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
+
+    QUEX_IF_ASSERTS_poison(&me->input.end_p[1], me->_memory._back);
+}
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_register_content)(QUEX_NAME(Buffer)*        me,
+                                   QUEX_TYPE_CHARACTER*      EndOfInputP,
+                                   QUEX_TYPE_STREAM_POSITION CharacterIndexBegin)
+/* Registers information about the stream that fills the buffer and its
+ * relation to the buffer. 
+ *  
+ *  EndOfInputP --> Position behind the last character in the buffer that has
+ *                  been streamed.
+ *          '0' --> No change.
+ *  
+ *  CharacterIndexBegin --> Character index of the first character in the 
+ *                          buffer.
+ *                 '-1' --> No change.                                       */
+{
+    if( EndOfInputP ) {
+        __quex_assert(EndOfInputP <= me->_memory._back);
+        __quex_assert(EndOfInputP >  me->_memory._front);
+
+        me->input.end_p    = EndOfInputP;
+        *(me->input.end_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
+
+    if( CharacterIndexBegin != (QUEX_TYPE_STREAM_POSITION)-1 ) {
+        me->input.character_index_begin = CharacterIndexBegin;
+    }
+
+    QUEX_IF_ASSERTS_poison(&me->input.end_p[1], me->_memory._back);
+    /* NOT: assert(QUEX_NAME(Buffer_input_character_index_begin)(me) >= 0);
+     * This function may be called before content is setup/loaded propperly. */ 
+}
+
+QUEX_INLINE void       
+QUEX_NAME(Buffer_register_eos)(QUEX_NAME(Buffer)*        me,
+                               QUEX_TYPE_STREAM_POSITION CharacterIndexEndOfStream)
+{
+    me->input.character_index_end_of_stream = CharacterIndexEndOfStream;
+}
+
+QUEX_INLINE bool
+QUEX_NAME(Buffer_is_empty)(QUEX_NAME(Buffer)* me)
+/* RETURNS: true, if buffer does not contain anything.
+ *          false, else.                                                     */
+{ 
+    return    me->input.end_p == &me->_memory._front[1] 
+           && me->input.character_index_begin == 0; 
+}
+
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
+QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me)
+/* RETURNS: Character index of the character to which '.input.end_p' points.
+ *                                                                           */
+{
+    __quex_assert(me->input.character_index_begin >= 0);
+    QUEX_BUFFER_ASSERT_pointers_in_range(me);
+
+    return   me->input.character_index_begin 
+           + (me->input.end_p - &me->_memory._front[1]);
+}
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_read_p_add_offset)(QUEX_NAME(Buffer)* buffer, const size_t Offset)
+/* Add offset to '._read_p'. No check applies whether this is admissible.
+ *                                                                           */
+{ 
+    QUEX_BUFFER_ASSERT_pointers_in_range(buffer);
+    buffer->_read_p += Offset; 
+    QUEX_BUFFER_ASSERT_pointers_in_range(buffer);
+}
+
+QUEX_INLINE size_t
+QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)* me)
+{
+    return QUEX_NAME(BufferMemory_size)(&(me->_memory)) - 2;
+}
+
+QUEX_INLINE bool 
+QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)* me)
+{ 
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    if     ( me->_read_p != me->input.end_p )                return false;
+    else if( me->input.character_index_end_of_stream == -1 ) return false;
+
+    return    QUEX_NAME(Buffer_input_character_index_end)(me) 
+           == me->input.character_index_end_of_stream;
+}
+
+QUEX_INLINE bool 
+QUEX_NAME(Buffer_is_end_of_stream_inside)(QUEX_NAME(Buffer)* me)
+{ 
+    const ptrdiff_t ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+
+    if( me->input.character_index_end_of_stream == -1 ) return false;
+    else if( me->input.character_index_end_of_stream < me->input.character_index_begin ) return false;
+    
+    return me->input.character_index_end_of_stream - me->input.character_index_begin < ContentSize;
+}
+
+QUEX_INLINE bool                  
+QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)* buffer)
+{ 
+    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+    if     ( buffer->_read_p != buffer->_memory._front )                  return false;
+    else if( QUEX_NAME(Buffer_input_character_index_begin)(buffer) != 0 ) return false;
+    else                                                                  return true;
+}
+
+QUEX_INLINE bool
+QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me, 
+                                        QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin,
+                                        QUEX_TYPE_STREAM_POSITION MinCharacterIndexInBuffer)
+/* RETURNS:  true -- if the the buffer could be filled start from 
+ *                   NewCharacterIndexBegin.
+ *           false, else.
+ *
+ * In case, that the loading fails, the buffer is setup as it was BEFORE the call
+ * to this function.
+ *
+ * EXPLANATION:
+ *
+ * Before:    .-------------------------------------- prev character_index_begin             
+ *            :                 
+ *            | . . . . . . . . .x.x.x.x.x.x.x.x.x.x.x| 
+ *                              |<---- move size ---->|
+ * After:     |<- move distance |
+ *            .-------------------------------------- new character_index_begin
+ *            :                     .---------------- prev character index begin
+ *            :                     :  
+ *            |x.x.x.x.x.x.x.x.x.x.x|N.N.N.N.N.N.N. . | 
+ *            |- move_size -------->|- loaded_n ->|
+ *                                                             
+ * Moves the region of size 'Size' from the end of the buffer to the beginning
+ * of the buffer and tries to load as many characters as possible behind it. */
+{
+    QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*       EndP        = me->_memory._back;
+    const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_STREAM_POSITION  load_character_index;
+    ptrdiff_t                  load_request_n;
+    QUEX_TYPE_CHARACTER*       load_p;
+    ptrdiff_t                  loaded_n;
+    intmax_t                   move_distance;
+    ptrdiff_t                  move_size;
+    bool                       end_of_stream_f = false;
+
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    __quex_assert(me->input.character_index_begin      <= NewCharacterIndexBegin);
+    __quex_assert(NewCharacterIndexBegin               <= MinCharacterIndexInBuffer);
+    __quex_assert(NewCharacterIndexBegin + ContentSize >= MinCharacterIndexInBuffer );
+
+    if(    me->input.character_index_end_of_stream != -1
+        && MinCharacterIndexInBuffer >= me->input.character_index_end_of_stream ) {
+        /* If the end of the stream is INSIDE the buffer already, then there
+         * is no need, no chance, of loading more content.                   */
+        return false;
+    }
+
+    /* (1) Move existing content in the buffer to appropriate position.      */
+    move_distance        = NewCharacterIndexBegin - me->input.character_index_begin;
+    move_size            = QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)move_distance);
+    load_character_index = NewCharacterIndexBegin + move_size;
+    load_request_n       = ContentSize - move_size; 
+    load_p               = &BeginP[move_size];
+
+    __quex_assert(load_character_index == NewCharacterIndexBegin + (load_p - BeginP));
+    __quex_assert(load_p >= BeginP);
+    __quex_assert(&load_p[load_request_n] <= EndP);
+    (void)EndP;
+    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, load_p, load_request_n,
+                                            load_character_index,
+                                            &end_of_stream_f);
+
+    if( (! loaded_n) || end_of_stream_f ) { /* End of stream detected.       */
+        QUEX_NAME(Buffer_register_eos)(me, load_character_index + loaded_n);
+    }
+
+    /* (3) In case of failure, restore previous buffer content.              */
+    if( MinCharacterIndexInBuffer >= load_character_index + loaded_n ) {
+        QUEX_NAME(Buffer_move_forward_undo)(me, move_distance, move_size);
+        return false;
+    }
+
+    QUEX_NAME(Buffer_register_content)(me, &load_p[loaded_n], NewCharacterIndexBegin);
+    return true;
+}
+
+QUEX_INLINE bool
+QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me, 
+                                         QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin)
+/* Before:                     
+ *            .------------------------------------- prev character index begin
+ *            :
+ *            |x.x.x.x.x.x.x.x.x.x. . . . . . . . . . . . . |
+ *            |<--- move size---->|                         
+ * After:                                             
+ *            .------------------------------------- new character index begin
+ *            :                     .--------------- prev character index begin
+ *            :                     :
+ *            :--- move distance--->|                 
+ *            |N.N.N.N.N.N.N.N.N.N.N.x.x.x.x.x.x.x.x.x.x. . | 
+ *                               
+ * Moves the region of size 'Size' from the beginning of the buffer to the end
+ * and tries to load as many characters as possible behind it. If the try fails
+ * something is seriously wrong.                                             */
+{
+    QUEX_TYPE_CHARACTER*       BeginP   = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*       EndP     = me->_memory._back;
+    QUEX_TYPE_STREAM_POSITION  ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
+    ptrdiff_t                  load_request_n;
+    ptrdiff_t                  loaded_n;
+    ptrdiff_t                  move_distance;
+    QUEX_TYPE_CHARACTER*       end_p;
+    bool                       end_of_stream_f = false;
+
+    __quex_assert(NewCharacterIndexBegin >= 0);
+    __quex_assert(ci_begin  >= NewCharacterIndexBegin);
+
+    /* (1) Move away content, so that previous content can be reloaded.      */
+    move_distance  = (ptrdiff_t)(ci_begin - NewCharacterIndexBegin);
+    load_request_n = QUEX_NAME(Buffer_move_backward)(me, (ptrdiff_t)move_distance);
+
+    __quex_assert(&BeginP[load_request_n] <= EndP);
+
+    /* (2) Move away content, so that previous content can be reloaded.      */
+    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
+                                            NewCharacterIndexBegin,
+                                            &end_of_stream_f);
+
+    /* (3) In case of error, the stream must have been corrupted. Previously
+     *     present content is not longer available. Continuation impossible. */
+    if( loaded_n != load_request_n ) {
+        QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
+        return false;
+    }
+
+    end_p = EndP - me->input.end_p < move_distance ? 
+            EndP : &me->input.end_p[move_distance];
+
+    QUEX_NAME(Buffer_register_content)(me, end_p, NewCharacterIndexBegin);
+    return true;
+}
+   
+QUEX_INLINE ptrdiff_t
+QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
+                                           QUEX_TYPE_CHARACTER** position_register,
+                                           const size_t          PositionRegisterN)
+/* Free some space AHEAD so that new content can be loaded. Content that 
+ * is still used, or expected to be used shall remain inside the buffer.
+ * Following things need to be respected:
+ *
+ *    _lexeme_start_p  --> points to the lexeme that is currently treated.
+ *                         MUST BE INSIDE BUFFER!
+ *    _read_p          --> points to the character that is currently used
+ *                         for triggering. MUST BE INSIDE BUFFER!
+ *    fall back region --> A used defined buffer backwards from the lexeme
+ *                         start. Shall help to avoid extensive backward
+ *                         loading.
+ *
+ * RETURNS: Pointer to the end of the maintained content.                    */
+{ 
+    QUEX_TYPE_CHARACTER*        BeginP = &me->_memory._front[1];
+    const QUEX_TYPE_CHARACTER*  EndP   = me->_memory._back;
+    const ptrdiff_t             ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_CHARACTER*        move_begin_p;
+    ptrdiff_t                   move_size;
+    ptrdiff_t                   move_distance;
+    const ptrdiff_t             FallBackN = (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
+    QUEX_TYPE_CHARACTER**       pr_it     = 0x0;
+
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
+    if( me->_read_p - me->_lexeme_start_p >= ContentSize - FallBackN ) { 
+        /* OVERFLOW: If stretch from _read_p to _lexeme_start_p 
+         * spans the whole buffer, then nothing can be loaded.               */
+        me->on_overflow(me, /* Forward */ true);
+        return 0;
+    }
+    else if( QUEX_NAME(Buffer_is_end_of_stream_inside)(me) ) {
+        /* Refuse the move, if the end of stream is inside buffer.           */
+        return 0;
+    }
+
+    /* Determine from where the region-to-be-moved BEGINS, what its size is
+     * and how far it is to be moved.                                        */
+    move_begin_p  = me->_read_p;
+    move_begin_p  = me->_lexeme_start_p ? QUEX_MIN(move_begin_p, me->_lexeme_start_p)
+                                        : move_begin_p;
+    /* Plain math: move_begin_p = max(BeginP, move_begin_p - FallBackN); 
+     * BUT: Consider case where 'move_begin_p - FallBackN < 0'! CAREFUL!     */
+    move_begin_p  = move_begin_p - BeginP < FallBackN ? BeginP 
+                                                      : &move_begin_p[- FallBackN];
+    move_distance = move_begin_p    - BeginP;
+
+    if( ! move_distance ) {
+        return 0;
+    }
+
+    move_size = QUEX_NAME(Buffer_move_forward)(me, move_distance);
+
+    /* Pointer Adaption: _read_p, _lexeme_start_p, position registers.
+     *                   input.end_p, input.end_character_index              */
+    me->_read_p -= move_distance;
+    if( me->_lexeme_start_p ) me->_lexeme_start_p -= move_distance;
+   
+    if( position_register ) {
+        /* All position registers MUST point behind '_lexeme_start_p'.       */
+        for(pr_it = position_register; pr_it != &position_register[PositionRegisterN]; ++pr_it) {
+            if( ! *pr_it ) continue;
+            *pr_it = (*pr_it - BeginP) >= move_distance ? *pr_it - move_distance : 0;
+        }
+    }
+
+    /* input.end_p/end_character_index: End character index remains the SAME, 
+     * since no new content has been loaded into the buffer.                 */
+    __quex_assert(me->input.end_p - BeginP >= move_distance);
+
+    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[- move_distance], 
+                                       me->input.character_index_begin + move_distance);
+
+    /*_______________________________________________________________________*/
+    __quex_assert(me->input.end_p == &move_begin_p[move_size - move_distance]);
+    (void)move_size;
+    QUEX_IF_ASSERTS_poison(&EndP[- move_distance + 1], EndP);
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    (void)EndP;
+
+    return move_distance;
+}
+
+QUEX_INLINE bool
+QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
+                               QUEX_TYPE_CHARACTER** position_register,
+                               const size_t          PositionRegisterN)
+/* Load as much new content into the buffer as possible--from what lies ahead
+ * in the input stream. Maintains '_read_p', '_lexeme_start_p' inside the
+ * buffer (if possible also fallback region). The 'input.end_p' pointer and
+ * 'input.end_character_index' are adapted according to the newly loaded
+ * content, i.e. the point to exactly the same character as before the load.
+ *
+ * BEHAVIOR: BLOCKING wait for incoming stream content. 
+ *           No return without content--except at end of stream.
+ *
+ *           Buffer and pointers are adapted are adapted IN ANY CASE!
+ *
+ *           (i) Content present:
+ *               => return 'true'.
+ *
+ *           (ii) No content:
+ *               => pointers are 'disabled' because 'end_p = _read_p'.
+ *                  return 'false'.
+ *
+ * RETURNS: true  => load successful: analysis MAY CONTINUE.
+ *          false => nothing loaded:  analysis MUST STOP!                    
+ *
+ * The case of 'end-of-stream' may be true in both cases. When 'end-of-stream' 
+ * is detected, the character index of the 'end-of-stream' is registered. This 
+ * prevents future attemps to load beyond that index. Again, even if 
+ * 'end-of-stream' has been detected, there might be characters for the lexer 
+ * to chew on.                                                               */
+{
+    QUEX_TYPE_CHARACTER*        BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*        EndP        = me->_memory._back;
+    const ptrdiff_t             ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_STREAM_POSITION   ci_begin    = QUEX_NAME(Buffer_input_character_index_begin)(me);
+    QUEX_TYPE_STREAM_POSITION   ci_load_begin;
+    ptrdiff_t                   move_distance;
+    ptrdiff_t                   load_request_n;
+    ptrdiff_t                   loaded_n;
+    bool                        end_of_stream_f = false;
+
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
+    if( ! me->filler || ! me->filler->byte_loader ) {
+        QUEX_NAME(Buffer_register_eos)(me, ci_begin + (me->input.end_p - BeginP));
+        return false;       /* No filler, no loader => no loading!           */
+    }
+
+    /* Move remaining content.
+     * Maintain lexeme and fallback.                 
+     * Adapt pointers.                                                       */
+    move_distance = QUEX_NAME(Buffer_move_away_passed_content)(me, position_register, 
+                                                               PositionRegisterN);
+    if( ! move_distance && me->input.end_p == EndP ) {
+        return false;        /* Cannot free space for loading => no loading! */
+    }
+
+    /* Load new content.                                                     */
+    ci_load_begin  = me->input.character_index_begin + (me->input.end_p - BeginP);
+    load_request_n = ContentSize                     - (me->input.end_p - BeginP);
+    loaded_n       = QUEX_NAME(BufferFiller_load)(me->filler, 
+                                                  me->input.end_p, load_request_n,
+                                                  ci_load_begin, &end_of_stream_f);
+    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[loaded_n], -1);
+
+    if( ! loaded_n ) {
+        /* Filler blocks until either some characters are filled, or
+         * returns fills characters indicating 'end-of-stream'.              */
+        end_of_stream_f = true; 
+    }
+    if( end_of_stream_f ) {
+        QUEX_NAME(Buffer_register_eos)(me, ci_load_begin + loaded_n); 
+    }
+
+    __quex_debug_buffer_load(me, "LOAD FORWARD(exit)\n");
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    return loaded_n ? true : false;
+}
+
+QUEX_INLINE ptrdiff_t        
+QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
+/* Free some space in the REAR so that previous content can be re-loaded. Some 
+ * content is to be left in front, so that no immediate reload is necessary
+ * once the analysis goes forward again. Following things need to be respected:
+ *
+ *    _lexeme_start_p  --> points to the lexeme that is currently treated.
+ *                         MUST BE INSIDE BUFFER!
+ *    _read_p          --> points to the character that is currently used
+ *                         for triggering. MUST BE INSIDE BUFFER!
+ *
+ * RETURNS: Distance the the buffer content has been freed to be filled.     */
+{
+    const QUEX_TYPE_CHARACTER*  BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*        EndP        = me->_memory._back;
+    const ptrdiff_t             ContentSize = EndP - BeginP;
+    ptrdiff_t                   move_distance;
+    QUEX_TYPE_CHARACTER*        end_p;
+
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
+    if( me->input.character_index_begin == 0 && BeginP == me->_read_p ) {
+        return 0;                        /* Begin of stream.                 */
+    }
+    else if( me->_lexeme_start_p >= &EndP[-1] ) { 
+        /* If _lexeme_start_p at back, then no new content can be loaded.    */
+        me->on_overflow(me, /* Forward */ false);
+        return 0;
+    }
+
+    /* Determine where the region-to-be-moved ENDS, what its size is and how
+     * far it is to be moved.                                                */
+    move_distance = EndP - me->input.end_p;
+    move_distance = QUEX_MAX(move_distance, (ptrdiff_t)(ContentSize/3));
+    move_distance = (ptrdiff_t)QUEX_MIN((QUEX_TYPE_STREAM_POSITION)move_distance, 
+                                        me->input.character_index_begin);
+    move_distance = QUEX_MIN(move_distance, &EndP[-1] - me->_read_p);
+    if( me->_lexeme_start_p ) {
+        move_distance = QUEX_MIN(move_distance, &EndP[-1] - me->_lexeme_start_p);
+    }
+
+    if( ! move_distance ) {
+        return 0;
+    }
+
+    (void)QUEX_NAME(Buffer_move_backward)(me, move_distance);
+
+    /* Pointer Adaption: _read_p, _lexeme_start_p.                           */
+    me->_read_p += move_distance;
+    if( me->_lexeme_start_p ) me->_lexeme_start_p += move_distance;
+
+    /* Adapt and of content pointer and new character index at begin.        */
+    end_p = EndP - me->input.end_p < move_distance ? EndP
+                                                   : &me->input.end_p[move_distance];
+
+    QUEX_NAME(Buffer_register_content)(me, end_p, 
+                                       me->input.character_index_begin - move_distance);
+
+    /*_______________________________________________________________________*/
+    QUEX_IF_ASSERTS_poison(BeginP, &BeginP[move_distance]); 
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
+    return move_distance;
+}
+
+QUEX_INLINE bool   
+QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
+/* Load *previous* content into the buffer so that the analyzer can continue
+ * seeminglessly (in backward direction).
+ *
+ * BEHAVIOR: BLOCKING wait for incoming stream content. 
+ *           No return without content--except at end of stream.
+ *
+ *           Buffer and pointers are adapted are adapted IN ANY CASE!
+ *
+ * RETURNS: true  => load successful:           backward analysis MAY CONTINUE.
+ *          false => begin of stream or ERROR:  backward analysis MUST STOP!
+ *
+ *  __________________________________________________________________________
+ * ! In the false case, the range from 'Begin' to '_lexeme_start_p' may       !
+ * ! have ARBITRARY CONTENT. Then the '_read_p' MUST be reset IMMEDIATELY and !
+ * ! only forward analysis may work.                                          !
+ * '--------------------------------------------------------------------------'
+ *
+ *_____________________________________________________________________________
+ * NO ADAPTIONS OF POST-CONTEXT POSITIONS. Reason: Backward analysis appears
+ * only in the following two cases.
+ *  
+ *  (1) When checking for a pre-condition. This does not involve pre-contexts.
+ * 
+ *  (2) When tracing back along a 'pseudo-ambigous post context'. However,
+ *      the stretch from 'end-of-core' pattern to 'end-of-post context' lies
+ *      completely in between 'lexeme start' to 'read '. Thus, one never has
+ *      to go farther back then the buffer's begin.                        */
+{
+    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
+    ptrdiff_t                  move_distance;
+    ptrdiff_t                  loaded_n;
+    bool                       end_of_stream_f = false;
+
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
+    __quex_debug_buffer_load(me, "BACKWARD(entry)\n");
+
+    /* REFUSE CASES:                                                         */
+    if( ! me->filler || ! me->filler->byte_loader ) {
+        return false;                    /* Buffer based analysis.           */
+    }
+    else if( ! QUEX_NAME(ByteLoader_seek_is_enabled)(me->filler->byte_loader) ) {
+        return false;                    /* Stream cannot go backwards.      */
+    }
+
+    move_distance = QUEX_NAME(Buffer_move_away_upfront_content)(me);
+
+    if( ! move_distance ) {
+        return false;
+    }
+
+    /* Load new content.                                                     */
+    loaded_n      = QUEX_NAME(BufferFiller_load)(me->filler, 
+                                                 BeginP, move_distance,
+                                                 me->input.character_index_begin, 
+                                                 &end_of_stream_f);
+
+    if( loaded_n  != move_distance ) {
+        /* Serious: previously loaded content could not be loaded again!     
+         * => Buffer has now hole: 
+         *    from BeginP[loaded_n] to Begin[move_distance]                 
+         * The analysis can continue in forward direction, but not backwards.*/
+        return false;
+    }
+
+    __quex_debug_buffer_load(me, "BACKWARD(exit)\n");
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    return true;
+}
+
+QUEX_INLINE ptrdiff_t
+QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, 
+                               ptrdiff_t          move_distance)
+/* Moves the entire (meaningful) content of the buffer by 'move_distance'
+ * forward. It does NOT MODIFY any pointers about the buffer content!
+ *
+ *                                                               EndP
+ *                                         |<---- move size ---->|
+ *     Before:   | . . . . . . . . . . . . .x.x.x.x.x.x.x.x.x.x.x| 
+ *               |<---- move distance -----|                     |
+ *                  .----------------------'                     |
+ *               .-'                            .----------------'
+ *               |                     .-------'
+ *     After:    |x.x.x.x.x.x.x.x.x.x.x| . . . . . . . . . . . . | 
+ *               |<---- move_size ---->|
+ *
+ * The callback 'on_content_change()' informs the user that any pointer into
+ * the buffer must now copy its pointed objects, because the pointers will 
+ * become invalid.
+ *
+ * RETURNS: Number of characters that have been moved.                       */
+{
+    QUEX_TYPE_CHARACTER* BeginP       = &me->_memory._front[1];
+    const ptrdiff_t      FilledSize   = me->input.end_p - BeginP;
+    ptrdiff_t            move_size;
+
+    if( move_distance >= FilledSize ) {
+        return 0;
+    }
+
+    move_size = FilledSize - move_distance;
+
+    if( move_distance && move_size ) {
+        me->on_content_change(BeginP, me->input.end_p);
+
+        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance],
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
+    }
+    return move_size;
+}
+
+QUEX_INLINE ptrdiff_t
+QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, 
+                                ptrdiff_t          move_distance)
+/* Moves content so that previous content may be filled into the buffer.
+ *
+ *          BeginP
+ *            |<--- move size---->|                         
+ *            |x.x.x.x.x.x.x.x.x.x| . . . . . . . . . . . . . . |
+ *            |                   '--------------.               
+ *            '------------.                      '-------------.
+ *                          '---------------.                   |
+ *            :------- move distance------->|                   |
+ *            | . . . . . . . . . . . . . . |x.x.x.x.x.x.x.x.x.x| 
+ *                               
+ *
+ * RETURNS: Number of character that need to be filled into the gap.
+ *                                                                           */
+{
+    QUEX_TYPE_CHARACTER*  BeginP      = &me->_memory._front[1];
+    const ptrdiff_t       ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    ptrdiff_t             move_size;
+
+    if( move_distance > ContentSize ) {
+        return ContentSize;
+    }
+
+    move_size = ContentSize - move_distance;
+
+    if( move_distance && move_size ) {
+        me->on_content_change(BeginP, me->input.end_p);
+
+        __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
+    }
+    return (ptrdiff_t)move_distance;
+}
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
+                                    intmax_t           move_distance,
+                                    ptrdiff_t          move_size)
+/* Restore the buffer's raw memory to what it was before in the 'FORWARD' case. 
+ * It is assumed that the buffer's parameters in
+ *
+ *                         me->input
+ *
+ * remained UNTOUCHED during the moving and loading of the caller function.
+ * That is, they indicate the situation to be restored.                      */
+{
+    QUEX_TYPE_CHARACTER* BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER* EndP        = me->_memory._back;
+    ptrdiff_t            load_request_n;
+    ptrdiff_t            loaded_n;
+    bool                 end_of_stream_f = false;
+
+    /* Character with character index 'MinCharacterIndexInBuffer' has
+     * not been loaded. => Buffer must be setup as before.                   */
+    if( move_size ) {
+        __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
+        load_request_n = (ptrdiff_t)move_distance;
+    }
+    else {
+        load_request_n = (me->input.end_p - BeginP);
+    }
+    __quex_assert(&BeginP[load_request_n] <= EndP);
+    (void)EndP;
+    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
+                                            me->input.character_index_begin,
+                                            &end_of_stream_f);
+
+    if( loaded_n != load_request_n ) {
+        QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
+    }
+    else {
+        /* Ensure, that the buffer limit code is restored.                   */
+        *(me->input.end_p) = (QUEX_TYPE_CHARACTER)QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
+}
+
+QUEX_INLINE void      
+QUEX_NAME(Buffer_on_content_change_DEFAULT)(const QUEX_TYPE_CHARACTER* BeginP, 
+                                            const QUEX_TYPE_CHARACTER* EndP)
+{ (void)BeginP; (void)EndP; }
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_on_overflow_DEFAULT)(QUEX_NAME(Buffer)* me, bool ForwardF)
+{
+    (void)me; (void)ForwardF;
+#   ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
+    uint8_t                     utf8_encoded_str[512]; 
+    char                        message[1024];
+    const size_t                MessageSize = (size_t)1024;
+    uint8_t*                    WEnd        = 0x0;
+    uint8_t*                    witerator   = 0x0; 
+    QUEX_TYPE_CHARACTER*        End         = 0x0; 
+    const QUEX_TYPE_CHARACTER*  iterator    = 0x0; 
+
+    /* Print out the lexeme start, so that the user has a hint. */
+    WEnd        = utf8_encoded_str + 512 - 7;
+    witerator   = utf8_encoded_str; 
+    End         = me->_memory._back; 
+    iterator    = me->_lexeme_start_p; 
+
+    QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, utf8)(&iterator, End, &witerator, WEnd);
+
+    message[0] = '\0';
+    /* No use of 'snprintf()' because not all systems seem to support it propperly. */
+    __QUEX_STD_strncat(message, 
+                       "Distance between lexeme start and current pointer exceeds buffer size.\n"
+                       "(tried to load buffer",
+                       MessageSize);
+    __QUEX_STD_strncat(message, ForwardF ? "forward)" : "backward)",                   MessageSize);
+    __QUEX_STD_strncat(message, "As a hint consider the beginning of the lexeme:\n[[", MessageSize);
+    __QUEX_STD_strncat(message, (char*)utf8_encoded_str,                               MessageSize);
+    __QUEX_STD_strncat(message, "]]\n",                                                MessageSize);
+
+    QUEX_ERROR_EXIT(message);
+#   else
+    QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
+                    "(tried to load buffer forward). Please, compile with option\n\n"
+                    "    QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE\n\n"
+                    "in order to get a more informative output. Most likely, one of your patterns\n"
+                    "eats more than you intended. Alternatively you might want to set the buffer\n"
+                    "size to a greater value or use skippers (<skip: [ \\n\\t]> for example).\n");
+#   endif /* QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE */
+}
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/temporary_macros_off>
-
+#include <quex/code_base/buffer/filler/BufferFiller.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/Buffer_navigation.i>
+#include <quex/code_base/buffer/Buffer_fill.i>
+#include <quex/code_base/buffer/BufferMemory.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I */
 

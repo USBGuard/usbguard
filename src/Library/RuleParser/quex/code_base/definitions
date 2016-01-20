@@ -29,6 +29,11 @@
 #   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
 #   define QUEXED_DEF(X)              QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
 #endif
+#if defined( __cplusplus) && ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_MAP_THIS_TO_ME(CLASS)   CLASS* me = this; (void)me;
+#else
+#   define QUEX_MAP_THIS_TO_ME(CLASS)   /* 'me' already plays the role of 'this'.   */
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1600
     /* Microsoft VisualStudio(tm) 2010, i.e. Version 1600:
@@ -55,6 +60,7 @@
 #   define __QUEX_STD_memset   std::memset
 #   define __QUEX_STD_printf   std::printf
 #   define __QUEX_STD_sprintf  std::sprintf
+#   define __QUEX_STD_strcmp   std::strcmp
 #   define __QUEX_STD_strncat  std::strncat
 #   define __QUEX_STD_malloc   std::malloc
 #   define __QUEX_STD_free     std::free  
@@ -78,6 +84,7 @@
 #   define __QUEX_STD_memmove  memmove
 #   define __QUEX_STD_memset   memset
 #   define __QUEX_STD_printf   printf
+#   define __QUEX_STD_strcmp   strcmp
 #   define __QUEX_STD_sprintf  sprintf
 #   define __QUEX_STD_strncat  strncat
 #   define __QUEX_STD_malloc   malloc
@@ -86,6 +93,30 @@
 #   define QUEX_INLINE             /* static */
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
+
+/* Define the QUEX_TYPE_STREAM_POSITION at a central place, so that it is the
+ * same when it is used in multiple analyzers compiled into one binary.      */
+#ifndef    QUEX_TYPE_STREAM_POSITION
+#   define QUEX_TYPE_STREAM_POSITION intmax_t
+#endif
+
+#define QUEX_MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+#define QUEX_MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
+
+/* In cases, such as DLL compilation for some dedicated compilers, 
+ * the classes need some epilog. If the user does not specify such
+ * a thing, it must be empty.                                                */
+#ifndef    QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#   define QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#endif
+
+/* Hash Function:
+ *
+ * Using Dan Bernstein's 'dbj2' (published in comp.lang.c) which is extremely
+ * fast but still behaves well. See Linear Congruential Generators for further
+ * reading.                                                                  */
+#define QUEX_HASH_INIT_VALUE  5381
+#define QUEX_HASH_NEXT(H, C)  ((((H) << 5) + (H)) + (C))
 
 /* Support of computed goto */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
@@ -129,7 +160,7 @@
            goto RELOAD_LABEL; } while (0)
 
 #define __QUEX_PRINT_SOURCE_POSITION()                             \
-        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
+        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, (int)__LINE__) 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_ERROR_EXIT(Msg) \
@@ -176,9 +207,9 @@
 
 #   define __quex_debug_input(StateIdx)                                            \
            __quex_debug("input:           ");                                      \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
+           __QUEX_PRINT_CHAR(*(me->buffer._read_p));                              \
            __quex_debug2("input position:  %i",                                    \
-                         (int)(me->buffer._input_p - me->buffer._memory._front));  \
+                         (int)(me->buffer._read_p - me->buffer._memory._front));  \
            __quex_optional_statistics((StateIdx))
 
 #   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
@@ -218,7 +249,7 @@
 
 #   define __quex_debug_buffer_info(B)                                         \
            __quex_debug2("input position:  %i",                                \
-                         (int)((B)._input_p        - (B)._memory._front + 1)); \
+                         (int)((B)._read_p        - (B)._memory._front + 1)); \
            __quex_debug2("lexeme start:    %i",                                \
                          (int)((B)._lexeme_start_p - (B)._memory._front + 1)); \
            __quex_debug2("buffer size:     %i",                                \
@@ -269,14 +300,16 @@
 #   include <quex/code_base/buffer/Buffer_debug>
 #   define __quex_debug_buffer_load(BUFFER, Msg)         \
            __QUEX_STD_fprintf(stderr, Msg);              \
-           QUEX_NAME(Buffer_show_debug_content)(BUFFER); 
+           QUEX_NAME(Buffer_show_debug_content)(BUFFER); \
+           __QUEX_STD_fprintf(stderr, "\n");
 
 #elif  defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
 
 #   include <quex/code_base/buffer/Buffer_debug>
 #   define __quex_debug_buffer_load(BUFFER, Msg)         \
            __QUEX_STD_fprintf(stdout, Msg);              \
-           QUEX_NAME(Buffer_show_content)(BUFFER); 
+           QUEX_NAME(Buffer_show_content)(BUFFER);       \
+           __QUEX_STD_fprintf(stdout, "\n");
 #else
 
 #   define __quex_debug_buffer_load(BUFFER, Msg) /* empty */
@@ -286,37 +319,11 @@
 #ifdef QUEX_OPTION_STATISTICS
 #    define __quex_optional_statistics(StateIdx) \
             QUEX_NAME(statistics_state_count)(QUEX_NAME(statistics_state_ ## StateIdx), \
-                                              *(me->buffer._input_p));
+                                              *(me->buffer._read_p));
 #else
 #    define __quex_optional_statistics(StateIdx) /* empty */
 #endif
 
-#if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
-#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
-        "\nThe provided input stream behaves strangely. Number of read\n"   \
-        "characters is not proportional to the stream position increase.\n" \
-        "The buffer filler type which you are using might be able to\n"     \
-        "deal with those cases. Try compile option:\n"                      \
-        "\n" \
-                  "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
-        "\n" \
-        "However, those mechanisms imply a trade-off in terms of speed.\n"   \
-        "Please, consider using a 'binary' for your input stream, or use\n" \
-        "a different implementation of the standard I/O library (e.g.\n"    \
-        "not Microsoft(tm)).\n"
-#else
-#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
-        "\nThe macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
-        "Nevertheless, the quex engine detected that the number of characters\n"   \
-        "is not proportional to the character position increase. The buffer\n"     \
-        "filler type which you are using **is not able** to deal with those\n"     \
-        "cases. You **must** use a binary mode of your input stream!\n"            
-#endif
-#define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD \
-        "Macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION enables strange stream\n" \
-        "handling. This functionality cannot be used in backward load. Either\n"    \
-        "renounce on pre-conditions or only use 'binary' file streams.\n"           \
-        
 #define __QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER \
         "A character encoding name '%s' has been specified while the analyzer is not\n" \
         "setup to run with a converter (icu or iconv).\n" 
@@ -335,19 +342,6 @@
         "##\n"                                                                      \
         "## Report any bug at\n"                                                    \
         "##        http://sourceforge.net/tracker/?group_id=168259&atid=846112\n" 
-
-#define __QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR \
-        "Error: Quex engine constructor has received a standard input handle!\n"   \
-        "Error: Standard input has to be treated like buffered input. Please,\n"   \
-        "Error: consult the documentation or the example 'stdinlexer.cpp' in\n"    \
-        "Error: directory $QUEX_PATH/demo/010 (> make stdinlexer.exe). Please,\n"  \
-        "Error: review the other (non-stdin) examples in this directory to\n"      \
-        "Error: conclude how to read encoded data via stdin.\n"
-
-#define __QUEX_MESSAGE_C_DOES_NOT_SUPPORT_MULTIPLE_IMPLICIT_TOKEN_ARGS \
-        "Error: Quex does not support unspecified multiple arguments for token\n" \
-        "Error: senders in plain 'C'. Please use something like\n\n"              \
-        "Error:           '=> TKN_MY_TOKEN(ID, text=Lexeme)\n\n"
 
 #define __QUEX_MESSAGE_MODE_STACK_OVERFLOW \
         "Error: Mode stack overflow. Adapt size of mode stack via the macro\n"      \
@@ -369,13 +363,13 @@
 #if ! defined(QUEX_OPTION_TERMINATION_ZERO_DISABLED)
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)        \
-        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_input_p); \
-        *((BUFFER)->_input_p) = '\0';
+        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_read_p); \
+        *((BUFFER)->_read_p) = '\0';
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
         /* only need to reset, in case that the terminating zero was set*/        \
         if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) { \
-            *((BUFFER)->_input_p) = (BUFFER)->_character_at_lexeme_start;         \
+            *((BUFFER)->_read_p) = (BUFFER)->_character_at_lexeme_start;         \
             (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     \
         }
 #else

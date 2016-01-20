@@ -1,6 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                      */
+        const char*                     input_name;
 
         QUEX_NAME(Buffer)               buffer;
 
@@ -28,4 +29,3 @@
         struct QUEX_NAME(Memento_tag)*  _parent_memento;
 #       endif
 
-        FILE*                           __file_handle_allocated_by_constructor;

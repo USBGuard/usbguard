@@ -7,12 +7,35 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 /* NOTE: QUEX_TYPE_TOKEN must be defined at this place! */
 
 
 QUEX_NAMESPACE_MAIN_OPEN
+
+    QUEX_INLINE void
+    QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, 
+                                    QUEX_TYPE_TOKEN*       Memory, 
+                                    const size_t           N)
+    /* me:     The token queue.
+     * Memory: Pointer to memory of token queue, 0x0 --> no initial memory.
+     * N:      Number of token objects that the array can carry.               */
+    {
+#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        QUEX_TYPE_TOKEN* iterator   = 0x0;
+#       endif
+        QUEX_TYPE_TOKEN* memory_end = &Memory[N];
+
+        __quex_assert(Memory != 0x0);
+        __quex_assert(N != 0);
+
+#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        /* Call placement new (plain constructor) for all tokens in chunk. */
+        for(iterator = Memory; iterator != memory_end; ++iterator) {
+            QUEX_NAME_TOKEN(construct)(iterator);
+        }
+#       endif
+        QUEX_NAME(TokenQueue_init)(me, Memory, memory_end); 
+    }
 
     QUEX_INLINE void
     QUEX_NAME(TokenQueue_reset)(QUEX_NAME(TokenQueue)* me) 
@@ -32,30 +55,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(TokenQueue_reset)(me);                                
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, 
-                                    QUEX_TYPE_TOKEN*       Memory, 
-                                    const size_t           N)
-    /* me:     The token queue.
-     * Memory: Pointer to memory of token queue, 0x0 --> no initial memory.
-     * N:      Number of token objects that the array can carry.               */
-    {
-#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-        QUEX_TYPE_TOKEN* iterator   = 0x0;
-#       endif
-        QUEX_TYPE_TOKEN* memory_end = Memory + N;
-
-        __quex_assert(Memory != 0x0);
-        __quex_assert(N != 0);
-
-#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-        /* Call placement new (plain constructor) for all tokens in chunk. */
-        for(iterator = Memory; iterator != memory_end; ++iterator) {
-            QUEX_NAME_TOKEN(construct)(iterator);
-        }
-#       endif
-        QUEX_NAME(TokenQueue_init)(me, Memory, memory_end); 
-    }
 
     QUEX_INLINE void
     QUEX_NAME(TokenQueue_destruct)(QUEX_NAME(TokenQueue)* me)
@@ -210,7 +209,7 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
         
         /* Step 1: allocate plain chunk of memory.                              */
         me->token_list = (QUEX_TYPE_TOKEN*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_TYPE_TOKEN) * me->size, 
-                                                                          QUEXED(MemoryObjectType_TOKEN_ARRAY));
+                                                                          E_MemoryObjectType_TOKEN_ARRAY);
         if( me->token_list == 0x0 ) {
             QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
         }
@@ -262,7 +261,7 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
         /* Step 3: De-Allocate the remainder objects                                 
          *         NO explicit destructor calls, since the referred objects are now
          *         referred from inside the 'real' token queue.                      */
-        QUEXED(MemoryManager_free)(me->token_list, QUEXED(MemoryObjectType_TOKEN_ARRAY));
+        QUEXED(MemoryManager_free)(me->token_list, E_MemoryObjectType_TOKEN_ARRAY);
     }
     /* Reset the read and write iterators */
     token_queue->read_iterator  = token_queue->begin;
@@ -273,7 +272,5 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I */

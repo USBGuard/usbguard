@@ -22,10 +22,19 @@
 %type usbiftypevec { std::vector<USBInterfaceType>* }
 %destructor usbiftypevec { delete $$; }
 
+%type condition { RuleCondition* }
+%destructor condition { delete $$; }
+
+%type conditionvec { std::vector<RuleCondition*>* }
+%destructor conditionvec { delete $$; }
+
+%type negation_op { bool }
 %type ports_set_op { Rule::SetOperator }
 %type usbif_set_op { Rule::SetOperator }
+%type condition_set_op { Rule::SetOperator }
 
 %syntax_error {
+#ifndef NDEBUG
   std::string possible_tokens;
   const size_t n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
   for (size_t i = 0; i < n; ++i) {
@@ -44,6 +53,9 @@
   else {
     state->error.setHint(hint_prefix);
   }
+#else
+  state->error.setHint("Syntax error!");
+#endif
   throw state->error;
 }
 
@@ -51,7 +63,7 @@
 
 rule ::= rule_spec.
 
-rule_spec ::= target device_spec action.
+rule_spec ::= target device_id device_attributes conditions.
 rule_spec ::= .
 
 target ::= KEYWORD_ALLOW. {
@@ -66,7 +78,13 @@ target ::= KEYWORD_REJECT. {
   state->rule.setTarget(Rule::Target::Reject);
 }
 
-device_spec ::= device_id device_attributes.
+target ::= KEYWORD_MATCH. {
+  state->rule.setTarget(Rule::Target::Match);
+}
+
+target ::= KEYWORD_DEVICE. {
+  state->rule.setTarget(Rule::Target::Device);
+}
 
 device_id ::= HEXCHAR4(V) COLON ASTERISK. { // 1234:*
   state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
@@ -196,12 +214,63 @@ usbiftypevec(V) ::= . {
 	V = new std::vector<USBInterfaceType>();
 }
 
-action ::= KEYWORD_ACTION string(S). {
-       state->rule.setAction(*S);
-       delete S;
+condition_set_op(O) ::= SET_OPERATOR(V). {
+  O = Rule::setOperatorFromString(quex::unicode_to_char(V->get_text()));
+  delete V;
 }
 
-action ::= .
+condition_set_op(O) ::= . {
+  O = Rule::SetOperator::EqualsOrdered;
+}
+
+negation_op(N) ::= NEGATION. {
+  N = true;
+}
+
+negation_op(N) ::= . {
+  N = false;
+}
+
+condition(C) ::= negation_op(N) CONDITION_IDENTIFIER(I) PQ_STRING_BEGIN PQ_STRING(P) PQ_STRING_END. {
+  const String identifier = quex::unicode_to_char(I->get_text());
+  const String parameter = quex::unicode_to_char(P->get_text());
+  const bool negated = N;
+  C = RuleCondition::getImplementation(identifier, parameter, negated);
+  delete I;
+  delete P;
+}
+
+condition(C) ::= negation_op(N) CONDITION_IDENTIFIER(I). {
+  const String identifier = quex::unicode_to_char(I->get_text());
+  const String parameter;
+  const bool negated = N;
+  C = RuleCondition::getImplementation(identifier, parameter, negated);
+  delete I;
+}
+
+conditionvec(D) ::= conditionvec(S) condition(V). {
+  D = S;
+  D->push_back(V->clone());
+  delete V;
+}
+
+conditionvec(V) ::= . {
+  V = new std::vector<RuleCondition*>();
+}
+
+conditions ::= conditions condition_spec.
+conditions ::= .
+
+condition_spec ::= KEYWORD_IF condition(C). {
+  state->rule.internal()->refConditions().push_back(C);
+  state->rule.setConditionSetOperator(Rule::SetOperator::EqualsOrdered);
+}
+
+condition_spec ::= KEYWORD_IF condition_set_op(O) CURLYBRACE_OPEN conditionvec(V) CURLYBRACE_CLOSE. {
+  state->rule.internal()->refConditions().insert(state->rule.internal()->refConditions().end(),
+                                                 V->begin(), V->end());
+  state->rule.setConditionSetOperator(O);
+}
 
 string(S) ::= DQ_STRING_BEGIN DQ_STRING(V) DQ_STRING_END. {
 	  const String from_unicode = quex::unicode_to_char(V->get_text());
@@ -209,3 +278,4 @@ string(S) ::= DQ_STRING_BEGIN DQ_STRING(V) DQ_STRING_END. {
 	  S = new String(unescaped);
 	  delete V;
 }
+

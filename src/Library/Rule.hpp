@@ -102,6 +102,7 @@ namespace usbguard {
     void setAction(const String& action);
     void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
+    void setConditionSetOperator(Rule::SetOperator op);
 
     operator bool() const;
     String toString(bool invalid = false) const;
@@ -112,10 +113,10 @@ namespace usbguard {
     static const String setOperatorToString(SetOperator op);
     static Target targetFromString(const String& target_string);
     static const String targetToString(Target target);
-
     static const String escapeString(const String& string);
     static const String unescapeString(const String& string);
 
+    RulePrivate* internal();
   private:
     RulePrivate* d_pointer;
   };

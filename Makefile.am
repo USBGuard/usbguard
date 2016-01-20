@@ -101,7 +101,17 @@ libusbguard_la_SOURCES=\
 	src/Library/LinuxSysIO.cpp \
 	src/Library/LoggerPrivate.hpp \
 	src/Library/LoggerPrivate.cpp \
-	src/Library/Init.cpp
+	src/Library/Init.cpp \
+	src/Library/RuleCondition.hpp \
+	src/Library/RuleCondition.cpp \
+	src/Library/AllowedMatchesCondition.hpp \
+	src/Library/AllowedMatchesCondition.cpp \
+	src/Library/FixedStateCondition.hpp \
+	src/Library/FixedStateCondition.cpp \
+	src/Library/RandomStateCondition.hpp \
+	src/Library/RandomStateCondition.cpp \
+	src/Library/LocaltimeCondition.hpp \
+	src/Library/LocaltimeCondition.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \

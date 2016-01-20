@@ -11,11 +11,19 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+QUEX_INLINE QUEX_TYPE_CHARACTER*  
+QUEX_MEMBER_FUNCTIONO(lexeme_start_pointer_get) 
+{ QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER) return me->buffer._lexeme_start_p; }
+
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTIONO1(input_pointer_set, QUEX_TYPE_CHARACTER* Adr)
+{ QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER) me->buffer._read_p = Adr; }
+
 QUEX_INLINE void        
 QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,
-                                                 void               (*callback)(QUEX_TYPE_CHARACTER*, 
-                                                                                QUEX_TYPE_CHARACTER*))
-{ me->buffer.on_buffer_content_change = callback; }
+                                                 void               (*callback)(const QUEX_TYPE_CHARACTER*, 
+                                                                                const QUEX_TYPE_CHARACTER*))
+{ me->buffer.on_content_change = callback; }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
@@ -34,7 +42,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
     { me->token = TokenP; }
 
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
+    QUEX_NAME(token_p_swap)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
     {
         QUEX_TYPE_TOKEN* prev_token_p = me->token;
         me->token = TokenP;
@@ -69,7 +77,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
     }
 
     QUEX_INLINE void
-    QUEX_NAME(token_queue_switch)(QUEX_TYPE_ANALYZER* me, 
+    QUEX_NAME(token_queue_swap)(QUEX_TYPE_ANALYZER* me, 
                                   QUEX_TYPE_TOKEN**   memory, size_t* n)
     { 
         QUEX_TYPE_TOKEN*  prev_memory = 0x0;
@@ -96,11 +104,17 @@ QUEX_NAME(version)(QUEX_TYPE_ANALYZER* me)
 
 QUEX_INLINE bool
 QUEX_NAME(byte_order_reversion)(QUEX_TYPE_ANALYZER* me)
-{ return me->buffer._byte_order_reversion_active_f; }
+{ 
+    __quex_assert(me->buffer.filler);
+    return me->buffer.filler->_byte_order_reversion_active_f; 
+}
 
 QUEX_INLINE void     
 QUEX_NAME(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* me, bool Value)
-{ me->buffer._byte_order_reversion_active_f = Value; }
+{ 
+    __quex_assert(me->buffer.filler);
+    me->buffer.filler->_byte_order_reversion_active_f = Value; 
+}
 
 
 QUEX_INLINE void
@@ -136,8 +150,8 @@ QUEX_NAME(print_this)(QUEX_TYPE_ANALYZER* me)
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void        
-QUEX_MEMBER(set_callback_on_buffer_content_change)(void (*callback)(QUEX_TYPE_CHARACTER*, 
-                                                            QUEX_TYPE_CHARACTER*))
+QUEX_MEMBER(set_callback_on_buffer_content_change)(void (*callback)(const QUEX_TYPE_CHARACTER*, 
+                                                                    const QUEX_TYPE_CHARACTER*))
 { QUEX_NAME(set_callback_on_buffer_content_change)(this, callback); }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
@@ -148,8 +162,8 @@ QUEX_MEMBER(token_p)()
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMBER(token_p_switch)(QUEX_TYPE_TOKEN* TokenP)
-    { return QUEX_NAME(token_p_switch)(this, TokenP); }
+    QUEX_MEMBER(token_p_swap)(QUEX_TYPE_TOKEN* TokenP)
+    { return QUEX_NAME(token_p_swap)(this, TokenP); }
 #   endif
 
 #else
@@ -164,8 +178,8 @@ QUEX_MEMBER(token_p)()
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_MEMBER(token_queue_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
-    { QUEX_NAME(token_queue_switch)(this, memory, n); }
+    QUEX_MEMBER(token_queue_swap)(QUEX_TYPE_TOKEN** memory, size_t* n)
+    { QUEX_NAME(token_queue_swap)(this, memory, n); }
 
     QUEX_INLINE void
     QUEX_MEMBER(token_queue_get)(QUEX_TYPE_TOKEN** begin, size_t* size)

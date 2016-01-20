@@ -1,6 +1,6 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  *
- * (C) 2005-2009 Frank-Rene Schaefer
+ * (C) 2005-2015 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                    */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____LEXER
 #define __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION____QUEX____LEXER
@@ -16,15 +16,15 @@
  * NOTE: We do undefine without making sure that there is an older definition
  *       from a configuration file. This allows users to define some
  *       configuration options on the command line without being immediately
- *       deleted by "configuration/undefine".                                  */
+ *       deleted by "configuration/undefine".                                */
 #ifdef __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #   include <quex/code_base/analyzer/configuration/undefine>
 #else
 #   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
 #endif
 
-#define QUEX_SETTING_VERSION           "0.65.4"
-#define QUEX_SETTING_BUILD_DATE        "Mon May  4 10:58:00 2015"
+#define QUEX_SETTING_VERSION           "0.65.10"
+#define QUEX_SETTING_BUILD_DATE        "Wed Jan 20 00:56:07 2016"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -60,11 +60,13 @@
 /* #define QUEX_OPTION_COMPUTED_GOTOS */
 #endif
 
-#define    __QUEX_SETTING_MAX_MODE_CLASS_N         (2)
+#define    QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC  ('\n')
+
+#define    __QUEX_SETTING_MAX_MODE_CLASS_N         (3)
 #ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID    (QUEX_NAME(ModeID_RULE))
 #endif
-/* NOTE: QUEX_TYPE_TOKEN_ID is later on defined inside the token class header. */
+/* QUEX_TYPE_TOKEN_ID is later on defined inside the token class header.     */
 #define    __QUEX_SETTING_TOKEN_ID_TERMINATION       ((QUEX_TYPE_TOKEN_ID)RULE_TOKEN_TERMINATION)
 #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED     ((QUEX_TYPE_TOKEN_ID)RULE_TOKEN_UNINITIALIZED)
 #define    __QUEX_SETTING_TOKEN_ID_INDENT            ((QUEX_TYPE_TOKEN_ID)RULE_TOKEN_INDENT)
@@ -108,7 +110,7 @@
 /* #define QUEX_OPTION_TOKEN_REPETITION_SUPPORT */
 #endif
 
-/* OPTIONS: ____________________________________________________________________
+/* OPTIONS: ___________________________________________________________________
  *
  * Activate/Deactivate Options via comment/uncomment. Options without a 
  * double underline '__' at the beginning can be turned off in the created 
@@ -116,7 +118,7 @@
  * specified behavior. Such options are better not touched.
  *
  * -- Line Number / Column Number Counting:
- *    Turning counting off may result in engine speed-up.                      */
+ *    Turning counting off may result in engine speed-up.                    */
 #ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
 #define    QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
@@ -133,7 +135,7 @@
 /* Mode Transitions:
  *    If the engine was created without the flag '--no-mode-transition-check'
  *    then code for mode transition control is inserted. It can be deactivated
- *    by commenting the following option out.                                  */
+ *    by commenting the following option out.                                */
 #ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #define    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #endif
@@ -142,10 +144,10 @@
 #   define QUEX_SETTING_MODE_STACK_SIZE   (size_t)8
 #endif
 
-/* Verbosity (uncomment the following, if you want it verbose.)            */
-/* #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                    */
-
-/* Include Stack Support                                                   */
+/* Verbosity (uncomment the following, if you want it verbose.)              */
+/* #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                      */
+                                                                             
+/* Include Stack Support                                                     */
 #ifndef   QUEX_OPTION_INCLUDE_STACK
 #define    QUEX_OPTION_INCLUDE_STACK
 #endif
@@ -156,7 +158,7 @@
  * hits a character with such a code, it knows that a border or the
  * end of file has been reached. 
  *
- * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.           */
+ * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.              */
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
 #   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_CHARACTER)0x0)
 #endif
@@ -169,19 +171,19 @@
  * the input pointer stands on a buffer border and at the same time the
  * path iterator stands at the end of the path. 
  *
- * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.           */
+ * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.              */
 #ifndef    QUEX_SETTING_PATH_TERMINATION_CODE
 #   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_CHARACTER)0x1)
 #endif
 
 /* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
- *       pre-processor comparisons.                                       */
+ *       pre-processor comparisons.                                          */
 #ifndef    QUEX_OPTION_BUFFER_BASED_ANALYZIS
 /* #define QUEX_OPTION_BUFFER_BASED_ANALYZIS */
 #endif
 #ifndef     QUEX_SETTING_BUFFER_SIZE
      /* This setting must be defined as plain number, since there might
-      * be some pre-processor comparison operations depending on it.      */
+      * be some pre-processor comparison operations depending on it.         */
 #    define QUEX_SETTING_BUFFER_SIZE  65536
 #endif
 
@@ -195,23 +197,24 @@
 #ifndef  QUEX_OPTION_STRING_ACCUMULATOR
 #define    QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
-/* Initial size of the character accumulator. */
+/* Initial size of the character accumulator.                                */
 #ifndef     QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE
 #   define  QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE        (256)
 #endif
-/* Granularity, if new memory has to be allocated. The new
- * memory will be by this factor greater than the previous.
- * Example: At start, memory contains 256 characters; then 
- * new allocation becomes necessary; if factor = 0.5, then
- * the new memory will contain (256 + 128) = 384 characters. The
- * next time, the new memory of size (384 + 192) = 576 characters.      */
+
+/* Granularity, if new memory has to be allocated. The new memory will be by
+ * this factor greater than the previous.  Example: At start, memory contains
+ * 256 characters; then new allocation becomes necessary; if factor = 0.5, then
+ * the new memory will contain (256 + 128) = 384 characters. The next time, the
+ * new memory of size (384 + 192) = 576 characters.                          */
+
 #ifndef     QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR
 #   define  QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (0.8)
 #endif
 
-/* If one mode requires indentation support, then the lexical analyser
- * class must be setup for indentation counting. The following flag is
- * defined or undefined by the lexical analyser generator quex.         */
+/* If one mode requires indentation support, then the lexical analyser class
+ * must be setup for indentation counting. The following flag is defined or
+ * undefined by the lexical analyser generator quex.                         */
 /* #define QUEX_OPTION_INDENTATION_TRIGGER */
 #if    defined(QUEX_OPTION_INDENTATION_TRIGGER)
 #   ifndef    QUEX_SETTING_INDENTATION_STACK_SIZE
@@ -222,9 +225,9 @@
 #   endif
 #endif
   
-/* Quex can determine whether certain handlers are not used at all.
- * If so, computation time can be spared and quex comments the following
- * options out.                                                         */
+/* Quex can determine whether certain handlers are not used at all.  If so,
+ * computation time can be spared and quex comments the following options out.
+ *                                                                           */
 #define    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
 #define    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 /* #define QUEX_OPTION_CONVERTER_ICONV */
@@ -260,35 +263,38 @@
 
 /* Type Definitions 
  *
- * CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
- *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+ * CHARACTER TYPE: Type that represents the number of bytes used in the engine
+ * to store a character. This is independent of the coding (ASCII, WinArabic,
+ * ...)
  *
- * Both character types are clearly related, because they are supposed to relate to the 
- * same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
- * belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
- * accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+ * Both character types are clearly related, because they are supposed to
+ * relate to the same type of objects in memory. The following example shows,
+ * that 'uint8_t' and 'char' belong together, the lexeme type cannot be
+ * 'uint8_t' because the std-string functions accept 'char*' and not 'uint8_t'
+ * (which is most propperly 'unsigned char').
  *
- * NOTE: If in parallel another engine is built with other bytes per character settings,
- *       then the engines will also include their own header with their own definition
- *       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
- *       Templatifying the lexer would be possible, but the author has in mind to bring out
- *       a 'pure C' version of the quex generated engine. Thus templating would make this 
- *       goal harder achievable.                                                            */
+ * NOTE: If in parallel another engine is built with other bytes per character
+ * settings, then the engines will also include their own header with their own
+ * definition of QUEX_TYPE_CHARACTER. Thus there is no danger at all.
+ * Templatifying the lexer would be possible, but the author has in mind to
+ * bring out a 'pure C' version of the quex generated engine. Thus templating
+ * would make this goal harder achievable.
+ *                                                                           */
 #ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER          uint8_t
 #   define QUEX_TYPE_CHARACTER_BACKUP   uint8_t
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
-    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required here!
-     * '-1' stands for 'Cannot be determined at code generation time'. In this case,
-     * it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.                                */
+    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required
+     * here!  '-1' stands for 'Cannot be determined at code generation time'.
+     * In this case, it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.   */
 #   define QUEX_SETTING_CHARACTER_SIZE  1
 #endif
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   
 #   define QUEX_SETTING_CHARACTER_CODEC unicode
 #endif
 /* The following flag indicates that the engine is running on a specific
- * codec. Thus no converter is necessary. Use the flag to detect misuse.                    */
+ * codec. Thus no converter is necessary. Use the flag to detect misuse.     */
 /* #define __QUEX_OPTION_ENGINE_RUNNING_ON_CODEC */
 
 #ifndef    QUEX_TYPE_ACCEPTANCE_ID
@@ -296,12 +302,12 @@
 #endif
 
 /* QUEX_TYPE_X  --> Type of X in global namespace 
- * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted) */
+ * QUEX_TYPE0_X --> Type of X in local namespace (namespace omitted)         */
 #if defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_FUNCTION_PREFIX        quex_Lexer_
 #   define QUEX_FUNCTION_DEF_PREFIX    quex_Lexer_
     /* In 'C' there are no namespaces, so namespaces are coded directly
-     * into the type name. Both, global and local names are equal.       */
+     * into the type name. Both, global and local names are equal.           */
 #   define QUEX_TYPE0_ANALYZER         struct quex_Lexer_tag
 #   define QUEX_TYPE_ANALYZER          struct quex_Lexer_tag
 #   define QUEX_NAME_COMPLETE_ANALYZER quex_Lexer
@@ -336,10 +342,11 @@
 #   define QUEX_FUNCTION_DEF_PREFIX_BACKUP   quex_Lexer_
 
 #else
-#   define QUEX_FUNCTION_DEF_PREFIX    /* Supposed we are IN the namespace for definition. */
+    /* Assumption: here is IN the namespace for definition.                  */
+#   define QUEX_FUNCTION_DEF_PREFIX    
 #   define QUEX_FUNCTION_PREFIX        ::quex::
     /* Add namespaces for the global names of the classes of analyzer
-     * and token.                                                        */
+     * and token.                                                            */
 #   define QUEX_TYPE0_ANALYZER         Lexer
 #   define QUEX_TYPE_ANALYZER          ::quex::Lexer
 #   define QUEX_NAME_COMPLETE_ANALYZER ::quex::Lexer

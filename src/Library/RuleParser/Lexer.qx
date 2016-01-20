@@ -25,6 +25,8 @@ start = RULE;
 mode RULE :
      <entry: DQ_STRING_READER>
      <exit: DQ_STRING_READER>
+     <entry: PQ_STRING_READER>
+     <exit: PQ_STRING_READER>
 {
 	<<EOF>> => RULE_TOKEN_TERMINATION;
 
@@ -34,20 +36,20 @@ mode RULE :
 	"{" => RULE_TOKEN_CURLYBRACE_OPEN;
 	"}" => RULE_TOKEN_CURLYBRACE_CLOSE;
 	":" => RULE_TOKEN_COLON;
-
-	[0-9a-fA-F]{4} => RULE_TOKEN_HEXCHAR4(Lexeme);
-	[0-9a-fA-F]{2} => RULE_TOKEN_HEXCHAR2(Lexeme);
+        "!" => RULE_TOKEN_NEGATION;
 
 	"allow" => RULE_TOKEN_KEYWORD_ALLOW;
 	"block" => RULE_TOKEN_KEYWORD_BLOCK;
 	"reject" => RULE_TOKEN_KEYWORD_REJECT;
+        "match" => RULE_TOKEN_KEYWORD_MATCH;
+        "device" => RULE_TOKEN_KEYWORD_DEVICE;
 
 	"name" => RULE_TOKEN_KEYWORD_NAME;
-	"action" => RULE_TOKEN_KEYWORD_ACTION;
 	"hash" => RULE_TOKEN_KEYWORD_HASH;
 	"via-port" => RULE_TOKEN_KEYWORD_VIAPORT;
 	"with-interface" => RULE_TOKEN_KEYWORD_WITHINTERFACE;
 	"serial" => RULE_TOKEN_KEYWORD_SERIAL;
+        "if" => RULE_TOKEN_KEYWORD_IF;
 
 	"all-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
 	"any-of" => RULE_TOKEN_SET_OPERATOR(Lexeme);
@@ -56,11 +58,26 @@ mode RULE :
 	"equals" => RULE_TOKEN_SET_OPERATOR(Lexeme);
 	"equals-ordered" => RULE_TOKEN_SET_OPERATOR(Lexeme);
 
+        "allowed-matches" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "localtime" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "true" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "false" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "random" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+
+	[0-9a-fA-F]{4} => RULE_TOKEN_HEXCHAR4(Lexeme);
+	[0-9a-fA-F]{2} => RULE_TOKEN_HEXCHAR2(Lexeme);
+
 	"\"" {
 	     self_send(RULE_TOKEN_DQ_STRING_BEGIN);
 	     self << DQ_STRING_READER;
 	     RETURN;
 	}
+
+        "(" {
+          self_send(RULE_TOKEN_PQ_STRING_BEGIN);
+          self << PQ_STRING_READER;
+          RETURN;
+        }
 }
 
 mode DQ_STRING_READER :
@@ -90,6 +107,38 @@ mode DQ_STRING_READER :
 	. { self_accumulator_add(Lexeme, LexemeEnd); }
 
 	<<FAIL>> {
-		 throw std::runtime_error("Invalid string");
+		 throw std::runtime_error("Invalid double-quoted string");
 	}
 }
+
+mode PQ_STRING_READER :
+     <entry: RULE>
+     <exit: RULE>
+{
+	on_entry { self_accumulator_clear(); }
+	on_exit {
+		self_accumulator_flush(RULE_TOKEN_PQ_STRING);
+		self_send(RULE_TOKEN_PQ_STRING_END);
+	}
+
+	// Escaped double quote
+	"\\(" { self_accumulator_add(Lexeme, LexemeEnd); }
+
+	// Escaped escape character
+	"\\\\" { self_accumulator_add(Lexeme, LexemeEnd); }
+
+	// Byte encoded in hex
+	"\\x"[0-9a-fA-F]{2} { self_accumulator_add(Lexeme, LexemeEnd); }
+
+	")" {
+	     self << RULE;
+	     RETURN;
+	}
+
+	. { self_accumulator_add(Lexeme, LexemeEnd); }
+
+	<<FAIL>> {
+		 throw std::runtime_error("Invalid parameter string");
+	}
+}
+

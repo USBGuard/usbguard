@@ -20,7 +20,7 @@
 #include "RuleParser/Lexer.hpp"
 #include "Typedefs.hpp"
 
-#include "Rule.hpp"
+#include "RulePrivate.hpp"
 #include "USB.hpp"
 #include "Lexer.hpp"
 #include "Common/Utility.hpp"
@@ -62,6 +62,9 @@ namespace usbguard
       quex::Lexer lexer(&stream);
       quex::Token *token_ptr = nullptr;
 
+#ifndef NDEBUG
+      RuleParserTrace(stderr, (char*)"RuleParser:");
+#endif
       for (;;) {
         lexer.receive(&token_ptr);
         if (token_ptr->type_id() != RULE_TOKEN_TERMINATION) {

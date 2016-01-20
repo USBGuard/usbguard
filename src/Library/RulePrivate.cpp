@@ -32,6 +32,7 @@ namespace usbguard {
     _device_ports_op = Rule::SetOperator::Match;
     _device_configurations = 0;
     _interface_types_op = Rule::SetOperator::Match;
+    _conditions_op = Rule::SetOperator::EqualsOrdered;
     return;
   }
 
@@ -59,7 +60,26 @@ namespace usbguard {
     _action = rhs._action;
     _tp_added = rhs._tp_added;
     _timeout_seconds = rhs._timeout_seconds;
+    try {
+      for (auto const& condition : rhs._conditions) {
+        _conditions.push_back(condition->clone());
+      }
+    }
+    catch(...) {
+      for (auto const& condition : _conditions) {
+        delete condition;
+      }
+      throw;
+    }
+    _conditions_op = rhs._conditions_op;
     return *this;
+  }
+
+  RulePrivate::~RulePrivate()
+  {
+    for (auto const& condition : _conditions) {
+      delete condition;
+    }
   }
 
   uint32_t RulePrivate::getSeqn() const
@@ -352,6 +372,17 @@ namespace usbguard {
   void RulePrivate::setTimeoutSeconds(uint32_t timeout_seconds)
   {
     _timeout_seconds = timeout_seconds;
+    return;
+  }
+
+  std::vector<RuleCondition*>& RulePrivate::refConditions()
+  {
+    return _conditions;
+  }
+
+  void RulePrivate::setConditionSetOperator(Rule::SetOperator op)
+  {
+    _conditions_op = op;
     return;
   }
 

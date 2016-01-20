@@ -10,12 +10,6 @@
 
 #include <quex/code_base/definitions>
 
-#include <quex/code_base/temporary_macros_on>
-
-#if ! defined(__QUEX_OPTION_PLAIN_C) && defined(QUEX_OPTION_ASSERTS)
-#    include<quex/code_base/buffer/MemoryPositionMimiker>
-#endif
-
 QUEX_NAMESPACE_MAIN_OPEN
     
 #   if ! defined(__QUEX_OPTION_PLAIN_C)
@@ -24,14 +18,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_TYPE0_ANALYZER;   
 #   endif
 
-    typedef struct QUEX_NAME(Mode_tag) {  
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Mode_tag) {  
         int                  id;
         const char*          name;
-        QUEX_TYPE_ANALYZER*  the_lexer;
 
-        QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
-
-#       ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+#   if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
+       && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
         void (*on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                QUEX_TYPE_INDENTATION  Indentation, 
                                QUEX_TYPE_CHARACTER*   Begin);
@@ -43,6 +35,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         bool (*has_entry_from)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_exit_to)(const struct QUEX_NAME(Mode_tag)* Mode);
 #       endif
+
+        /* Choose the analyzer function to be the last, because it has a unique
+         * signature. The function pointers are assigned in a table. If the 
+         * content of this class changes, any mismatch of pointers is likely
+         * to trigger a compilation error, thus signalling that the setup is
+         * incorrect.                                                        */
+        QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
     } QUEX_NAME(Mode);
     
     QUEX_INLINE __QUEX_TYPE_ANALYZER_RETURN_VALUE
@@ -58,8 +57,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*);
 
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
+        QUEX_NAME(Mode)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+        QUEX_NAME(Mode)** end;
+        QUEX_NAME(Mode)** memory_end;
+    } QUEX_NAME(ModeStack);
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE */

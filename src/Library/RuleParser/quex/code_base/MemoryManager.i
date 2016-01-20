@@ -12,38 +12,40 @@
 QUEX_NAMESPACE_QUEX_OPEN
 
 uint8_t*
-QUEXED_DEF(MemoryManager_allocate)(const size_t                 ByteN, 
-                                   QUEXED_DEF(MemoryObjectType) Type)
+QUEXED_DEF(MemoryManager_allocate)(const size_t       ByteN, 
+                                   E_MemoryObjectType Type)
 {
-    uint8_t*  memory = (uint8_t*)__QUEX_STD_malloc((size_t)ByteN);
+    uint8_t*  me = (uint8_t*)__QUEX_STD_malloc((size_t)ByteN);
+
     (void)Type;
 #   ifdef QUEX_OPTION_ASSERTS
-    __QUEX_STD_memset((void*)memory, 0xFF, ByteN);
+    __QUEX_STD_memset((void*)me, 0xFF, ByteN);
 #   endif
-    return memory;
+    return me;
 }
        
 void 
-QUEXED_DEF(MemoryManager_free)(void*                        memory, 
-                               QUEXED_DEF(MemoryObjectType) Type)  
+QUEXED_DEF(MemoryManager_free)(void*              alter_ego, 
+                               E_MemoryObjectType Type)  
 { 
+    void* me = (void*)alter_ego;
     (void)Type;
-    /* The de-allocator shall never be called for LexemeNull object.     */
-    if( memory != (void*)0 ) {
-        __QUEX_STD_free(memory); 
+    /* The de-allocator shall never be called for LexemeNull object.         */
+    if( me ) {
+        __QUEX_STD_free(me); 
     }
 }
 
 size_t
 QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                  uint8_t* source_begin_p, uint8_t* source_end_p)
-    /* Inserts as many bytes as possible into the array from 'drain_begin_p'
-     * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
-     * ends at 'source_end_p'.
-     *
-     * RETURNS: Number of bytes that have been copied.                      */
+/* Inserts as many bytes as possible into the array from 'drain_begin_p'
+ * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
+ * ends at 'source_end_p'.
+ *
+ * RETURNS: Number of bytes that have been copied.                           */
 {
-    /* Determine the insertion size. */
+    /* Determine the insertion size.                                         */
     const size_t DrainSize = (size_t)(drain_end_p  - drain_begin_p);
     size_t       size      = (size_t)(source_end_p - source_begin_p);
     __quex_assert(drain_end_p  >= drain_begin_p);
@@ -60,6 +62,18 @@ QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
 
     return size;
 }
+
+bool 
+QUEXED_DEF(system_is_little_endian)(void)
+{
+    union {
+        long int multi_bytes;
+        char     c[sizeof (long int)];
+    } u;
+    u.multi_bytes = 1;
+    return u.c[sizeof(long int)-1] != 1;
+}
+
 
 QUEX_NAMESPACE_QUEX_CLOSE
  

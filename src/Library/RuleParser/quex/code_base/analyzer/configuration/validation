@@ -10,7 +10,7 @@
 #if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
 #   error "Cannot define little endian and big endian at the same time."
 #endif
-#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN) && ! defined(__QUEX_OPTION_SYSTEM_ENDIAN)
 #   error "Either little endian or big endian must be defined."
 #endif
 
@@ -27,7 +27,7 @@
 #endif
 
 #if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
-    && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)            \
+    && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)  \
     && ! defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
 
 #   if defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)

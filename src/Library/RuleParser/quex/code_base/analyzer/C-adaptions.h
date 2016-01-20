@@ -75,9 +75,9 @@
 #endif
 
 /* Changing Modes with stack */ 
-#define self_pop_mode()                   QUEX_NAME(pop_mode)(&self)
-#define self_pop_drop_mode()              QUEX_NAME(pop_drop_mode)(&self)
-#define self_push_mode()                  QUEX_NAME(push_mode)(&self, (NewModeP))
+#define self_pop_mode()                      QUEX_NAME(pop_mode)(&self)
+#define self_pop_drop_mode()                 QUEX_NAME(pop_drop_mode)(&self)
+#define self_push_mode(ModeP)                QUEX_NAME(push_mode)(&self, (ModeP))
 
 #ifdef      QUEX_OPTION_LINE_NUMBER_COUNTING
 #   define  self_line_number_at_begin()      (self.counter._line_number_at_begin)

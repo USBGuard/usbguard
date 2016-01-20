@@ -19,6 +19,7 @@
 #pragma once
 #include <build-config.h>
 #include "Rule.hpp"
+#include "RuleCondition.hpp"
 
 namespace usbguard {
   class RulePrivate
@@ -27,6 +28,7 @@ namespace usbguard {
     RulePrivate(Rule& p_instance);
     RulePrivate(Rule& p_instance, const RulePrivate& rhs);
     const RulePrivate& operator=(const RulePrivate& rhs);
+    ~RulePrivate();
 
     uint32_t getSeqn() const;
     const String& getVendorID() const;
@@ -63,6 +65,8 @@ namespace usbguard {
     void setAction(const String& action);
     void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
+    std::vector<RuleCondition*>& refConditions();
+    void setConditionSetOperator(Rule::SetOperator op);
 
     String toString(bool invalid = false) const;
 
@@ -191,5 +195,7 @@ namespace usbguard {
     String _action;
     std::chrono::steady_clock::time_point _tp_added;
     uint32_t _timeout_seconds;
+    std::vector<RuleCondition*> _conditions;
+    Rule::SetOperator _conditions_op;
   };
 }

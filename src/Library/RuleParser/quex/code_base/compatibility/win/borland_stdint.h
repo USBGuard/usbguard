@@ -32,4 +32,5 @@
   typedef unsigned __int64 uint_least64_t;
   typedef unsigned __int64 uint_fast64_t;
 
+  typedef int64_t  intmax_t;
 #endif

@@ -1,0 +1,25 @@
+/* -*- C++ -*-  vim:set syntax=cpp: 
+ *
+ * (C) 2004-2009 Frank-Rene Schaefer 
+ * ABSOLUTELY NO WARRANTY               */
+#ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__BASIC
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__BASIC
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+
+QUEX_NAMESPACE_MAIN_OPEN
+
+    QUEX_INLINE void 
+    QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me);
+
+    QUEX_INLINE void
+    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*     me,
+                           QUEX_NAME(ByteLoader)*             byte_loader, 
+                           const QUEX_NAME(Mode)*  Mode, 
+                           const char*             CharacterEncodingName, 
+                           const size_t            TranslationBufferMemorySize);
+
+QUEX_NAMESPACE_MAIN_CLOSE
+
+#endif /*  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__BASIC */

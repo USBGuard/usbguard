@@ -4,8 +4,8 @@
  * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
  *                      LEXICAL ANALYZERS
  *
- * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_TOKEN_POLICY__
- * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_TOKEN_POLICY__              
+ * NOT: #ifndef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_POLICY
+ * NOT: #define  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_POLICY              
  *
  * Instead of an include guard, there is an include indicator 
  *
