@@ -14,7 +14,9 @@ int main(int argc, char **argv)
   else {
     try {
       const std::string rule_spec(argv[1]);
+      std::cout << "INPUT: " << rule_spec << std::endl;
       const usbguard::Rule rule = usbguard::parseRuleSpecification(rule_spec);
+      std::cout << "OUTPUT: " << rule.toString() << std::endl;
       return EXIT_SUCCESS;
     }
     catch(const usbguard::RuleParserError& ex) {
