@@ -46,7 +46,7 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    const uint32_t seqn = std::stoul(argv[1]);
+    const uint32_t seqn = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
     ipc.removeRule(seqn);

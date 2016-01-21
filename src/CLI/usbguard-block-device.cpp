@@ -54,7 +54,7 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    seqn = std::stoul(argv[1]);
+    seqn = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
     ipc.blockDevice(seqn, append, 0);
