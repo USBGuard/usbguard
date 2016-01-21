@@ -22,6 +22,7 @@
 #include "RuleCondition.hpp"
 
 namespace usbguard {
+  class Interface;
   class RulePrivate
   {
   public:
@@ -46,6 +47,13 @@ namespace usbguard {
 
     bool appliesTo(Pointer<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
+    bool appliesToWithConditions(const Rule& rhs, bool with_update = false);
+    bool meetsConditions(const Rule& rhs, bool with_update = false);
+    void initConditions(Interface * const interface);
+    void finiConditions();
+    bool updateConditionsState(const Rule& rhs);
+    uint64_t conditionsState() const;
+    void setConditionsState(uint64_t state);
 
     void setSeqn(uint32_t seqn);
     void setVendorID(const String& vendor_id);
@@ -197,5 +205,6 @@ namespace usbguard {
     uint32_t _timeout_seconds;
     std::vector<RuleCondition*> _conditions;
     Rule::SetOperator _conditions_op;
+    uint64_t _conditions_state;
   };
 }

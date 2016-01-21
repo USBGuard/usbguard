@@ -33,6 +33,7 @@ namespace usbguard {
     _device_configurations = 0;
     _interface_types_op = Rule::SetOperator::Match;
     _conditions_op = Rule::SetOperator::EqualsOrdered;
+    _conditions_state = 0;
     return;
   }
 
@@ -72,6 +73,7 @@ namespace usbguard {
       throw;
     }
     _conditions_op = rhs._conditions_op;
+    _conditions_state = rhs._conditions_state;
     return *this;
   }
 
@@ -154,6 +156,10 @@ namespace usbguard {
   
   bool RulePrivate::appliesTo(const Rule& rhs) const
   {
+    /*
+     * This method checks whether the rule referenced by rhs belongs to
+     * a set defined by this rule.
+     */
     logger->trace("Checking applicability of rule [{}] to rule [{}]",
         this->toString(/*invalid=*/true), rhs.toString(/*invalid=*/true));
     /*
@@ -273,6 +279,86 @@ namespace usbguard {
 
     logger->debug("Rule applies.");
     return true;
+  }
+
+  bool RulePrivate::appliesToWithConditions(const Rule& rhs, bool with_update)
+  {
+    if (!appliesTo(rhs)) {
+      return false;
+    }
+    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getSeqn(), rhs.getSeqn());
+    if (!meetsConditions(rhs, with_update)) {
+      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getSeqn(), getSeqn());
+      return false;
+    }
+    logger->debug("Rule {} meets conditions of rule {}", rhs.getSeqn(), getSeqn());
+    return true;
+  }
+
+  bool RulePrivate::meetsConditions(const Rule& rhs, bool with_update)
+  {
+    if (with_update) {
+      (void)updateConditionsState(rhs);
+    }
+    switch(_conditions_op) {
+      case Rule::SetOperator::OneOf:
+        return conditionsState() > 0;
+      case Rule::SetOperator::NoneOf:
+        return conditionsState() == 0;
+      case Rule::SetOperator::AllOf:
+      case Rule::SetOperator::Equals:
+      case Rule::SetOperator::EqualsOrdered:
+        return conditionsState() == ((((uint64_t)1) << _conditions.size()) - 1);
+      case Rule::SetOperator::Match:
+        throw std::runtime_error("BUG: meetsConditions: invalid conditions set operator");
+    }
+    return false;
+  }
+
+  void RulePrivate::initConditions(Interface * const interface)
+  {
+    for (auto condition : _conditions) {
+      condition->init(interface);
+    }
+    /* FIXME: prevent leaks when init() throws an exception */
+  }
+
+  void RulePrivate::finiConditions()
+  {
+    for (auto condition : _conditions) {
+      condition->fini();
+    }
+  }
+
+  bool RulePrivate::updateConditionsState(const Rule& rhs)
+  {
+    uint64_t updated_state = 0;
+    size_t i = 0;
+
+    for (auto condition : _conditions) {
+      if (i >= (sizeof updated_state * 8)) {
+        throw std::runtime_error("BUG: updateConditionsState: too many conditions");
+      }
+      updated_state |= (condition->evaluate(rhs) ? 1 : 0) << i;
+      ++i;
+    }
+
+    if (updated_state != conditionsState()) {
+      setConditionsState(updated_state);
+      return true;
+    }
+
+    return false;
+  }
+
+  uint64_t RulePrivate::conditionsState() const
+  {
+    return _conditions_state;
+  }
+
+  void RulePrivate::setConditionsState(uint64_t state)
+  {
+    _conditions_state = state;
   }
 
   void RulePrivate::setSeqn(uint32_t seqn)
@@ -475,6 +561,22 @@ namespace usbguard {
 
     /* Device Hash */
     toString_addNonEmptyField(rule_string, "hash", _device_hash);
+
+    if (_conditions.size() == 1
+        && _conditions_op == Rule::SetOperator::Equals) {
+      toString_addNonEmptyField(rule_string, "if", _conditions[0]->toString(),
+                                /*quote_escape=*/false);
+    }
+    else if (_conditions.size() > 0) {
+      rule_string.append(" if ");
+      rule_string.append(Rule::setOperatorToString(_conditions_op));
+      rule_string.append(" { ");
+      for (auto const& condition : _conditions) {
+        rule_string.append(condition->toString());
+        rule_string.append(" ");
+      }
+      rule_string.append("}");
+    }
 
     /* Action */
     toString_addNonEmptyField(rule_string, "action", _action);
