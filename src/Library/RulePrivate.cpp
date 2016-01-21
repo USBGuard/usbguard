@@ -79,7 +79,7 @@ namespace usbguard {
 
   RulePrivate::~RulePrivate()
   {
-    for (auto const& condition : _conditions) {
+    for (auto& condition : _conditions) {
       delete condition;
     }
   }

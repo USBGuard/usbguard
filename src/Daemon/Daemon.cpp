@@ -22,6 +22,7 @@
 #include "LoggerPrivate.hpp"
 #include "Common/Utility.hpp"
 #include "IPCPrivate.hpp"
+#include "RulePrivate.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -220,7 +221,7 @@ namespace usbguard
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
     logger->debug("Appending rule: {}", rule_spec);
-    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn);
+    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn, this);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
     }

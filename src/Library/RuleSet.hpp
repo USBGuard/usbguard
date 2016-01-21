@@ -24,6 +24,7 @@
 
 namespace usbguard {
   class RuleSetPrivate;
+  class Interface;
   class DLL_PUBLIC RuleSet
   {
   public:
@@ -77,7 +78,7 @@ namespace usbguard {
      * If `parent_seqn' is not specified, the rule will be appended at the end od the ruleset.
      * The method returns the sequence number assigned to the rule.
      */
-    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
+    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast, Interface * const interface = nullptr);
 
     /**
      * Get a rule pointer to a rule with the specified sequence number.

@@ -18,6 +18,7 @@
 //
 #include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
+#include "RulePrivate.hpp"
 #include <stdexcept>
 #include <fstream>
 
@@ -97,7 +98,7 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn)
+  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn, Interface * const interface)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     auto rule_ptr = makePointer<Rule>(rule);
@@ -107,6 +108,9 @@ namespace usbguard {
 
     /* Set time */
     rule_ptr->setTimePointAdded(std::chrono::steady_clock::now());
+
+    /* Initialize conditions */
+    rule_ptr->internal()->initConditions(interface);
 
     /* Append the rule to the main rule table */
     if (parent_seqn == Rule::SeqnLast) {
@@ -168,7 +172,7 @@ namespace usbguard {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
 
     for (auto const& rule_ptr : _rules) {
-      if (rule_ptr->appliesTo(device_rule)) {
+      if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
 	return rule_ptr;
       }
     }

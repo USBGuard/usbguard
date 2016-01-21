@@ -36,7 +36,7 @@ namespace usbguard {
     void save(std::ostream& stream) const;
     void setDefaultTarget(Rule::Target target);
     void setDefaultAction(const String& action);
-    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
+    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast, Interface * const interface = nullptr);
     Pointer<const Rule> getRule(uint32_t seqn);
     bool removeRule(uint32_t seqn);
     Pointer<const Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1);

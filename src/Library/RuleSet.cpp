@@ -66,7 +66,7 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_seqn)
+  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_seqn, Interface * const interface)
   {
     return d_pointer->appendRule(rule, parent_seqn);
   }

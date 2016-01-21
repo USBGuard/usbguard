@@ -29,6 +29,7 @@ namespace usbguard
 
   RuleCondition::~RuleCondition()
   {
+    fini();
   }
 
   void RuleCondition::init(Interface * const interface_ptr)
