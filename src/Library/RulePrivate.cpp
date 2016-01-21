@@ -333,13 +333,13 @@ namespace usbguard {
   bool RulePrivate::updateConditionsState(const Rule& rhs)
   {
     uint64_t updated_state = 0;
-    size_t i = 0;
+    unsigned int i = 0;
 
     for (auto condition : _conditions) {
       if (i >= (sizeof updated_state * 8)) {
         throw std::runtime_error("BUG: updateConditionsState: too many conditions");
       }
-      updated_state |= (condition->evaluate(rhs) ? 1 : 0) << i;
+      updated_state |= uint64_t(condition->evaluate(rhs)) << i;
       ++i;
     }
 
