@@ -47,6 +47,8 @@ namespace usbguard {
 
     /* Returns a copy of the list of active USB devices */
     PointerVector<Device> getDeviceList();
+    PointerVector<Device> getDeviceList(const Rule& query);
+
     Pointer<Device> getDevice(uint32_t seqn);
     std::mutex& refDeviceMapMutex();
 

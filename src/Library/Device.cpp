@@ -52,7 +52,7 @@ namespace usbguard {
     d_pointer = n_pointer;
     return *this;
   }
-  
+ 
   std::mutex& Device::refDeviceMutex()
   {
     return d_pointer->refDeviceMutex();
@@ -66,6 +66,11 @@ namespace usbguard {
   uint32_t Device::getSeqn() const
   {
     return d_pointer->getSeqn();
+  }
+
+  Rule::Target Device::getTarget() const
+  {
+    return d_pointer->getTarget();
   }
 
   String Device::getDeviceHash(const bool include_port) const

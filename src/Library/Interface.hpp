@@ -18,6 +18,7 @@
 //
 #pragma once
 
+#include <Typedefs.hpp>
 #include <USB.hpp>
 #include <Rule.hpp>
 #include <Device.hpp>
@@ -28,7 +29,7 @@
 
 namespace usbguard
 {
-  class Interface
+  class DLL_PUBLIC Interface
   {
   public:
     /* Methods */
@@ -52,7 +53,7 @@ namespace usbguard
 			      bool append,
 			      uint32_t timeout_sec) = 0;
 
-    virtual const std::map<std::string, std::string> listDevices() = 0;
+    virtual const std::map<std::string, std::string> listDevices(const std::string& query) = 0;
 
     /* Signals */
     virtual void DeviceInserted(uint32_t seqn,

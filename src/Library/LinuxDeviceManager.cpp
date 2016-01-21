@@ -280,6 +280,7 @@ namespace usbguard {
     /* FIXME: check that snprintf wrote the whole path */
     //log->debug("SysIO: writing '{}' to {}", target_value, sysio_path);
     sysioWrite(sysio_path, target_value);
+    device->setTarget(target);
 
     return std::move(device);
   }

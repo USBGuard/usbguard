@@ -28,7 +28,6 @@ namespace usbguard
 
   int usbguard_list_devices(int argc, char *argv[])
   {
-    bool list_everything = true;
     bool list_blocked = false;
     bool list_allowed = false;
     int opt = 0;
@@ -39,11 +38,9 @@ namespace usbguard
           showHelp(std::cout);
           return EXIT_SUCCESS;
         case 'a':
-          list_everything = false;
           list_allowed = true;
           break;
         case 'b':
-          list_everything = false;
           list_blocked = true;
           break;
         case '?':
@@ -53,9 +50,21 @@ namespace usbguard
       }
     }
 
+    const bool list_everything = (list_blocked == list_allowed);
+    std::string query = "match";
+
+    if (!list_everything) {
+      if (list_allowed) {
+        query = "allow";
+      }
+      else {
+        query = "block";
+      }
+    }
+
     usbguard::IPCClient ipc(/*connected=*/true);
 
-    for (auto map_entry : ipc.listDevices()) {
+    for (auto map_entry : ipc.listDevices(query)) {
       std::cout << map_entry.first << ": " << map_entry.second << std::endl;
     }
 

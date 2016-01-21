@@ -40,7 +40,11 @@ namespace usbguard
     void allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
-    const std::map<std::string, std::string> listDevices();
+    const std::map<std::string, std::string> listDevices(const std::string& query);
+    const std::map<std::string, std::string> listDevices() /* NOTE: left for compatibility */
+    {
+      return listDevices("match");
+    }
 
     virtual void IPCConnected() {}
     virtual void IPCDisconnected() {}

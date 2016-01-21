@@ -26,7 +26,7 @@
 
 namespace usbguard
 {
-  class IPCException : public std::exception
+  class DLL_PUBLIC IPCException : public std::exception
   {
   public:
     enum ReasonCode {
@@ -122,7 +122,7 @@ namespace usbguard
     mutable uint64_t _request_id;
   };
 
-  class IPC : public Interface
+  class DLL_PUBLIC IPC : public Interface
   {
   public:
     static uint64_t uniqueID(void)

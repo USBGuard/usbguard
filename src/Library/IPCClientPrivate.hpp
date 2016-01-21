@@ -50,7 +50,7 @@ namespace usbguard {
     void allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
-    const std::map<std::string, std::string> listDevices();
+    const std::map<std::string, std::string> listDevices(const std::string& query);
 
   protected:
     void destruct();

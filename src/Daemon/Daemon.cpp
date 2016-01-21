@@ -689,7 +689,7 @@ namespace usbguard
         rejectDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "listDevices") {
-        retval["retval"] = listDevices();
+        retval["retval"] = listDevices(jobj["query"]);
       }
       else {
         throw 0;
@@ -1007,11 +1007,12 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> Daemon::listDevices()
+  const std::map<std::string, std::string> Daemon::listDevices(const std::string& query)
   {
     std::map<std::string, std::string> device_rules;
+    const Rule query_rule = Rule::fromString(query);
 
-    for (auto const& device : _dm->getDeviceList()) {
+    for (auto const& device : _dm->getDeviceList(query_rule)) {
       device_rules[std::to_string(device->getSeqn())] = device->getDeviceRule()->toString();
     }
 

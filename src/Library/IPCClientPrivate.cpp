@@ -432,10 +432,11 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClientPrivate::listDevices()
+  const std::map<std::string, std::string> IPCClientPrivate::listDevices(const std::string& query)
   {
     const json jreq = {
       { "_m", "listDevices" },
+      { "query", query },
       { "_i", IPC::uniqueID() }
     };
 

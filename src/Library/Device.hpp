@@ -37,6 +37,7 @@ namespace usbguard {
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
     uint32_t getSeqn() const;
+    Rule::Target getTarget() const;
     String getDeviceHash(bool include_port = false) const;
     const String getPort() const;
     const String& getSerialNumber() const;

@@ -298,7 +298,8 @@ namespace usbguard {
       { "allow", Target::Allow },
       { "block", Target::Block },
       { "reject", Target::Reject },
-      { "match", Target::Match }
+      { "match", Target::Match },
+      { "device", Target::Device }
     };
 
     for (auto ttable_entry : target_ttable) {
@@ -316,7 +317,8 @@ namespace usbguard {
       { "allow", Target::Allow },
       { "block", Target::Block },
       { "reject", Target::Reject },
-      { "match", Target::Match }
+      { "match", Target::Match },
+      { "device", Target::Device }
     };
 
     for (auto ttable_entry : target_ttable) {

@@ -88,8 +88,8 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClient::listDevices()
+  const std::map<std::string, std::string> IPCClient::listDevices(const std::string& query)
   {
-    return d_pointer->listDevices();
+    return d_pointer->listDevices(query);
   }
 } /* namespace usbguard */

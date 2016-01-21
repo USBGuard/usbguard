@@ -64,6 +64,32 @@ namespace usbguard {
     return d_pointer->getDeviceList();
   }
 
+  PointerVector<Device> DeviceManager::getDeviceList(const Rule& query)
+  {
+    PointerVector<Device> matching_devices;
+
+    for (auto const& device : getDeviceList()) {
+      if (query.appliesTo(device->getDeviceRule())) {
+        switch(query.getTarget()) {
+          case Rule::Target::Allow:
+          case Rule::Target::Block:
+            if (device->getTarget() == query.getTarget()) {
+              matching_devices.push_back(device);
+            }
+            break;
+          case Rule::Target::Device:
+          case Rule::Target::Match:
+            matching_devices.push_back(device);
+            break;
+          default:
+            throw std::runtime_error("Invalid device query target");
+        }
+      }
+    }
+
+    return matching_devices;
+  }
+
   Pointer<Device> DeviceManager::getDevice(uint32_t seqn)
   {
     return d_pointer->getDevice(seqn);

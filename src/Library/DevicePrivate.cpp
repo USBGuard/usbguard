@@ -46,7 +46,7 @@ namespace usbguard {
     // TODO: Check that the device_rule is of type "Device"
 
     _seqn = device_rule.getSeqn();
-    _target = Rule::Target::Unknown;
+    _target = device_rule.getTarget();
     _name = device_rule.getDeviceName();
     _vendor_id = device_rule.getVendorID();
     _product_id = device_rule.getProductID();
@@ -88,7 +88,7 @@ namespace usbguard {
 		  _vendor_id, _product_id, _port, _name, include_port);
 
     device_rule->setSeqn(_seqn);
-    device_rule->setTarget(Rule::Target::Device);
+    device_rule->setTarget(_target);
     device_rule->setVendorID(_vendor_id);
     device_rule->setProductID(_product_id);
     device_rule->setSerialNumber(_serial_number);
@@ -109,6 +109,11 @@ namespace usbguard {
   uint32_t DevicePrivate::getSeqn() const
   {
     return _seqn;
+  }
+
+  Rule::Target DevicePrivate::getTarget() const
+  {
+    return _target;
   }
 
   String DevicePrivate::getDeviceHash(const bool include_port) const
