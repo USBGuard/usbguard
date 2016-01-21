@@ -563,7 +563,7 @@ namespace usbguard {
     toString_addNonEmptyField(rule_string, "hash", _device_hash);
 
     if (_conditions.size() == 1
-        && _conditions_op == Rule::SetOperator::Equals) {
+        && _conditions_op == Rule::SetOperator::EqualsOrdered) {
       toString_addNonEmptyField(rule_string, "if", _conditions[0]->toString(),
                                 /*quote_escape=*/false);
     }
