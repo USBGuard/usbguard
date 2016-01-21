@@ -20,8 +20,9 @@ namespace usbguard
   {
   }
 
-  bool RandomStateCondition::update()
+  bool RandomStateCondition::update(const Rule& rule)
   {
+    (void)rule;
     return _rng_dist(_rng_gen);
   }
 

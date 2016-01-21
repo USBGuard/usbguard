@@ -15,8 +15,9 @@ namespace usbguard
   {
   }
 
-  bool FixedStateCondition::update()
+  bool FixedStateCondition::update(const Rule& rule)
   {
+    (void)rule;
     return _state;
   }
 

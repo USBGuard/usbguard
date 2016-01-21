@@ -11,7 +11,7 @@ namespace usbguard
     AllowedMatchesCondition(const String& device_spec, bool negated = false);
     AllowedMatchesCondition(const AllowedMatchesCondition& rhs);
     void init(Interface * const interface_ptr);
-    bool update();
+    bool update(const Rule& rule);
     RuleCondition * clone() const;
   private:
     Rule _device_match_rule;

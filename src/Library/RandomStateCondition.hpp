@@ -11,7 +11,7 @@ namespace usbguard
   public:
     RandomStateCondition(const String& true_probability, bool negated = false);
     RandomStateCondition(const RandomStateCondition& rhs);
-    bool update();
+    bool update(const Rule& rule);
     RuleCondition * clone() const;
   private:
     std::random_device _rng_device;

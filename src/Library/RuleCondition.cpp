@@ -40,9 +40,9 @@ namespace usbguard
   {
   }
 
-  bool RuleCondition::evaluate()
+  bool RuleCondition::evaluate(const Rule& rule)
   {
-    return isNegated() ? !update() : update();
+    return isNegated() ? !update(rule) : update(rule);
   }
 
   const String& RuleCondition::identifier() const

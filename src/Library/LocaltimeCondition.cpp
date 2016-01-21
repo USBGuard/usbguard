@@ -39,8 +39,9 @@ namespace usbguard
     _tp_end = rhs._tp_end;
   }
 
-  bool LocaltimeCondition::update()
+  bool LocaltimeCondition::update(const Rule& rule)
   {
+    (void)rule;
     const auto tp_now = std::chrono::system_clock::now();
     return (tp_now >= _tp_begin && tp_now <= _tp_end);
   }

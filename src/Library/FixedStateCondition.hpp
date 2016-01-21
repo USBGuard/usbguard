@@ -10,7 +10,7 @@ namespace usbguard
   public:
     FixedStateCondition(bool state, bool negated = false);
     FixedStateCondition(const FixedStateCondition& rhs);
-    bool update();
+    bool update(const Rule& rule);
     RuleCondition * clone() const;
   private:
     const bool _state;

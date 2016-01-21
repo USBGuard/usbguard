@@ -22,8 +22,9 @@ namespace usbguard
     _interface_ptr = interface_ptr;
   }
 
-  bool AllowedMatchesCondition::update()
+  bool AllowedMatchesCondition::update(const Rule& rule)
   {
+    (void)rule;
     return false;
   }
 

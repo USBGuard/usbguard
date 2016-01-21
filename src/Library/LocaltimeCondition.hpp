@@ -11,7 +11,7 @@ namespace usbguard
   public:
     LocaltimeCondition(const String& time_range, bool negated = false);
     LocaltimeCondition(const LocaltimeCondition& rhs);
-    bool update();
+    bool update(const Rule& rule);
     RuleCondition * clone() const;
 
   protected:

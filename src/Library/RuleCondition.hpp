@@ -5,6 +5,7 @@
 namespace usbguard
 {
   class Interface;
+  class Rule;
   class RuleCondition
   {
   public:
@@ -15,10 +16,10 @@ namespace usbguard
 
     virtual void init(Interface * const interface_ptr);
     virtual void fini();
-    virtual bool update() = 0;
+    virtual bool update(const Rule& rule) = 0;
     virtual RuleCondition * clone() const = 0;
 
-    bool evaluate();
+    bool evaluate(const Rule& rule);
     const String& identifier() const;
     const String& parameter() const;
     bool hasParameter() const;
