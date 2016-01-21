@@ -32,10 +32,8 @@ mode RULE :
 
 	[ \t\r\n]+ { }
 
-	"*" => RULE_TOKEN_ASTERISK;
 	"{" => RULE_TOKEN_CURLYBRACE_OPEN;
 	"}" => RULE_TOKEN_CURLYBRACE_CLOSE;
-	":" => RULE_TOKEN_COLON;
         "!" => RULE_TOKEN_NEGATION;
 
 	"allow" => RULE_TOKEN_KEYWORD_ALLOW;
@@ -64,8 +62,13 @@ mode RULE :
         "false" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
         "random" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
 
-	[0-9a-fA-F]{4} => RULE_TOKEN_HEXCHAR4(Lexeme);
-	[0-9a-fA-F]{2} => RULE_TOKEN_HEXCHAR2(Lexeme);
+         [:xdigit:]{4}":"[:xdigit:]{4} => RULE_TOKEN_DEVICE_VPID(Lexeme);
+         [:xdigit:]{4}":*" => RULE_TOKEN_DEVICE_VID(Lexeme);
+         "*:*" => RULE_TOKEN_DEVICE_ANYID;
+
+         [:xdigit:]{2}":"[:xdigit:]{2}":"[:xdigit:]{2} => RULE_TOKEN_INTERFACE_TYPE_FULL(Lexeme);
+         [:xdigit:]{2}":"[:xdigit:]{2}":*" => RULE_TOKEN_INTERFACE_TYPE_SUBCLASS(Lexeme);
+         [:xdigit:]{2}":*:*" => RULE_TOKEN_INTERFACE_TYPE_CLASS(Lexeme);
 
 	"\"" {
 	     self_send(RULE_TOKEN_DQ_STRING_BEGIN);

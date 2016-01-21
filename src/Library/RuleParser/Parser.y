@@ -86,19 +86,22 @@ target ::= KEYWORD_DEVICE. {
   state->rule.setTarget(Rule::Target::Device);
 }
 
-device_id ::= HEXCHAR4(V) COLON ASTERISK. { // 1234:*
-  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
+device_id ::= DEVICE_VID(V). { // 1234:*
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(V->get_text()), tokens, ":", /*trim_empty=*/false);
+  state->rule.setVendorID(tokens[0]);
   delete V;
 }
 
-device_id ::= HEXCHAR4(V) COLON HEXCHAR4(P). { // 1234:5678
-  state->rule.setVendorID(quex::unicode_to_char(V->get_text()));
-  state->rule.setProductID(quex::unicode_to_char(P->get_text()));
+device_id ::= DEVICE_VPID(V). { // 1234:5678
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(V->get_text()), tokens, ":", /*trim_empty=*/false);
+  state->rule.setVendorID(tokens[0]);
+  state->rule.setProductID(tokens[1]);
   delete V;
-  delete P;
 }
 
-device_id ::= ASTERISK COLON ASTERISK.
+device_id ::= DEVICE_ANYID.
 device_id ::= .
 
 device_attributes ::= device_attributes device_attribute.
@@ -178,30 +181,32 @@ usbif_set_op(O) ::= . {
 		    O = Rule::SetOperator::EqualsOrdered;
 }
 
-usbiftype(T) ::= HEXCHAR2(C) COLON HEXCHAR2(S) COLON HEXCHAR2(P). {
-	     T = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(C->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(S->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(P->get_text()), 16));
-	     delete C;
-	     delete S;
-	     delete P;
+usbiftype(T) ::= INTERFACE_TYPE_FULL(I). {
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(I->get_text()), tokens, ":", /*trim_empty=*/false);
+
+  T = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           stringToNumber<uint8_t>(tokens[1], 16),
+                           stringToNumber<uint8_t>(tokens[2], 16));
+  delete I;
 }
 
-usbiftype(T) ::= HEXCHAR2(C) COLON HEXCHAR2(S) COLON ASTERISK. {
-	     T = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(C->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(S->get_text()), 16),
-				      0,
-				      USBInterfaceType::MatchClass|USBInterfaceType::MatchSubClass),
-	     delete C;
-	     delete S;
+usbiftype(T) ::= INTERFACE_TYPE_SUBCLASS(I). {
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(I->get_text()), tokens, ":", /*trim_empty=*/false);
+  T = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           stringToNumber<uint8_t>(tokens[1], 16),
+                           0,
+                           USBInterfaceType::MatchClass|USBInterfaceType::MatchSubClass),
+  delete I;
 }
 
-usbiftype(T) ::= HEXCHAR2(C) COLON ASTERISK COLON ASTERISK. {
-	     T = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(C->get_text()), 16),
-				      0,
-				      0,
-				      USBInterfaceType::MatchClass);
-	     delete C;
+usbiftype(T) ::= INTERFACE_TYPE_CLASS(I). {
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(I->get_text()), tokens, ":", /*trim_empty=*/false);
+  T = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           0, 0, USBInterfaceType::MatchClass);
+  delete I;
 }
 
 usbiftypevec(D) ::= usbiftypevec(S) usbiftype(V). {

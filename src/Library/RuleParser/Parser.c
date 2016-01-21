@@ -86,20 +86,20 @@
 #endif
 /************* Begin control #defines *****************************************/
 #define YYCODETYPE unsigned char
-#define YYNOCODE 49
+#define YYNOCODE 51
 #define YYACTIONTYPE unsigned char
 #define RuleParserTOKENTYPE  quex::Token* 
 typedef union {
   int yyinit;
   RuleParserTOKENTYPE yy0;
-  std::vector<RuleCondition*>* yy4;
-  std::vector<USBInterfaceType>* yy16;
-  RuleCondition* yy30;
-  String* yy50;
-  StringVector* yy81;
-  USBInterfaceType* yy88;
-  bool yy89;
-  Rule::SetOperator yy90;
+  String* yy14;
+  StringVector* yy29;
+  bool yy37;
+  std::vector<USBInterfaceType>* yy56;
+  USBInterfaceType* yy64;
+  std::vector<RuleCondition*>* yy88;
+  RuleCondition* yy90;
+  Rule::SetOperator yy97;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -108,16 +108,16 @@ typedef union {
 #define RuleParserARG_PDECL , RuleParserState* state 
 #define RuleParserARG_FETCH  RuleParserState* state  = yypParser->state 
 #define RuleParserARG_STORE yypParser->state  = state 
-#define YYNSTATE             37
+#define YYNSTATE             27
 #define YYNRULE              45
-#define YY_MAX_SHIFT         36
-#define YY_MIN_SHIFTREDUCE   68
-#define YY_MAX_SHIFTREDUCE   112
-#define YY_MIN_REDUCE        113
-#define YY_MAX_REDUCE        157
-#define YY_ERROR_ACTION      158
-#define YY_ACCEPT_ACTION     159
-#define YY_NO_ACTION         160
+#define YY_MAX_SHIFT         26
+#define YY_MIN_SHIFTREDUCE   58
+#define YY_MAX_SHIFTREDUCE   102
+#define YY_MIN_REDUCE        103
+#define YY_MAX_REDUCE        147
+#define YY_ERROR_ACTION      148
+#define YY_ACCEPT_ACTION     149
+#define YY_NO_ACTION         150
 /************* End control #defines *******************************************/
 
 /* The yyzerominor constant is used to initialize instances of
@@ -189,50 +189,46 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (80)
+#define YY_ACTTAB_COUNT (67)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */    71,   72,   73,   74,   75,   11,   10,    9,    4,  159,
- /*    10 */    36,    8,    3,  100,   98,   89,  102,  148,  110,   91,
- /*    20 */    35,   12,   80,   31,   93,   27,   26,   87,   85,  111,
- /*    30 */    86,   16,   22,  102,   21,   28,   30,  106,   92,   35,
- /*    40 */    30,   26,   77,   96,   76,   24,   30,   84,   83,   82,
- /*    50 */     1,  108,   95,    2,   25,   78,    6,    7,   20,   17,
- /*    60 */   112,   97,    5,   23,   18,   19,   29,   13,   14,   33,
- /*    70 */   104,   32,   15,  113,  115,  115,  115,  115,  115,   34,
+ /*     0 */    61,   62,   63,   64,   65,   11,   10,    9,    4,  149,
+ /*    10 */    26,    7,    3,   83,   88,   85,   86,   87,   82,   16,
+ /*    20 */    90,   85,   86,   87,   79,   92,  138,  100,   20,   25,
+ /*    30 */    12,   70,   21,   81,   66,   67,   68,   75,   77,   17,
+ /*    40 */   101,   74,   73,   96,   18,   25,   92,   76,   72,   20,
+ /*    50 */     1,    8,    6,   98,    2,   13,    5,   14,  102,   20,
+ /*    60 */    15,   19,   94,   22,  103,   23,   24,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */     3,    4,    5,    6,    7,   11,   12,   13,   14,   40,
- /*    10 */    41,   42,   18,   17,   32,   30,   20,   21,   34,   32,
- /*    20 */    36,   45,   46,   39,   17,   38,   19,   17,   30,   16,
- /*    30 */    16,   43,    8,   20,   10,   37,   26,   34,   16,   36,
- /*    40 */    26,   19,    8,   10,   10,   10,   26,   30,   30,   30,
- /*    50 */    25,   47,   19,   44,   19,   10,   33,   31,    9,    9,
- /*    60 */    28,   10,   35,    9,    9,    9,   27,   15,   15,   22,
- /*    70 */    24,   23,   15,    0,   48,   48,   48,   48,   48,   21,
+ /*     0 */     3,    4,    5,    6,    7,   11,   12,   13,   14,   42,
+ /*    10 */    43,   44,   18,   17,   34,   19,   20,   21,   16,   45,
+ /*    20 */    17,   19,   20,   21,   32,   22,   23,   36,   28,   38,
+ /*    30 */    47,   48,   41,   34,    8,    9,   10,   32,   17,   40,
+ /*    40 */    16,   32,   32,   36,   39,   38,   22,   16,   32,   28,
+ /*    50 */    27,   33,   35,   49,   46,   15,   37,   15,   30,   28,
+ /*    60 */    15,   29,   26,   25,    0,   24,   23,
 };
 #define YY_SHIFT_USE_DFLT (-7)
-#define YY_SHIFT_COUNT (36)
+#define YY_SHIFT_COUNT (26)
 #define YY_SHIFT_MIN   (-6)
-#define YY_SHIFT_MAX   (73)
+#define YY_SHIFT_MAX   (64)
 static const signed char yy_shift_ofst[] = {
- /*     0 */    -3,   -4,   -6,    7,   10,   13,   22,   14,   24,   20,
- /*    10 */    20,   20,   25,   -7,   -7,   -7,   -7,   34,   33,   35,
- /*    20 */    45,   49,   50,   51,   54,   55,   56,   52,   53,   32,
- /*    30 */    39,   57,   46,   48,   47,   58,   73,
+ /*     0 */    -3,    3,   -6,   -4,   21,   24,    2,   26,   31,    0,
+ /*    10 */     0,    0,   23,   -7,   -7,   -7,   -7,   40,   42,   28,
+ /*    20 */    32,   45,   36,   38,   41,   43,   64,
 };
-#define YY_REDUCE_USE_DFLT (-32)
+#define YY_REDUCE_USE_DFLT (-34)
 #define YY_REDUCE_COUNT (16)
-#define YY_REDUCE_MIN   (-31)
-#define YY_REDUCE_MAX   (27)
+#define YY_REDUCE_MIN   (-33)
+#define YY_REDUCE_MAX   (19)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */   -31,  -16,  -24,  -13,   -2,    3,  -18,  -15,  -12,   17,
- /*    10 */    18,   19,    4,   23,   26,   27,    9,
+ /*     0 */   -33,   -9,  -17,   -1,    5,    7,  -20,  -26,   -8,    9,
+ /*    10 */    10,   16,    4,   17,   18,   19,    8,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */   115,  146,  154,  139,  133,  148,  158,  158,  124,  158,
- /*    10 */   158,  158,  114,  144,  135,  152,  126,  158,  158,  158,
- /*    20 */   158,  158,  158,  158,  158,  158,  158,  158,  158,  158,
- /*    30 */   158,  158,  158,  158,  150,  158,  158,
+ /*     0 */   105,  136,  144,  129,  123,  138,  148,  114,  148,  148,
+ /*    10 */   148,  148,  104,  134,  125,  142,  116,  148,  148,  148,
+ /*    20 */   148,  148,  148,  148,  140,  148,  148,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -336,16 +332,17 @@ void RuleParserTrace(FILE *TraceFILE, char *zTracePrompt){
 static const char *const yyTokenName[] = { 
   "$",             "TERMINATION",   "UNINITIALIZED",  "KEYWORD_ALLOW",
   "KEYWORD_BLOCK",  "KEYWORD_REJECT",  "KEYWORD_MATCH",  "KEYWORD_DEVICE",
-  "HEXCHAR4",      "COLON",         "ASTERISK",      "KEYWORD_HASH",
+  "DEVICE_VID",    "DEVICE_VPID",   "DEVICE_ANYID",  "KEYWORD_HASH",
   "KEYWORD_NAME",  "KEYWORD_SERIAL",  "KEYWORD_VIAPORT",  "CURLYBRACE_OPEN",
-  "CURLYBRACE_CLOSE",  "SET_OPERATOR",  "KEYWORD_WITHINTERFACE",  "HEXCHAR2",    
-  "NEGATION",      "CONDITION_IDENTIFIER",  "PQ_STRING_BEGIN",  "PQ_STRING",   
-  "PQ_STRING_END",  "KEYWORD_IF",    "DQ_STRING_BEGIN",  "DQ_STRING",   
-  "DQ_STRING_END",  "error",         "string",        "stringvec",   
-  "usbiftype",     "usbiftypevec",  "condition",     "conditionvec",
-  "negation_op",   "ports_set_op",  "usbif_set_op",  "condition_set_op",
-  "rule",          "rule_spec",     "target",        "device_id",   
-  "device_attributes",  "conditions",    "device_attribute",  "condition_spec",
+  "CURLYBRACE_CLOSE",  "SET_OPERATOR",  "KEYWORD_WITHINTERFACE",  "INTERFACE_TYPE_FULL",
+  "INTERFACE_TYPE_SUBCLASS",  "INTERFACE_TYPE_CLASS",  "NEGATION",      "CONDITION_IDENTIFIER",
+  "PQ_STRING_BEGIN",  "PQ_STRING",     "PQ_STRING_END",  "KEYWORD_IF",  
+  "DQ_STRING_BEGIN",  "DQ_STRING",     "DQ_STRING_END",  "error",       
+  "string",        "stringvec",     "usbiftype",     "usbiftypevec",
+  "condition",     "conditionvec",  "negation_op",   "ports_set_op",
+  "usbif_set_op",  "condition_set_op",  "rule",          "rule_spec",   
+  "target",        "device_id",     "device_attributes",  "conditions",  
+  "device_attribute",  "condition_spec",
 };
 #endif /* NDEBUG */
 
@@ -361,9 +358,9 @@ static const char *const yyRuleName[] = {
  /*   5 */ "target ::= KEYWORD_REJECT",
  /*   6 */ "target ::= KEYWORD_MATCH",
  /*   7 */ "target ::= KEYWORD_DEVICE",
- /*   8 */ "device_id ::= HEXCHAR4 COLON ASTERISK",
- /*   9 */ "device_id ::= HEXCHAR4 COLON HEXCHAR4",
- /*  10 */ "device_id ::= ASTERISK COLON ASTERISK",
+ /*   8 */ "device_id ::= DEVICE_VID",
+ /*   9 */ "device_id ::= DEVICE_VPID",
+ /*  10 */ "device_id ::= DEVICE_ANYID",
  /*  11 */ "device_id ::=",
  /*  12 */ "device_attributes ::= device_attributes device_attribute",
  /*  13 */ "device_attributes ::=",
@@ -380,9 +377,9 @@ static const char *const yyRuleName[] = {
  /*  24 */ "device_attribute ::= KEYWORD_WITHINTERFACE usbif_set_op CURLYBRACE_OPEN usbiftypevec CURLYBRACE_CLOSE",
  /*  25 */ "usbif_set_op ::= SET_OPERATOR",
  /*  26 */ "usbif_set_op ::=",
- /*  27 */ "usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON HEXCHAR2",
- /*  28 */ "usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON ASTERISK",
- /*  29 */ "usbiftype ::= HEXCHAR2 COLON ASTERISK COLON ASTERISK",
+ /*  27 */ "usbiftype ::= INTERFACE_TYPE_FULL",
+ /*  28 */ "usbiftype ::= INTERFACE_TYPE_SUBCLASS",
+ /*  29 */ "usbiftype ::= INTERFACE_TYPE_CLASS",
  /*  30 */ "usbiftypevec ::= usbiftypevec usbiftype",
  /*  31 */ "usbiftypevec ::=",
  /*  32 */ "condition_set_op ::= SET_OPERATOR",
@@ -496,9 +493,9 @@ static void yy_destructor(
     case 5: /* KEYWORD_REJECT */
     case 6: /* KEYWORD_MATCH */
     case 7: /* KEYWORD_DEVICE */
-    case 8: /* HEXCHAR4 */
-    case 9: /* COLON */
-    case 10: /* ASTERISK */
+    case 8: /* DEVICE_VID */
+    case 9: /* DEVICE_VPID */
+    case 10: /* DEVICE_ANYID */
     case 11: /* KEYWORD_HASH */
     case 12: /* KEYWORD_NAME */
     case 13: /* KEYWORD_SERIAL */
@@ -507,82 +504,84 @@ static void yy_destructor(
     case 16: /* CURLYBRACE_CLOSE */
     case 17: /* SET_OPERATOR */
     case 18: /* KEYWORD_WITHINTERFACE */
-    case 19: /* HEXCHAR2 */
-    case 20: /* NEGATION */
-    case 21: /* CONDITION_IDENTIFIER */
-    case 22: /* PQ_STRING_BEGIN */
-    case 23: /* PQ_STRING */
-    case 24: /* PQ_STRING_END */
-    case 25: /* KEYWORD_IF */
-    case 26: /* DQ_STRING_BEGIN */
-    case 27: /* DQ_STRING */
-    case 28: /* DQ_STRING_END */
+    case 19: /* INTERFACE_TYPE_FULL */
+    case 20: /* INTERFACE_TYPE_SUBCLASS */
+    case 21: /* INTERFACE_TYPE_CLASS */
+    case 22: /* NEGATION */
+    case 23: /* CONDITION_IDENTIFIER */
+    case 24: /* PQ_STRING_BEGIN */
+    case 25: /* PQ_STRING */
+    case 26: /* PQ_STRING_END */
+    case 27: /* KEYWORD_IF */
+    case 28: /* DQ_STRING_BEGIN */
+    case 29: /* DQ_STRING */
+    case 30: /* DQ_STRING_END */
 {
 #line 11 "Parser.y"
  delete (yypminor->yy0); 
-#line 524 "Parser.c"
+#line 523 "Parser.c"
 }
       break;
       /* Default NON-TERMINAL Destructor */
-    case 29: /* error */
-    case 36: /* negation_op */
-    case 37: /* ports_set_op */
-    case 38: /* usbif_set_op */
-    case 39: /* condition_set_op */
-    case 40: /* rule */
-    case 41: /* rule_spec */
-    case 42: /* target */
-    case 43: /* device_id */
-    case 44: /* device_attributes */
-    case 45: /* conditions */
-    case 46: /* device_attribute */
-    case 47: /* condition_spec */
+    case 31: /* error */
+    case 38: /* negation_op */
+    case 39: /* ports_set_op */
+    case 40: /* usbif_set_op */
+    case 41: /* condition_set_op */
+    case 42: /* rule */
+    case 43: /* rule_spec */
+    case 44: /* target */
+    case 45: /* device_id */
+    case 46: /* device_attributes */
+    case 47: /* conditions */
+    case 48: /* device_attribute */
+    case 49: /* condition_spec */
 {
 #line 7 "Parser.y"
  (void)state; 
-#line 544 "Parser.c"
+#line 543 "Parser.c"
 }
       break;
-    case 30: /* string */
+    case 32: /* string */
 {
 #line 14 "Parser.y"
- delete (yypminor->yy50); 
-#line 551 "Parser.c"
+ delete (yypminor->yy14); 
+#line 550 "Parser.c"
 }
       break;
-    case 31: /* stringvec */
+    case 33: /* stringvec */
 {
 #line 17 "Parser.y"
- delete (yypminor->yy81); 
-#line 558 "Parser.c"
+ delete (yypminor->yy29); 
+#line 557 "Parser.c"
 }
       break;
-    case 32: /* usbiftype */
+    case 34: /* usbiftype */
 {
 #line 20 "Parser.y"
- delete (yypminor->yy88); 
-#line 565 "Parser.c"
+ delete (yypminor->yy64); 
+#line 564 "Parser.c"
 }
       break;
-    case 33: /* usbiftypevec */
+    case 35: /* usbiftypevec */
 {
 #line 23 "Parser.y"
- delete (yypminor->yy16); 
-#line 572 "Parser.c"
+ delete (yypminor->yy56); 
+#line 571 "Parser.c"
 }
       break;
-    case 34: /* condition */
+    case 36: /* condition */
 {
 #line 26 "Parser.y"
- delete (yypminor->yy30); 
-#line 579 "Parser.c"
+ delete (yypminor->yy90); 
+#line 578 "Parser.c"
 }
       break;
-    case 35: /* conditionvec */
+    case 37: /* conditionvec */
 {
 #line 29 "Parser.y"
- delete (yypminor->yy4); 
-#line 586 "Parser.c"
+ delete (yypminor->yy88); 
+#line 585 "Parser.c"
 }
       break;
 /********* End destructor definitions *****************************************/
@@ -823,51 +822,51 @@ static const struct {
   YYCODETYPE lhs;         /* Symbol on the left-hand side of the rule */
   unsigned char nrhs;     /* Number of right-hand side symbols in the rule */
 } yyRuleInfo[] = {
-  { 40, 1 },
-  { 41, 4 },
-  { 41, 0 },
   { 42, 1 },
-  { 42, 1 },
-  { 42, 1 },
-  { 42, 1 },
-  { 42, 1 },
-  { 43, 3 },
-  { 43, 3 },
-  { 43, 3 },
+  { 43, 4 },
   { 43, 0 },
-  { 44, 2 },
-  { 44, 0 },
+  { 44, 1 },
+  { 44, 1 },
+  { 44, 1 },
+  { 44, 1 },
+  { 44, 1 },
+  { 45, 1 },
+  { 45, 1 },
+  { 45, 1 },
+  { 45, 0 },
   { 46, 2 },
-  { 46, 2 },
-  { 46, 2 },
-  { 46, 2 },
-  { 46, 5 },
-  { 37, 1 },
-  { 37, 0 },
-  { 31, 2 },
-  { 31, 0 },
-  { 46, 2 },
-  { 46, 5 },
-  { 38, 1 },
-  { 38, 0 },
-  { 32, 5 },
-  { 32, 5 },
-  { 32, 5 },
-  { 33, 2 },
-  { 33, 0 },
+  { 46, 0 },
+  { 48, 2 },
+  { 48, 2 },
+  { 48, 2 },
+  { 48, 2 },
+  { 48, 5 },
   { 39, 1 },
   { 39, 0 },
-  { 36, 1 },
-  { 36, 0 },
-  { 34, 5 },
-  { 34, 2 },
+  { 33, 2 },
+  { 33, 0 },
+  { 48, 2 },
+  { 48, 5 },
+  { 40, 1 },
+  { 40, 0 },
+  { 34, 1 },
+  { 34, 1 },
+  { 34, 1 },
   { 35, 2 },
   { 35, 0 },
-  { 45, 2 },
-  { 45, 0 },
+  { 41, 1 },
+  { 41, 0 },
+  { 38, 1 },
+  { 38, 0 },
+  { 36, 5 },
+  { 36, 2 },
+  { 37, 2 },
+  { 37, 0 },
   { 47, 2 },
-  { 47, 5 },
-  { 30, 3 },
+  { 47, 0 },
+  { 49, 2 },
+  { 49, 5 },
+  { 32, 3 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -910,19 +909,19 @@ static void yy_reduce(
       case 0: /* rule ::= rule_spec */
 #line 64 "Parser.y"
 {
-  yy_destructor(yypParser,41,&yymsp[0].minor);
+  yy_destructor(yypParser,43,&yymsp[0].minor);
 }
-#line 916 "Parser.c"
+#line 915 "Parser.c"
         break;
       case 1: /* rule_spec ::= target device_id device_attributes conditions */
 #line 66 "Parser.y"
 {
-  yy_destructor(yypParser,42,&yymsp[-3].minor);
-  yy_destructor(yypParser,43,&yymsp[-2].minor);
-  yy_destructor(yypParser,44,&yymsp[-1].minor);
-  yy_destructor(yypParser,45,&yymsp[0].minor);
+  yy_destructor(yypParser,44,&yymsp[-3].minor);
+  yy_destructor(yypParser,45,&yymsp[-2].minor);
+  yy_destructor(yypParser,46,&yymsp[-1].minor);
+  yy_destructor(yypParser,47,&yymsp[0].minor);
 }
-#line 926 "Parser.c"
+#line 925 "Parser.c"
         break;
       case 3: /* target ::= KEYWORD_ALLOW */
 #line 69 "Parser.y"
@@ -930,7 +929,7 @@ static void yy_reduce(
   state->rule.setTarget(Rule::Target::Allow);
   yy_destructor(yypParser,3,&yymsp[0].minor);
 }
-#line 934 "Parser.c"
+#line 933 "Parser.c"
         break;
       case 4: /* target ::= KEYWORD_BLOCK */
 #line 73 "Parser.y"
@@ -938,7 +937,7 @@ static void yy_reduce(
   state->rule.setTarget(Rule::Target::Block);
   yy_destructor(yypParser,4,&yymsp[0].minor);
 }
-#line 942 "Parser.c"
+#line 941 "Parser.c"
         break;
       case 5: /* target ::= KEYWORD_REJECT */
 #line 77 "Parser.y"
@@ -946,7 +945,7 @@ static void yy_reduce(
   state->rule.setTarget(Rule::Target::Reject);
   yy_destructor(yypParser,5,&yymsp[0].minor);
 }
-#line 950 "Parser.c"
+#line 949 "Parser.c"
         break;
       case 6: /* target ::= KEYWORD_MATCH */
 #line 81 "Parser.y"
@@ -954,7 +953,7 @@ static void yy_reduce(
   state->rule.setTarget(Rule::Target::Match);
   yy_destructor(yypParser,6,&yymsp[0].minor);
 }
-#line 958 "Parser.c"
+#line 957 "Parser.c"
         break;
       case 7: /* target ::= KEYWORD_DEVICE */
 #line 85 "Parser.y"
@@ -962,341 +961,332 @@ static void yy_reduce(
   state->rule.setTarget(Rule::Target::Device);
   yy_destructor(yypParser,7,&yymsp[0].minor);
 }
-#line 966 "Parser.c"
+#line 965 "Parser.c"
         break;
-      case 8: /* device_id ::= HEXCHAR4 COLON ASTERISK */
+      case 8: /* device_id ::= DEVICE_VID */
 #line 89 "Parser.y"
 { // 1234:*
-  state->rule.setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
-  delete yymsp[-2].minor.yy0;
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
-  yy_destructor(yypParser,10,&yymsp[0].minor);
-}
-#line 976 "Parser.c"
-        break;
-      case 9: /* device_id ::= HEXCHAR4 COLON HEXCHAR4 */
-#line 94 "Parser.y"
-{ // 1234:5678
-  state->rule.setVendorID(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()));
-  state->rule.setProductID(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
-  delete yymsp[-2].minor.yy0;
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), tokens, ":", /*trim_empty=*/false);
+  state->rule.setVendorID(tokens[0]);
   delete yymsp[0].minor.yy0;
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
 }
-#line 987 "Parser.c"
+#line 975 "Parser.c"
         break;
-      case 10: /* device_id ::= ASTERISK COLON ASTERISK */
-#line 101 "Parser.y"
-{
-  yy_destructor(yypParser,10,&yymsp[-2].minor);
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
-  yy_destructor(yypParser,10,&yymsp[0].minor);
+      case 9: /* device_id ::= DEVICE_VPID */
+#line 96 "Parser.y"
+{ // 1234:5678
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), tokens, ":", /*trim_empty=*/false);
+  state->rule.setVendorID(tokens[0]);
+  state->rule.setProductID(tokens[1]);
+  delete yymsp[0].minor.yy0;
 }
-#line 996 "Parser.c"
+#line 986 "Parser.c"
         break;
-      case 12: /* device_attributes ::= device_attributes device_attribute */
+      case 10: /* device_id ::= DEVICE_ANYID */
 #line 104 "Parser.y"
 {
-  yy_destructor(yypParser,44,&yymsp[-1].minor);
-  yy_destructor(yypParser,46,&yymsp[0].minor);
+  yy_destructor(yypParser,10,&yymsp[0].minor);
 }
-#line 1004 "Parser.c"
+#line 993 "Parser.c"
         break;
-      case 14: /* device_attribute ::= KEYWORD_HASH string */
+      case 12: /* device_attributes ::= device_attributes device_attribute */
 #line 107 "Parser.y"
 {
+  yy_destructor(yypParser,46,&yymsp[-1].minor);
+  yy_destructor(yypParser,48,&yymsp[0].minor);
+}
+#line 1001 "Parser.c"
+        break;
+      case 14: /* device_attribute ::= KEYWORD_HASH string */
+#line 110 "Parser.y"
+{
   try {
-    state->rule.setDeviceHash(*yymsp[0].minor.yy50);
-    delete yymsp[0].minor.yy50;
+    state->rule.setDeviceHash(*yymsp[0].minor.yy14);
+    delete yymsp[0].minor.yy14;
   }
   catch(...) {
-    state->error.setHint("Invalid device hash value: " + *yymsp[0].minor.yy50);
-    delete yymsp[0].minor.yy50;
+    state->error.setHint("Invalid device hash value: " + *yymsp[0].minor.yy14);
+    delete yymsp[0].minor.yy14;
     throw state->error;
   }
   yy_destructor(yypParser,11,&yymsp[-1].minor);
 }
-#line 1020 "Parser.c"
+#line 1017 "Parser.c"
         break;
       case 15: /* device_attribute ::= KEYWORD_NAME string */
-#line 119 "Parser.y"
+#line 122 "Parser.y"
 {
-		 state->rule.setDeviceName(*yymsp[0].minor.yy50);
-		 delete yymsp[0].minor.yy50;
+		 state->rule.setDeviceName(*yymsp[0].minor.yy14);
+		 delete yymsp[0].minor.yy14;
   yy_destructor(yypParser,12,&yymsp[-1].minor);
 }
-#line 1029 "Parser.c"
+#line 1026 "Parser.c"
         break;
       case 16: /* device_attribute ::= KEYWORD_SERIAL string */
-#line 124 "Parser.y"
+#line 127 "Parser.y"
 {
-		 state->rule.setSerialNumber(*yymsp[0].minor.yy50);
-		 delete yymsp[0].minor.yy50;
+		 state->rule.setSerialNumber(*yymsp[0].minor.yy14);
+		 delete yymsp[0].minor.yy14;
   yy_destructor(yypParser,13,&yymsp[-1].minor);
 }
-#line 1038 "Parser.c"
+#line 1035 "Parser.c"
         break;
       case 17: /* device_attribute ::= KEYWORD_VIAPORT string */
-#line 129 "Parser.y"
+#line 132 "Parser.y"
 {
-		 state->rule.refDevicePorts().push_back(*yymsp[0].minor.yy50);
+		 state->rule.refDevicePorts().push_back(*yymsp[0].minor.yy14);
 		 state->rule.setDevicePortsSetOperator(Rule::SetOperator::Equals);
-		 delete yymsp[0].minor.yy50;
+		 delete yymsp[0].minor.yy14;
   yy_destructor(yypParser,14,&yymsp[-1].minor);
 }
-#line 1048 "Parser.c"
+#line 1045 "Parser.c"
         break;
       case 18: /* device_attribute ::= KEYWORD_VIAPORT ports_set_op CURLYBRACE_OPEN stringvec CURLYBRACE_CLOSE */
-#line 135 "Parser.y"
+#line 138 "Parser.y"
 {
-		 state->rule.refDevicePorts().insert(state->rule.refDevicePorts().end(), yymsp[-1].minor.yy81->begin(), yymsp[-1].minor.yy81->end());
-		 state->rule.setDevicePortsSetOperator(yymsp[-3].minor.yy90);
-		 delete yymsp[-1].minor.yy81;
+		 state->rule.refDevicePorts().insert(state->rule.refDevicePorts().end(), yymsp[-1].minor.yy29->begin(), yymsp[-1].minor.yy29->end());
+		 state->rule.setDevicePortsSetOperator(yymsp[-3].minor.yy97);
+		 delete yymsp[-1].minor.yy29;
   yy_destructor(yypParser,14,&yymsp[-4].minor);
   yy_destructor(yypParser,15,&yymsp[-2].minor);
   yy_destructor(yypParser,16,&yymsp[0].minor);
 }
-#line 1060 "Parser.c"
+#line 1057 "Parser.c"
         break;
       case 19: /* ports_set_op ::= SET_OPERATOR */
-#line 141 "Parser.y"
+#line 144 "Parser.y"
 {
-		 yygotominor.yy90 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+		 yygotominor.yy97 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
 		 delete yymsp[0].minor.yy0;
 }
-#line 1068 "Parser.c"
+#line 1065 "Parser.c"
         break;
       case 20: /* ports_set_op ::= */
-#line 146 "Parser.y"
+#line 149 "Parser.y"
 {
-		    yygotominor.yy90 = Rule::SetOperator::OneOf;
+		    yygotominor.yy97 = Rule::SetOperator::OneOf;
 }
-#line 1075 "Parser.c"
+#line 1072 "Parser.c"
         break;
       case 21: /* stringvec ::= stringvec string */
-#line 150 "Parser.y"
+#line 153 "Parser.y"
 {
-	  yygotominor.yy81 = yymsp[-1].minor.yy81;
-	  yygotominor.yy81->push_back(*yymsp[0].minor.yy50);
-	  delete yymsp[0].minor.yy50;
+	  yygotominor.yy29 = yymsp[-1].minor.yy29;
+	  yygotominor.yy29->push_back(*yymsp[0].minor.yy14);
+	  delete yymsp[0].minor.yy14;
 }
-#line 1084 "Parser.c"
+#line 1081 "Parser.c"
         break;
       case 22: /* stringvec ::= */
-#line 156 "Parser.y"
+#line 159 "Parser.y"
 {
-	  yygotominor.yy81 = new StringVector();
+	  yygotominor.yy29 = new StringVector();
 }
-#line 1091 "Parser.c"
+#line 1088 "Parser.c"
         break;
       case 23: /* device_attribute ::= KEYWORD_WITHINTERFACE usbiftype */
-#line 160 "Parser.y"
+#line 163 "Parser.y"
 {
-	  state->rule.refInterfaceTypes().push_back(*yymsp[0].minor.yy88);
+	  state->rule.refInterfaceTypes().push_back(*yymsp[0].minor.yy64);
 	  state->rule.setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
-	  delete yymsp[0].minor.yy88;
+	  delete yymsp[0].minor.yy64;
   yy_destructor(yypParser,18,&yymsp[-1].minor);
 }
-#line 1101 "Parser.c"
+#line 1098 "Parser.c"
         break;
       case 24: /* device_attribute ::= KEYWORD_WITHINTERFACE usbif_set_op CURLYBRACE_OPEN usbiftypevec CURLYBRACE_CLOSE */
-#line 166 "Parser.y"
+#line 169 "Parser.y"
 {
-	  state->rule.refInterfaceTypes().insert(state->rule.refInterfaceTypes().end(), yymsp[-1].minor.yy16->begin(), yymsp[-1].minor.yy16->end());
-	  state->rule.setInterfaceTypesSetOperator(yymsp[-3].minor.yy90);
-	  delete yymsp[-1].minor.yy16;
+	  state->rule.refInterfaceTypes().insert(state->rule.refInterfaceTypes().end(), yymsp[-1].minor.yy56->begin(), yymsp[-1].minor.yy56->end());
+	  state->rule.setInterfaceTypesSetOperator(yymsp[-3].minor.yy97);
+	  delete yymsp[-1].minor.yy56;
   yy_destructor(yypParser,18,&yymsp[-4].minor);
   yy_destructor(yypParser,15,&yymsp[-2].minor);
   yy_destructor(yypParser,16,&yymsp[0].minor);
 }
-#line 1113 "Parser.c"
+#line 1110 "Parser.c"
         break;
       case 25: /* usbif_set_op ::= SET_OPERATOR */
-#line 172 "Parser.y"
+#line 175 "Parser.y"
 {
-		    yygotominor.yy90 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+		    yygotominor.yy97 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
 		    delete yymsp[0].minor.yy0;
 }
-#line 1121 "Parser.c"
+#line 1118 "Parser.c"
         break;
       case 26: /* usbif_set_op ::= */
-#line 177 "Parser.y"
+#line 180 "Parser.y"
 {
-		    yygotominor.yy90 = Rule::SetOperator::EqualsOrdered;
+		    yygotominor.yy97 = Rule::SetOperator::EqualsOrdered;
 }
-#line 1128 "Parser.c"
+#line 1125 "Parser.c"
         break;
-      case 27: /* usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON HEXCHAR2 */
-#line 181 "Parser.y"
+      case 27: /* usbiftype ::= INTERFACE_TYPE_FULL */
+#line 184 "Parser.y"
 {
-	     yygotominor.yy88 = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[-4].minor.yy0->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), 16));
-	     delete yymsp[-4].minor.yy0;
-	     delete yymsp[-2].minor.yy0;
-	     delete yymsp[0].minor.yy0;
-  yy_destructor(yypParser,9,&yymsp[-3].minor);
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
-}
-#line 1142 "Parser.c"
-        break;
-      case 28: /* usbiftype ::= HEXCHAR2 COLON HEXCHAR2 COLON ASTERISK */
-#line 190 "Parser.y"
-{
-	     yygotominor.yy88 = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[-4].minor.yy0->get_text()), 16),
-				      stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[-2].minor.yy0->get_text()), 16),
-				      0,
-				      USBInterfaceType::MatchClass|USBInterfaceType::MatchSubClass),
-	     delete yymsp[-4].minor.yy0;
-	     delete yymsp[-2].minor.yy0;
-  yy_destructor(yypParser,9,&yymsp[-3].minor);
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
-  yy_destructor(yypParser,10,&yymsp[0].minor);
-}
-#line 1157 "Parser.c"
-        break;
-      case 29: /* usbiftype ::= HEXCHAR2 COLON ASTERISK COLON ASTERISK */
-#line 199 "Parser.y"
-{
-	     yygotominor.yy88 = new USBInterfaceType(stringToNumber<uint8_t>(quex::unicode_to_char(yymsp[-4].minor.yy0->get_text()), 16),
-				      0,
-				      0,
-				      USBInterfaceType::MatchClass);
-	     delete yymsp[-4].minor.yy0;
-  yy_destructor(yypParser,9,&yymsp[-3].minor);
-  yy_destructor(yypParser,10,&yymsp[-2].minor);
-  yy_destructor(yypParser,9,&yymsp[-1].minor);
-  yy_destructor(yypParser,10,&yymsp[0].minor);
-}
-#line 1172 "Parser.c"
-        break;
-      case 30: /* usbiftypevec ::= usbiftypevec usbiftype */
-#line 207 "Parser.y"
-{
-	yygotominor.yy16 = yymsp[-1].minor.yy16;
-	yygotominor.yy16->push_back(*yymsp[0].minor.yy88);
-	delete yymsp[0].minor.yy88;
-}
-#line 1181 "Parser.c"
-        break;
-      case 31: /* usbiftypevec ::= */
-#line 213 "Parser.y"
-{
-	yygotominor.yy16 = new std::vector<USBInterfaceType>();
-}
-#line 1188 "Parser.c"
-        break;
-      case 32: /* condition_set_op ::= SET_OPERATOR */
-#line 217 "Parser.y"
-{
-  yygotominor.yy90 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), tokens, ":", /*trim_empty=*/false);
+
+  yygotominor.yy64 = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           stringToNumber<uint8_t>(tokens[1], 16),
+                           stringToNumber<uint8_t>(tokens[2], 16));
   delete yymsp[0].minor.yy0;
 }
-#line 1196 "Parser.c"
+#line 1138 "Parser.c"
         break;
-      case 33: /* condition_set_op ::= */
+      case 28: /* usbiftype ::= INTERFACE_TYPE_SUBCLASS */
+#line 194 "Parser.y"
+{
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), tokens, ":", /*trim_empty=*/false);
+  yygotominor.yy64 = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           stringToNumber<uint8_t>(tokens[1], 16),
+                           0,
+                           USBInterfaceType::MatchClass|USBInterfaceType::MatchSubClass),
+  delete yymsp[0].minor.yy0;
+}
+#line 1151 "Parser.c"
+        break;
+      case 29: /* usbiftype ::= INTERFACE_TYPE_CLASS */
+#line 204 "Parser.y"
+{
+  StringVector tokens;
+  tokenizeString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()), tokens, ":", /*trim_empty=*/false);
+  yygotominor.yy64 = new USBInterfaceType(stringToNumber<uint8_t>(tokens[0], 16),
+                           0, 0, USBInterfaceType::MatchClass);
+  delete yymsp[0].minor.yy0;
+}
+#line 1162 "Parser.c"
+        break;
+      case 30: /* usbiftypevec ::= usbiftypevec usbiftype */
+#line 212 "Parser.y"
+{
+	yygotominor.yy56 = yymsp[-1].minor.yy56;
+	yygotominor.yy56->push_back(*yymsp[0].minor.yy64);
+	delete yymsp[0].minor.yy64;
+}
+#line 1171 "Parser.c"
+        break;
+      case 31: /* usbiftypevec ::= */
+#line 218 "Parser.y"
+{
+	yygotominor.yy56 = new std::vector<USBInterfaceType>();
+}
+#line 1178 "Parser.c"
+        break;
+      case 32: /* condition_set_op ::= SET_OPERATOR */
 #line 222 "Parser.y"
 {
-  yygotominor.yy90 = Rule::SetOperator::EqualsOrdered;
+  yygotominor.yy97 = Rule::setOperatorFromString(quex::unicode_to_char(yymsp[0].minor.yy0->get_text()));
+  delete yymsp[0].minor.yy0;
 }
-#line 1203 "Parser.c"
+#line 1186 "Parser.c"
+        break;
+      case 33: /* condition_set_op ::= */
+#line 227 "Parser.y"
+{
+  yygotominor.yy97 = Rule::SetOperator::EqualsOrdered;
+}
+#line 1193 "Parser.c"
         break;
       case 34: /* negation_op ::= NEGATION */
-#line 226 "Parser.y"
+#line 231 "Parser.y"
 {
-  yygotominor.yy89 = true;
-  yy_destructor(yypParser,20,&yymsp[0].minor);
+  yygotominor.yy37 = true;
+  yy_destructor(yypParser,22,&yymsp[0].minor);
 }
-#line 1211 "Parser.c"
+#line 1201 "Parser.c"
         break;
       case 35: /* negation_op ::= */
-#line 230 "Parser.y"
+#line 235 "Parser.y"
 {
-  yygotominor.yy89 = false;
+  yygotominor.yy37 = false;
 }
-#line 1218 "Parser.c"
+#line 1208 "Parser.c"
         break;
       case 36: /* condition ::= negation_op CONDITION_IDENTIFIER PQ_STRING_BEGIN PQ_STRING PQ_STRING_END */
-#line 234 "Parser.y"
+#line 239 "Parser.y"
 {
   const String identifier = quex::unicode_to_char(yymsp[-3].minor.yy0->get_text());
   const String parameter = quex::unicode_to_char(yymsp[-1].minor.yy0->get_text());
-  const bool negated = yymsp[-4].minor.yy89;
-  yygotominor.yy30 = RuleCondition::getImplementation(identifier, parameter, negated);
+  const bool negated = yymsp[-4].minor.yy37;
+  yygotominor.yy90 = RuleCondition::getImplementation(identifier, parameter, negated);
   delete yymsp[-3].minor.yy0;
   delete yymsp[-1].minor.yy0;
-  yy_destructor(yypParser,22,&yymsp[-2].minor);
-  yy_destructor(yypParser,24,&yymsp[0].minor);
+  yy_destructor(yypParser,24,&yymsp[-2].minor);
+  yy_destructor(yypParser,26,&yymsp[0].minor);
 }
-#line 1232 "Parser.c"
+#line 1222 "Parser.c"
         break;
       case 37: /* condition ::= negation_op CONDITION_IDENTIFIER */
-#line 243 "Parser.y"
+#line 248 "Parser.y"
 {
   const String identifier = quex::unicode_to_char(yymsp[0].minor.yy0->get_text());
   const String parameter;
-  const bool negated = yymsp[-1].minor.yy89;
-  yygotominor.yy30 = RuleCondition::getImplementation(identifier, parameter, negated);
+  const bool negated = yymsp[-1].minor.yy37;
+  yygotominor.yy90 = RuleCondition::getImplementation(identifier, parameter, negated);
   delete yymsp[0].minor.yy0;
 }
-#line 1243 "Parser.c"
+#line 1233 "Parser.c"
         break;
       case 38: /* conditionvec ::= conditionvec condition */
-#line 251 "Parser.y"
+#line 256 "Parser.y"
 {
-  yygotominor.yy4 = yymsp[-1].minor.yy4;
-  yygotominor.yy4->push_back(yymsp[0].minor.yy30->clone());
-  delete yymsp[0].minor.yy30;
+  yygotominor.yy88 = yymsp[-1].minor.yy88;
+  yygotominor.yy88->push_back(yymsp[0].minor.yy90->clone());
+  delete yymsp[0].minor.yy90;
 }
-#line 1252 "Parser.c"
+#line 1242 "Parser.c"
         break;
       case 39: /* conditionvec ::= */
-#line 257 "Parser.y"
+#line 262 "Parser.y"
 {
-  yygotominor.yy4 = new std::vector<RuleCondition*>();
+  yygotominor.yy88 = new std::vector<RuleCondition*>();
 }
-#line 1259 "Parser.c"
+#line 1249 "Parser.c"
         break;
       case 40: /* conditions ::= conditions condition_spec */
-#line 261 "Parser.y"
+#line 266 "Parser.y"
 {
-  yy_destructor(yypParser,45,&yymsp[-1].minor);
-  yy_destructor(yypParser,47,&yymsp[0].minor);
+  yy_destructor(yypParser,47,&yymsp[-1].minor);
+  yy_destructor(yypParser,49,&yymsp[0].minor);
 }
-#line 1267 "Parser.c"
+#line 1257 "Parser.c"
         break;
       case 42: /* condition_spec ::= KEYWORD_IF condition */
-#line 264 "Parser.y"
-{
-  state->rule.internal()->refConditions().push_back(yymsp[0].minor.yy30);
-  state->rule.setConditionSetOperator(Rule::SetOperator::EqualsOrdered);
-  yy_destructor(yypParser,25,&yymsp[-1].minor);
-}
-#line 1276 "Parser.c"
-        break;
-      case 43: /* condition_spec ::= KEYWORD_IF condition_set_op CURLYBRACE_OPEN conditionvec CURLYBRACE_CLOSE */
 #line 269 "Parser.y"
 {
+  state->rule.internal()->refConditions().push_back(yymsp[0].minor.yy90);
+  state->rule.setConditionSetOperator(Rule::SetOperator::EqualsOrdered);
+  yy_destructor(yypParser,27,&yymsp[-1].minor);
+}
+#line 1266 "Parser.c"
+        break;
+      case 43: /* condition_spec ::= KEYWORD_IF condition_set_op CURLYBRACE_OPEN conditionvec CURLYBRACE_CLOSE */
+#line 274 "Parser.y"
+{
   state->rule.internal()->refConditions().insert(state->rule.internal()->refConditions().end(),
-                                                 yymsp[-1].minor.yy4->begin(), yymsp[-1].minor.yy4->end());
-  state->rule.setConditionSetOperator(yymsp[-3].minor.yy90);
-  yy_destructor(yypParser,25,&yymsp[-4].minor);
+                                                 yymsp[-1].minor.yy88->begin(), yymsp[-1].minor.yy88->end());
+  state->rule.setConditionSetOperator(yymsp[-3].minor.yy97);
+  yy_destructor(yypParser,27,&yymsp[-4].minor);
   yy_destructor(yypParser,15,&yymsp[-2].minor);
   yy_destructor(yypParser,16,&yymsp[0].minor);
 }
-#line 1288 "Parser.c"
+#line 1278 "Parser.c"
         break;
       case 44: /* string ::= DQ_STRING_BEGIN DQ_STRING DQ_STRING_END */
-#line 275 "Parser.y"
+#line 280 "Parser.y"
 {
 	  const String from_unicode = quex::unicode_to_char(yymsp[-1].minor.yy0->get_text());
 	  const String unescaped = Rule::unescapeString(from_unicode);
-	  yygotominor.yy50 = new String(unescaped);
+	  yygotominor.yy14 = new String(unescaped);
 	  delete yymsp[-1].minor.yy0;
-  yy_destructor(yypParser,26,&yymsp[-2].minor);
-  yy_destructor(yypParser,28,&yymsp[0].minor);
+  yy_destructor(yypParser,28,&yymsp[-2].minor);
+  yy_destructor(yypParser,30,&yymsp[0].minor);
 }
-#line 1300 "Parser.c"
+#line 1290 "Parser.c"
         break;
       default:
       /* (2) rule_spec ::= */ yytestcase(yyruleno==2);
@@ -1306,7 +1296,7 @@ static void yy_reduce(
         break;
 /********** End reduce actions ************************************************/
   };
-  assert( yyruleno>=0 && yyruleno<(ssize_t)(sizeof(yyRuleInfo)/sizeof(yyRuleInfo[0])) );
+  assert( yyruleno>=0 && yyruleno<sizeof(yyRuleInfo)/sizeof(yyRuleInfo[0]) );
   yygoto = yyRuleInfo[yyruleno].lhs;
   yysize = yyRuleInfo[yyruleno].nrhs;
   yypParser->yyidx -= yysize;
@@ -1391,7 +1381,7 @@ static void yy_syntax_error(
   state->error.setHint("Syntax error!");
 #endif
   throw state->error;
-#line 1395 "Parser.c"
+#line 1385 "Parser.c"
 /************ End %syntax_error code ******************************************/
   RuleParserARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
