@@ -105,6 +105,7 @@ namespace usbguard
 
       if (port_specific) {
         rule_hashonly->setDevicePorts(rule->getDevicePorts());
+        rule_hashonly->setDevicePortsSetOperator(Rule::SetOperator::Equals);
       }
 
       rule = rule_hashonly;
