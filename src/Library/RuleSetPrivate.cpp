@@ -24,8 +24,9 @@
 
 namespace usbguard {
   
-  RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance)
-    : _p_instance(p_instance)
+  RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr)
+    : _p_instance(p_instance),
+      _interface_ptr(interface_ptr)
   {
     (void)_p_instance;
     _default_target = Rule::Target::Block;
@@ -98,7 +99,7 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn, Interface * const interface)
+  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     auto rule_ptr = makePointer<Rule>(rule);
@@ -110,7 +111,7 @@ namespace usbguard {
     rule_ptr->setTimePointAdded(std::chrono::steady_clock::now());
 
     /* Initialize conditions */
-    rule_ptr->internal()->initConditions(interface);
+    rule_ptr->internal()->initConditions(_interface_ptr);
 
     /* Append the rule to the main rule table */
     if (parent_seqn == Rule::SeqnLast) {

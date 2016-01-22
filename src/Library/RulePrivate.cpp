@@ -302,12 +302,16 @@ namespace usbguard {
     }
     switch(_conditions_op) {
       case Rule::SetOperator::OneOf:
+	logger->debug("meetsCondition: OneOf: {}", conditionsState() > 0 ? "true" : "false");
         return conditionsState() > 0;
       case Rule::SetOperator::NoneOf:
+	logger->debug("meetsCondition: NoneOf: {}", conditionsState() == 0 ? "true" : "false");
         return conditionsState() == 0;
       case Rule::SetOperator::AllOf:
       case Rule::SetOperator::Equals:
       case Rule::SetOperator::EqualsOrdered:
+	logger->debug("meetsCondition: AllOf, Equals, ...: {}",
+                      conditionsState() == ((((uint64_t)1) << _conditions.size()) - 1) ? "true" : "false");
         return conditionsState() == ((((uint64_t)1) << _conditions.size()) - 1);
       case Rule::SetOperator::Match:
         throw std::runtime_error("BUG: meetsConditions: invalid conditions set operator");
@@ -342,6 +346,9 @@ namespace usbguard {
       updated_state |= uint64_t(condition->evaluate(rhs)) << i;
       ++i;
     }
+
+    logger->debug("Condition state of rule {}: current={} updated={}",
+                  rhs.getSeqn(), conditionsState(), updated_state);
 
     if (updated_state != conditionsState()) {
       setConditionsState(updated_state);

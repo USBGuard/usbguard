@@ -57,7 +57,8 @@ namespace usbguard
   };
 
   Daemon::Daemon()
-    : _config(G_config_known_names)
+    : _config(G_config_known_names),
+      _ruleset(this)
   {
     G_qb_loop = _qb_loop = qb_loop_create();
 
@@ -221,7 +222,7 @@ namespace usbguard
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
     logger->debug("Appending rule: {}", rule_spec);
-    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn, this);
+    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
     }

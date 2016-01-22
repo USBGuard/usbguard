@@ -20,9 +20,9 @@
 #include "RuleSetPrivate.hpp"
 
 namespace usbguard {
-  RuleSet::RuleSet()
+  RuleSet::RuleSet(Interface * const interface_ptr)
   {
-    d_pointer = new RuleSetPrivate(*this);
+    d_pointer = new RuleSetPrivate(*this, interface_ptr);
   }
 
   RuleSet::~RuleSet()
@@ -66,7 +66,7 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_seqn, Interface * const interface)
+  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_seqn)
   {
     return d_pointer->appendRule(rule, parent_seqn);
   }

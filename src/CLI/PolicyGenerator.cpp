@@ -22,6 +22,7 @@ namespace usbguard
 {
 
   PolicyGenerator::PolicyGenerator()
+   : _ruleset(nullptr)
   {
     _with_hash = true;
     _hash_only = false;

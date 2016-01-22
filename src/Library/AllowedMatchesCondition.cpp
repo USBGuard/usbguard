@@ -1,5 +1,6 @@
 #include "AllowedMatchesCondition.hpp"
 #include "RuleParser.hpp"
+#include "LoggerPrivate.hpp"
 #include <Interface.hpp>
 
 namespace usbguard
@@ -20,6 +21,7 @@ namespace usbguard
 
   void AllowedMatchesCondition::init(Interface * const interface_ptr)
   {
+    logger->debug("AllowedMatchesCondition::init setting interface ptr to {}", (void *)interface_ptr);
     _interface_ptr = interface_ptr;
   }
 
@@ -27,9 +29,11 @@ namespace usbguard
   {
     (void)rule;
     if (_interface_ptr == nullptr) {
+      logger->debug("AllowedMatchesCondition::update interface ptr not set!");
       return false;
     }
     auto devices = _interface_ptr->listDevices(_device_match_rule.toString());
+    logger->debug("AllowedMatches: {} devices matches query {}", devices.size(), _device_match_rule.toString());
     return !devices.empty();
   }
 
