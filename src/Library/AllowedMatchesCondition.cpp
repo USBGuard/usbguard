@@ -1,12 +1,13 @@
 #include "AllowedMatchesCondition.hpp"
 #include "RuleParser.hpp"
+#include <Interface.hpp>
 
 namespace usbguard
 {
   AllowedMatchesCondition::AllowedMatchesCondition(const String& device_spec, bool negated)
     : RuleCondition("allowed-matches", device_spec, negated)
   {
-    _device_match_rule = parseRuleSpecification(std::string("match ") + device_spec);
+    _device_match_rule = parseRuleSpecification(std::string("allow ") + device_spec);
     _interface_ptr = nullptr;
   }
 
@@ -25,7 +26,11 @@ namespace usbguard
   bool AllowedMatchesCondition::update(const Rule& rule)
   {
     (void)rule;
-    return false;
+    if (_interface_ptr == nullptr) {
+      return false;
+    }
+    auto devices = _interface_ptr->listDevices(_device_match_rule.toString());
+    return !devices.empty();
   }
 
   RuleCondition * AllowedMatchesCondition::clone() const
