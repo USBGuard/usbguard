@@ -15,8 +15,14 @@
   - [Rules](#rules)
     - [Targets](#targets)
     - [Device specification](#device-specification)
-    - [Initial policy](#initial-policy)
-    - [Example policies](#example-policies)
+    - [Conditions](#conditions)
+  - [Initial policy](#initial-policy)
+  - [Example policies](#example-policies)
+    - [Allow USB mass storage devices (USB flash disks) and block everything else](#allow-usb-mass-storage-devices-usb-flash-disks-and-block-everything-else)
+    - [Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port.](#allow-a-specific-yubikey-device-to-be-connected-via-a-specific-port-reject-everything-else-on-that-port)
+    - [Reject devices with suspicious combination of interfaces](#reject-devices-with-suspicious-combination-of-interfaces)
+    - [Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed](#allow-a-keyboard-only-usb-device-only-if-there-isnt-already-a-usb-device-with-a-keyboard-interface-allowed)
+    - [Play "Russian roulette" with USB devices](#play-russian-roulette-with-usb-devices)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -188,7 +194,7 @@ List of attributes:
 
 `interface-type` represents a USB interface and should be formated as three 8-bit numbers in hexadecimal base delimited by colon, i.e. `cc:ss:pp`. The numbers represent the interface class (`cc`), subclass (`ss`) and protocol (`pp`) as assigned by the [USB-IF](http://www.usb.org/about) ([List of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class)). Instead of the subclass and protocol number, you may write an asterisk character (`\*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
-#### Conditions
+### Conditions
 
 Whether a rule that matches a device will be applied or not can be further restricted using rule conditions. If the condition expression is met at the rule evaluation time, then the rule target is applied for the device. A condition expression is met if it evaluates to true. Otherwise, the rule evaluation continues with the next rule. A rule conditions has the following syntax:
 
@@ -214,7 +220,7 @@ List of conditions:
  * `true`: Evaluates always to true.
  * `false`: Evaluates always to false.
 
-### Initial policy
+## Initial policy
 
 Using the `usbguard` CLI tool and its `generate-policy` subcommand, you can generate an initial policy for your system instead of writing one from scratch. The tool generates an **allow** policy for all devices connected to the system at the moment of execution. It has several options to tweak the resulting policy:
 
@@ -236,11 +242,11 @@ The policy will be printed out on the standard output. It's a good idea to revie
     # sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
     # sudo systemctl restart usbguard
 
-### Example policies
+## Example policies
 
 The following examples show what to put into the `rules.conf` file in order to implement the given policy.
 
-#### Allow USB mass storage devices (USB flash disks) and block everything else
+### Allow USB mass storage devices (USB flash disks) and block everything else
 
 This policy will block any device that isn't just a mass storage device. Devices with a hidden keyboard interface in a USB flash disk will be blocked. Only devices with a single mass storage interface will be allowed to interact with the operating system. The policy consists of a single rule:
 
@@ -248,14 +254,14 @@ This policy will block any device that isn't just a mass storage device. Devices
 
 The blocking is implicit in this case because we didn't write a `block` rule. Implicit blocking is useful to desktop users because a desktop applet listening to USBGuard events can ask the user for a decision if an implicit target was selected for a device.
 
-#### Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port.
+### Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port.
 
     allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
     reject via-port "1-2"
 
 We could use just the hash to match the device. However, using the name and serial attributes allows the policy creator to quickly assign rules to specific devices without computing the hash. On the other hand, the hash is the most specific value we can use to identify a device in USBGuard so it's the best attribute to use if you want a rule to match just one device.
 
-#### Reject devices with suspicious combination of interfaces
+### Reject devices with suspicious combination of interfaces
 
 A USB flash disk which implements a keyboard or a network interface is very suspicious. The following set of rules forms a policy which allows USB flash disks and explicitly rejects devices with an additional and suspicious (as defined before) interface.
 
@@ -267,11 +273,11 @@ A USB flash disk which implements a keyboard or a network interface is very susp
    
 The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes. Please note that blacklisting is the wrong approach and you shouldn't just blacklist a set of devices and allow the rest. The policy above assumes that blocking is the implicit default. Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible.
 
-#### Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed
+### Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed
 
     allow with-interface one-of { 03:00:01 03:01:01 } if !allowed-matches(with-interface one-of { 03:00:01 03:01:01 })
 
-#### Play "Russian roulette" with USB devices
+### Play "Russian roulette" with USB devices
 
     allow if random(0.1666)
     reject
