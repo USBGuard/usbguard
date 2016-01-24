@@ -99,19 +99,19 @@ target. This implicit default is to block the device until a decision is made by
 
 The rule language grammar, expressed in a BNF-like syntax, is the following:
 
-    rule ::= target device.
+    rule ::= target device_id device_attributes conditions.
 
     target ::= "allow" | "block" | "reject".
-
-    device ::= device_id device_attributes.
-    device ::= .
 
     device_id ::= "*:*" | vendor_id ":*" | vendor_id ":" product_id.
 
     device_attributes ::= device_attributes | attribute.
     device_attributes ::= .
 
-See [Device attributes](https://github.com/dkopecek/usbguard#device-attributes) section for the list of available attributes and their syntax.
+    conditions ::= conditions | condition.
+    conditions ::= .
+
+See [Device attributes](https://github.com/dkopecek/usbguard#device-attributes) section for the list of available attributes and [Conditions](https://github.com/dkopecek/usbguard#conditions) for the list of supported rule conditions.
 
 ### Targets
 
@@ -166,6 +166,32 @@ List of attributes:
 
 `interface-type` represents a USB interface and should be formated as three 8-bit numbers in hexadecimal base delimited by colon, i.e. `cc:ss:pp`. The numbers represent the interface class (`cc`), subclass (`ss`) and protocol (`pp`) as assigned by the [USB-IF](http://www.usb.org/about) ([List of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class)). Instead of the subclass and protocol number, you may write an asterisk character (`\*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
+#### Conditions
+
+Whether a rule that matches a device will be applied or not can be further restricted using rule conditions. If the condition expression is met at the rule evaluation time, then the rule target is applied for the device. A condition expression is met if it evaluates to true. Otherwise, the rule evaluation continues with the next rule. A rule conditions has the following syntax:
+
+     if [!]condition
+     if [operator] { [!]conditionA [!]conditionB ... }
+
+Optionally, an exclamation mark (`!`) can be used to negate the result of a condition.
+
+Interpretation of the set operator:
+
+ * `all-of`: Evaluate to true if all of the specified conditions evaluated to true.
+ * `one-of`: Evaluate to true if one of the specified conditions evaluated to true.
+ * `none-of`: Evaluate to true if none of the specified conditions evaluated to true.
+ * `equals`: Same as `all-of`.
+ * `equals-ordered`: Same as `all-of`.
+
+List of conditions:
+
+ * `localtime(time_range)`: Evaluates to true if the local time is in the specified time range. `time_range` can be written either as `HH:MM[:SS]` or `HH:MM:[:SS]-HH:MM[:SS]`.
+ * `allowed-matches(query)`: Evaluates to true if an allowed device matches the specified query. The query uses the rule syntax. **Conditions in the query are not evaluated**.
+ * `random`: Evaluates to true/false with a probability of `p=0.5`.
+ * `random(p_true)`: Evaluates to true with the specified probability `p_true`.
+ * `true`: Evaluates always to true.
+ * `false`: Evaluates always to false.
+
 ### Initial policy
 
 Using the `usbguard` CLI tool and its `generate-policy` subcommand, you can generate an initial policy for your system instead of writing one from scratch. The tool generates an **allow** policy for all devices connected to the system at the moment of execution. It has several options to tweak the resulting policy:
@@ -218,3 +244,13 @@ A USB flash disk which implements a keyboard or a network interface is very susp
     reject with-interface all-of { 08:*:* 02:*:* }
    
 The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes. Please note that blacklisting is the wrong approach and you shouldn't just blacklist a set of devices and allow the rest. The policy above assumes that blocking is the implicit default. Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible.
+
+#### Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed
+
+    allow with-interface { 03:00:* } if !allowed-matches(with-interface one-of { 03:00:* })
+
+#### Play "Russian roulette" with USB devices
+
+    allow if random(0.1666)
+    reject
+
