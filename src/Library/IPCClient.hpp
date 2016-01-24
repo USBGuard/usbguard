@@ -36,12 +36,12 @@ namespace usbguard
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
     void removeRule(uint32_t seqn);
-    const std::map<std::string, std::string> listRules();
+    const RuleSet listRules();
     void allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
     void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
-    const std::map<std::string, std::string> listDevices(const std::string& query);
-    const std::map<std::string, std::string> listDevices() /* NOTE: left for compatibility */
+    const std::vector<Rule> listDevices(const std::string& query);
+    const std::vector<Rule> listDevices() /* NOTE: left for compatibility */
     {
       return listDevices("match");
     }

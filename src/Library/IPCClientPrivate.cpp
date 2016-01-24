@@ -367,7 +367,7 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClientPrivate::listRules()
+  const RuleSet IPCClientPrivate::listRules()
   {
     const json jreq = {
       { "_m", "listRules" },
@@ -377,13 +377,18 @@ namespace usbguard
     const json jrep = qbIPCSendRecvJSON(jreq);
 
     try {
-      std::map<std::string, std::string> retval;
+      RuleSet ruleset(&_p_instance);
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-	retval.emplace(it.key(), it.value().get<std::string>());
+        const json rule_json = it.value(); 
+        const uint32_t rule_seqn = rule_json["seqn"];
+        const std::string rule_string = rule_json["rule"];
+        Rule rule = Rule::fromString(rule_string);
+        rule.setSeqn(rule_seqn);
+        ruleset.appendRule(rule);
       }
 
-      return retval;
+      return ruleset;
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
                          "Invalid or missing return value after calling listRules");
@@ -432,7 +437,7 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClientPrivate::listDevices(const std::string& query)
+  const std::vector<Rule> IPCClientPrivate::listDevices(const std::string& query)
   {
     const json jreq = {
       { "_m", "listDevices" },
@@ -443,13 +448,18 @@ namespace usbguard
     const json jrep = qbIPCSendRecvJSON(jreq);
 
     try {
-      std::map<std::string, std::string> retval;
+      std::vector<Rule> devices;
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-        retval.emplace(it.key(), it.value().get<std::string>());
+        const json device_json = it.value();
+        const uint32_t device_seqn = device_json["seqn"];
+        const std::string device_string = device_json["device"];
+        Rule device_rule = Rule::fromString(device_string);
+        device_rule.setSeqn(device_seqn);
+        devices.push_back(device_rule);
       }
 
-      return retval;
+      return devices;
     } catch(...) {
       throw IPCException(IPCException::ProtocolError,
                          "Invalid or missing return value after calling listDevices");

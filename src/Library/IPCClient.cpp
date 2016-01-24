@@ -65,7 +65,7 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClient::listRules()
+  const RuleSet IPCClient::listRules()
   {
     return d_pointer->listRules();
   }
@@ -88,7 +88,7 @@ namespace usbguard
     return;
   }
 
-  const std::map<std::string, std::string> IPCClient::listDevices(const std::string& query)
+  const std::vector<Rule> IPCClient::listDevices(const std::string& query)
   {
     return d_pointer->listDevices(query);
   }

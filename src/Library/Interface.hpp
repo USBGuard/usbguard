@@ -21,7 +21,7 @@
 #include <Typedefs.hpp>
 #include <USB.hpp>
 #include <Rule.hpp>
-#include <Device.hpp>
+#include <RuleSet.hpp>
 #include <string>
 #include <map>
 #include <vector>
@@ -39,7 +39,7 @@ namespace usbguard
 
     virtual void removeRule(uint32_t seqn) = 0;
 
-    virtual const std::map<std::string, std::string> listRules() = 0;
+    virtual const RuleSet listRules() = 0;
 
     virtual void allowDevice(uint32_t seqn,
 			     bool append,
@@ -53,7 +53,7 @@ namespace usbguard
 			      bool append,
 			      uint32_t timeout_sec) = 0;
 
-    virtual const std::map<std::string, std::string> listDevices(const std::string& query) = 0;
+    virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
 
     /* Signals */
     virtual void DeviceInserted(uint32_t seqn,
