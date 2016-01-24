@@ -29,6 +29,9 @@ namespace usbguard {
   {
   public:
     RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr);
+    RuleSetPrivate(RuleSet& p_instance, const RuleSetPrivate& rhs);
+    const RuleSetPrivate& operator=(const RuleSetPrivate& rhs);
+    ~RuleSetPrivate();
 
     void load(const String& path);
     void load(std::istream& stream);

@@ -28,6 +28,20 @@ namespace usbguard {
   RuleSet::~RuleSet()
   {
     delete d_pointer;
+    d_pointer = nullptr;
+  }
+
+  RuleSet::RuleSet(const RuleSet& rhs)
+  {
+    d_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
+  }
+
+  const RuleSet& RuleSet::operator=(const RuleSet& rhs)
+  {
+    RuleSetPrivate * n_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
+    delete d_pointer;
+    d_pointer = n_pointer;
+    return *this;
   }
 
   void RuleSet::load(const String& path)

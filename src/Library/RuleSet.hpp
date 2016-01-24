@@ -32,6 +32,8 @@ namespace usbguard {
      * Construct an empty ruleset.
      */
     RuleSet(Interface * const interface_ptr);
+    RuleSet(const RuleSet& rhs);
+    const RuleSet& operator=(const RuleSet& rhs);
     ~RuleSet();
 
     /**
