@@ -213,7 +213,7 @@ Interpretation of the set operator:
 
 List of conditions:
 
- * `localtime(time_range)`: Evaluates to true if the local time is in the specified time range. `time_range` can be written either as `HH:MM[:SS]` or `HH:MM:[:SS]-HH:MM[:SS]`.
+ * `localtime(time_range)`: Evaluates to true if the local time is in the specified time range. `time_range` can be written either as `HH:MM[:SS]` or `HH:MM[:SS]-HH:MM[:SS]`.
  * `allowed-matches(query)`: Evaluates to true if an allowed device matches the specified query. The query uses the rule syntax. **Conditions in the query are not evaluated**.
  * `random`: Evaluates to true/false with a probability of `p=0.5`.
  * `random(p_true)`: Evaluates to true with the specified probability `p_true`.
