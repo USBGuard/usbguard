@@ -1,3 +1,25 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [USBGuard](#usbguard)
+  - [Use Cases](#use-cases)
+    - [Use case #1: USB device whitelisting](#use-case-1-usb-device-whitelisting)
+    - [Use case #2: USB device blacklisting](#use-case-2-usb-device-blacklisting)
+    - [Use case #3: Triggering actions on USB device events](#use-case-3-triggering-actions-on-usb-device-events)
+  - [Supported Operating Systems](#supported-operating-systems)
+    - [Portability](#portability)
+  - [Compilation](#compilation)
+  - [Pre-compiled packages](#pre-compiled-packages)
+    - [Fedora Linux, RHEL or CentOS](#fedora-linux-rhel-or-centos)
+  - [Rules](#rules)
+    - [Targets](#targets)
+    - [Device specification](#device-specification)
+    - [Initial policy](#initial-policy)
+    - [Example policies](#example-policies)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # USBGuard
 
 [![Build Status](https://travis-ci.org/dkopecek/usbguard.svg?branch=master)](https://travis-ci.org/dkopecek/usbguard)
