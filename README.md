@@ -247,7 +247,7 @@ The policy rejects all USB flash disk devices with an interface from the HID/Key
 
 #### Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed
 
-    allow with-interface { 03:00:* } if !allowed-matches(with-interface one-of { 03:00:* })
+    allow with-interface one-of { 03:00:01 03:01:01 } if !allowed-matches(with-interface one-of { 03:00:01 03:01:01 })
 
 #### Play "Russian roulette" with USB devices
 
