@@ -7,3 +7,6 @@
 [submodule "src/ThirdParty/Catch"]
 	path = src/ThirdParty/Catch
 	url = https://github.com/philsquared/Catch
+[submodule "src/ThirdParty/usbmon"]
+	path = src/ThirdParty/usbmon
+	url = https://github.com/radosroka/usbmon
