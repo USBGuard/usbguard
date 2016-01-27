@@ -85,12 +85,31 @@ $ usbguard-applet-qt &
 --
 
 ### APPENDIX: Anatomy Of A Rule
+```
+target [device_id] [device_attributes] [conditions]
+```
+* target: allow, block, reject
+* device id: VENDOR:PRODUCT, VENDOR:*
+  ```
+  allow 1234:5678
+  block ffff:*
+  ```
+* attributes: name, serial number, port, interfaces, hash
+  ```
+  allow via-port "1-2"
+  reject with-interface any-of { ff:*:* ab:cd:* }
+  ```
+* conditions: time, device match, random
+  ```
+  allow with-interface 03:00:01 if !allowed-matches(with-interface 03:00:01)
+  reject if random(0.2)
+  ```
 
 --
 
 ### APPENDIX: Policy Examples
 
-* Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port
+* Allow a specific Yubikey device to be connected via a specific port
 ```
 allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
 reject via-port "1-2"

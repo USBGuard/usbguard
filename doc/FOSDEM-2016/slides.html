@@ -780,12 +780,25 @@ $ usbguard-applet-qt &amp;</code></pre>
   </section>
   <section>
     <h3 id="appendix-anatomy-of-a-rule">APPENDIX: Anatomy Of A Rule</h3>
+<pre><code>target [device_id] [device_attributes] [conditions]</code></pre>
+<ul>
+<li>target: allow, block, reject</li>
+<li>device id: VENDOR:PRODUCT, VENDOR:*<pre><code>allow 1234:5678
+block ffff:*</code></pre>
+</li>
+<li>attributes: name, serial number, port, interfaces, hash<pre><code>allow via-port &quot;1-2&quot;
+reject with-interface any-of { ff:*:* ab:cd:* }</code></pre>
+</li>
+<li>conditions: time, device match, random<pre><code>allow with-interface 03:00:01 if !allowed-matches(with-interface 03:00:01)
+reject if random(0.2)</code></pre>
+</li>
+</ul>
 
   </section>
   <section>
     <h3 id="appendix-policy-examples">APPENDIX: Policy Examples</h3>
 <ul>
-<li>Allow a specific Yubikey device to be connected via a specific port. Reject everything else on that port<pre><code>allow 1050:0011 name &quot;Yubico Yubikey II&quot; serial &quot;0001234567&quot; via-port &quot;1-2&quot; hash &quot;044b5e168d40ee0245478416caf3d998&quot;
+<li>Allow a specific Yubikey device to be connected via a specific port<pre><code>allow 1050:0011 name &quot;Yubico Yubikey II&quot; serial &quot;0001234567&quot; via-port &quot;1-2&quot; hash &quot;044b5e168d40ee0245478416caf3d998&quot;
 reject via-port &quot;1-2&quot;</code></pre>
 </li>
 <li>Play &quot;Russian roulette&quot; with USB devices<pre><code>allow if random(0.1666)
