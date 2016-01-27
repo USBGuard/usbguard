@@ -208,6 +208,7 @@ if test "$debug" = "yes"; then
 else
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_DISABLED"
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
+   AC_DEFINE([QUEX_OPTION_ASSERTS_DISABLED], [1], [Disable asserts in the Quex generated lexer])
 fi
 
 if test "$systemd" = "yes"; then

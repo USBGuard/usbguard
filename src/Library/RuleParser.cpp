@@ -16,6 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include <build-config.h>
 #include "RuleParser.hpp"
 #include "RuleParser/Lexer.hpp"
 #include "Typedefs.hpp"
