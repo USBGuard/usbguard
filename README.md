@@ -101,7 +101,7 @@ And to generate the *configure* script, run:
 
 If you want to modify the lexer and/or the parser, you'll have to generate new source files for them. To learn how to do that, read [src/Library/RuleParser/README.md](src/Library/RuleParser/README.md).
 
-## Pre-compiled packages
+## OS packages
 
 ### Fedora Linux, RHEL or CentOS
 
@@ -112,6 +112,15 @@ You can install the repository by executing the following steps:
     $ sudo yum copr enable mildew/usbguard
     $ sudo yum install usbguard
     $ sudo yum install usbguard-applet-qt
+
+### Gentoo
+
+For Gentoo you can use the [stuge overlay](http://git.stuge.se/?p=stuge-overlay.git;a=summary) via layman:
+
+    $ layman -a stuge-overlay
+    $ emerge -av usbguard
+
+### Usage
 
 To actually start the daemon, use:
 
