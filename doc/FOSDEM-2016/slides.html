@@ -711,24 +711,7 @@ code {
 
   </section>
   <section>
-    <h3 id="usbguard-up-and-running-protecting-in-1-minute-or-so-">USBGuard: Up and running/protecting in 1 minute (or so...)</h3>
-<pre><code># dnf install usbguard usbguard-applet-qt
-# usbguard generate-policy &gt; /etc/usbguard/rules.conf
-# systemctl start usbguard
-$ usbguard-applet-qt &amp;</code></pre>
-<p><img src="devicedialog.png" alt="USBGuard Applet Device Dialog" title="USBGuard Applet Device Dialog"></p>
-
-  </section>
-  <section>
-    <h3 id="usbguard-components">USBGuard: Components</h3>
-<p><img src="components.svg" alt="USBGuard components" title="USBGuard components"></p>
-<ul>
-<li>A firewall-like system for whitelisting and blacklisting USB devices based on their attributes</li>
-</ul>
-
-  </section>
-  <section>
-    <h3 id="attack-vectors-where-can-usbguard-help-">Attack vectors: Where can USBGuard help?</h3>
+    <h3 id="attack-vectors">Attack vectors</h3>
 <ul>
 <li>USB sticks are usually infected with a malware that relies on the user to run it or on some autorun feature of the system<ul>
 <li>Solution? Disable autorun, educate users</li>
@@ -742,11 +725,37 @@ $ usbguard-applet-qt &amp;</code></pre>
 
   </section>
   <section>
-    <h3 id="attack-vectors-where-can-usbguard-help-">Attack vectors: Where can USBGuard help?</h3>
+    <h3 id="attack-vectors">Attack vectors</h3>
 <ul>
 <li><strong>Reprogramming</strong> of USB devices is possible without special hardware: BadUSB</li>
-<li><strong>Bugs in USB drivers</strong></li>
-<li><strong>Usability vs. Security</strong>: physically blocking USB ports is not always desirable</li>
+<li><strong>Bugs in USB drivers</strong> <code>/* TODO: check bounds */</code><ul>
+<li>CVE-2013-1680: Heap-based buffer overflow in drivers/usb/class/cdc-wdm.c</li>
+</ul>
+</li>
+</ul>
+
+  </section>
+  <section>
+    <h3 id="usability-vs-security">Usability vs. Security</h3>
+<ul>
+<li>Physically blocking (epoxy) or destroying USB ports is not always desirable</li>
+</ul>
+
+  </section>
+  <section>
+    <h3 id="usbguard-up-and-running-protecting-in-1-minute-or-so-">USBGuard: Up and running/protecting in 1 minute (or so...)</h3>
+<pre><code># dnf install usbguard usbguard-applet-qt
+# usbguard generate-policy &gt; /etc/usbguard/rules.conf
+# systemctl start usbguard
+$ usbguard-applet-qt &amp;</code></pre>
+<p><img src="devicedialog.png" alt="USBGuard Applet Device Dialog" title="USBGuard Applet Device Dialog"></p>
+
+  </section>
+  <section>
+    <h3 id="usbguard-components">USBGuard: Components</h3>
+<p><img src="components.svg" alt="USBGuard components" title="USBGuard components"></p>
+<ul>
+<li>A firewall-like system for whitelisting and blacklisting USB devices based on their attributes</li>
 </ul>
 
   </section>
@@ -791,6 +800,14 @@ reject with-interface any-of { ff:*:* ab:cd:* }</code></pre>
 </li>
 <li>conditions: time, device match, random<pre><code>allow with-interface 03:00:01 if !allowed-matches(with-interface 03:00:01)
 reject if random(0.2)</code></pre>
+</li>
+</ul>
+
+  </section>
+  <section>
+    <h3 id="appendix-policy-examples">APPENDIX: Policy Examples</h3>
+<ul>
+<li>Allow USB thumb drives only (mass storage)<pre><code>allow with-interface { 08:*:* }</code></pre>
 </li>
 </ul>
 

@@ -21,6 +21,29 @@ _Daniel Kopeček_
 
 --
 
+### Attack vectors
+
+* USB sticks are usually infected with a malware that relies on the user to run it or on some autorun feature of the system
+  * Solution? Disable autorun, educate users
+* **Rogue USB devices** that simulate keystrokes, mouse operations or even a network card with a dhcp server already exist
+  * Teensy, USBdriveby, ... Cost? ~$20
+
+--
+
+### Attack vectors
+
+* **Reprogramming** of USB devices is possible without special hardware: BadUSB
+* **Bugs in USB drivers** `/* TODO: check bounds */`
+  * CVE-2013-1680: Heap-based buffer overflow in drivers/usb/class/cdc-wdm.c
+
+--
+
+### Usability vs. Security
+
+* Physically blocking (epoxy) or destroying USB ports is not always desirable
+
+--
+
 ### USBGuard: Up and running/protecting in 1 minute (or so...)
 
 ```
@@ -39,23 +62,6 @@ $ usbguard-applet-qt &
 ![USBGuard components](components.svg "USBGuard components")
 
 * A firewall-like system for whitelisting and blacklisting USB devices based on their attributes
-
---
-
-### Attack vectors: Where can USBGuard help?
-
-* USB sticks are usually infected with a malware that relies on the user to run it or on some autorun feature of the system
-  * Solution? Disable autorun, educate users
-* **Rogue USB devices** that simulate keystrokes, mouse operations or even a network card with a dhcp server already exist
-  * Teensy, USBdriveby, ... Cost? ~$20
-
---
-
-### Attack vectors: Where can USBGuard help?
-
-* **Reprogramming** of USB devices is possible without special hardware: BadUSB
-* **Bugs in USB drivers**
-* **Usability vs. Security**: physically blocking USB ports is not always desirable 
 
 --
 
@@ -109,6 +115,15 @@ target [device_id] [device_attributes] [conditions]
 
 ### APPENDIX: Policy Examples
 
+* Allow USB thumb drives only (mass storage)
+```
+allow with-interface { 08:*:* }
+```
+
+--
+
+### APPENDIX: Policy Examples
+
 * Allow a specific Yubikey device to be connected via a specific port
 ```
 allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
@@ -119,7 +134,6 @@ reject via-port "1-2"
 allow if random(0.1666)
 reject
 ```
-
 --
 
 ### APPENDIX: CLI Usage Examples
