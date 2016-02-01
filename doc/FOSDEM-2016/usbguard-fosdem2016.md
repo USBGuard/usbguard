@@ -2,7 +2,7 @@ title: USBGuard -- Take control over your USB devices
 author:
   name: Daniel Kopeček 
   url: https://github.com/dkopecek/usbguard
-output: slides.html
+output: usbguard-fosdem2016.html 
 controls: true
 theme: sudodoki/reveal-cleaver-theme
 
@@ -17,7 +17,7 @@ _Daniel Kopeček_
 
 ### From The News (year 2011)
 
-![story headline](badusb-theregister-forslides.png "story headline")
+![story headline](pics/badusb-theregister-forslides.png "story headline")
 
 --
 
@@ -53,13 +53,13 @@ _Daniel Kopeček_
 $ usbguard-applet-qt &
 
 ```
-![USBGuard Applet Device Dialog](devicedialog.png "USBGuard Applet Device Dialog")
+![USBGuard Applet Device Dialog](pics/devicedialog.png "USBGuard Applet Device Dialog")
 
 --
 
 ### USBGuard: Components
 
-![USBGuard components](components.svg "USBGuard components")
+![USBGuard components](pics/components.svg "USBGuard components")
 
 * A firewall-like system for whitelisting and blacklisting USB devices based on their attributes
 
