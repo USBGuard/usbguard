@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [USBGuard](#usbguard)
+  - [Component View](#component-view)
   - [Use Cases](#use-cases)
     - [Use case #1: USB device whitelisting](#use-case-1-usb-device-whitelisting)
     - [Use case #2: USB device blacklisting](#use-case-2-usb-device-blacklisting)
@@ -39,6 +40,10 @@ The USBGuard software framework helps to protect your computer against rogue USB
 
  * [Report a bug or request a feature in **usbguard**](https://github.com/dkopecek/usbguard/issues/new)
  * [Report a bug or request a feature in **usbguard-applet-qt**](https://github.com/dkopecek/usbguard-applet-qt/issues/new)
+
+## Component View
+
+![USBGuard component diagram](doc/usbguard-component-diagram.png "USBGuard component diagram")
 
 ## Use Cases
 
