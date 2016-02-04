@@ -47,6 +47,7 @@ namespace usbguard {
   const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
   {
     _seqn = rhs._seqn;
+    _meta = rhs._meta;
     _vendor_id = rhs._vendor_id;
     _product_id = rhs._product_id;
     _serial_number = rhs._serial_number;
@@ -59,7 +60,6 @@ namespace usbguard {
     _interface_types_op = rhs._interface_types_op;
     _target = rhs._target;
     _action = rhs._action;
-    _tp_added = rhs._tp_added;
     _timeout_seconds = rhs._timeout_seconds;
     try {
       for (auto const& condition : rhs._conditions) {
@@ -139,11 +139,6 @@ namespace usbguard {
     return _action;
   }
   
-  const std::chrono::steady_clock::time_point RulePrivate::getTimePointAdded() const
-  {
-    return _tp_added;
-  }
-  
   uint32_t RulePrivate::getTimeoutSeconds() const
   {
     return _timeout_seconds;
@@ -162,6 +157,7 @@ namespace usbguard {
      */
     logger->trace("Checking applicability of rule [{}] to rule [{}]",
         this->toString(/*invalid=*/true), rhs.toString(/*invalid=*/true));
+
     /*
      * If a this set of rules contains the rhs rule, return true. Otherwise false.
      * Ignored fields: rule_seqn, target, action, ts_added, timeout_sec, ref_syspath
@@ -456,12 +452,6 @@ namespace usbguard {
     return;
   }
   
-  void RulePrivate::setTimePointAdded(const std::chrono::steady_clock::time_point tp_added)
-  {
-    _tp_added = tp_added;
-    return;
-  }
-  
   void RulePrivate::setTimeoutSeconds(uint32_t timeout_seconds)
   {
     _timeout_seconds = timeout_seconds;
@@ -594,6 +584,16 @@ namespace usbguard {
     return rule_string;
   }
 
+  RulePrivate::MetaData& RulePrivate::metadata()
+  {
+    return _meta;
+  }
+
+  const RulePrivate::MetaData& RulePrivate::metadata() const
+  {
+    return _meta;
+  }
+
   Rule RulePrivate::fromString(const String& rule_string)
   {
     return parseRuleSpecification(rule_string);
@@ -622,4 +622,16 @@ namespace usbguard {
     return result;
   }
 
+  void RulePrivate::updateMetaDataCounters(bool applied, bool evaluated)
+  {
+    if (evaluated) {
+      ++_meta.counter_evaluated;
+      _meta.tp_last_evaluated = std::chrono::steady_clock::now();
+    }
+    if (applied) {
+      ++_meta.counter_applied;
+      _meta.tp_last_applied = std::chrono::steady_clock::now();
+    }
+    return;
+  }
 } /* namespace usbguard */

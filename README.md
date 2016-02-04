@@ -231,6 +231,10 @@ List of conditions:
 
  * `localtime(time_range)`: Evaluates to true if the local time is in the specified time range. `time_range` can be written either as `HH:MM[:SS]` or `HH:MM[:SS]-HH:MM[:SS]`.
  * `allowed-matches(query)`: Evaluates to true if an allowed device matches the specified query. The query uses the rule syntax. **Conditions in the query are not evaluated**.
+ * `rule-applied`: Evaluates to true if the rule currently being evaluated ever matched a device.
+ * `rule-applied(past_duration)`: Evaluates to true if the rule currently being evaluated matched a device in the past duration of time specified by the parameter. `past_duration` can be written as `HH:MM:SS`, `HH:MM`, or `SS`.
+ * `rule-evaluated`: Evaluates to true if the rule currently being evaluated was ever evaluated before.
+ * `rule-evaluated(past_duration)`: Evaluates to true if the rule currently being evaluated was evaluated in the pas duration of time specified by the parameter. `past_duration` can be written as `HH:MM:SS`, `HH:MM`, or `SS`.
  * `random`: Evaluates to true/false with a probability of `p=0.5`.
  * `random(p_true)`: Evaluates to true with the specified probability `p_true`.
  * `true`: Evaluates always to true.

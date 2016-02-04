@@ -42,7 +42,7 @@ namespace usbguard {
     uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
     Pointer<const Rule> getRule(uint32_t seqn);
     bool removeRule(uint32_t seqn);
-    Pointer<const Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1);
+    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1) const;
     PointerVector<const Rule> getRules();
     Pointer<Rule> getTimedOutRule();
     uint32_t assignSeqn(Pointer<Rule> rule);

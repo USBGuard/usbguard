@@ -106,11 +106,6 @@ namespace usbguard {
     return d_pointer->getAction();
   }
   
-  const std::chrono::steady_clock::time_point Rule::getTimePointAdded() const
-  {
-    return d_pointer->getTimePointAdded();
-  }
-  
   uint32_t Rule::getTimeoutSeconds() const
   {
     return d_pointer->getTimeoutSeconds();
@@ -123,6 +118,12 @@ namespace usbguard {
   
   bool Rule::appliesTo(const Rule& rhs) const
   {
+    return d_pointer->appliesTo(rhs);
+  }
+
+  bool Rule::appliesTo(const Rule& rhs)
+  {
+    updateMetaDataCounters(/*applied=*/false, /*evaluated=*/true);
     return d_pointer->appliesTo(rhs);
   }
 
@@ -219,12 +220,6 @@ namespace usbguard {
     return;
   }
   
-  void Rule::setTimePointAdded(const std::chrono::steady_clock::time_point tp_added)
-  {
-    d_pointer->setTimePointAdded(tp_added);
-    return;
-  }
-  
   void Rule::setTimeoutSeconds(uint32_t timeout_seconds)
   {
     d_pointer->setTimeoutSeconds(timeout_seconds);
@@ -246,6 +241,12 @@ namespace usbguard {
   String Rule::toString(bool invalid) const
   {
     return d_pointer->toString(invalid);
+  }
+
+  void Rule::updateMetaDataCounters(bool applied, bool evaluated)
+  {
+    d_pointer->updateMetaDataCounters(applied, evaluated);
+    return;
   }
 
   Rule Rule::fromString(const String& rule_string)
@@ -429,6 +430,11 @@ namespace usbguard {
   }
 
   RulePrivate* Rule::internal()
+  {
+    return d_pointer;
+  }
+
+  const RulePrivate* Rule::internal() const
   {
     return d_pointer;
   }

@@ -99,7 +99,7 @@ namespace usbguard {
      * If `from_seqn' isn't specified, the method searches from the beginning of the ruleset.
      * If no matching rule is found, nullptr is returned.
      */
-    Pointer<const Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1);
+    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1) const;
 
     /**
      * Get all rules from the set.

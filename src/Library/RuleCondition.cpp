@@ -90,6 +90,8 @@ namespace usbguard
 #include "LocaltimeCondition.hpp"
 #include "FixedStateCondition.hpp"
 #include "RandomStateCondition.hpp"
+#include "RuleAppliedCondition.hpp"
+#include "RuleEvaluatedCondition.hpp"
 #include <iostream>
 
 namespace usbguard
@@ -110,6 +112,12 @@ namespace usbguard
     }
     if (identifier == "random") {
       return new RandomStateCondition(parameter, negated);
+    }
+    if (identifier == "rule-applied") {
+      return new RuleAppliedCondition(parameter, negated);
+    }
+    if (identifier == "rule-evaluated") {
+      return new RuleEvaluatedCondition(parameter, negated);
     }
     throw std::runtime_error("Unknown rule condition");
   }

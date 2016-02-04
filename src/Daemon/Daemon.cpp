@@ -472,7 +472,7 @@ namespace usbguard
       device->isController() ? _present_controller_policy : _present_device_policy;
 
     Rule::Target target = Rule::Target::Invalid;
-    Pointer<const Rule> matched_rule = nullptr;
+    Pointer<Rule> matched_rule = nullptr;
 
     switch (policy) {
     case PresentDevicePolicy::Allow:
@@ -492,11 +492,6 @@ namespace usbguard
       target = matched_rule->getTarget();
       break;
     }
-
-    DevicePresent(device_rule->getSeqn(),
-		  attributes,
-		  device_rule->refInterfaceTypes(),
-		  target);
 
     if (matched_rule == nullptr) {
       auto rule = makePointer<Rule>();
@@ -518,6 +513,12 @@ namespace usbguard
       throw std::runtime_error("BUG: Wrong matched_rule target");
     }
 
+    matched_rule->updateMetaDataCounters(/*applied=*/true);
+
+    DevicePresent(device_rule->getSeqn(),
+		  attributes,
+		  device_rule->refInterfaceTypes(),
+		  target);
     return;
   }
 

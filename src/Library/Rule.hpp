@@ -78,11 +78,11 @@ namespace usbguard {
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
     Target getTarget() const;
     const String& getAction() const;
-    const std::chrono::steady_clock::time_point getTimePointAdded() const;
     uint32_t getTimeoutSeconds() const;
 
     bool appliesTo(Pointer<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
+    bool appliesTo(const Rule& rhs);
     bool isImplicit() const;
 
     void setSeqn(uint32_t seqn);
@@ -100,12 +100,13 @@ namespace usbguard {
     void setInterfaceTypesSetOperator(Rule::SetOperator op);
     void setTarget(Rule::Target target);
     void setAction(const String& action);
-    void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
     void setConditionSetOperator(Rule::SetOperator op);
 
     operator bool() const;
     String toString(bool invalid = false) const;
+
+    void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 
     /*** Static methods ***/
     static Rule fromString(const String& rule_string);
@@ -117,6 +118,7 @@ namespace usbguard {
     static const String unescapeString(const String& string);
 
     RulePrivate* internal();
+    const RulePrivate* internal() const;
   private:
     RulePrivate* d_pointer;
   };

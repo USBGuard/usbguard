@@ -61,6 +61,8 @@ mode RULE :
         "true" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
         "false" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
         "random" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "rule-applied" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
+        "rule-evaluated" => RULE_TOKEN_CONDITION_IDENTIFIER(Lexeme);
 
          [:xdigit:]{4}":"[:xdigit:]{4} => RULE_TOKEN_DEVICE_VPID(Lexeme);
          [:xdigit:]{4}":*" => RULE_TOKEN_DEVICE_VID(Lexeme);

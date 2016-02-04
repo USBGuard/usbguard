@@ -177,7 +177,7 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
     if( remaining_n ) {
         loaded_n = me->derived.load_characters(me, &chunk[0], (size_t)remaining_n, &end_of_stream_f);
         me->character_index_next_to_fill += loaded_n;
-        if( (size_t)remaining_n > loaded_n ) {
+        if( remaining_n > loaded_n ) {
             return false;
         }
     }

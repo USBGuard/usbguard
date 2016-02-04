@@ -95,7 +95,7 @@ namespace usbguard {
     return d_pointer->removeRule(seqn);
   }
 
-  Pointer<const Rule> RuleSet::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn)
+  Pointer<Rule> RuleSet::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn) const
   {
     return d_pointer->getFirstMatchingRule(device_rule, from_seqn);
   }

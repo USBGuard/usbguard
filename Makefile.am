@@ -112,6 +112,10 @@ libusbguard_la_SOURCES=\
 	src/Library/RandomStateCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
 	src/Library/LocaltimeCondition.cpp \
+	src/Library/RuleAppliedCondition.cpp \
+	src/Library/RuleAppliedCondition.hpp \
+	src/Library/RuleEvaluatedCondition.cpp \
+	src/Library/RuleEvaluatedCondition.hpp \
 	src/ThirdParty/usbmon/src/usbmon.cpp \
 	src/ThirdParty/usbmon/src/usbmon.hpp \
 	src/ThirdParty/usbmon/src/usbpacket.cpp \

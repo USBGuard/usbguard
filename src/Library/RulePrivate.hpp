@@ -20,12 +20,37 @@
 #include <build-config.h>
 #include "Rule.hpp"
 #include "RuleCondition.hpp"
+#include <chrono>
 
 namespace usbguard {
   class Interface;
   class RulePrivate
   {
   public:
+    struct MetaData {
+      MetaData()
+        : tp_created(std::chrono::steady_clock::now())
+      {
+        counter_evaluated = 0;
+        counter_applied = 0;
+      }
+
+      MetaData(const MetaData& rhs)
+      {
+        counter_evaluated = rhs.counter_evaluated;
+        counter_applied = rhs.counter_applied;
+        tp_created = rhs.tp_created;
+        tp_last_evaluated = rhs.tp_last_evaluated;
+        tp_last_applied = rhs.tp_last_applied;
+      }
+
+      uint64_t counter_evaluated;
+      uint64_t counter_applied;
+      std::chrono::steady_clock::time_point tp_created;
+      std::chrono::steady_clock::time_point tp_last_evaluated;
+      std::chrono::steady_clock::time_point tp_last_applied;
+    };
+
     RulePrivate(Rule& p_instance);
     RulePrivate(Rule& p_instance, const RulePrivate& rhs);
     const RulePrivate& operator=(const RulePrivate& rhs);
@@ -42,7 +67,6 @@ namespace usbguard {
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
     Rule::Target getTarget() const;
     const String& getAction() const;
-    const std::chrono::steady_clock::time_point getTimePointAdded() const;
     uint32_t getTimeoutSeconds() const;
 
     bool appliesTo(Pointer<const Rule> rhs) const;
@@ -71,12 +95,14 @@ namespace usbguard {
     void setInterfaceTypesSetOperator(Rule::SetOperator op);
     void setTarget(Rule::Target target);
     void setAction(const String& action);
-    void setTimePointAdded(const std::chrono::steady_clock::time_point tp_added);
     void setTimeoutSeconds(uint32_t timeout_seconds);
     std::vector<RuleCondition*>& refConditions();
     void setConditionSetOperator(Rule::SetOperator op);
 
     String toString(bool invalid = false) const;
+    MetaData& metadata();
+    const MetaData& metadata() const;
+    void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 
     /*** Static methods ***/
     static Rule fromString(const String& rule_string);
@@ -188,6 +214,7 @@ namespace usbguard {
 
   private:
     Rule& _p_instance;
+    MetaData _meta;
     uint32_t _seqn;
     String _vendor_id;
     String _product_id;
@@ -201,7 +228,6 @@ namespace usbguard {
     Rule::SetOperator _interface_types_op;
     Rule::Target _target;
     String _action;
-    std::chrono::steady_clock::time_point _tp_added;
     uint32_t _timeout_seconds;
     std::vector<RuleCondition*> _conditions;
     Rule::SetOperator _conditions_op;

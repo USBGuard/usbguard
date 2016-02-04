@@ -139,9 +139,6 @@ namespace usbguard {
       _seqn_next = std::max(_seqn_next.load(), rule_ptr->getSeqn() + 1);
     }
 
-    /* Set time */
-    rule_ptr->setTimePointAdded(std::chrono::steady_clock::now());
-
     /* Initialize conditions */
     rule_ptr->internal()->initConditions(_interface_ptr);
 
@@ -200,11 +197,11 @@ namespace usbguard {
     throw std::out_of_range("Rule not found");
   }
 
-  Pointer<const Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn)
+  Pointer<Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn) const
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
 
-    for (auto const& rule_ptr : _rules) {
+    for (auto& rule_ptr : _rules) {
       if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
 	return rule_ptr;
       }
@@ -242,7 +239,7 @@ namespace usbguard {
     std::chrono::steady_clock::time_point tp_current =	\
       std::chrono::steady_clock::now();
 
-    if ((tp_current - oldest_rule->getTimePointAdded()) \
+    if ((tp_current - oldest_rule->internal()->metadata().tp_created) \
 	< std::chrono::seconds(oldest_rule->getTimeoutSeconds())) {
       return nullptr;
     } else {
