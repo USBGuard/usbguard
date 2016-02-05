@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE node PUBLIC
+  "-//freedesktop//DTD D-Bus Object Introspection 1.0//EN"
+  "http://standards.freedesktop.org/dbus/1.0/introspect.dtd">
+<node xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+  <interface name="org.usbguard.Policy">
+    <method name="list-rules">
+      <doc:doc>
+        <doc:summary>List rules</doc:summary>
+      </doc:doc>
+      <arg name="ruleset" direction="out" type="a(us)">
+        <doc:doc>
+          <doc:summary>An array of rules and their ids</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+    <method name="append-rule">
+      <doc:doc>
+        <doc:summary>Append a rule to the policy</doc:summary>
+      </doc:doc>
+      <arg name="rule" direction="in" type="s">
+        <doc:doc>
+          <doc:summary>The rule to be appended</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="parent_id" direction="in" type="u">
+        <doc:doc>
+          <doc:summary>The parent rule id after which the rule should be appended</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The rule id which was assigned to the succesfully appended rule</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+    <method name="remove-rule">
+      <doc:doc>
+        <doc:summary>Remove a rule from the policy</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="in" type="u">
+        <doc:doc>
+          <doc:summary>The id of the rule to remove</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+  </interface>
+  <interface name="org.usbguard.Device">
+    <method name="list-devices">
+      <doc:doc>
+        <doc:summary>List currently recognized devices, their state and their ids</doc:summary>
+      </doc:doc>
+      <arg name="query" direction="in" type="s">
+        <doc:doc>
+          <doc:summary>A query specified using the rule syntax</doc:summary>
+          <doc:para>
+            The resulting list of devices will contain only devices that match the query.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="devices" direction="out" type="a(us)">
+        <doc:doc>
+          <doc:summary>An array of device rules and their ids</doc:summary>
+          <doc:para>
+            The authorization state is expressed using the rule target in each device rule.
+          </doc:para>
+        </doc:doc>
+      </arg>
+    </method>
+    <method name="allow-device">
+      <doc:doc>
+        <doc:summary>Authorize a device to interact with the system</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="in" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device to authorize</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+    <method name="block-device">
+      <doc:doc>
+        <doc:summary>Deauthorize a device.</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="in" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device to deauthorize</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+    <method name="reject-device">
+      <doc:doc>
+        <doc:summary>Remove a device from the system</doc:summary>
+        <doc:para>
+          This action will logically remove the device from the system. The device will have to be reconnected to be recognized again.
+        </doc:para>
+      </doc:doc>
+      <arg name="id" direction="in" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device to remove</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+    <signal name="DevicePresent">
+      <doc:doc>
+        <doc:summary>A signal notifying of a device already connected to the system</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="interfaces" direction="out" type="a(s)">
+        <doc:doc>
+          <doc:summary>A flat view of the USB interfaces that the device contains</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="target" direction="out" type="s">
+        <doc:doc>
+          <doc:summary>The current authorization target of the device</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+    <signal name="DeviceInterted">
+      <doc:doc>
+        <doc:summary>A signal notifying of a newly inserted USB device</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="interfaces" direction="out" type="a(s)">
+        <doc:doc>
+          <doc:summary>A flat view of the USB interfaces that the device contains</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="rule_match" direction="out" type="b">
+        <doc:doc>
+          <doc:summary>A boolean value specifying whether the device matched a rule in the policy</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="rule_id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the matched rule</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+    <signal name="DeviceRemoved">
+      <doc:doc>
+        <doc:summary>A signal notifying that a USB device was removed from the system</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+    </signal>
+    <signal name="DeviceAllowed">
+       <doc:doc>
+        <doc:summary>A signal notifying that a USB device was authorized</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="rule_match" direction="out" type="b">
+        <doc:doc>
+          <doc:summary>A boolean value specifying whether the device matched a rule in the policy</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="rule_id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the matched rule</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+    <signal name="DeviceBlocked">
+      <doc:doc>
+        <doc:summary>A signal notifying that a USB device was not authorized</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="rule_match" direction="out" type="b">
+        <doc:doc>
+          <doc:summary>A boolean value specifying whether the device matched a rule in the policy</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="rule_id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the matched rule</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+    <signal name="DeviceRejected">
+      <doc:doc>
+        <doc:summary>A signal notifying that a USB device was rejected</doc:summary>
+      </doc:doc>
+      <arg name="id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the device</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="attributes" direction="out" type="a{ss}">
+        <doc:doc>
+          <doc:summary>Device attributes</doc:summary>
+          <doc:para>
+            The attributes are represented as a dictionary that maps attribute names to their values.
+          </doc:para>
+        </doc:doc>
+      </arg>
+      <arg name="rule_match" direction="out" type="b">
+        <doc:doc>
+          <doc:summary>A boolean value specifying whether the device matched a rule in the policy</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="rule_id" direction="out" type="u">
+        <doc:doc>
+          <doc:summary>The id of the matched rule</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+  </interface>
+</node>
