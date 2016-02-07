@@ -64,8 +64,8 @@ void printUsage(std::ostream& stream, const char *arg0)
   stream << "  -p <path>  Write PID to a file at `path'." << std::endl;
   stream << "  -c <path>  Load configuration from a file at `path'." << std::endl;
   stream << "             (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
-  stream << "  -C         Don't drop capabilities." << std::endl;
-  stream << "  -W         Don't setup seccomp whitelist." << std::endl;
+  stream << "  -C         Drop capabilities to limit privileges of the process." << std::endl;
+  stream << "  -W         Use a seccomp whitelist to limit available syscalls to the process." << std::endl;
   stream << "  -h         Show this usage screen." << std::endl;
   stream << std::endl;
 }
@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
   bool log_syslog = false;
   bool log_console = false;
   bool log_file = false;
-  bool use_seccomp_whitelist = true;
-  bool drop_capabilities = true;
+  bool use_seccomp_whitelist = false;
+  bool drop_capabilities = false;
   String log_file_path;
   String pid_file;
   String conf_file = "/etc/usbguard/usbguard-daemon.conf";
@@ -107,10 +107,10 @@ int main(int argc, char *argv[])
 	conf_file = String(optarg);
 	break;
       case 'W':
-	use_seccomp_whitelist = false;
+	use_seccomp_whitelist = true;
 	break;
       case 'C':
-	drop_capabilities = false;
+	drop_capabilities = true;
 	break;
       case 'h':
 	printUsage(std::cout, arg0);
