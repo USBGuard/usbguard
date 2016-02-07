@@ -100,12 +100,14 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %license LICENSE
 %{_libdir}/*.so.*
 %{_sbindir}/usbguard-daemon
+%{_bindir}/usbguard
 %dir %{_sysconfdir}/usbguard
 %config(noreplace) %{_sysconfdir}/usbguard/usbguard-daemon.conf
 %{_unitdir}/usbguard.service
 %{_datadir}/man/man8/usbguard-daemon.8.gz
 %{_datadir}/man/man5/usbguard-daemon.conf.5.gz
 %{_datadir}/man/man5/usbguard-rules.conf.5.gz
+%{_datadir}/man/man1/usbguard.1.gz
 
 %files devel
 %defattr(-,root,root,-)
@@ -115,14 +117,13 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %files tools
 %defattr(-,root,root,-)
-%{_bindir}/usbguard-generate-policy
-%{_datadir}/man/man1/usbguard-generate-policy.1.gz
+%{_bindir}/usbguard-rule-parser
 
 %changelog
-* Tue May 19 2015 Daniel Kopecek <dkopecek@redhat.com> 0.4-1
+* Sun Feb 07 2016 Daniel Kopecek <dkopecek@redhat.com> 0.4-1
 - Update to version 0.4
-- Added a tools subpackage which contains the usbguard-generate-policy
-  tool
+- added usbguard CLI
+- added a tools subpackage with usbguard-rule-parser binary
 
 * Tue Apr 14 2015 Daniel Kopecek <dkopecek@redhat.com> 0.3p3-1
 - Update to version 0.3p3
