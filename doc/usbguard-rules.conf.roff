@@ -1,7 +1,7 @@
 .\" Generated with Ronnjs 0.4.0
 .\" http://github.com/kapouer/ronnjs
 .
-.TH "USBGUARD\-DAEMON\.CONF" "5" "April 2015" "" "5"
+.TH "USBGUARD\-DAEMON\.CONF" "5" "February 2016" "" "5"
 .
 .SH "NAME"
 \fBusbguard-daemon.conf\fR \-\- USBGuard rule set file
@@ -18,20 +18,20 @@ The USBGuard daemon decides which USB device to authorize based on a policy defi
 .IP "" 4
 .
 .nf
-rule ::= target device\.
+rule ::= target device_id device_attributes conditions\.
 target ::= "allow" | "block" | "reject"\.
-device ::= device_id device_attributes\.
-device ::= \.
 device_id ::= "*:*" | vendor_id ":*" | vendor_id ":" product_id\.
 device_attributes ::= device_attributes | attribute\.
 device_attributes ::= \.
+conditions ::= conditions | condition\.
+conditions ::= \.
 .
 .fi
 .
 .IP "" 0
 .
 .P
-See the \fIDevice Attributes\fR section for the list of available attributes and their syntax\.
+See the \fIDevice Attributes\fR section for the list of available attributes and \fIConditions\fR for the list of supported rule conditions\.
 .
 .SS "Targets"
 The target of a rule specifies whether the device will be authorized for use or not\. Three types of target are recognized:
@@ -111,6 +111,113 @@ and \fBport\-id\fR is a platform specific USB port identification\. On Linux it\
 .P
 The \fBinterface\-type\fR represents a USB interface and should be formated as three 8\-bit numbers in hexadecimal base delimited by colon, i\.e\. \fBcc:ss:pp\fR\|\. The numbers represent the interface class (\fBcc\fR), subclass (\fBss\fR) and protocol (\fBpp\fR) as assigned by the USB\-IF \fIwww\.usb\.org/about\fR (List of assigned classes, subclasses and protocols \fIhttp://www\.usb\.org/developers/defined_class\fR)\. Instead of the subclass and protocol number, you may write an asterisk character (\fB\\*\fR) to match all subclasses or protocols\. Matching a specific class and a specific protocol is not allowed, i\.e\. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too\.
 .
+.SS "Conditions"
+Whether a rule that matches a device will be applied or not can be further restricted using rule conditions\. If the condition expression is met at the rule evaluation time, then the rule target is applied for the device\. A condition expression is met if it evaluates to true\. Otherwise, the rule evaluation continues with the next rule\. A rule conditions has the following syntax:
+.
+.IP "" 4
+.
+.nf
+ if [!]condition
+ if [operator] { [!]conditionA [!]conditionB \.\.\. }
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Optionally, an exclamation mark (\fB!\fR) can be used to negate the result of a condition\.
+.
+.P
+Interpretation of the set operator:
+.
+.IP "\(bu" 4
+\fBall\-of\fR: Evaluate to true if all of the specified conditions evaluated to true\.
+.
+.IP "\(bu" 4
+\fBone\-of\fR: Evaluate to true if one of the specified conditions evaluated to true\.
+.
+.IP "\(bu" 4
+\fBnone\-of\fR: Evaluate to true if none of the specified conditions evaluated to true\.
+.
+.IP "\(bu" 4
+\fBequals\fR: Same as \fBall\-of\fR\|\.
+.
+.IP "\(bu" 4
+\fBequals\-ordered\fR: Same as \fBall\-of\fR\|\.
+.
+.IP "" 0
+.
+.P
+List of conditions:
+.
+.IP "\(bu" 4
+\fBlocaltime(time_range)\fR: Evaluates to true if the local time is in the specified time range\. \fBtime_range\fR can be written either as \fBHH:MM[:SS]\fR or \fBHH:MM[:SS]\-HH:MM[:SS]\fR\|\.
+.
+.IP "\(bu" 4
+\fBallowed\-matches(query)\fR: Evaluates to true if an allowed device matches the specified query\. The query uses the rule syntax\. \fBConditions in the query are not evaluated\fR\|\.
+.
+.IP "\(bu" 4
+\fBrule\-applied\fR: Evaluates to true if the rule currently being evaluated ever matched a device\.
+.
+.IP "\(bu" 4
+\fBrule\-applied(past_duration)\fR: Evaluates to true if the rule currently being evaluated matched a device in the past duration of time specified by the parameter\. \fBpast_duration\fR can be written as \fBHH:MM:SS\fR, \fBHH:MM\fR, or \fBSS\fR\|\.
+.
+.IP "\(bu" 4
+\fBrule\-evaluated\fR: Evaluates to true if the rule currently being evaluated was ever evaluated before\.
+.
+.IP "\(bu" 4
+\fBrule\-evaluated(past_duration)\fR: Evaluates to true if the rule currently being evaluated was evaluated in the pas duration of time specified by the parameter\. \fBpast_duration\fR can be written as \fBHH:MM:SS\fR, \fBHH:MM\fR, or \fBSS\fR\|\.
+.
+.IP "\(bu" 4
+\fBrandom\fR: Evaluates to true/false with a probability of \fBp=0\.5\fR\|\.
+.
+.IP "\(bu" 4
+\fBrandom(p_true)\fR: Evaluates to true with the specified probability \fBp_true\fR\|\.
+.
+.IP "\(bu" 4
+\fBtrue\fR: Evaluates always to true\.
+.
+.IP "\(bu" 4
+\fBfalse\fR: Evaluates always to false\.
+.
+.IP "" 0
+.
+.SS "Initial policy"
+Using the \fBusbguard\fR CLI tool and its \fBgenerate\-policy\fR subcommand, you can generate an initial policy for your system instead of writing one from scratch\. The tool generates an \fBallow\fR policy for all devices connected to the system at the moment of execution\. It has several options to tweak the resulting policy:
+.
+.IP "\(bu" 4
+\fB\-p\fR: Generate port specific rules for all devices\. By default, port specific rules are generated only for devices which do not export an iSerial value\. See the \fB\-P\fR option for more details\.
+.
+.IP "\(bu" 4
+\fB\-P\fR: Don\'t generate port specific rules for devices without an iSerial value\. Without this option, the tool will add a \fBvia\-port\fR attribute to any device that doesn\'t provide a serial number\. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port\. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time\.
+.
+.IP "\(bu" 4
+\fB\-t <target>\fR: Generate an explicit "catch all" rule with the specified target\. The target can be one of the following values: \fBallow\fR, \fBblock\fR, \fBreject\fR\|\.
+.
+.IP "\(bu" 4
+\fB\-X\fR: Don\'t generate a hash attribute for each device\.
+.
+.IP "\(bu" 4
+\fB\-H\fR: Generate a hash\-only policy\.
+.
+.IP "" 0
+.
+.P
+The policy will be printed out on the standard output\. It\'s a good idea to review the generated rules before using them on a system\. The typical workflow for generating an initial policy could look like this:
+.
+.IP "" 4
+.
+.nf
+# usbguard generate\-policy > rules\.conf
+# vi rules\.conf
+(review/modify the rule set)
+# sudo install \-m 0600 \-o root \-g root rules\.conf /etc/usbguard/rules\.conf
+# sudo systemctl restart usbguard
+.
+.fi
+.
+.IP "" 0
+.
 .SS "Example Policies"
 The following examples show what to put into the \fBrules\.conf\fR file in order to implement the given policy\.
 .
@@ -158,6 +265,21 @@ reject with\-interface all\-of { 08:*:* 02:*:* }
 .
 .P
 The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes\. Please note that blacklisting is the wrong approach and you shouldn\'t just blacklist a set of devices and allow the rest\. The policy above assumes that blocking is the implicit default\. Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible\.
+.
+.SS "\fIExample 4: Allow a keyboard\-only USB device only if there isn&#39;t already a USB device with a keyboard interface allowed\fR"
+.
+.nf
+allow with\-interface one\-of { 03:00:01 03:01:01 } if !allowed\-matches(with\-interface one\-of { 03:00:01 03:01:01 })
+.
+.fi
+.
+.SS "\fIExample 5: Play &quot;Russian roulette&quot; with USB devices\fR"
+.
+.nf
+allow if random(0\.1666)
+reject
+.
+.fi
 .
 .SH "BUGS"
 If you find a bug in this software or if you\'d like to request a feature to be implemented, please file a ticket at https://github\.com/dkopecek/usbguard/issues/new \fI\fR\|\.
