@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.4
-Release:        1%{?dist}
+Release:        4%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -120,7 +120,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_bindir}/usbguard-rule-parser
 
 %changelog
-* Sun Feb 07 2016 Daniel Kopecek <dkopecek@redhat.com> 0.4-1
+* Sun Feb 07 2016 Daniel Kopecek <dkopecek@redhat.com> 0.4-4
 - Update to version 0.4
 - added usbguard CLI
 - added a tools subpackage with usbguard-rule-parser binary
