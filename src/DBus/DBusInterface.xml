@@ -128,7 +128,7 @@
         </doc:doc>
       </arg>
     </signal>
-    <signal name="DeviceInterted">
+    <signal name="DeviceInserted">
       <doc:doc>
         <doc:summary>A signal notifying of a newly inserted USB device</doc:summary>
       </doc:doc>
