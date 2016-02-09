@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon-warning.svg</file>
+        <file>icon.svg</file>
+    </qresource>
+</RCC>

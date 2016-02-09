@@ -5,6 +5,9 @@ EXTRA_DIST =\
 	LICENSE \
 	dist/usbguard.service
 
+BUILT_SOURCES=
+DISTCLEANFILES=
+
 if SYSTEMD_SUPPORT_ENABLED
 SYSTEMD_UNIT_DIR= /lib/systemd/system
 
@@ -224,3 +227,56 @@ usbguard_rule_parser_CPPFLAGS=\
 
 usbguard_rule_parser_LDADD=\
 	$(top_builddir)/libusbguard.la
+
+#
+# Qt 5.x GUI
+#
+if GUI_QT5_ENABLED
+bin_PROGRAMS+= usbguard-applet-qt
+
+EXTRA_DIST+=\
+	src/GUI.Qt5/icon.qrc \
+	src/GUI.Qt5/DeviceDialog.ui \
+	src/GUI.Qt5/MainWindow.ui
+
+usbguard_applet_qt_UIHEADERS=\
+	src/GUI.Qt5/DeviceDialog.ui.h \
+	src/GUI.Qt5/MainWindow.ui.h
+
+BUILT_SOURCES+=\
+	$(usbguard_applet_qt_UIHEADERS)
+
+DISTCLEANFILES +=\
+	$(usbguard_applet_qt_UIHEADERS)
+
+usbguard_applet_qt_SOURCES=\
+	src/GUI.Qt5/main.cpp \
+	src/GUI.Qt5/DeviceDialog.cpp \
+	src/GUI.Qt5/DeviceDialog.h \
+	src/GUI.Qt5/DeviceDialog.moc.cpp \
+	src/GUI.Qt5/MainWindow.cpp \
+	src/GUI.Qt5/MainWindow.h \
+	src/GUI.Qt5/MainWindow.moc.cpp \
+	src/GUI.Qt5/icon.qrc.cpp
+
+usbguard_applet_qt_LDADD=\
+	$(top_builddir)/libusbguard.la \
+	@qt5_LIBS@
+
+usbguard_applet_qt_CPPFLAGS=\
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/src/GUI.Qt5 \
+	-I$(top_builddir)/src/GUI.Qt5 \
+	@spdlog_CFLAGS@ \
+	-fPIC @qt5_CFLAGS@
+
+%.moc.cpp: %.h
+	@MOCQT5@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MOC_CPPFLAGS) $<
+
+%.ui.h: %.ui
+	@UICQT5@ -g cpp -o $@ $<
+
+%.qrc.cpp: %.qrc
+	@RCCQT5@ -o $@ $<
+endif
+

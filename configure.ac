@@ -159,6 +159,33 @@ fi
 AC_SUBST([spdlog_CFLAGS])
 AC_SUBST([spdlog_LIBS])
 
+#
+# Qt 5.x GUI
+#
+AC_ARG_WITH([gui-qt5], AS_HELP_STRING([--with-gui-qt5], [Build the Qt 5.x GUI components]), [], [with_gui_qt5=yes])
+if test "x$with_gui_qt5" = xyes; then
+  #
+  # Check for Qt 5.x libraries
+  #
+  PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0],
+  [AC_DEFINE([HAVE_QT5], [1], [Required Qt 5.x API available])
+  qt5_summary="system-wide; $qt5_CFLAGS $qt5_LIBS"],
+  [AC_MSG_FAILURE([Qt 5.x development files not found!])]
+  )
+
+  #
+  # Check for Qt 5.x build tools
+  #
+  AC_CHECK_PROGS(MOCQT5, [moc-qt5])
+  AC_CHECK_PROGS(UICQT5, [uic-qt5])
+  AC_CHECK_PROGS(RCCQT5, [rcc-qt5])
+  if test -z "$MOCQT5" || test -z "$UICQT5" || test -z "$RCCQT5"; then
+    AC_MSG_FAILURE([Qt 5.x build tools are missing on your system. Make sure that moc-qt5, uic-qt5 and rcc-qt5 are installed.])
+  fi
+else
+  qt5_summary="None; building without Qt 5.x GUI"
+fi
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h locale.h netdb.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h wchar.h])
@@ -216,6 +243,7 @@ if test "$systemd" = "yes"; then
 fi
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "$systemd" = "yes" ])
+AM_CONDITIONAL([GUI_QT5_ENABLED], [test "$with_gui_qt5" = "yes" ])
 
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
@@ -233,6 +261,7 @@ echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "       json: $json_summary"
 echo "     spdlog: $spdlog_summary"
+echo "     Qt 5.x: $qt5_summary"
 echo
 echo "## Compilation Flags"
 echo
