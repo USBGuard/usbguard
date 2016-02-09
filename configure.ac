@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([usbguard], [0.4], [dkopecek@redhat.com])
+AC_INIT([usbguard], [0.5], [dkopecek@redhat.com])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/build-config.h])
 AC_CONFIG_MACRO_DIR([m4])
