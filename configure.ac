@@ -176,9 +176,9 @@ if test "x$with_gui_qt5" = xyes; then
   #
   # Check for Qt 5.x build tools
   #
-  AC_CHECK_PROGS(MOCQT5, [moc-qt5])
-  AC_CHECK_PROGS(UICQT5, [uic-qt5])
-  AC_CHECK_PROGS(RCCQT5, [rcc-qt5])
+  AC_CHECK_PROGS(MOCQT5, [moc-qt5 moc])
+  AC_CHECK_PROGS(UICQT5, [uic-qt5 uic])
+  AC_CHECK_PROGS(RCCQT5, [rcc-qt5 rcc])
   if test -z "$MOCQT5" || test -z "$UICQT5" || test -z "$RCCQT5"; then
     AC_MSG_FAILURE([Qt 5.x build tools are missing on your system. Make sure that moc-qt5, uic-qt5 and rcc-qt5 are installed.])
   fi
