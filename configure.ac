@@ -55,7 +55,7 @@ AC_ARG_ENABLE([coverage],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-coverage]) ;;
      esac], [coverage=no])
 
-if test "$coverage" = "yes"; then
+if test "x$coverage" = xyes; then
    CXXFLAGS="$CXXFLAGS --coverage"
 fi
 
@@ -115,8 +115,8 @@ libcap_ng_summary="not found"]
 # json C++ library
 #
 with_bundled_json=yes
-AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]))
-if test "x$with_bundled_json" = "xyes"; then
+AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]), [], [with_bundled_json=yes])
+if test "x$with_bundled_json" = xyes; then
 	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
 	json_LIBS=""
 	AC_MSG_NOTICE([Using bundled json library])
@@ -138,9 +138,8 @@ AC_SUBST([json_LIBS])
 #
 # spdlog C++ library
 #
-with_bundled_spdlog=yes
-AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]))
-if test "x$with_bundled_spdlog" = "xyes"; then
+AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]), [], [with_bundled_spdlog=yes])
+if test "x$with_bundled_spdlog" = xyes; then
 	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
 	spdlog_LIBS=""
 	AC_MSG_NOTICE([Using bundled spdlog library])
@@ -230,7 +229,7 @@ AC_ARG_ENABLE([systemd],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-systemd]) ;;
      esac], [systemd=no])
 
-if test "$debug" = "yes"; then
+if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
 else
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_DISABLED"
@@ -238,12 +237,12 @@ else
    AC_DEFINE([QUEX_OPTION_ASSERTS_DISABLED], [1], [Disable asserts in the Quex generated lexer])
 fi
 
-if test "$systemd" = "yes"; then
+if test "x$systemd" = xyes; then
    AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
 fi
 
-AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "$systemd" = "yes" ])
-AM_CONDITIONAL([GUI_QT5_ENABLED], [test "$with_gui_qt5" = "yes" ])
+AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
+AM_CONDITIONAL([GUI_QT5_ENABLED], [test "x$with_gui_qt5" = xyes ])
 
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
@@ -270,8 +269,4 @@ echo "   CXXFLAGS: $CXXFLAGS"
 echo "   CPPFLAGS: $CPPFLAGS"
 echo "    LDFLAGS: $LDFLAGS"
 echo
-echo "## Compile-Time Parameter Values"
-echo
-echo ""
-echo ""
-echo
+
