@@ -56,6 +56,7 @@ software framework.
 Summary:        USBGuard Qt 5.x Applet
 Group:          Applications/System
 Requires:       %{name} = %{version}-%{release}
+Obsoletes:      usbguard-applet-qt <= 0.3
 
 %description    applet-qt
 The %{name}-applet-qt package contains an optional Qt 5.x desktop applet
