@@ -1,8 +1,8 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.4
-Release:        4%{?dist}
+Version:        0.5
+Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -11,7 +11,6 @@ License:        GPLv2+
 URL:            https://dkopecek.github.io/usbguard
 Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
 Source1:        usbguard-daemon.conf
-Source2:        usbguard.service
 
 Requires: systemd
 Requires(post): systemd
@@ -26,6 +25,7 @@ BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: json-static
 BuildRequires: spdlog-static
+BuildRequires: qt5-qtbase-devel
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
@@ -52,6 +52,15 @@ Requires:       %{name} = %{version}-%{release}
 The %{name}-tools package contains optional tools from the USBGuard
 software framework.
 
+%package        applet-qt 
+Summary:        USBGuard Qt 5.x Applet
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description    applet-qt
+The %{name}-applet-qt package contains an optional Qt 5.x desktop applet
+for interacting with the USBGuard daemon component.
+
 %prep
 %setup -q
 # Remove bundled library sources before build
@@ -62,7 +71,9 @@ rm -rf src/ThirdParty/{json,spdlog}
     --disable-silent-rules \
     --disable-static \
     --without-bundled-json \
-    --without-bundled-spdlog
+    --without-bundled-spdlog \
+    --enable-systemd \
+    --with-gui-qt5
 
 make %{?_smp_mflags}
 
@@ -77,8 +88,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/usbguard
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/usbguard/usbguard-daemon.conf
 
 # Install systemd unit
-mkdir -p %{buildroot}%{_unitdir}
-install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/usbguard.service
+#mkdir -p %{buildroot}%{_unitdir}
+#install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/usbguard.service
 
 # Cleanup
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
@@ -119,7 +130,20 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %defattr(-,root,root,-)
 %{_bindir}/usbguard-rule-parser
 
+%files applet-qt
+%defattr(-,root,root,-)
+%{_bindir}/usbguard-applet-qt
+%{_mandir}/man1/usbguard-applet-qt.1.gz
+%{_datadir}/applications/usbguard-applet-qt.desktop
+%{_datadir}/icons/hicolor/scalable/apps/usbguard-icon.svg
+
 %changelog
+* Wed Feb 10 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-1
+- Update to version 0.5
+- added --enable-systemd configure flag and removed manual
+  installtion commands
+- added applet-qt subpackage
+
 * Sun Feb 07 2016 Daniel Kopecek <dkopecek@redhat.com> 0.4-4
 - Update to version 0.4
 - added usbguard CLI

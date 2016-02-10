@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>icon-warning.svg</file>
-        <file>icon.svg</file>
+        <file>usbguard-icon-warning.svg</file>
+        <file>usbguard-icon.svg</file>
     </qresource>
 </RCC>

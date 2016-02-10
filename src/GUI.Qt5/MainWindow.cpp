@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("USBGuard");
-    setWindowIcon(QIcon(":/icon.svg"));
+    setWindowIcon(QIcon(":/usbguard-icon.svg"));
     setupSystemTray();
     showMinimized();
 
@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setupSystemTray()
 {
-    systray = new QSystemTrayIcon(QIcon(":/icon.svg"), this);
+    systray = new QSystemTrayIcon(QIcon(":/usbguard-icon.svg"), this);
     systray->setToolTip("USBGuard");
     auto menu = new QMenu();
     auto quit_action = new QAction(tr("Quit"), systray);
@@ -234,19 +234,19 @@ void MainWindow::stopFlashing()
 {
     _flash_state = false;
     _flash_timer.stop();
-    systray->setIcon(QIcon(":/icon.svg"));
+    systray->setIcon(QIcon(":/usbguard-icon.svg"));
 }
 
 void MainWindow::flashStep()
 {
     if (_flash_state) {
-        systray->setIcon(QIcon(":/icon-warning.svg"));
+        systray->setIcon(QIcon(":/usbguard-icon-warning.svg"));
         systray->show();
         _flash_timer.setInterval(250);
         _flash_state = false;
     }
     else {
-        systray->setIcon(QIcon(":/icon.svg"));
+        systray->setIcon(QIcon(":/usbguard-icon.svg"));
         systray->show();
         _flash_timer.setInterval(500);
         _flash_state = true;

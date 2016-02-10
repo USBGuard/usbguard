@@ -7,9 +7,10 @@ EXTRA_DIST =\
 
 BUILT_SOURCES=
 DISTCLEANFILES=
+CLEANFILES=
 
 if SYSTEMD_SUPPORT_ENABLED
-SYSTEMD_UNIT_DIR= /lib/systemd/system
+SYSTEMD_UNIT_DIR= /usr/lib/systemd/system
 
 install-data-hook:
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
@@ -234,10 +235,22 @@ usbguard_rule_parser_LDADD=\
 if GUI_QT5_ENABLED
 bin_PROGRAMS+= usbguard-applet-qt
 
+desktopdir = $(datadir)/applications
+desktop_DATA = src/GUI.Qt5/usbguard-applet-qt.desktop
+
+appicondir = $(datadir)/icons/hicolor/scalable/apps
+appicon_DATA = src/GUI.Qt5/usbguard-icon.svg
+
+dist_man1_MANS +=\
+	doc/usbguard-applet-qt.roff
+
 EXTRA_DIST+=\
 	src/GUI.Qt5/icon.qrc \
 	src/GUI.Qt5/DeviceDialog.ui \
-	src/GUI.Qt5/MainWindow.ui
+	src/GUI.Qt5/MainWindow.ui \
+	src/GUI.Qt5/usbguard-icon.svg \
+	src/GUI.Qt5/usbguard-icon-warning.svg \
+	src/GUI.Qt5/usbguard-applet-qt.desktop
 
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt5/DeviceDialog.ui.h \
@@ -246,8 +259,11 @@ usbguard_applet_qt_UIHEADERS=\
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS)
 
-DISTCLEANFILES +=\
-	$(usbguard_applet_qt_UIHEADERS)
+CLEANFILES +=\
+	$(usbguard_applet_qt_UIHEADERS) \
+	$(top_builddir)/src/GUI.Qt5/DeviceDialog.moc.cpp \
+	$(top_builddir)/src/GUI.Qt5/MainWindow.moc.cpp \
+	$(top_builddir)/src/GUI.Qt5/icon.qrc.cpp
 
 usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt5/main.cpp \
@@ -271,12 +287,31 @@ usbguard_applet_qt_CPPFLAGS=\
 	-fPIC @qt5_CFLAGS@
 
 %.moc.cpp: %.h
-	@MOCQT5@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MOC_CPPFLAGS) $<
+	@MOCQT5@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt5 -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MOC_CPPFLAGS) $<
 
 %.ui.h: %.ui
-	@UICQT5@ -g cpp -o $@ $<
+	@UICQT5@ -g cpp -o $(top_builddir)/$@ $<
 
 %.qrc.cpp: %.qrc
-	@RCCQT5@ -o $@ $<
+	@RCCQT5@ -o $(top_builddir)/$@ $<
+
 endif
+
+srpm: dist
+	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t rpmbuild.XXXXXX))
+	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
+	$(eval RPMBUILD_SPECS:=$(RPMBUILD_ROOT)/SPECS)
+	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
+	mkdir -p $(RPMBUILD_SOURCES)
+	mkdir -p $(RPMBUILD_SPECS)
+	cp $(top_srcdir)/dist/usbguard-daemon.conf $(RPMBUILD_SOURCES)
+	cp $(top_srcdir)/dist/usbguard.spec $(RPMBUILD_SPECS)
+	cp $(top_builddir)/usbguard-*.tar.gz $(RPMBUILD_SOURCES)
+	rpmbuild -bs \
+		--define "_sourcedir $(RPMBUILD_SOURCES)" \
+		--define "_srcrpmdir $(top_builddir)" \
+		--define "_rpmdir $(top_builddir)" \
+		--define "_builddir $(RPMBUILD_BUILDS)" \
+		"$(RPMBUILD_SPECS)/usbguard.spec"
+	rm -rf "$(RPMBUILD_ROOT)"
 
