@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _ipc_timer.start();
     ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
 
-#if 1
+#if 0
     /* Hide things which arent' working yet */
     ui->tabWidget->removeTab(0);
     ui->tabWidget->removeTab(1);
