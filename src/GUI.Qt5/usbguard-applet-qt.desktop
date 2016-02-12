@@ -5,6 +5,6 @@ GenericName=USBGuard Applet
 Comment=USBGuard Qt applet for interaction with the USBGuard daemon
 TryExec=usbguard-applet-qt
 Exec=usbguard-applet-qt
-Icon=usbguard-applet-qt
+Icon=usbguard-icon
 Categories=System;
 X-Desktop-File-Install-Version=0.3
