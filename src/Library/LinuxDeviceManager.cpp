@@ -18,7 +18,7 @@
 //
 #include "LinuxDeviceManager.hpp"
 #include "LinuxSysIO.hpp"
-#include <Logger.hpp>
+#include "LoggerPrivate.hpp"
 #include <USB.hpp>
 #include <sys/eventfd.h>
 #include <sys/select.h>
@@ -30,34 +30,40 @@ namespace usbguard {
 
   LinuxDevice::LinuxDevice(struct udev_device* dev)
   {
-    //log->debug("Creating a new LinuxDevice instance");
+    logger->debug("Creating a new LinuxDevice instance");
     const char *name = udev_device_get_sysattr_value(dev, "product");
     if (name) {
-      //log->debug("DeviceName={}", name);
+      logger->debug("DeviceName={}", name);
       setDeviceName(name);
     }
     
     const char *id_vendor = udev_device_get_sysattr_value(dev, "idVendor");
     if (id_vendor) {
-      //log->debug("VendorID={}", id_vendor);
+      logger->debug("VendorID={}", id_vendor);
       setVendorID(id_vendor);
     }
 
     const char *id_product = udev_device_get_sysattr_value(dev, "idProduct");
     if (id_product) {
-      //log->debug("ProductID={}", id_product);
+      logger->debug("ProductID={}", id_product);
       setProductID(id_product);
     }
 
     const char *serial = udev_device_get_sysattr_value(dev, "serial");
     if (serial) {
-      //log->debug("Serial={}", serial);
+      logger->debug("Serial={}", serial);
       setSerialNumber(serial);
     }
 
+    /* FIXME: We should somehow lock the syspath before accessing the
+     *        files inside to prevent creating invalid devices. It is
+     *        possible that the device we are working with now will not
+     *        be the same when we start reading the descriptor data and
+     *        the authorization state.
+     */
     const char *syspath = udev_device_get_syspath(dev);
     if (syspath) {
-      //log->debug("Syspath={}", syspath);
+      logger->debug("Syspath={}", syspath);
       _syspath = syspath;
     } else {
       throw std::runtime_error("device wihtout syspath");
@@ -65,15 +71,34 @@ namespace usbguard {
 
     const char *sysname = udev_device_get_sysname(dev);
     if (sysname) {
-      //log->debug("Sysname={}", sysname);
+      logger->debug("Sysname={}", sysname);
       setDevicePort(sysname);
     } else {
       throw std::runtime_error("device wihtout sysname");
     }
 
-    //log->debug("DeviceHash={}", getDeviceHash());
+    logger->debug("DeviceHash={}", getDeviceHash());
 
     setTarget(Rule::Target::Unknown);
+    std::ifstream authstate_stream(_syspath + "/authorized", std::ifstream::binary);
+
+    if (!authstate_stream.good()) {
+      throw std::runtime_error("cannot read authorization state");
+    }
+    else {
+      switch(authstate_stream.get()) {
+        case '1':
+          setTarget(Rule::Target::Allow);
+          break;
+        case '0':
+          setTarget(Rule::Target::Block);
+          break;
+        default:
+          /* Block the device if we get an unexpected value */
+          setTarget(Rule::Target::Block);
+      }
+      logger->debug("Authstate={}", Rule::targetToString(getTarget()));
+    }
 
     std::ifstream descriptor_stream(_syspath + "/descriptors", std::ifstream::binary);
     if (!descriptor_stream.good()) {

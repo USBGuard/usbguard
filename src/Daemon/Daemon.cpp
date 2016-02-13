@@ -485,7 +485,7 @@ namespace usbguard
       target = Rule::Target::Reject;
       break;
     case PresentDevicePolicy::Keep:
-      target = Rule::Target::Allow; /* FIXME: read the current auth state */
+      target = device->getTarget();
       break;
     case PresentDevicePolicy::ApplyPolicy:
       matched_rule = _ruleset.getFirstMatchingRule(device_rule);
