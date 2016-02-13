@@ -164,8 +164,10 @@ void MainWindow::showMessage(const QString& message, bool alert)
 
 void MainWindow::notifyInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched)
 {
-  if (rule_matched) {
-    systray->showMessage(tr("USB Device Inserted"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  if (ui->notify_inserted->isChecked()) {
+    if (rule_matched) {
+      systray->showMessage(tr("USB Device Inserted"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+    }
   }
   showMessage(QString(tr("<i>Inserted</i>: %1")).arg(QString::fromStdString(attributes.at("name"))));
   return;
@@ -173,35 +175,45 @@ void MainWindow::notifyInserted(quint32 seqn, const std::map<std::string, std::s
 
 void MainWindow::notifyPresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target)
 {
-  systray->showMessage(tr("USB Device Present"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  if (ui->notify_present->isChecked()) {
+    systray->showMessage(tr("USB Device Present"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  }
   showMessage(QString(tr("<i>Present</i>: %1")).arg(QString::fromStdString(attributes.at("name"))));
   return;
 }
 
 void MainWindow::notifyRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes)
 {
-  systray->showMessage(tr("USB Device Removed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  if (ui->notify_removed->isChecked()) {
+    systray->showMessage(tr("USB Device Removed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  }
   showMessage(QString(tr("<i>Removed</i>: %1")).arg(QString::fromStdString(attributes.at("name"))));
   return;
 }
 
 void MainWindow::notifyAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes)
 {
-  systray->showMessage(tr("USB Device Allowed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  if (ui->notify_allowed->isChecked()) {
+    systray->showMessage(tr("USB Device Allowed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
+  }
   showMessage(QString(tr("Allowed: %1")).arg(QString::fromStdString(attributes.at("name"))));
   return;
 }
 
 void MainWindow::notifyBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes)
 {
-  systray->showMessage(tr("USB Device Blocked"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Warning);
+  if (ui->notify_blocked->isChecked()) {
+    systray->showMessage(tr("USB Device Blocked"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Warning);
+  }
   showMessage(QString(tr("Blocked: %1")).arg(QString::fromStdString(attributes.at("name"))));
   return;
 }
 
 void MainWindow::notifyRejected(quint32 seqn, const std::map<std::string, std::string>& attributes)
 {
-  systray->showMessage(tr("USB Device Rejected"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Critical);
+  if (ui->notify_rejected->isChecked()) {
+    systray->showMessage(tr("USB Device Rejected"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Critical);
+  }
   showMessage(QString(tr("Rejected: %1")).arg(QString::fromStdString(attributes.at("name"))), true);
   if (this->windowState() & Qt::WindowMinimized) {
     startFlashing();
@@ -211,14 +223,18 @@ void MainWindow::notifyRejected(quint32 seqn, const std::map<std::string, std::s
 
 void MainWindow::notifyIPCConnected()
 {
-  systray->showMessage(tr("IPC Connection Established"), "", QSystemTrayIcon::Information);
+  if (ui->notify_ipc->isChecked()) {
+    systray->showMessage(tr("IPC Connection Established"), "", QSystemTrayIcon::Information);
+  }
   showMessage(tr("IPC connection established"));
   ui->statusBar->showMessage(tr("IPC connection established."));
 }
 
 void MainWindow::notifyIPCDisconnected()
 {
-  systray->showMessage(tr("IPC Connection Lost"), "", QSystemTrayIcon::Information);
+  if (ui->notify_ipc->isChecked()) {
+    systray->showMessage(tr("IPC Connection Lost"), "", QSystemTrayIcon::Information);
+  }
   showMessage(tr("IPC connection lost"));
   ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
 }
