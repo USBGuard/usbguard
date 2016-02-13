@@ -32,45 +32,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QTableWidget" name="device_table">
-          <property name="gridStyle">
-           <enum>Qt::DotLine</enum>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-           <bool>true</bool>
-          </attribute>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string>State</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Device</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="apply_button">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>Apply</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <spacer name="horizontalSpacer">
           <property name="orientation">
@@ -83,6 +44,60 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="apply_button">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Apply</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="device_apply_permanent">
+          <property name="text">
+           <string>Permanently</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="4">
+         <widget class="QTableWidget" name="device_table">
+          <property name="gridStyle">
+           <enum>Qt::DotLine</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>50</number>
+          </attribute>
+          <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>State</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Device</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -133,20 +148,17 @@
             <string>Notifications</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="notify_inserted">
-              <property name="text">
-               <string>Inserted</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QCheckBox" name="notify_allowed">
               <property name="text">
                <string>Allowed</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QCheckBox" name="notify_removed">
+              <property name="text">
+               <string>Removed</string>
               </property>
              </widget>
             </item>
@@ -160,24 +172,17 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QCheckBox" name="notify_blocked">
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="notify_inserted">
               <property name="text">
-               <string>Blocked</string>
+               <string>Inserted</string>
               </property>
               <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QCheckBox" name="notify_removed">
-              <property name="text">
-               <string>Removed</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -190,10 +195,27 @@
               </property>
              </spacer>
             </item>
-            <item row="2" column="1">
-             <widget class="QCheckBox" name="ipc_events">
+            <item row="1" column="2">
+             <widget class="QCheckBox" name="notify_blocked">
+              <property name="text">
+               <string>Blocked</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QCheckBox" name="notify_ipc">
               <property name="text">
                <string>IPC status</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QCheckBox" name="notify_present">
+              <property name="text">
+               <string>Present</string>
               </property>
              </widget>
             </item>
@@ -212,13 +234,6 @@
             <string>Device Dialog</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
             <item row="5" column="0">
              <spacer name="verticalSpacer">
               <property name="orientation">
@@ -239,53 +254,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QCheckBox" name="checkBox">
-              <property name="text">
-               <string>Decision is permanent by default</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="QLineEdit" name="lineEdit_2">
-              <property name="text">
-               <string>23</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBox_2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
+             <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Decision is transient by default for</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" colspan="2">
-             <widget class="QComboBox" name="comboBox">
-              <item>
-               <property name="text">
-                <string>Allow</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Block</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Reject</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QComboBox" name="comboBox_2">
-              <property name="enabled">
-               <bool>false</bool>
+               <string>Decision method</string>
               </property>
              </widget>
             </item>
@@ -297,14 +269,46 @@
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QLabel" name="label_3">
+             <widget class="QCheckBox" name="decision_permanent_checkbox">
               <property name="text">
-               <string>Decision method</string>
+               <string>Decision is permanent by default</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1" colspan="2">
-             <widget class="QComboBox" name="decision_method_comboBox">
+            <item row="0" column="2">
+             <widget class="QComboBox" name="default_decision_combobox">
+              <item>
+               <property name="text">
+                <string notr="true">allow</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string notr="true">block</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string notr="true">reject</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QSpinBox" name="decision_timeout">
+              <property name="suffix">
+               <string/>
+              </property>
+              <property name="maximum">
+               <number>3600</number>
+              </property>
+              <property name="value">
+               <number>23</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QComboBox" name="decision_method_combobox">
               <item>
                <property name="text">
                 <string>Buttons</string>
