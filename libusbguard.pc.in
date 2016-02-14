@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@/usbguard
 
 Name: libusbguard
-Description: TBA
-URL: http://TBA
+Description: USBGuard API library
+URL: https://github.com/dkopecek/usbguard
 Version: @VERSION@
 Requires: libqb
 Libs: -L${libdir} -lusbguard
