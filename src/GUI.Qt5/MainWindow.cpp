@@ -33,133 +33,122 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    setWindowTitle("USBGuard");
-    setWindowIcon(QIcon(":/usbguard-icon.svg"));
-    setupSystemTray();
-    showMinimized();
+  ui->setupUi(this);
+  setWindowTitle("USBGuard");
+  setWindowIcon(QIcon(":/usbguard-icon.svg"));
+  setupSystemTray();
+  showMinimized();
 
-    qRegisterMetaType<std::map<std::string, std::string> >("std::map<std::string, std::string>");
-    qRegisterMetaType<std::vector<usbguard::USBInterfaceType> >("std::vector<usbguard::USBInterfaceType>");
+  qRegisterMetaType<std::map<std::string, std::string> >("std::map<std::string, std::string>");
+  qRegisterMetaType<std::vector<usbguard::USBInterfaceType> >("std::vector<usbguard::USBInterfaceType>");
 
-    QObject::connect(&_ipc_timer, SIGNAL(timeout()),
-		     this, SLOT(ipcTryConnect()));
+  QObject::connect(&_ipc_timer, SIGNAL(timeout()),
+                   this, SLOT(ipcTryConnect()));
 
-    QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
-		     this, SLOT(showDeviceDialog(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)));
+  QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
+                   this, SLOT(showDeviceDialog(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)));
 
-    QObject::connect(this, SIGNAL(uiDevicePresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)),
-		     this, SLOT(notifyPresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)));
+  QObject::connect(this, SIGNAL(uiDevicePresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)),
+                   this, SLOT(notifyPresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)));
 
-    QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
-		     this, SLOT(notifyInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)));
+  QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
+                   this, SLOT(notifyInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)));
 
-    QObject::connect(this, SIGNAL(uiDeviceAllowed(quint32, const std::map<std::string, std::string>&)),
-		     this, SLOT(notifyAllowed(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceAllowed(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(notifyAllowed(quint32, const std::map<std::string, std::string>&)));
 
-    QObject::connect(this, SIGNAL(uiDeviceBlocked(quint32, const std::map<std::string, std::string>&)),
-		     this, SLOT(notifyBlocked(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceBlocked(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(notifyBlocked(quint32, const std::map<std::string, std::string>&)));
 
-    QObject::connect(this, SIGNAL(uiDeviceRejected(quint32, const std::map<std::string, std::string>&)),
-		     this, SLOT(notifyRejected(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceRejected(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(notifyRejected(quint32, const std::map<std::string, std::string>&)));
 
-    QObject::connect(this, SIGNAL(uiDeviceRemoved(quint32, const std::map<std::string, std::string>&)),
-		     this, SLOT(notifyRemoved(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceRemoved(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(notifyRemoved(quint32, const std::map<std::string, std::string>&)));
 
-    QObject::connect(this, SIGNAL(uiConnected()),
-		     this, SLOT(handleIPCConnect()));
+  QObject::connect(this, SIGNAL(uiConnected()),
+                   this, SLOT(handleIPCConnect()));
 
-    QObject::connect(this, SIGNAL(uiDisconnected()),
-		     this, SLOT(handleIPCDisconnect()));
+  QObject::connect(this, SIGNAL(uiDisconnected()),
+                   this, SLOT(handleIPCDisconnect()));
 
-    _ipc_timer.setInterval(1000);
-    _ipc_timer.start();
-    ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
+  _ipc_timer.setInterval(1000);
+  _ipc_timer.start();
+  ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
 
-#if 0
-    /* Hide things which arent' working yet */
-    ui->tabWidget->removeTab(0);
-    ui->tabWidget->removeTab(1);
-    ui->device_tab->hide();
-    ui->settings_tab->hide();
-#endif
-    return;
+  return;
 }
 
 void MainWindow::setupSystemTray()
 {
-    systray = new QSystemTrayIcon(QIcon(":/usbguard-icon.svg"), this);
-    systray->setToolTip("USBGuard");
-    auto menu = new QMenu();
-    auto quit_action = new QAction(tr("Quit"), systray);
-    menu->addAction(quit_action);
-    systray->setContextMenu(menu);
+  systray = new QSystemTrayIcon(QIcon(":/usbguard-icon.svg"), this);
+  systray->setToolTip("USBGuard");
+  auto menu = new QMenu();
+  auto quit_action = new QAction(tr("Quit"), systray);
+  menu->addAction(quit_action);
+  systray->setContextMenu(menu);
 
-    QObject::connect(quit_action, SIGNAL(triggered()),
-		     qApp, SLOT(quit()));
-
-    QObject::connect(systray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-                     this, SLOT(switchVisibilityState(QSystemTrayIcon::ActivationReason)));
-
-    QObject::connect(&_flash_timer, SIGNAL(timeout()),
-		     this, SLOT(flashStep()));    
-
-    systray->show();
-    return;
+  QObject::connect(quit_action, SIGNAL(triggered()), qApp, SLOT(quit()));
+  QObject::connect(systray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+                   this, SLOT(switchVisibilityState(QSystemTrayIcon::ActivationReason)));
+  QObject::connect(&_flash_timer, SIGNAL(timeout()),
+                   this, SLOT(flashStep()));    
+  systray->show();
+  return;
 }
 
 void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
 {
-    if (reason == QSystemTrayIcon::Context) {
-        systray->contextMenu()->show();
-        return;
+  if (reason == QSystemTrayIcon::Context) {
+    systray->contextMenu()->show();
+    return;
+  } else {
+    if (this->windowState() & Qt::WindowMinimized) {
+      showNormal();
+      stopFlashing();
     } else {
-        if (this->windowState() & Qt::WindowMinimized) {
-            showNormal();
-            stopFlashing();
-        } else {
-            showMinimized();
-        }
+      showMinimized();
     }
+  }
 }
 
 MainWindow::~MainWindow()
 {
-    IPCClient::disconnect();
-    delete ui;
+  IPCClient::disconnect();
+  delete ui;
 }
 
 void MainWindow::showDeviceDialog(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match)
 {
-    if (!rule_match) {
-        DeviceDialog *d = new DeviceDialog(seqn);
-
-        d->setName(QString::fromStdString(attributes.at("name")));
-    d->setSerial(QString::fromStdString(attributes.at("serial")));
-    d->setDeviceID(QString::fromStdString(attributes.at("vendor_id")),
-                   QString::fromStdString(attributes.at("product_id")));
-	d->setInterfaceTypes(interfaces);
-
-        QObject::connect(d, SIGNAL(allowed(quint32,bool)),
-			 this, SLOT(allowDevice(quint32,bool)));
-        QObject::connect(d, SIGNAL(rejected(quint32,bool)),
-			 this, SLOT(rejectDevice(quint32,bool)));
-        QObject::connect(d, SIGNAL(blocked(quint32,bool)),
-			 this, SLOT(blockDevice(quint32,bool)));
-
-        d->setModal(false);
-        d->show();
-    }
+  if (rule_match) {
     return;
+  }
+
+  auto dialog = new DeviceDialog(seqn);
+
+  dialog->setName(QString::fromStdString(attributes.at("name")));
+  dialog->setSerial(QString::fromStdString(attributes.at("serial")));
+  dialog->setDeviceID(QString::fromStdString(attributes.at("vendor_id")),
+                 QString::fromStdString(attributes.at("product_id")));
+  dialog->setInterfaceTypes(interfaces);
+  dialog->setModal(false);
+  dialog->show();
+ 
+  QObject::connect(dialog, SIGNAL(allowed(quint32,bool)),
+                   this, SLOT(allowDevice(quint32,bool)));
+  QObject::connect(dialog, SIGNAL(rejected(quint32,bool)),
+                   this, SLOT(rejectDevice(quint32,bool)));
+  QObject::connect(dialog, SIGNAL(blocked(quint32,bool)),
+                   this, SLOT(blockDevice(quint32,bool)));
+  return;
 }
 
 void MainWindow::showMessage(const QString& message, bool alert)
 {
-    const QString text("[%1] %2%3%4");
-    const QString dt_string = QDateTime::currentDateTime().toString();
-    ui->messages_text->append(text.arg(dt_string).arg(alert?"<b>":"").arg(message).arg(alert?"</b>":""));
-
-    return;
+  const QString text("[%1] %2%3%4");
+  const QString dt_string = QDateTime::currentDateTime().toString();
+  ui->messages_text->append(text.arg(dt_string).arg(alert?"<b>":"").arg(message).arg(alert?"</b>":""));
+  return;
 }
 
 void MainWindow::notifyInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched)
@@ -241,101 +230,99 @@ void MainWindow::notifyIPCDisconnected()
 
 void MainWindow::startFlashing()
 {
-    _flash_state = false;
-    _flash_timer.setInterval(500);
-    _flash_timer.start();
+  _flash_state = false;
+  _flash_timer.setInterval(500);
+  _flash_timer.start();
 }
 
 void MainWindow::stopFlashing()
 {
-    _flash_state = false;
-    _flash_timer.stop();
-    systray->setIcon(QIcon(":/usbguard-icon.svg"));
+  _flash_state = false;
+  _flash_timer.stop();
+  systray->setIcon(QIcon(":/usbguard-icon.svg"));
 }
 
 void MainWindow::flashStep()
 {
-    if (_flash_state) {
-        systray->setIcon(QIcon(":/usbguard-icon-warning.svg"));
-        systray->show();
-        _flash_timer.setInterval(250);
-        _flash_state = false;
-    }
-    else {
-        systray->setIcon(QIcon(":/usbguard-icon.svg"));
-        systray->show();
-        _flash_timer.setInterval(500);
-        _flash_state = true;
-    }
+  if (_flash_state) {
+    systray->setIcon(QIcon(":/usbguard-icon-warning.svg"));
+    systray->show();
+    _flash_timer.setInterval(250);
+    _flash_state = false;
+  }
+  else {
+    systray->setIcon(QIcon(":/usbguard-icon.svg"));
+    systray->show();
+    _flash_timer.setInterval(500);
+    _flash_state = true;
+  }
 }
 
 void MainWindow::ipcTryConnect()
 {
-    try {
-        IPCClient::connect();
-    }
-    catch(...) {
-    }
+  try {
+    IPCClient::connect();
+  }
+  catch(...) {
+  }
 }
 
 void MainWindow::allowDevice(quint32 seqn, bool append)
 {
-    try {
-        IPCClient::allowDevice(seqn, append, 0);
-    }
-    catch(...) {
-    }
+  try {
+    IPCClient::allowDevice(seqn, append, 0);
+  }
+  catch(...) {
+  }
 }
 
 void MainWindow::blockDevice(quint32 seqn, bool append)
 {
-    try {
-        IPCClient::blockDevice(seqn, append, 0);
-    }
-    catch(...) {
-    }
+  try {
+    IPCClient::blockDevice(seqn, append, 0);
+  }
+  catch(...) {
+  }
 }
 
 void MainWindow::rejectDevice(quint32 seqn, bool append)
 {
-    try {
-        IPCClient::rejectDevice(seqn, append, 0);
-    } catch(...) {
-    }
+  try {
+    IPCClient::rejectDevice(seqn, append, 0);
+  } catch(...) {
+  }
 }
 
 void MainWindow::handleIPCConnect()
 {
-    _ipc_timer.stop();
-    notifyIPCConnected();
+  _ipc_timer.stop();
+  notifyIPCConnected();
 }
 
 void MainWindow::handleIPCDisconnect()
 {
-    _ipc_timer.start();
-    notifyIPCDisconnected();
+  _ipc_timer.start();
+  notifyIPCDisconnected();
 }
 
 void MainWindow::changeEvent(QEvent* e)
 {
-    switch (e->type())
-    {
-        case QEvent::LanguageChange:
-            this->ui->retranslateUi(this);
-            break;
-        case QEvent::WindowStateChange:
-            {
-                if (this->windowState() & Qt::WindowMinimized)
-                {
-                    QTimer::singleShot(250, this, SLOT(hide()));
-                }
-                break;
-            }
-        default:
-            break;
-    }
-
-    QMainWindow::changeEvent(e);
+  switch (e->type()) {
+    case QEvent::LanguageChange:
+      this->ui->retranslateUi(this);
+      break;
+    case QEvent::WindowStateChange:
+      {
+        if (this->windowState() & Qt::WindowMinimized) {
+          QTimer::singleShot(250, this, SLOT(hide()));
+        }
+        break;
+      }
+    default:
+      break;
+  }
+  QMainWindow::changeEvent(e);
+  return;
 }
 
 void MainWindow::DeviceInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_seqn)

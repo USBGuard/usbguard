@@ -239,31 +239,36 @@ desktopdir = $(datadir)/applications
 desktop_DATA = src/GUI.Qt5/usbguard-applet-qt.desktop
 
 appicondir = $(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = src/GUI.Qt5/usbguard-icon.svg
+appicon_DATA = src/GUI.Qt5/resources/usbguard-icon.svg
 
 dist_man1_MANS +=\
 	doc/usbguard-applet-qt.roff
-
-EXTRA_DIST+=\
-	src/GUI.Qt5/icon.qrc \
-	src/GUI.Qt5/DeviceDialog.ui \
-	src/GUI.Qt5/MainWindow.ui \
-	src/GUI.Qt5/usbguard-icon.svg \
-	src/GUI.Qt5/usbguard-icon-warning.svg \
-	src/GUI.Qt5/usbguard-applet-qt.desktop
 
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt5/DeviceDialog.ui.h \
 	src/GUI.Qt5/MainWindow.ui.h
 
+usbguard_applet_qt_RESOURCES=\
+	src/GUI.Qt5/resources/usbguard-icon.svg \
+	src/GUI.Qt5/resources/usbguard-icon-warning.svg
+
 BUILT_SOURCES+=\
-	$(usbguard_applet_qt_UIHEADERS)
+	$(usbguard_applet_qt_UIHEADERS) \
+	src/GUI.Qt5/usbguard.qrc
+
+EXTRA_DIST+=\
+	src/GUI.Qt5/DeviceDialog.ui \
+	src/GUI.Qt5/MainWindow.ui \
+	src/GUI.Qt5/usbguard-applet-qt.desktop \
+	$(usbguard_applet_qt_RESOURCES)
 
 CLEANFILES +=\
 	$(usbguard_applet_qt_UIHEADERS) \
 	$(top_builddir)/src/GUI.Qt5/DeviceDialog.moc.cpp \
 	$(top_builddir)/src/GUI.Qt5/MainWindow.moc.cpp \
-	$(top_builddir)/src/GUI.Qt5/icon.qrc.cpp
+	$(top_builddir)/src/GUI.Qt5/usbguard.qrc.cpp \
+	$(top_builddir)/src/GUI.Qt5/usbguard.qrc \
+	$(top_builddir)/src/GUI.Qt5/DeviceTableWidget.moc.cpp
 
 usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt5/main.cpp \
@@ -273,7 +278,10 @@ usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt5/MainWindow.cpp \
 	src/GUI.Qt5/MainWindow.h \
 	src/GUI.Qt5/MainWindow.moc.cpp \
-	src/GUI.Qt5/icon.qrc.cpp
+	src/GUI.Qt5/usbguard.qrc.cpp \
+	src/GUI.Qt5/DeviceTableWidget.h \
+	src/GUI.Qt5/DeviceTableWidget.cpp \
+	src/GUI.Qt5/DeviceTableWidget.moc.cpp
 
 usbguard_applet_qt_LDADD=\
 	$(top_builddir)/libusbguard.la \
@@ -294,6 +302,17 @@ usbguard_applet_qt_CPPFLAGS=\
 
 %.qrc.cpp: %.qrc
 	@RCCQT5@ -o $(top_builddir)/$@ $<
+
+%.qrc: $(usbguard_applet_qt_RESOURCES)
+	echo '<RCC>' > "$@.tmp"
+	echo '<qresource prefix="/">' >> "$@.tmp"
+	for file in $(usbguard_applet_qt_RESOURCES); do \
+	  base=$$(basename $$file); \
+	  echo "<file alias=\"$$base\">$(abs_top_srcdir)/$$file</file>" >> "$@.tmp"; \
+	done
+	echo '</qresource>' >> "$@.tmp"
+	echo '</RCC>' >> "$@.tmp"
+	mv "$@.tmp" "$@"
 
 endif
 
