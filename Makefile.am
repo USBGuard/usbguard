@@ -317,7 +317,7 @@ usbguard_applet_qt_CPPFLAGS=\
 endif
 
 srpm: dist
-	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t rpmbuild.XXXXXX))
+	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t usbguard-srpm.XXXXXX))
 	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
 	$(eval RPMBUILD_SPECS:=$(RPMBUILD_ROOT)/SPECS)
 	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
@@ -333,4 +333,13 @@ srpm: dist
 		--define "_builddir $(RPMBUILD_BUILDS)" \
 		"$(RPMBUILD_SPECS)/usbguard.spec"
 	rm -rf "$(RPMBUILD_ROOT)"
+
+analyze-clang:
+	$(eval ANALYSIS_ROOT:=$(shell mktemp -d -t usbguard-analyze-clang.XXXXXX))
+	$(eval JOBS:=$(shell grep -c '^processor' /proc/cpuinfo 2> /dev/null || echo 1))
+	cd "$(ANALYSIS_ROOT)" && scan-build $(abs_top_srcdir)/configure
+	cd "$(ANALYSIS_ROOT)" && scan-build \
+	  -status-bugs -maxloop 8 -disable-checker deadcode.DeadStores -o "$(abs_top_builddir)" \
+	  make -j$(JOBS)
+	rm -rf "$(ANALYSIS_ROOT)"
 
