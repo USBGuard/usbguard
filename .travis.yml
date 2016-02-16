@@ -18,9 +18,10 @@ before_install:
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh
-- ./configure --enable-coverage --disable-shared --disable-silent-rules
+- mkdir build && cd build
+- ../configure --enable-coverage --disable-shared --disable-silent-rules
 script:
-- make && make check && make analyze-clang
+- cd build && make && make check && make analyze-clang
 addons:
   coverity_scan:
     project:
@@ -34,3 +35,4 @@ addons:
 after_success:
 - lcov --compat-libtool --directory . --capture --output-file coverage.info
 - coveralls-lcov coverage.info
+
