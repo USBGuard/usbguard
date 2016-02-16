@@ -37,12 +37,15 @@ DeviceDialog::DeviceDialog(quint32 seqn, QWidget *parent) :
   connect(&timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
   timer.start(1000);
 
+  /* FIXME: Add a random deviation from the center */
   setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter,
                                   size(),
                                   qApp->desktop()->availableGeometry()));
   updateDialog();
 
+  /* FIXME: Randomly select block or reject */
   ui->block_button->setFocus();
+
 #if 1
   /* Hide things which aren't working yet */
   ui->timeout_checkbox->hide();

@@ -103,7 +103,7 @@ void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
     systray->contextMenu()->show();
     return;
   } else {
-    if (this->windowState() & Qt::WindowMinimized) {
+    if (windowState() & Qt::WindowMinimized) {
       showNormal();
       stopFlashing();
     } else {
@@ -204,7 +204,7 @@ void MainWindow::notifyRejected(quint32 seqn, const std::map<std::string, std::s
     systray->showMessage(tr("USB Device Rejected"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Critical);
   }
   showMessage(QString(tr("Rejected: %1")).arg(QString::fromStdString(attributes.at("name"))), true);
-  if (this->windowState() & Qt::WindowMinimized) {
+  if (windowState() & Qt::WindowMinimized) {
     startFlashing();
   }
   return;
@@ -309,11 +309,11 @@ void MainWindow::changeEvent(QEvent* e)
 {
   switch (e->type()) {
     case QEvent::LanguageChange:
-      this->ui->retranslateUi(this);
+      ui->retranslateUi(this);
       break;
     case QEvent::WindowStateChange:
       {
-        if (this->windowState() & Qt::WindowMinimized) {
+        if (windowState() & Qt::WindowMinimized) {
           QTimer::singleShot(250, this, SLOT(hide()));
         }
         break;
