@@ -21,7 +21,7 @@ before_script:
 - mkdir build && cd build
 - ../configure --enable-coverage --disable-shared --disable-silent-rules
 script:
-- cd build && make && make check && make analyze-clang
+- make && make check && make analyze-clang
 addons:
   coverity_scan:
     project:
