@@ -26,8 +26,47 @@ handle_method_call (GDBusConnection       *connection,
     dbus_bridge->handleMethodCall(interface_name, method_name, parameters, invocation);
   }
   catch(std::exception& ex) {
+    g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+       G_DBUS_ERROR_FAILED, "Exception: %s", ex.what());
   }
   catch(...) {
+    g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+       G_DBUS_ERROR_FAILED, "BUG: Unknown exception; method call failed for unknown reasons.");
+  }
+}
+
+static gboolean
+usbguard_ipc_try_connect(gpointer user_data)
+{
+  (void)user_data;
+
+  if (dbus_bridge == nullptr) {
+    g_main_loop_quit(main_loop);
+    return FALSE;
+  }
+  else if (dbus_bridge->isConnected()) {
+   /* returning FALSE removes the function call from the main loop */
+   return FALSE;
+  }
+  else {
+    try {
+      dbus_bridge->connect();
+    }
+    catch(...) {
+      /* ignore exception */
+    }
+    return TRUE;
+  }
+}
+
+static void
+handle_usbguard_ipc_state(bool state)
+{
+  if (state == false) {
+    if (g_timeout_add_seconds(1, &usbguard_ipc_try_connect, nullptr) <= 0) {
+      g_main_loop_quit(main_loop);
+      return;
+    }
   }
 }
 
@@ -76,6 +115,7 @@ on_name_acquired (GDBusConnection *connection,
 {
   try {
     dbus_bridge = new usbguard::DBusBridge(connection);
+    handle_usbguard_ipc_state(/*state=*/false);
   }
   catch(...) {
     dbus_bridge = nullptr;
