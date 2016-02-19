@@ -24,8 +24,8 @@ namespace usbguard
     // call interface handlers
 
     g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
-        G_DBUS_ERROR_UNKNOWN_INTERFACE, "Unknown interface");
-      return;
+        G_DBUS_ERROR_UNKNOWN_METHOD, "Unknown method interface");
+    return;
   }
 
   void DBusBridge::IPCConnected()
