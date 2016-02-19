@@ -230,6 +230,39 @@ usbguard_rule_parser_LDADD=\
 	$(top_builddir)/libusbguard.la
 
 #
+# DBus Bridge
+#
+if DBUS_ENABLED
+sbin_PROGRAMS+= usbguard-dbus
+
+BUILT_SOURCES+=\
+	src/DBus/DBusInterface.xml.cstr
+
+usbguard_dbus_SOURCES=\
+	src/DBus/gdbus-server.cpp \
+	src/DBus/DBusBridge.cpp \
+	src/DBus/DBusBridge.hpp
+
+usbguard_dbus_CPPFLAGS=\
+	$(AM_CPPFLAGS) \
+	-I$(top_builddir)/src/DBus \
+	@spdlog_CFLAGS@ \
+	@dbus_CFLAGS@
+
+usbguard_dbus_LDADD=\
+	$(top_builddir)/libusbguard.la \
+	@dbus_LIBS@
+
+%.xml:
+	xmllint "$@" > /dev/null
+
+%.xml.cstr: %.xml
+	XMLLINT_INDENT="" xmllint --format "$<" |\
+	  sed -n -e 's|\"|\\"|g; s|.*|"&"|; p' > "$(top_builddir)/$@"
+
+endif
+
+#
 # Qt 5.x GUI
 #
 if GUI_QT5_ENABLED

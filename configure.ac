@@ -185,6 +185,31 @@ else
   qt5_summary="None; building without Qt 5.x GUI"
 fi
 
+#
+# GLib D-Bus
+#
+AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
+if test "x$with_dbus" = xyes; then
+  #
+  # Check for Qt 5.x libraries
+  #
+  PKG_CHECK_MODULES([dbus], [dbus-glib-1 >= 0.106 gio-2.0],
+  [AC_DEFINE([HAVE_DBUS], [1], [Required GLib DBus API available])
+  dbus_summary="system-wide; $dbus_CFLAGS $dbus_LIBS"],
+  [AC_MSG_FAILURE([GLib DBus development files not found!])]
+  )
+
+  #
+  # Check for xmllint tool
+  #
+  AC_CHECK_PROGS(XMLLINT, [xmllint])
+  if test -z "$XMLLINT" ; then
+    AC_MSG_FAILURE([The required xmllint tool missing on your system. Make sure that xmllint is installed.])
+  fi
+else
+  dbus_summary="None; building without DBus support"
+fi
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h locale.h netdb.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h wchar.h])
@@ -243,6 +268,7 @@ fi
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT5_ENABLED], [test "x$with_gui_qt5" = xyes ])
+AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 
 AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
 AC_OUTPUT
@@ -261,6 +287,7 @@ echo "  libcap-ng: $libcap_ng_summary"
 echo "       json: $json_summary"
 echo "     spdlog: $spdlog_summary"
 echo "     Qt 5.x: $qt5_summary"
+echo "  GLib Dbus: $dbus_summary"
 echo
 echo "## Compilation Flags"
 echo

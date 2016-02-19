@@ -27,7 +27,7 @@ namespace usbguard
   {
   public:
     IPCClient(bool connected = false);
-    ~IPCClient();
+    virtual ~IPCClient();
 
     void connect();
     void disconnect();
