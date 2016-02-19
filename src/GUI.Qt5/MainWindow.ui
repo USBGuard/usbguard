@@ -89,7 +89,7 @@
           </column>
           <column>
            <property name="text">
-            <string>State</string>
+            <string>Target</string>
            </property>
           </column>
           <column>
@@ -133,8 +133,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>487</width>
-             <height>228</height>
+             <width>204</width>
+             <height>146</height>
             </rect>
            </property>
            <attribute name="label">
@@ -219,8 +219,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>487</width>
-             <height>228</height>
+             <width>419</width>
+             <height>153</height>
             </rect>
            </property>
            <attribute name="label">
