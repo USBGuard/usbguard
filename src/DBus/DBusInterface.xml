@@ -4,42 +4,42 @@
   "https://specifications.freedesktop.org/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.usbguard.Policy">
-    <method name="list-rules">
+    <method name="listRules">
       <arg name="ruleset" direction="out" type="a(us)"/>
     </method>
-    <method name="append-rule">
+    <method name="appendRule">
       <arg name="rule" direction="in" type="s"/>
       <arg name="parent_id" direction="in" type="u"/>
       <arg name="id" direction="out" type="u"/>
     </method>
-    <method name="remove-rule">
+    <method name="removeRule">
       <arg name="id" direction="in" type="u"/>
     </method>
   </interface>
   <interface name="org.usbguard.Devices">
-    <method name="list-devices">
+    <method name="listDevices">
       <arg name="query" direction="in" type="s"/>
       <arg name="devices" direction="out" type="a(us)"/>
     </method>
-    <method name="allow-device">
+    <method name="allowDevice">
       <arg name="id" direction="in" type="u"/>
     </method>
-    <method name="block-device">
+    <method name="blockDevice">
       <arg name="id" direction="in" type="u"/>
     </method>
-    <method name="reject-device">
+    <method name="rejectDevice">
       <arg name="id" direction="in" type="u"/>
     </method>
     <signal name="DevicePresent">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
-      <arg name="interfaces" direction="out" type="a(s)"/>
+      <arg name="interfaces" direction="out" type="as"/>
       <arg name="target" direction="out" type="s"/>
     </signal>
     <signal name="DeviceInserted">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
-      <arg name="interfaces" direction="out" type="a(s)"/>
+      <arg name="interfaces" direction="out" type="as"/>
       <arg name="rule_match" direction="out" type="b"/>
       <arg name="rule_id" direction="out" type="u"/>
     </signal>
