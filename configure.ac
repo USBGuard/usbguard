@@ -193,7 +193,7 @@ if test "x$with_dbus" = xyes; then
   #
   # Check for Qt 5.x libraries
   #
-  PKG_CHECK_MODULES([dbus], [dbus-glib-1 >= 0.106 gio-2.0],
+  PKG_CHECK_MODULES([dbus], [dbus-glib-1 >= 0.100 gio-2.0],
   [AC_DEFINE([HAVE_DBUS], [1], [Required GLib DBus API available])
   dbus_summary="system-wide; $dbus_CFLAGS $dbus_LIBS"],
   [AC_MSG_FAILURE([GLib DBus development files not found!])]
