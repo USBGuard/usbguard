@@ -23,13 +23,16 @@
     </method>
     <method name="allowDevice">
       <arg name="id" direction="in" type="u"/>
+      <arg name="permanent" direction="in" type="b"/>
     </method>
     <method name="blockDevice">
       <arg name="id" direction="in" type="u"/>
-    </method>
+      <arg name="permanent" direction="in" type="b"/>
+   </method>
     <method name="rejectDevice">
       <arg name="id" direction="in" type="u"/>
-    </method>
+      <arg name="permanent" direction="in" type="b"/>
+   </method>
     <signal name="DevicePresent">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
