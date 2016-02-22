@@ -10,8 +10,8 @@ namespace usbguard
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
-    { "blocked", no_argument, nullptr, 'a' },
-    { "allowed", no_argument, nullptr, 'b' },
+    { "blocked", no_argument, nullptr, 'b' },
+    { "allowed", no_argument, nullptr, 'a' },
     { nullptr, 0, nullptr, 0 }
   };
 
