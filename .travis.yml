@@ -16,6 +16,7 @@ before_install:
 - sudo apt-get install -y lcov
 - sudo apt-get install -y clang
 - sudo apt-get install -y libglib2.0-dev libdbus-glib-1-dev libxml2-utils
+- sudo apt-get install -y libpolkit-gobject-1-dev
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh

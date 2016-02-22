@@ -236,7 +236,18 @@ if DBUS_ENABLED
 sbin_PROGRAMS+= usbguard-dbus
 
 BUILT_SOURCES+=\
-	src/DBus/DBusInterface.xml.cstr
+	src/DBus/DBusInterface.xml.cstr \
+	src/DBus/org.usbguard.service
+
+EXTRA_DIST+=\
+	src/DBus/org.usbguard.conf \
+	src/DBus/org.usbguard.service.in \
+	src/DBus/org.usbguard.policy \
+	src/DBus/DBusInterface.xml
+
+CLEANFILES+=\
+	$(top_builddir)/src/DBus/org.usbguard.service \
+	$(top_builddir)/src/DBus/DBusInterface.xml.cstr
 
 usbguard_dbus_SOURCES=\
 	src/DBus/gdbus-server.cpp \
@@ -254,13 +265,47 @@ usbguard_dbus_LDADD=\
 	@dbus_LIBS@
 
 %.xml:
-	xmllint "$@" > /dev/null
+	xmllint "$(top_srcdir)/$@" > /dev/null
 
 %.xml.cstr: %.xml
 	XMLLINT_INDENT="" xmllint --format "$<" |\
 	  sed -n -e 's|\"|\\"|g; s|.*|"&"|; p' > "$(top_builddir)/$@"
 
-endif
+%.service: %.service.in
+	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
+
+if POLICYKIT_ENABLED
+install-data-local: $(top_builddir)/src/DBus/org.usbguard.service
+	mkdir -p $(DESTDIR)$(POLKIT_POLICY_DIR) && \
+	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.policy $(DESTDIR)$(POLKIT_POLICY_DIR)
+	mkdir -p $(DESTDIR)$(DBUS_SERVICES_DIR) && \
+	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard.service $(DESTDIR)$(DBUS_SERVICES_DIR)
+	mkdir -p $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
+	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard.service
+	rmdir $(DESTDIR)$(DBUS_SERVICES_DIR)
+	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard.conf
+	rmdir $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
+	rm -f $(DESTDIR)$(POLKIT_POLICY_DIR)/org.usbguard.policy
+	rmdir $(DESTDIR)$(POLKIT_POLICY_DIR)
+
+else
+install-data-local: $(top_builddir)/src/DBus/org.usbguard.service
+	mkdir -p $(DESTDIR)$(DBUS_SERVICES_DIR) && \
+	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard.service $(DESTDIR)$(DBUS_SERVICES_DIR)
+	mkdir -p $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
+	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard.service
+	rmdir $(DESTDIR)$(DBUS_SERVICES_DIR)
+	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard.conf
+	rmdir $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
+
+endif #POLICYKIT_ENABLED
+endif #DBUS_ENABLED
 
 #
 # Qt 5.x GUI

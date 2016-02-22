@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+        "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+        
+<policyconfig>
+  <vendor>The USBGuard Project</vendor>
+  <vendor_url>https://github.org/dkopecek/usbguard</vendor_url>
+
+  <action id="org.usbguard.Policy.listRules">
+    <description>List the rule set (policy) used by the USBGuard daemon</description>
+    <message>Prevents from listing the USBGuard policy</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_self_keep_session</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Policy.appendRule">
+    <description>Append a new rule to the policy</description>
+    <message>Prevents from appending rules to the USBGuard policy</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Policy.removeRule">
+    <description>Remove a rule from the policy</description>
+    <message>Prevents removing rules from the USBGuard policy</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Devices.listDevices">
+    <description>List all USB devices recognized by the USBGuard deaemon</description>
+    <message>Prevents from listing USB devices recognized by the USBGuard daemon</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_self_keep_session</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Devices.allowDevice">
+    <description>Authorize a USB device via the USBGuard daemon to interact with the system</description>
+    <message>Prevents from authorizing USB devices via the USBGuard daemon</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Devices.blockDevice">
+    <description>Deauthorize a USB device via the USBGuard daemon</description>
+    <message>Prevents from deauthorizing USB devices via the USBGuard daemon</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard.Devices.rejectDevice">
+    <description>Remove a USB device via the USBGuard daemon</description>
+    <message>Prevents from removing USB devices via the USBGuard daemon</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+</policyconfig>
+
