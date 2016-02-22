@@ -1,4 +1,5 @@
-[D-Bus Service]
+[D-BUS Service]
 Name=org.usbguard
 Exec=%{sbindir}%/usbguard-dbus --system
+SystemdService=dbus-org.usbguard.service
 

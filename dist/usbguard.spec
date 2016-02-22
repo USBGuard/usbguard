@@ -161,6 +161,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/dbus-1/system-services/org.usbguard.service
 %{_datadir}/dbus-1/system.d/org.usbguard.conf
 %{_datadir}/polkit-1/actions/org.usbguard.policy
+%{_unitdir}/usbguard-dbus.service
 
 %changelog
 * Mon Feb 22 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-1

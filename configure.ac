@@ -225,14 +225,14 @@ if test "x$with_dbus" = xyes; then
   fi
 else
   dbus_summary="None; building without DBus support"
-  dbus_services_dir=" -"
-  dbus_busconfig_dir=" -"
+  dbus_services_dir="-"
+  dbus_busconfig_dir="-"
 fi
 
 #
 # PolicyKit
 #
-AC_ARG_WITH([polkit], AC_HELP_STRING([--with-polkit], [Install the PolicyKit configuration with if D-Bus support is also enabled]), [], [with_polkit=yes])
+AC_ARG_WITH([polkit], AC_HELP_STRING([--with-polkit], [Install the PolicyKit configuration if D-Bus support is also enabled]), [], [with_polkit=yes])
 if test "x$with_polkit" = xyes; then
   #
   # Check for required PolicyKit modules
@@ -252,7 +252,7 @@ if test "x$with_polkit" = xyes; then
   fi
 else
   polkit_summary="None; building without PolicyKit support"
-  polkit_policy_dir=" -"
+  polkit_policy_dir="-"
 fi
 
 # Checks for header files.
@@ -308,7 +308,14 @@ else
 fi
 
 if test "x$systemd" = xyes; then
+   systemd_unit_dir="`$PKG_CONFIG systemd --variable=systemdsystemunitdir`"
+   if test "x$systemd_unit_dir" = x; then
+     AC_MSG_FAILURE([Cannot detect the systemd system unit dir])
+   fi
+   AC_SUBST(SYSTEMD_UNIT_DIR, $systemd_unit_dir)
    AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
+else
+  systemd_unit_dir="-"
 fi
 
 AC_SUBST(ANALYZE_CONFIGURE_ARGS, $ac_configure_args)
@@ -342,6 +349,7 @@ echo
 echo " D-Bus System Services: $dbus_services_dir"
 echo "       D-Bus Busconfig: $dbus_busconfig_dir"
 echo "    PolicyKit Policies: $polkit_policy_dir"
+echo "      systemd unit dir: $systemd_unit_dir"
 echo
 echo "## Compilation Flags"
 echo
