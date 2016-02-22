@@ -1,5 +1,7 @@
 #include <gio/gio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <getopt.h>
 #include "DBusBridge.hpp"
 
 
@@ -11,6 +13,8 @@ static const gchar introspection_xml[] =
 #include "DBusInterface.xml.cstr"
 ;
 static const unsigned int expected_interface_count = 2;
+
+static int global_ret = EXIT_SUCCESS;
 
 static void
 handle_method_call (GDBusConnection       *connection,
@@ -42,6 +46,7 @@ usbguard_ipc_try_connect(gpointer user_data)
 
   if (dbus_bridge == nullptr) {
     g_main_loop_quit(main_loop);
+    global_ret = EXIT_FAILURE;
     return FALSE;
   }
   else if (dbus_bridge->isConnected()) {
@@ -64,7 +69,9 @@ handle_usbguard_ipc_state(bool state)
 {
   if (state == false) {
     if (g_timeout_add_seconds(1, &usbguard_ipc_try_connect, nullptr) <= 0) {
+      std::cerr << "Unable to setup the IPC reconnection timer." << std::endl;
       g_main_loop_quit(main_loop);
+      global_ret = EXIT_FAILURE;
       return;
     }
   }
@@ -104,7 +111,9 @@ on_bus_acquired (GDBusConnection *connection,
                                                       /*user_data_free_func=*/nullptr,
                                                       /*GError=*/nullptr);
   if (policy_rid <= 0 || devices_rid <= 0) {
+    std::cerr << "Unable to register required objects on the bus." << std::endl;
     g_main_loop_quit(main_loop);
+    global_ret = EXIT_FAILURE;
   }
 }
 
@@ -113,13 +122,17 @@ on_name_acquired (GDBusConnection *connection,
                   const gchar     *name,
                   gpointer         user_data)
 {
+  /* We got the name, reset the global return value */
+  global_ret = EXIT_SUCCESS;
   try {
     dbus_bridge = new usbguard::DBusBridge(connection);
     handle_usbguard_ipc_state(/*state=*/false);
   }
   catch(...) {
     dbus_bridge = nullptr;
+    std::cerr << "Unable to create the USBGuard DBus Bridge." << std::endl;
     g_main_loop_quit(main_loop);
+    global_ret = EXIT_FAILURE;
   }
 }
 
@@ -134,11 +147,56 @@ on_name_lost (GDBusConnection *connection,
   delete dbus_bridge_local;
 }
 
+static const char *options_short = "sSh";
+static const char *usbguard_arg0 = nullptr;
+
+static const struct ::option options_long[] = {
+  { "system", no_argument, nullptr, 's' },
+  { "session", no_argument, nullptr, 'S' },
+  { "help", no_argument, nullptr, 'h' },
+  { nullptr, 0, nullptr, 0 }
+};
+
+static void showHelp(std::ostream& stream)
+{
+  stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS]" << std::endl;
+  stream << std::endl;
+  stream << " Options:" << std::endl;
+  stream << "  -s, --system   Listen on the system bus." << std::endl;
+  stream << "  -S, --session  Listen on the session bus." << std::endl;
+  stream << "  -h, --help     Show this help." << std::endl;
+  stream << std::endl;
+}
+
 int
 main (int argc, char *argv[])
 {
+  usbguard_arg0 = argv[0];
+
+  int opt = 0;
+  bool use_system_bus = true;
+
+  while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
+    switch(opt) {
+      case 's':
+        use_system_bus = true;
+        break;
+      case 'S':
+        use_system_bus = false;
+        break;
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+      case '?':
+        showHelp(std::cerr);
+      default:
+        return EXIT_FAILURE;
+    }
+  }
+
   /* Parse the XML DBus interface definition */
   if ((introspection_data = g_dbus_node_info_new_for_xml (introspection_xml, nullptr)) == nullptr) {
+    std::cerr << "Failed to parse the introspection data." << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -150,11 +208,24 @@ main (int argc, char *argv[])
     }
   }
   if (interface_count != expected_interface_count) {
+    std::cerr << "The introspection data contains an unexpected"
+              << " number of interfaces: " << interface_count
+              << ", expected: " << expected_interface_count << std::endl;
     return EXIT_FAILURE;
   }
 
+  /*
+   * Set the global return value to FAILURE before we start the mainloop.
+   * When we succesfully own the bus name, this flag will be reset by the
+   * DBus callbacks back to SUCCESS. Otherwise, the on_name_lost callback
+   * will be called which will stop the main loop and we'll return the
+   * FAILURE return code.
+   */
+  global_ret = EXIT_FAILURE;
+
   /* Try to take ownership of the bus */
-  auto owner_id = g_bus_own_name (G_BUS_TYPE_SESSION,
+  auto owner_id = g_bus_own_name (use_system_bus ?
+                                    G_BUS_TYPE_SYSTEM : G_BUS_TYPE_SESSION,
                                  "org.usbguard",
                                  G_BUS_NAME_OWNER_FLAGS_NONE,
                                  on_bus_acquired,
@@ -163,17 +234,24 @@ main (int argc, char *argv[])
                                  /*user_data=*/nullptr,
                                  /*user_data_free_func=*/nullptr);
 
+  int ret;
+
   /* Start the main loop */
   if (owner_id > 0) {
     if ((main_loop = g_main_loop_new (NULL, FALSE)) != nullptr) {
       g_main_loop_run (main_loop);
     }
     g_bus_unown_name (owner_id);
+    ret = global_ret;
+  }
+  else {
+    std::cerr << "Failed to take ownership of the org.usbguard bus name." << std::endl;
+    ret = EXIT_FAILURE;
   }
 
   /* Release allocated resources */
   g_dbus_node_info_unref (introspection_data);
 
-  return 0;
+  return ret;
 }
 
