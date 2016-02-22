@@ -311,6 +311,8 @@ if test "x$systemd" = xyes; then
    AC_DEFINE([SYSTEMD_SUPPORT_ENABLED], [1], [Enable systemd support int the project])
 fi
 
+AC_SUBST(ANALYZE_CONFIGURE_ARGS, $ac_configure_args)
+
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT5_ENABLED], [test "x$with_gui_qt5" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])

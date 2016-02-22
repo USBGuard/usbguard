@@ -415,7 +415,7 @@ srpm: dist
 analyze-clang:
 	$(eval ANALYSIS_ROOT:=$(shell mktemp -d -t usbguard-analyze-clang.XXXXXX))
 	$(eval JOBS:=$(shell grep -c '^processor' /proc/cpuinfo 2> /dev/null || echo 1))
-	cd "$(ANALYSIS_ROOT)" && scan-build $(abs_top_srcdir)/configure
+	cd "$(ANALYSIS_ROOT)" && scan-build $(abs_top_srcdir)/configure $(ANALYZE_CONFIGURE_ARGS)
 	cd "$(ANALYSIS_ROOT)" && scan-build \
 	  --status-bugs -maxloop 8 -disable-checker deadcode.DeadStores -o "$(abs_top_builddir)" \
 	  make -j$(JOBS)
