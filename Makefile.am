@@ -269,8 +269,8 @@ usbguard_dbus_LDADD=\
 	xmllint "$(top_srcdir)/$@" > /dev/null
 
 %.xml.cstr: %.xml
-	XMLLINT_INDENT="" xmllint --format "$<" |\
-	  sed -n -e 's|\"|\\"|g; s|.*|"&"|; p' > "$(top_builddir)/$@"
+	XMLLINT_INDENT="" xmllint --noblanks --format "$<" |\
+	  sed -n -e '/<!--/,/-->/ d; s|\"|\\"|g; s|.*|"&"|; p' > "$(top_builddir)/$@"
 
 %.service: %.service.in
 	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
