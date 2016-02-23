@@ -403,7 +403,8 @@ usbguard_applet_qt_CPPFLAGS=\
 
 endif
 
-srpm: dist
+rpmbuild: dist
+	test -n "$(RPMBUILD_FLAGS)"
 	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t usbguard-srpm.XXXXXX))
 	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
 	$(eval RPMBUILD_SPECS:=$(RPMBUILD_ROOT)/SPECS)
@@ -413,13 +414,19 @@ srpm: dist
 	cp $(top_srcdir)/dist/usbguard-daemon.conf $(RPMBUILD_SOURCES)
 	cp $(top_srcdir)/dist/usbguard.spec $(RPMBUILD_SPECS)
 	cp $(top_builddir)/usbguard-*.tar.gz $(RPMBUILD_SOURCES)
-	rpmbuild -bs \
+	rpmbuild $(RPMBUILD_FLAGS) \
 		--define "_sourcedir $(RPMBUILD_SOURCES)" \
 		--define "_srcrpmdir $(top_builddir)" \
 		--define "_rpmdir $(top_builddir)" \
 		--define "_builddir $(RPMBUILD_BUILDS)" \
 		"$(RPMBUILD_SPECS)/usbguard.spec"
 	rm -rf "$(RPMBUILD_ROOT)"
+
+rpmbuild-bs:
+	$(MAKE) rpmbuild RPMBUILD_FLAGS=-bs
+
+rpmbuild-ba:
+	$(MAKE) rpmbuild RPMBUILD_FLAGS=-ba
 
 analyze-clang:
 	$(eval ANALYSIS_ROOT:=$(shell mktemp -d -t usbguard-analyze-clang.XXXXXX))
