@@ -4,27 +4,27 @@
   "https://specifications.freedesktop.org/dbus/1.0/introspect.dtd">
 <node>
   <!--
-  org.usbguard.Policy:
-  @short_description: USBGuard Policy interface.
+   org.usbguard.Policy:
 
-  The Policy interface allows to modify the USBGuard authorization policy.
+   The Policy interface allows to modify the USBGuard authorization policy.
   -->
   <interface name="org.usbguard.Policy">
     <!--
       listRules:
-      @ruleset: An array of (rule_id, rule) tuples. The rules are
-                returned in the same order as they are evaluated.
+       @ruleset: An array of (rule_id, rule) tuples. 
 
-      List the current rule set (policy) used by the USBGuard daemon.
+      List the current rule set (policy) used by the USBGuard daemon. The
+      rules are returned in the same order as they are evaluated.
      -->
     <method name="listRules">
       <arg name="ruleset" direction="out" type="a(us)"/>
     </method>
+
     <!--
       appendRule:
-      @rule: The rule that should be appended to the policy.
-      @parent_id: Rule id of the parent rule.
-      @id: The rule id assigned to the succesfully appended rule.
+       @rule: The rule that should be appended to the policy.
+       @parent_id: Rule id of the parent rule.
+       @id: The rule id assigned to the succesfully appended rule.
 
       Append a new rule to the current policy. Using the parent_id
       parameter, the rule can be inserted anywhere in the policy,
@@ -36,9 +36,10 @@
       <arg name="parent_id" direction="in" type="u"/>
       <arg name="id" direction="out" type="u"/>
     </method>
+
     <!--
       removeRule:
-      @id: The rule id of the rule to be removed.
+       @id: The rule id of the rule to be removed.
 
       Remove a rule from the current policy.
      -->
@@ -48,7 +49,6 @@
   </interface>
   <!--
     org.usbguard.Devices:
-    @short_description: USBGuard Devices interface.
 
     The org.usbguard.Devices interface provides access to USB
     devices via the USBGuard daemon. It can be used to modify
@@ -59,86 +59,82 @@
   <interface name="org.usbguard.Devices">
     <!--
       listDevices:
-      @query: A query, in the rule language syntax, for matching devices.
-      @devices: An array of (device_id, device_rule) tuples that match
-                the specified query. Order of the returned devices is not
-                defined and should not be relied upon.
+       @query: A query, in the rule language syntax, for matching devices.
+       @devices: An array of (device_id, device_rule) tuples that match the query.
 
       List devices that match the specified query. The query uses the rule
       language syntax and the devices are returned as device specific rules.
       The target in each rule represents the current authorization state of
-      the device.
+      the device. Order of the returned devices is not defined and should not
+      be relied upon.
 
       Example queries:
-       * 'match'
-          Matches any device.
-       * 'allow'
-          Matches only authorized devices.
-       * 'block'
-          Matches only unauthorized devices.
-       * 'match with-interface one-of { 03:00:01 03:01:01 }'
-          Matches devices with a HID/Keyboard interface
+       - 'match': Matches any device.
+       - 'allow': Matches only authorized devices.
+       - 'block': Matches only unauthorized devices.
+       - 'match with-interface one-of { 03:00:01 03:01:01 }': Matches any device with a HID/Keyboard interface.
 
       -->
     <method name="listDevices">
       <arg name="query" direction="in" type="s"/>
       <arg name="devices" direction="out" type="a(us)"/>
     </method>
+
     <!--
       allowDevice:
-      @id: Device id of the device to authorize.
-      @permanent: A boolean flag specifying whether an allow rule should be
-                  appended to the policy.
+       @id: Device id of the device to authorize.
+       @permanent: A boolean flag specifying whether an allow rule should be appended to the policy.
 
-      Authorize a device. If the permanent flag is set to True, an allow rule
-      will be appended to the policy. Sucessfull exection of this method will
-      cause the DeviceAllowed signal to be broadcasted.
+      Authorize a device to interact with the system.
+
+      If the permanent flag is set to True, an allow rule will be appended to the policy.
+
+      Sucessfull exection of this method will cause the DeviceAllowed signal to be broadcasted.
       -->
     <method name="allowDevice">
       <arg name="id" direction="in" type="u"/>
       <arg name="permanent" direction="in" type="b"/>
     </method>
+
     <!--
       blockDevice:
-      @id: Device id of the device to deauthorize.
-      @permanent: A boolean flag specifying whether a block rule should be
-                  appended to the policy.
+       @id: Device id of the device to deauthorize.
+       @permanent: A boolean flag specifying whether a block rule should be appended to the policy.
 
-      Deauthorize a device. If the permanent flag is set to True, a block rule
-      will be appended to the policy. Sucessfull exection of this method will
-      cause the DeviceBlocked signal to be broadcasted.
+      Deauthorize a device.
+
+      If the permanent flag is set to True, a block rule will be appended to the policy.
+
+      Sucessfull exection of this method will cause the DeviceBlocked signal to be broadcasted.
       -->
     <method name="blockDevice">
       <arg name="id" direction="in" type="u"/>
       <arg name="permanent" direction="in" type="b"/>
     </method>
+
     <!--
       rejectDevice:
-      @id: Device id of the device to reject.
-      @permanent: A boolean flag specifying whether a reject rule should be
-                  appended to the policy.
+       @id: Device id of the device to reject.
+       @permanent: A boolean flag specifying whether a reject rule should be appended to the policy.
 
-      Reject a device. Rejecting a device will cause the device to be logically
-      removed from the system until it is reconnected. If the permanent flag is
-      set to True, a reject rule will be appended to the policy. Sucessfull
-      exection of this method will cause the DeviceRejected signal to be
-      broadcasted.
+      Reject a device. Rejecting a device will cause the device to be logically removed from the
+      system until it is reconnected.
+
+      If the permanent flag is set to True, a reject rule will be appended to the policy.
+
+      Sucessfull exection of this method will cause the DeviceRejected signal to be broadcasted.
       -->
     <method name="rejectDevice">
       <arg name="id" direction="in" type="u"/>
       <arg name="permanent" direction="in" type="b"/>
     </method>
+
     <!--
       DevicePresent:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
-      @interfaces: An array of USB interfaces types serialized to strings of the
-                   form AA:BB:CC, where AA, BB, and CC are hexadecimal numbers
-                   representing the class, subclass and protocol of the interface
-                   as defined by the USB standard.
-      @target: The current authorization target of the device. It can be either
-               'allow' or 'block'.
+       @id: Device id of the device.
+       @attributes: A dictionary of device attributes and their values.
+       @interfaces: An array of USB interfaces types.
+       @target: The current authorization target of the device. 
 
       Notify that a USB device was already present when USBGuard was started. Note
       that currently this signal is of little use to 3rd-party application developers
@@ -147,6 +143,17 @@
       routines may change in the future so this signal is provided and documented
       for completeness.
 
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
+      The USB interface types are represented as strings of the form AA:BB:CC, where AA,
+      BB, and CC are hexadecimal numbers representing the class, subclass and protocol
+      of the interface  as defined by the USB standard.
+
       -->
     <signal name="DevicePresent">
       <arg name="id" direction="out" type="u"/>
@@ -154,20 +161,14 @@
       <arg name="interfaces" direction="out" type="as"/>
       <arg name="target" direction="out" type="s"/>
     </signal>
+
     <!--
       DeviceInserted:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
-      @interfaces: An array of USB interfaces types serialized to strings of the
-                   form AA:BB:CC, where AA, BB, and CC are hexadecimal numbers
-                   representing the class, subclass and protocol of the interface
-                   as defined by the USB standard.
-      @rule_match: A boolean flag specifying whether the inserted device matched a
-                   rule in the policy. If True, then the rule_id field will contain
-                   a valid rule id of the rule that will be applied to the device.
-      @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value
-                is used.
+       @id: Device id of the device
+       @attributes: A dictionary of device attributes and their values.
+       @interfaces: An array of USB interfaces types.
+       @rule_match: A boolean flag specifying whether the device matched a rule in the policy.
+       @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
 
       Notify that a USB device was inserted into the system. When a newly inserted
       device is recognized by the USBGuard daemon, it will try to match it against
@@ -180,6 +181,18 @@
       do so using the allowDevice, blockDevice or rejectDevice methods or modify the
       policy using the org.usbguard.Policy interface so that the policy contains the
       desired (de)authorization rule.
+
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
+      The USB interface types are represented as strings of the form AA:BB:CC, where AA,
+      BB, and CC are hexadecimal numbers representing the class, subclass and protocol
+      of the interface  as defined by the USB standard.
+
       -->
     <signal name="DeviceInserted">
       <arg name="id" direction="out" type="u"/>
@@ -188,70 +201,92 @@
       <arg name="rule_match" direction="out" type="b"/>
       <arg name="rule_id" direction="out" type="u"/>
     </signal>
+
     <!--
       DeviceRemoved:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
+       @id: Device id of the device
+       @attributes: A dictionary of device attributes and their values.
 
       Notify that a USB device was removed from the system.
+
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
       -->
     <signal name="DeviceRemoved">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
     </signal>
+
     <!--
       DeviceAllowed:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
-      @rule_match: A boolean flag specifying whether the authorized device matched a
-                   rule in the policy. If True, then the rule_id field will contain
-                   a valid rule id of the rule that was applied to the device.
-      @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value
-                is used.
+       @id: Device id of the device
+       @attributes: A dictionary of device attributes and their values.
+       @rule_match: A boolean flag specifying whether the device matched a rule in the policy.
+       @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
 
       Notify that a USB device was allowed to interact with the system.
-      -->
+
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
+     -->
     <signal name="DeviceAllowed">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
       <arg name="rule_match" direction="out" type="b"/>
       <arg name="rule_id" direction="out" type="u"/>
     </signal>
+
     <!--
       DeviceBlocked:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
-      @rule_match: A boolean flag specifying whether the blocked device matched a
-                   rule in the policy (which caused that the device was blocked).
-                   If True, then the rule_id field will contain a valid rule id of
-                   the rule that was applied to the device.
-      @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value
-                is used.
+       @id: Device id of the device
+       @attributes: A dictionary of device attributes and their values.
+       @rule_match: A boolean flag specifying whether the device matched a rule in the policy.
+       @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
 
       Notify that a USB device was blocked from interacting with the system. 
-      -->
+ 
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
+     -->
     <signal name="DeviceBlocked">
       <arg name="id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
       <arg name="rule_match" direction="out" type="b"/>
       <arg name="rule_id" direction="out" type="u"/>
     </signal>
+
     <!--
       DeviceRejected:
-      @id: Device id of the device
-      @attributes: A dictionary of the following device attributes: name, vendor_id,
-                   product_id, serial, port.
-      @rule_match: A boolean flag specifying whether the rejected device matched a
-                   rule in the policy. If True, then the rule_id field will contain
-                   a valid rule id of the rule that was applied to the device.
-      @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value
-                is used.
+       @id: Device id of the device
+       @attributes: A dictionary of device attributes and their values.
+       @rule_match: A boolean flag specifying whether the device matched a rule in the policy.
+       @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
 
-      Notify that a USB device was rejected. When a device is rejected, it is logically
-      removed from the system and must be reconnected in order to be recognized again.
+      Notify that a USB device was rejected. When a device is rejected, it is logically removed
+      from the system and must be reconnected in order to be recognized again.
+
+      The device attribute dictionary contains the following attributes:
+        - name
+        - vendor_id
+        - product_id
+        - serial
+        - port
+
       -->
     <signal name="DeviceRejected">
       <arg name="id" direction="out" type="u"/>
@@ -261,3 +296,4 @@
     </signal>
   </interface>
 </node>
+
