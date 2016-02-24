@@ -204,7 +204,21 @@ if test "x$with_dbus" = xyes; then
   #
   AC_CHECK_PROGS(XMLLINT, [xmllint])
   if test -z "$XMLLINT" ; then
-    AC_MSG_FAILURE([The required xmllint tool missing on your system. Make sure that xmllint is installed.])
+    AC_MSG_FAILURE([The required xmllint tool is missing on your system. Make sure that xmllint is installed.])
+  fi
+  #
+  # Check for xsltproc tool
+  #
+  AC_CHECK_PROGS(XSLTPROC, [xsltproc])
+  if test -z "$XSLTPROC"; then
+    AC_MSG_FAILURE([The required xsltproc tool is missing on your system. Make sure that xsltproc is installed.])
+  fi
+  #
+  # Check for gdbus-codegen tool
+  #
+  AC_CHECK_PROGS(GDBUS_CODEGEN, [gdbus-codegen])
+  if test -z "$GDBUS_CODEGEN"; then
+    AC_MSG_FAILURE([The required gdbus-codegen tool is missing on your system. Make sure that gdbus-codegen is installed.])
   fi
 
   dbus_services_dir=`$PKG_CONFIG dbus-1 --define-variable=datadir='${datadir}' --define-variable=prefix='${prefix}' --variable=system_bus_services_dir`

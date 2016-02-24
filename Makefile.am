@@ -287,6 +287,23 @@ uninstall-local: uninstall-polkit-policy uninstall-systemd-service
 	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard.conf
 	rmdir $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
+dbus-docs: $(top_srcdir)/src/DBus/DBusInterface.xml
+#
+# Copy the input files to builddir because gdbus-codegen
+# doesn't provide an option to store the output files somewhere
+# else than in the directory where the input files are. And we
+# don't want to create files in the srcdir when building.
+#
+	mkdir -p "$(top_builddir)/src/DBus"
+	cp "$<" "$(top_builddir)/src/DBus/"
+	$(GDBUS_CODEGEN) --interface-prefix org.usbguard --generate-docbook=docbook \
+	  "$(top_builddir)/src/DBus/DBusInterface.xml"
+	for docbook in $(top_builddir)/docbook-org.usbguard.*.xml; do \
+	  $(XSLTPROC) -o "$$(basename -s .xml $$docbook).html" \
+	  "$(top_srcdir)/src/ThirdParty/xsl-stylesheets/xhtml-1_1/docbook.xsl" \
+	  "$(top_builddir)/$$docbook"; \
+	done
+
 if POLICYKIT_ENABLED
 install-polkit-policy:
 	mkdir -p $(DESTDIR)$(POLKIT_POLICY_DIR) && \
