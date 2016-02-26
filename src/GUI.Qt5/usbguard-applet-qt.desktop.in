@@ -7,4 +7,4 @@ TryExec=usbguard-applet-qt
 Exec=usbguard-applet-qt
 Icon=usbguard-icon
 Categories=System;
-X-Desktop-File-Install-Version=0.3
+X-Desktop-File-Install-Version=@VERSION@

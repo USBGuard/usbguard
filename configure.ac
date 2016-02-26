@@ -339,7 +339,10 @@ AM_CONDITIONAL([GUI_QT5_ENABLED], [test "x$with_gui_qt5" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 
-AC_CONFIG_FILES([Makefile libusbguard.pc src/Tests/Makefile])
+AC_CONFIG_FILES([Makefile
+                 src/Tests/Makefile
+                 libusbguard.pc
+                 src/GUI.Qt5/usbguard-applet-qt.desktop])
 AC_OUTPUT
 
 echo

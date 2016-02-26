@@ -340,7 +340,7 @@ if GUI_QT5_ENABLED
 bin_PROGRAMS+= usbguard-applet-qt
 
 desktopdir = $(datadir)/applications
-desktop_DATA = src/GUI.Qt5/usbguard-applet-qt.desktop
+desktop_DATA = $(top_builddir)/src/GUI.Qt5/usbguard-applet-qt.desktop
 
 appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt5/resources/usbguard-icon.svg
@@ -363,7 +363,7 @@ BUILT_SOURCES+=\
 EXTRA_DIST+=\
 	src/GUI.Qt5/DeviceDialog.ui \
 	src/GUI.Qt5/MainWindow.ui \
-	src/GUI.Qt5/usbguard-applet-qt.desktop \
+	src/GUI.Qt5/usbguard-applet-qt.desktop.in \
 	$(usbguard_applet_qt_RESOURCES)
 
 CLEANFILES +=\
