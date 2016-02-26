@@ -420,7 +420,7 @@ namespace usbguard
      * specific rule here.
      */
     Pointer<Rule> device_rule = device->getDeviceRule(/*include_port=*/true);
-    Pointer<const Rule> matched_rule = _ruleset.getFirstMatchingRule(device_rule);
+    Pointer<Rule> matched_rule = _ruleset.getFirstMatchingRule(device_rule);
 
     std::map<std::string,std::string> attributes;
     
@@ -449,6 +449,8 @@ namespace usbguard
     default:
       throw std::runtime_error("BUG: Wrong matched_rule target");
     }
+
+    matched_rule->updateMetaDataCounters(/*applied=*/true);
 
     return;
   }
