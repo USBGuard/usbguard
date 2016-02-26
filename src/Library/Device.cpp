@@ -63,9 +63,9 @@ namespace usbguard {
     return d_pointer->getDeviceRule(include_port);
   }
 
-  uint32_t Device::getSeqn() const
+  uint32_t Device::getID() const
   {
-    return d_pointer->getSeqn();
+    return d_pointer->getID();
   }
 
   Rule::Target Device::getTarget() const
@@ -93,9 +93,9 @@ namespace usbguard {
     return d_pointer->getInterfaceTypes();
   }
 
-  void Device::setSeqn(const uint32_t seqn)
+  void Device::setID(const uint32_t id)
   {
-    d_pointer->setSeqn(seqn);
+    d_pointer->setID(id);
     return;
   }
 

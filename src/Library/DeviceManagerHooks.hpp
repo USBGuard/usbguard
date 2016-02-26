@@ -33,6 +33,6 @@ namespace usbguard
     virtual void dmHookDeviceAllowed(Pointer<Device> device);
     virtual void dmHookDeviceBlocked(Pointer<Device> device);
     virtual void dmHookDeviceRejected(Pointer<Device> device);
-    virtual uint32_t dmHookAssignSeqn() = 0;
+    virtual uint32_t dmHookAssignID() = 0;
   };
 } /* namespace usbguard */

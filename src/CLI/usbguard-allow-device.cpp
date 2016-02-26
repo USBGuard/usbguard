@@ -27,7 +27,7 @@ namespace usbguard
 
   int usbguard_allow_device(int argc, char *argv[])
   {
-    uint32_t seqn = 0;
+    uint32_t id = 0;
     bool append = false;
     int opt = 0;
 
@@ -54,10 +54,10 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    seqn = std::stoul(argv[0]);
+    id = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    ipc.allowDevice(seqn, append, 0);
+    ipc.allowDevice(id, append, 0);
 
     return EXIT_SUCCESS;
   }

@@ -56,7 +56,7 @@ namespace usbguard {
     const RulePrivate& operator=(const RulePrivate& rhs);
     ~RulePrivate();
 
-    uint32_t getSeqn() const;
+    uint32_t getID() const;
     const String& getVendorID() const;
     const String& getProductID() const;
     const String& getSerialNumber() const;
@@ -79,7 +79,7 @@ namespace usbguard {
     uint64_t conditionsState() const;
     void setConditionsState(uint64_t state);
 
-    void setSeqn(uint32_t seqn);
+    void setID(uint32_t id);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
     void setSerialNumber(const String& serial_number);
@@ -215,7 +215,7 @@ namespace usbguard {
   private:
     Rule& _p_instance;
     MetaData _meta;
-    uint32_t _seqn;
+    uint32_t _id;
     String _vendor_id;
     String _product_id;
     String _serial_number;

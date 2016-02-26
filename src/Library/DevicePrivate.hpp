@@ -35,14 +35,14 @@ namespace usbguard {
 
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
-    uint32_t getSeqn() const;
+    uint32_t getID() const;
     Rule::Target getTarget() const;
     String getDeviceHash(bool include_port = false) const;
     const String getPort() const;
     const String& getSerialNumber() const;
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
 
-    void setSeqn(uint32_t seqn);
+    void setID(uint32_t id);
     void setTarget(Rule::Target target);
     void setDeviceName(const String& name);
     void setVendorID(const String& vendor_id);
@@ -58,7 +58,7 @@ namespace usbguard {
   private:
     Device& _p_instance;
     std::mutex _mutex;
-    uint32_t _seqn;
+    uint32_t _id;
     Rule::Target _target;
     String _name;
     String _vendor_id;

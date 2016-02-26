@@ -54,14 +54,14 @@ namespace usbguard
     return;
   }
 
-  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec)
+  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec)
   {
-    return d_pointer->appendRule(rule_spec, parent_seqn, timeout_sec);
+    return d_pointer->appendRule(rule_spec, parent_id, timeout_sec);
   }
 
-  void IPCClient::removeRule(uint32_t seqn)
+  void IPCClient::removeRule(uint32_t id)
   {
-    d_pointer->removeRule(seqn);
+    d_pointer->removeRule(id);
     return;
   }
 
@@ -70,21 +70,21 @@ namespace usbguard
     return d_pointer->listRules();
   }
 
-  void IPCClient::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClient::allowDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    d_pointer->allowDevice(seqn, append, timeout_sec);
+    d_pointer->allowDevice(id, append, timeout_sec);
     return;
   }
 
-  void IPCClient::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClient::blockDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    d_pointer->blockDevice(seqn, append, timeout_sec);
+    d_pointer->blockDevice(id, append, timeout_sec);
     return;
   }
 
-  void IPCClient::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClient::rejectDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    d_pointer->rejectDevice(seqn, append, timeout_sec);
+    d_pointer->rejectDevice(id, append, timeout_sec);
     return;
   }
 

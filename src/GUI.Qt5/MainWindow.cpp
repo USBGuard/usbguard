@@ -118,13 +118,13 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-void MainWindow::showDeviceDialog(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match)
+void MainWindow::showDeviceDialog(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match)
 {
   if (rule_match) {
     return;
   }
 
-  auto dialog = new DeviceDialog(seqn);
+  auto dialog = new DeviceDialog(id);
 
   dialog->setName(QString::fromStdString(attributes.at("name")));
   dialog->setSerial(QString::fromStdString(attributes.at("serial")));
@@ -151,7 +151,7 @@ void MainWindow::showMessage(const QString& message, bool alert)
   return;
 }
 
-void MainWindow::notifyInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched)
+void MainWindow::notifyInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched)
 {
   if (ui->notify_inserted->isChecked()) {
     if (rule_matched) {
@@ -162,7 +162,7 @@ void MainWindow::notifyInserted(quint32 seqn, const std::map<std::string, std::s
   return;
 }
 
-void MainWindow::notifyPresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target)
+void MainWindow::notifyPresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target)
 {
   if (ui->notify_present->isChecked()) {
     systray->showMessage(tr("USB Device Present"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
@@ -171,7 +171,7 @@ void MainWindow::notifyPresent(quint32 seqn, const std::map<std::string, std::st
   return;
 }
 
-void MainWindow::notifyRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes)
+void MainWindow::notifyRemoved(quint32 id, const std::map<std::string, std::string>& attributes)
 {
   if (ui->notify_removed->isChecked()) {
     systray->showMessage(tr("USB Device Removed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
@@ -180,7 +180,7 @@ void MainWindow::notifyRemoved(quint32 seqn, const std::map<std::string, std::st
   return;
 }
 
-void MainWindow::notifyAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes)
+void MainWindow::notifyAllowed(quint32 id, const std::map<std::string, std::string>& attributes)
 {
   if (ui->notify_allowed->isChecked()) {
     systray->showMessage(tr("USB Device Allowed"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Information);
@@ -189,7 +189,7 @@ void MainWindow::notifyAllowed(quint32 seqn, const std::map<std::string, std::st
   return;
 }
 
-void MainWindow::notifyBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes)
+void MainWindow::notifyBlocked(quint32 id, const std::map<std::string, std::string>& attributes)
 {
   if (ui->notify_blocked->isChecked()) {
     systray->showMessage(tr("USB Device Blocked"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Warning);
@@ -198,7 +198,7 @@ void MainWindow::notifyBlocked(quint32 seqn, const std::map<std::string, std::st
   return;
 }
 
-void MainWindow::notifyRejected(quint32 seqn, const std::map<std::string, std::string>& attributes)
+void MainWindow::notifyRejected(quint32 id, const std::map<std::string, std::string>& attributes)
 {
   if (ui->notify_rejected->isChecked()) {
     systray->showMessage(tr("USB Device Rejected"), QString(tr("Name: %1")).arg(QString::fromStdString(attributes.at("name"))), QSystemTrayIcon::Critical);
@@ -267,28 +267,28 @@ void MainWindow::ipcTryConnect()
   }
 }
 
-void MainWindow::allowDevice(quint32 seqn, bool append)
+void MainWindow::allowDevice(quint32 id, bool append)
 {
   try {
-    IPCClient::allowDevice(seqn, append, 0);
+    IPCClient::allowDevice(id, append, 0);
   }
   catch(...) {
   }
 }
 
-void MainWindow::blockDevice(quint32 seqn, bool append)
+void MainWindow::blockDevice(quint32 id, bool append)
 {
   try {
-    IPCClient::blockDevice(seqn, append, 0);
+    IPCClient::blockDevice(id, append, 0);
   }
   catch(...) {
   }
 }
 
-void MainWindow::rejectDevice(quint32 seqn, bool append)
+void MainWindow::rejectDevice(quint32 id, bool append)
 {
   try {
-    IPCClient::rejectDevice(seqn, append, 0);
+    IPCClient::rejectDevice(id, append, 0);
   } catch(...) {
   }
 }
@@ -325,34 +325,34 @@ void MainWindow::changeEvent(QEvent* e)
   return;
 }
 
-void MainWindow::DeviceInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_seqn)
+void MainWindow::DeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_id)
 {
-  emit uiDeviceInserted(seqn, attributes, interfaces, rule_match);
+  emit uiDeviceInserted(id, attributes, interfaces, rule_match);
 }
 
-void MainWindow::DevicePresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target)
+void MainWindow::DevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target)
 {
-  emit uiDevicePresent(seqn, attributes, interfaces, target);
+  emit uiDevicePresent(id, attributes, interfaces, target);
 }
 
-void MainWindow::DeviceRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes)
+void MainWindow::DeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes)
 {
-  emit uiDeviceRemoved(seqn, attributes);
+  emit uiDeviceRemoved(id, attributes);
 }
 
-void MainWindow::DeviceAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_seqn)
+void MainWindow::DeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id)
 {
-  emit uiDeviceAllowed(seqn, attributes);
+  emit uiDeviceAllowed(id, attributes);
 }
 
-void MainWindow::DeviceBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_seqn)
+void MainWindow::DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id)
 {
-  emit uiDeviceBlocked(seqn, attributes);
+  emit uiDeviceBlocked(id, attributes);
 }
 
-void MainWindow::DeviceRejected(quint32 seqn, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_seqn)
+void MainWindow::DeviceRejected(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id)
 {
-  emit uiDeviceRejected(seqn, attributes);
+  emit uiDeviceRejected(id, attributes);
 }
 
 void MainWindow::IPCConnected()

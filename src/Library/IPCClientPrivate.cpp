@@ -134,11 +134,11 @@ namespace usbguard
 	  interfaces.push_back(USBInterfaceType(type_string));
 	}
 
-	_p_instance.DeviceInserted(jobj["seqn"],
+	_p_instance.DeviceInserted(jobj["id"],
 				   attributes,
 				   interfaces,
 				   jobj["rule_match"],
-				   jobj["rule_seqn"]);
+				   jobj["rule_id"]);
       }
       else if (name == "DevicePresent") {
 	const json attributes_json = jobj.at("attributes");
@@ -156,7 +156,7 @@ namespace usbguard
 	  interfaces.push_back(USBInterfaceType(type_string));
 	}
 
-	_p_instance.DevicePresent(jobj["seqn"],
+	_p_instance.DevicePresent(jobj["id"],
 				  attributes,
 				  interfaces,
 				  Rule::targetFromString(jobj["target"]));
@@ -171,7 +171,7 @@ namespace usbguard
 	  attributes[key] = value;
 	}
 
-	_p_instance.DeviceRemoved(jobj["seqn"],
+	_p_instance.DeviceRemoved(jobj["id"],
 				  attributes);
       }
       else if (name == "DeviceAllowed") {
@@ -184,10 +184,10 @@ namespace usbguard
 	  attributes[key] = value;
 	}
 
-	_p_instance.DeviceAllowed(jobj["seqn"],
+	_p_instance.DeviceAllowed(jobj["id"],
 				  attributes,
 				  jobj["rule_match"],
-				  jobj["rule_seqn"]);
+				  jobj["rule_id"]);
       }
       else if (name == "DeviceBlocked") {
 	const json attributes_json = jobj.at("attributes");
@@ -199,10 +199,10 @@ namespace usbguard
 	  attributes[key] = value;
 	}
 
-	_p_instance.DeviceBlocked(jobj["seqn"],
+	_p_instance.DeviceBlocked(jobj["id"],
 				  attributes,
 				  jobj["rule_match"],
-				  jobj["rule_seqn"]);
+				  jobj["rule_id"]);
       }
       else if (name == "DeviceRejected") {
 	const json attributes_json = jobj.at("attributes");
@@ -214,10 +214,10 @@ namespace usbguard
 	  attributes[key] = value;
 	}
 
-	_p_instance.DeviceRejected(jobj["seqn"],
+	_p_instance.DeviceRejected(jobj["id"],
 				   attributes,
 				   jobj["rule_match"],
-				   jobj["rule_seqn"]);
+				   jobj["rule_id"]);
       }
       else {
 	throw 0;
@@ -334,12 +334,12 @@ namespace usbguard
     _thread.wait();
   }
 
-  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec)
+  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "appendRule" },
       {   "rule_spec", rule_spec },
-      { "parent_seqn", parent_seqn },
+      { "parent_id", parent_id },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
     };
@@ -355,11 +355,11 @@ namespace usbguard
     }
   }
 
-  void IPCClientPrivate::removeRule(uint32_t seqn)
+  void IPCClientPrivate::removeRule(uint32_t id)
   {
     const json jreq = {
       {   "_m", "removeRule" },
-      { "seqn", seqn },
+      { "id", id },
       {   "_i", IPC::uniqueID() }
     };
 
@@ -381,10 +381,10 @@ namespace usbguard
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
         const json rule_json = it.value(); 
-        const uint32_t rule_seqn = rule_json["seqn"];
+        const uint32_t rule_id = rule_json["id"];
         const std::string rule_string = rule_json["rule"];
         Rule rule = Rule::fromString(rule_string);
-        rule.setSeqn(rule_seqn);
+        rule.setID(rule_id);
         ruleset.appendRule(rule);
       }
 
@@ -395,11 +395,11 @@ namespace usbguard
     }
   }
 
-  void IPCClientPrivate::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::allowDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "allowDevice" },
-      {        "seqn", seqn },
+      {        "id", id },
       {      "append", append },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
@@ -409,11 +409,11 @@ namespace usbguard
     return;
   }
 
-  void IPCClientPrivate::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::blockDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "blockDevice" },
-      {        "seqn", seqn },
+      {        "id", id },
       {      "append", append },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
@@ -423,11 +423,11 @@ namespace usbguard
     return;
   }
 
-  void IPCClientPrivate::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::rejectDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "rejectDevice" },
-      {        "seqn", seqn },
+      {        "id", id },
       {      "append", append },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
@@ -452,10 +452,10 @@ namespace usbguard
 
       for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
         const json device_json = it.value();
-        const uint32_t device_seqn = device_json["seqn"];
+        const uint32_t device_id = device_json["id"];
         const std::string device_string = device_json["device"];
         Rule device_rule = Rule::fromString(device_string);
-        device_rule.setSeqn(device_seqn);
+        device_rule.setID(device_id);
         devices.push_back(device_rule);
       }
 

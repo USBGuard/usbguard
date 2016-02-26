@@ -31,7 +31,7 @@ class DeviceDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit DeviceDialog(quint32 seqn, QWidget *parent = 0);
+  explicit DeviceDialog(quint32 id, QWidget *parent = 0);
   ~DeviceDialog();
 
   void setName(const QString& name);
@@ -40,9 +40,9 @@ public:
   void setInterfaceTypes(const std::vector<usbguard::USBInterfaceType>& interfaces);
 
 signals:
-  void allowed(quint32 seqn, bool permanent);
-  void blocked(quint32 seqn, bool permanent);
-  void rejected(quint32 seqn, bool permanent);
+  void allowed(quint32 id, bool permanent);
+  void blocked(quint32 id, bool permanent);
+  void rejected(quint32 id, bool permanent);
 
 protected slots:
   void timerUpdate();
@@ -65,7 +65,7 @@ private:
   QTimer timer;
   int time_left;
 
-  quint32 device_seqn;
+  quint32 device_id;
 
   QString _name;
   QString _serial;

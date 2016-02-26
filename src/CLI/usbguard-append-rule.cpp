@@ -27,7 +27,7 @@ namespace usbguard
 
   int usbguard_append_rule(int argc, char *argv[])
   {
-    uint32_t parent_seqn = usbguard::Rule::SeqnLast;
+    uint32_t parent_id = usbguard::Rule::LastID;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
@@ -36,7 +36,7 @@ namespace usbguard
           showHelp(std::cout);
           return EXIT_SUCCESS;
         case 'a':
-          parent_seqn = std::stoul(optarg);
+          parent_id = std::stoul(optarg);
           break;
         case '?':
           showHelp(std::cerr);
@@ -56,9 +56,9 @@ namespace usbguard
     usbguard::IPCClient ipc(/*connected=*/true);
 
     const std::string rule_spec = argv[0];
-    const uint32_t seqn = ipc.appendRule(rule_spec, parent_seqn, 0);
+    const uint32_t id = ipc.appendRule(rule_spec, parent_id, 0);
 
-    std::cout << seqn << std::endl;
+    std::cout << id << std::endl;
 
     return EXIT_SUCCESS;
   }

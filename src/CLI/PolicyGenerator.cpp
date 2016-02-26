@@ -100,7 +100,7 @@ namespace usbguard
     /* Remove everything but the hash value for hash-only rules */
     if (_hash_only) {
       Pointer<Rule> rule_hashonly(new Rule());
-      rule_hashonly->setSeqn(rule->getSeqn());
+      rule_hashonly->setID(rule->getID());
       rule_hashonly->setDeviceHash(rule->getDeviceHash());
 
       if (port_specific) {
@@ -145,8 +145,8 @@ namespace usbguard
     throw std::runtime_error("BUG: DeviceRejected hook should not be called");
   }
   
-  uint32_t PolicyGenerator::dmHookAssignSeqn()
+  uint32_t PolicyGenerator::dmHookAssignID()
   {
-    return _ruleset.assignSeqn();
+    return _ruleset.assignID();
   }
 } /* namespace usbguard */

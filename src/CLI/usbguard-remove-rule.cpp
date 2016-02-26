@@ -46,10 +46,10 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    const uint32_t seqn = std::stoul(argv[0]);
+    const uint32_t id = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    ipc.removeRule(seqn);
+    ipc.removeRule(id);
 
     return EXIT_SUCCESS;
   }

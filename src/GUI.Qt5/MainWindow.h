@@ -36,12 +36,12 @@ public:
   ~MainWindow();
 
 signals:
-  void uiDeviceInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
-  void uiDevicePresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void uiDeviceRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes);
-  void uiDeviceAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes);
-  void uiDeviceBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes);
-  void uiDeviceRejected(quint32 seqn, const std::map<std::string, std::string>& attributes);
+  void uiDeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
+  void uiDevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
+  void uiDeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
+  void uiDeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes);
+  void uiDeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes);
+  void uiDeviceRejected(quint32 id, const std::map<std::string, std::string>& attributes);
   void uiConnected();
   void uiDisconnected();
 
@@ -50,23 +50,23 @@ protected slots:
   void flashStep();
   void ipcTryConnect();
 
-  void showDeviceDialog(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
+  void showDeviceDialog(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
   void showMessage(const QString &message, bool alert = false);
 
-  void notifyInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched);
-  void notifyPresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void notifyRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes);
+  void notifyInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched);
+  void notifyPresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
+  void notifyRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
     
-  void notifyAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes);
-  void notifyBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes);
-  void notifyRejected(quint32 seqn, const std::map<std::string, std::string>& attributes);
+  void notifyAllowed(quint32 id, const std::map<std::string, std::string>& attributes);
+  void notifyBlocked(quint32 id, const std::map<std::string, std::string>& attributes);
+  void notifyRejected(quint32 id, const std::map<std::string, std::string>& attributes);
 
   void notifyIPCConnected();
   void notifyIPCDisconnected();
 
-  void allowDevice(quint32 seqn, bool append);
-  void blockDevice(quint32 seqn, bool append);
-  void rejectDevice(quint32 seqn, bool append);
+  void allowDevice(quint32 id, bool append);
+  void blockDevice(quint32 id, bool append);
+  void rejectDevice(quint32 id, bool append);
 
   void handleIPCConnect();
   void handleIPCDisconnect();
@@ -77,13 +77,13 @@ protected:
   void startFlashing();
   void stopFlashing();
 
-  void DeviceInserted(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_seqn);
-  void DevicePresent(quint32 seqn, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void DeviceRemoved(quint32 seqn, const std::map<std::string, std::string>& attributes);
+  void DeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_id);
+  void DevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
+  void DeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
 
-  void DeviceAllowed(quint32 seqn, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_seqn);
-  void DeviceBlocked(quint32 seqn, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_seqn);
-  void DeviceRejected(quint32 seqn, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_seqn);
+  void DeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id);
+  void DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id);
+  void DeviceRejected(quint32 id, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_id);
 
   void IPCConnected();
   void IPCDisconnected();

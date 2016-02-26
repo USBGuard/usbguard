@@ -22,9 +22,9 @@
 #include <locale>
 
 namespace usbguard {
-  const uint32_t Rule::SeqnRoot = std::numeric_limits<uint32_t>::min();
-  const uint32_t Rule::SeqnDefault = std::numeric_limits<uint32_t>::max();
-  const uint32_t Rule::SeqnLast = std::numeric_limits<uint32_t>::max() - 1;
+  const uint32_t Rule::RootID = std::numeric_limits<uint32_t>::min();
+  const uint32_t Rule::DefaultID = std::numeric_limits<uint32_t>::max();
+  const uint32_t Rule::LastID = std::numeric_limits<uint32_t>::max() - 1;
 
   Rule::Rule()
   {
@@ -51,9 +51,9 @@ namespace usbguard {
     return *this;
   }
 
-  uint32_t Rule::getSeqn() const
+  uint32_t Rule::getID() const
   {
-    return d_pointer->getSeqn();
+    return d_pointer->getID();
   }
   
   const String& Rule::getVendorID() const
@@ -129,12 +129,12 @@ namespace usbguard {
 
   bool Rule::isImplicit() const
   {
-    return d_pointer->getSeqn() == Rule::SeqnDefault;
+    return d_pointer->getID() == Rule::DefaultID;
   }
   
-  void Rule::setSeqn(uint32_t seqn)
+  void Rule::setID(uint32_t id)
   {
-    d_pointer->setSeqn(seqn);
+    d_pointer->setID(id);
     return;
   }
 

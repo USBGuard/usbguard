@@ -33,11 +33,11 @@ namespace usbguard {
     const DeviceManagerPrivate& operator=(const DeviceManagerPrivate& rhs);
     
     void insertDevice(Pointer<Device> device);
-    Pointer<Device> removeDevice(uint32_t seqn);
+    Pointer<Device> removeDevice(uint32_t id);
 
     /* Returns a copy of the list of active USB devices */
     PointerVector<Device> getDeviceList();
-    Pointer<Device> getDevice(uint32_t seqn);
+    Pointer<Device> getDevice(uint32_t id);
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */

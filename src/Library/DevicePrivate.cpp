@@ -26,7 +26,7 @@ namespace usbguard {
     : _p_instance(p_instance)
   {
     (void)_p_instance;
-    _seqn = Rule::SeqnDefault;
+    _id = Rule::DefaultID;
     _target = Rule::Target::Unknown;
     _num_configurations = -1;
     _num_interfaces = -1;
@@ -45,7 +45,7 @@ namespace usbguard {
   {
     // TODO: Check that the device_rule is of type "Device"
 
-    _seqn = device_rule.getSeqn();
+    _id = device_rule.getID();
     _target = device_rule.getTarget();
     _name = device_rule.getDeviceName();
     _vendor_id = device_rule.getVendorID();
@@ -61,7 +61,7 @@ namespace usbguard {
 
   const DevicePrivate& DevicePrivate::operator=(const DevicePrivate& rhs)
   {
-    _seqn = rhs._seqn;
+    _id = rhs._id;
     _target = rhs._target;
     _name = rhs._name;
     _vendor_id = rhs._vendor_id;
@@ -87,7 +87,7 @@ namespace usbguard {
     logger->trace("Generating rule for device {}:{}@{} (name={}); include_port={}",
 		  _vendor_id, _product_id, _port, _name, include_port);
 
-    device_rule->setSeqn(_seqn);
+    device_rule->setID(_id);
     device_rule->setTarget(_target);
     device_rule->setVendorID(_vendor_id);
     device_rule->setProductID(_product_id);
@@ -106,9 +106,9 @@ namespace usbguard {
     return device_rule;
   }
 
-  uint32_t DevicePrivate::getSeqn() const
+  uint32_t DevicePrivate::getID() const
   {
-    return _seqn;
+    return _id;
   }
 
   Rule::Target DevicePrivate::getTarget() const
@@ -160,9 +160,9 @@ namespace usbguard {
     return _interface_types;
   }
 
-  void DevicePrivate::setSeqn(const uint32_t seqn)
+  void DevicePrivate::setID(const uint32_t id)
   {
-    _seqn = seqn;
+    _id = id;
     return;
   }
 

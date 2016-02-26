@@ -38,18 +38,18 @@ namespace usbguard {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
-    virtual Pointer<Device> allowDevice(uint32_t seqn) = 0;
-    virtual Pointer<Device> blockDevice(uint32_t seqn) = 0;
-    virtual Pointer<Device> rejectDevice(uint32_t seqn) = 0;
+    virtual Pointer<Device> allowDevice(uint32_t id) = 0;
+    virtual Pointer<Device> blockDevice(uint32_t id) = 0;
+    virtual Pointer<Device> rejectDevice(uint32_t id) = 0;
 
     virtual void insertDevice(Pointer<Device> device);
-    Pointer<Device> removeDevice(uint32_t seqn);
+    Pointer<Device> removeDevice(uint32_t id);
 
     /* Returns a copy of the list of active USB devices */
     PointerVector<Device> getDeviceList();
     PointerVector<Device> getDeviceList(const Rule& query);
 
-    Pointer<Device> getDevice(uint32_t seqn);
+    Pointer<Device> getDevice(uint32_t id);
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */

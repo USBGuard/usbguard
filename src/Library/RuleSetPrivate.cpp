@@ -31,7 +31,7 @@ namespace usbguard {
     (void)_p_instance;
     _default_target = Rule::Target::Block;
     _default_action = String();
-    _seqn_next = Rule::SeqnRoot + 1;
+    _id_next = Rule::RootID + 1;
     return;
   }
 
@@ -47,7 +47,7 @@ namespace usbguard {
   {
     _default_target = rhs._default_target;
     _default_action = rhs._default_action;
-    _seqn_next = rhs._seqn_next.load();
+    _id_next = rhs._id_next.load();
     _rules = rhs._rules;
     _rules_timed = rhs._rules_timed;
     return *this;
@@ -121,7 +121,7 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_seqn)
+  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     auto rule_ptr = makePointer<Rule>(rule);
@@ -130,37 +130,37 @@ namespace usbguard {
      * If the rule doesn't already have a sequence number
      * assigned, do it now. Otherwise update the sequence
      * number counter so that we don't generate a duplicit
-     * one if assignSeqn() gets called in the future.
+     * one if assignID() gets called in the future.
      */
-    if (rule_ptr->getSeqn() == Rule::SeqnDefault) {
-      assignSeqn(rule_ptr);
+    if (rule_ptr->getID() == Rule::DefaultID) {
+      assignID(rule_ptr);
     }
     else {
-      _seqn_next = std::max(_seqn_next.load(), rule_ptr->getSeqn() + 1);
+      _id_next = std::max(_id_next.load(), rule_ptr->getID() + 1);
     }
 
     /* Initialize conditions */
     rule_ptr->internal()->initConditions(_interface_ptr);
 
     /* Append the rule to the main rule table */
-    if (parent_seqn == Rule::SeqnLast) {
+    if (parent_id == Rule::LastID) {
       _rules.push_back(rule_ptr);
     }
-    else if (parent_seqn == 0) {
+    else if (parent_id == 0) {
       _rules.insert(_rules.begin(), rule_ptr);
     }
     else {
       bool parent_found = false;
       for (auto it = _rules.begin(); it != _rules.end(); ++it) {
 	const Rule& rule = **it;
-	if (rule.getSeqn() == parent_seqn) {
+	if (rule.getID() == parent_id) {
 	  _rules.insert(it+1, rule_ptr);
 	  parent_found = true;
 	  break;
 	}
       }
       if (!parent_found) {
-	throw std::runtime_error("Invalid parent_seqn");
+	throw std::runtime_error("Invalid parent_id");
       }
     }
 
@@ -169,26 +169,26 @@ namespace usbguard {
       _rules_timed.push(rule_ptr);
     }
 
-    return rule_ptr->getSeqn();
+    return rule_ptr->getID();
   }
 
-  Pointer<const Rule> RuleSetPrivate::getRule(uint32_t seqn)
+  Pointer<const Rule> RuleSetPrivate::getRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto const& rule : _rules) {
-      if (rule->getSeqn() == seqn) {
+      if (rule->getID() == id) {
 	return rule;
       }
     }
     throw std::out_of_range("Rule not found");
   }
 
-  bool RuleSetPrivate::removeRule(uint32_t seqn)
+  bool RuleSetPrivate::removeRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto it = _rules.begin(); it != _rules.end(); ++it) {
       auto const& rule_ptr = *it;
-      if (rule_ptr->getSeqn() == seqn) {
+      if (rule_ptr->getID() == id) {
         _rules.erase(it);
         return true;
       }
@@ -197,7 +197,7 @@ namespace usbguard {
     throw std::out_of_range("Rule not found");
   }
 
-  Pointer<Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn) const
+  Pointer<Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
 
@@ -209,7 +209,7 @@ namespace usbguard {
 
     Pointer<Rule> default_rule = makePointer<Rule>();
 
-    default_rule->setSeqn(Rule::SeqnDefault);
+    default_rule->setID(Rule::DefaultID);
     default_rule->setTarget(_default_target);
     default_rule->setAction(_default_action);
 
@@ -249,15 +249,15 @@ namespace usbguard {
     return oldest_rule;
   }
 
-  uint32_t RuleSetPrivate::assignSeqn(Pointer<Rule> rule)
+  uint32_t RuleSetPrivate::assignID(Pointer<Rule> rule)
   {
-    rule->setSeqn(assignSeqn());
-    return rule->getSeqn();
+    rule->setID(assignID());
+    return rule->getID();
   }
 
-  uint32_t RuleSetPrivate::assignSeqn()
+  uint32_t RuleSetPrivate::assignID()
   {
-    return _seqn_next++;
+    return _id_next++;
   }
 
 } /* namespace usbguard */

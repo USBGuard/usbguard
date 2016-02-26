@@ -77,29 +77,29 @@ namespace usbguard {
 
     /**
      * Assign a sequence number to a rule and append it to the rule set.
-     * If `parent_seqn' is not specified, the rule will be appended at the end od the ruleset.
+     * If `parent_id' is not specified, the rule will be appended at the end od the ruleset.
      * The method returns the sequence number assigned to the rule.
      */
-    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
+    uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID);
 
     /**
      * Get a rule pointer to a rule with the specified sequence number.
      * Returns nullptr if no such rule exists.
      */
-    Pointer<const Rule> getRule(uint32_t seqn);
+    Pointer<const Rule> getRule(uint32_t id);
     
     /**
      * Remove a rule from the ruleset.
      * The method returns true if a rule was removed and false otherwise.
      */
-    bool removeRule(uint32_t seqn);
+    bool removeRule(uint32_t id);
 
     /**
      * Find first rule in the ruleset which matched the specified device rule.
-     * If `from_seqn' isn't specified, the method searches from the beginning of the ruleset.
+     * If `from_id' isn't specified, the method searches from the beginning of the ruleset.
      * If no matching rule is found, nullptr is returned.
      */
-    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1) const;
+    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
 
     /**
      * Get all rules from the set.
@@ -116,12 +116,12 @@ namespace usbguard {
      * Assign a unique sequence number to a rule.
      * Return the assigned sequence number.
      */
-    uint32_t assignSeqn(Pointer<Rule> rule);
+    uint32_t assignID(Pointer<Rule> rule);
 
     /**
      * Generate a unique sequence number.
      */
-    uint32_t assignSeqn();
+    uint32_t assignID();
 
   private:
     RuleSetPrivate* d_pointer;

@@ -42,11 +42,11 @@ namespace usbguard {
     };
 
     /**< Sequence number of the (fake) root rule */
-    static const uint32_t SeqnRoot;
+    static const uint32_t RootID;
     /**< Sequence number assigned to default constructed rules. Cannot be used for searching. */
-    static const uint32_t SeqnDefault;
+    static const uint32_t DefaultID;
     /**< Sequence number for specifying that the last rule in the ruleset should be used in context of the operation */
-    static const uint32_t SeqnLast;
+    static const uint32_t LastID;
 
     enum class SetOperator {
       AllOf,
@@ -67,7 +67,7 @@ namespace usbguard {
     Rule(const Rule& rhs);
     const Rule& operator=(const Rule& rhs);
 
-    uint32_t getSeqn() const;
+    uint32_t getID() const;
     const String& getVendorID() const;
     const String& getProductID() const;
     const String& getSerialNumber() const;
@@ -85,7 +85,7 @@ namespace usbguard {
     bool appliesTo(const Rule& rhs);
     bool isImplicit() const;
 
-    void setSeqn(uint32_t seqn);
+    void setID(uint32_t id);
     void setVendorID(const String& vendor_id);
     void setProductID(const String& product_id);
     void setSerialNumber(const String& serial_number);

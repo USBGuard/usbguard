@@ -54,14 +54,14 @@ namespace usbguard {
     void start();
     void stop();
     void scan();
-    Pointer<Device> allowDevice(uint32_t seqn);
-    Pointer<Device> blockDevice(uint32_t seqn);
-    Pointer<Device> rejectDevice(uint32_t seqn);
+    Pointer<Device> allowDevice(uint32_t id);
+    Pointer<Device> blockDevice(uint32_t id);
+    Pointer<Device> rejectDevice(uint32_t id);
     void insertDevice(Pointer<Device> device);
     Pointer<Device> removeDevice(const String& syspath);
 
   protected:
-    Pointer<Device> applyDevicePolicy(uint32_t seqn, Rule::Target target);
+    Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target);
     void thread();
     void udevReceiveDevice();
     void udevEnumerateDevices();

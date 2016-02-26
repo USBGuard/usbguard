@@ -22,7 +22,7 @@
 #include <QStyle>
 #include <QDesktopWidget>
 
-DeviceDialog::DeviceDialog(quint32 seqn, QWidget *parent) :
+DeviceDialog::DeviceDialog(quint32 id, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DeviceDialog)
 {
@@ -31,7 +31,7 @@ DeviceDialog::DeviceDialog(quint32 seqn, QWidget *parent) :
   setWindowTitle(QString(tr("USB Device Inserted")));
   setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowStaysOnTopHint);
 
-  device_seqn = seqn;
+  device_id = id;
 
   time_left = 23;
   connect(&timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
@@ -131,19 +131,19 @@ DeviceDialog::~DeviceDialog()
 
 void DeviceDialog::on_allow_button_clicked()
 {
-  emit allowed(device_seqn, ui->permanent_checkbox->isChecked());
+  emit allowed(device_id, ui->permanent_checkbox->isChecked());
   accept();
 }
 
 void DeviceDialog::on_block_button_clicked()
 {
-  emit blocked(device_seqn, ui->permanent_checkbox->isChecked());
+  emit blocked(device_id, ui->permanent_checkbox->isChecked());
   accept();
 }
 
 void DeviceDialog::on_reject_button_clicked()
 {
-  emit rejected(device_seqn, ui->permanent_checkbox->isChecked());
+  emit rejected(device_id, ui->permanent_checkbox->isChecked());
   accept();
 }
 

@@ -54,9 +54,9 @@ namespace usbguard {
     return;
   }
 
-  Pointer<Device> DeviceManager::removeDevice(uint32_t seqn)
+  Pointer<Device> DeviceManager::removeDevice(uint32_t id)
   {
-    return d_pointer->removeDevice(seqn);
+    return d_pointer->removeDevice(id);
   }
 
   PointerVector<Device> DeviceManager::getDeviceList()
@@ -90,9 +90,9 @@ namespace usbguard {
     return matching_devices;
   }
 
-  Pointer<Device> DeviceManager::getDevice(uint32_t seqn)
+  Pointer<Device> DeviceManager::getDevice(uint32_t id)
   {
-    return d_pointer->getDevice(seqn);
+    return d_pointer->getDevice(id);
   }
 
   void DeviceManager::DeviceInserted(Pointer<Device> device)

@@ -26,7 +26,7 @@ namespace usbguard {
     : _p_instance(p_instance)
   {
     (void)_p_instance;
-    _seqn = Rule::SeqnDefault;
+    _id = Rule::DefaultID;
     _target = Rule::Target::Invalid;
     _timeout_seconds = 0;
     _device_ports_op = Rule::SetOperator::Match;
@@ -46,7 +46,7 @@ namespace usbguard {
   
   const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
   {
-    _seqn = rhs._seqn;
+    _id = rhs._id;
     _meta = rhs._meta;
     _vendor_id = rhs._vendor_id;
     _product_id = rhs._product_id;
@@ -84,9 +84,9 @@ namespace usbguard {
     }
   }
 
-  uint32_t RulePrivate::getSeqn() const
+  uint32_t RulePrivate::getID() const
   {
-    return _seqn;
+    return _id;
   }
   
   const String& RulePrivate::getVendorID() const
@@ -160,7 +160,7 @@ namespace usbguard {
 
     /*
      * If a this set of rules contains the rhs rule, return true. Otherwise false.
-     * Ignored fields: rule_seqn, target, action, ts_added, timeout_sec, ref_syspath
+     * Ignored fields: rule_id, target, action, ts_added, timeout_sec, ref_syspath
      */
     if (!_vendor_id.empty()) {
       if (_vendor_id != rhs.getVendorID()) {
@@ -282,12 +282,12 @@ namespace usbguard {
     if (!appliesTo(rhs)) {
       return false;
     }
-    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getSeqn(), rhs.getSeqn());
+    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getID(), rhs.getID());
     if (!meetsConditions(rhs, with_update)) {
-      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getSeqn(), getSeqn());
+      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getID(), getID());
       return false;
     }
-    logger->debug("Rule {} meets conditions of rule {}", rhs.getSeqn(), getSeqn());
+    logger->debug("Rule {} meets conditions of rule {}", rhs.getID(), getID());
     return true;
   }
 
@@ -344,7 +344,7 @@ namespace usbguard {
     }
 
     logger->debug("Condition state of rule {}: current={} updated={}",
-                  rhs.getSeqn(), conditionsState(), updated_state);
+                  rhs.getID(), conditionsState(), updated_state);
 
     if (updated_state != conditionsState()) {
       setConditionsState(updated_state);
@@ -364,9 +364,9 @@ namespace usbguard {
     _conditions_state = state;
   }
 
-  void RulePrivate::setSeqn(uint32_t seqn)
+  void RulePrivate::setID(uint32_t id)
   {
-    _seqn = seqn;
+    _id = id;
     return;
   }
 

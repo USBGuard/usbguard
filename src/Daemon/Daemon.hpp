@@ -62,47 +62,47 @@ namespace usbguard
     /* Stop the daemon */
     void quit();
 
-    uint32_t assignSeqn();
+    uint32_t assignID();
 
     /* IPC methods */
-    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_seqn, uint32_t timeout_sec);
-    void removeRule(uint32_t seqn);
+    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec);
+    void removeRule(uint32_t id);
     const RuleSet listRules();
 
-    void allowDevice(uint32_t seqn, bool append,  uint32_t timeout_sec);
-    void blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
-    void rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec);
+    void allowDevice(uint32_t id, bool append,  uint32_t timeout_sec);
+    void blockDevice(uint32_t id, bool append, uint32_t timeout_sec);
+    void rejectDevice(uint32_t id, bool append, uint32_t timeout_sec);
     const std::vector<Rule> listDevices(const std::string& query);
 
     /* IPC Signals */
-    void DeviceInserted(uint32_t seqn,
+    void DeviceInserted(uint32_t id,
 			const std::map<std::string,std::string>& attributes,
 			const std::vector<USBInterfaceType>& interfaces,
 			bool rule_match,
-			uint32_t rule_seqn);
+			uint32_t rule_id);
 
-    void DevicePresent(uint32_t seqn,
+    void DevicePresent(uint32_t id,
 		       const std::map<std::string,std::string>& attributes,
 		       const std::vector<USBInterfaceType>& interfaces,
 		       Rule::Target target);
 
-    void DeviceRemoved(uint32_t seqn,
+    void DeviceRemoved(uint32_t id,
 		       const std::map<std::string,std::string>& attributes);
 
-    void DeviceAllowed(uint32_t seqn,
+    void DeviceAllowed(uint32_t id,
 		       const std::map<std::string,std::string>& attributes,
 		       bool rule_match,
-		       uint32_t rule_seqn);
+		       uint32_t rule_id);
 
-    void DeviceBlocked(uint32_t seqn,
+    void DeviceBlocked(uint32_t id,
 		       const std::map<std::string,std::string>& attributes,
 		       bool rule_match,
-		       uint32_t rule_seqn);
+		       uint32_t rule_id);
 
-    void DeviceRejected(uint32_t seqn,
+    void DeviceRejected(uint32_t id,
 			const std::map<std::string,std::string>& attributes,
 			bool rule_match,
-			uint32_t rule_seqn);
+			uint32_t rule_id);
 
     /* Device manager hooks */
     void dmHookDeviceInserted(Pointer<Device> device);
@@ -111,7 +111,7 @@ namespace usbguard
     void dmHookDeviceAllowed(Pointer<Device> device);
     void dmHookDeviceBlocked(Pointer<Device> device);
     void dmHookDeviceRejected(Pointer<Device> device);
-    uint32_t dmHookAssignSeqn();
+    uint32_t dmHookAssignID();
 
     json processJSON(const json& jobj);
     json processMethodCallJSON(const json& jobj);
@@ -139,11 +139,11 @@ namespace usbguard
     void qbIPCBroadcastString(const std::string& s);
     void qbIPCBroadcastJSON(const json& jobj);
 
-    void allowDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
-    void blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
-    void rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule);
+    void allowDevice(uint32_t id, Pointer<const Rule> matched_rule);
+    void blockDevice(uint32_t id, Pointer<const Rule> matched_rule);
+    void rejectDevice(uint32_t id, Pointer<const Rule> matched_rule);
 
-    Pointer<const Rule> appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec);
+    Pointer<const Rule> appendDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec);
 
     bool DACAuthenticateIPCConnection(uid_t uid, gid_t gid);
     void DACAddAllowedUID(uid_t uid);

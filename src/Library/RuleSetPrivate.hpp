@@ -39,14 +39,14 @@ namespace usbguard {
     void save(std::ostream& stream) const;
     void setDefaultTarget(Rule::Target target);
     void setDefaultAction(const String& action);
-    uint32_t appendRule(const Rule& rule, uint32_t parent_seqn = Rule::SeqnLast);
-    Pointer<const Rule> getRule(uint32_t seqn);
-    bool removeRule(uint32_t seqn);
-    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn = 1) const;
+    uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID);
+    Pointer<const Rule> getRule(uint32_t id);
+    bool removeRule(uint32_t id);
+    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
     PointerVector<const Rule> getRules();
     Pointer<Rule> getTimedOutRule();
-    uint32_t assignSeqn(Pointer<Rule> rule);
-    uint32_t assignSeqn();
+    uint32_t assignID(Pointer<Rule> rule);
+    uint32_t assignID();
 
   private:
     mutable std::mutex _io_mutex; /* mutex for load/save */
@@ -55,7 +55,7 @@ namespace usbguard {
     Interface * const _interface_ptr;
     Rule::Target _default_target;
     String _default_action;
-    Atomic<uint32_t> _seqn_next;
+    Atomic<uint32_t> _id_next;
     PointerVector<Rule> _rules;
     PointerPQueue<Rule> _rules_timed;
   };

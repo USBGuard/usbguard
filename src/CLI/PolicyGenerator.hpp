@@ -43,7 +43,7 @@ namespace usbguard
     void dmHookDeviceAllowed(Pointer<Device> device);
     void dmHookDeviceBlocked(Pointer<Device> device);
     void dmHookDeviceRejected(Pointer<Device> device);
-    uint32_t dmHookAssignSeqn();
+    uint32_t dmHookAssignID();
 
   private:
     RuleSet _ruleset;

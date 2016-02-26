@@ -6,8 +6,8 @@ using namespace usbguard;
 TEST_CASE("Default constructed rule", "[Rule]") {
   Rule rule;
 
-  SECTION("has default seqn") {
-    REQUIRE(rule.getSeqn() == Rule::SeqnDefault);
+  SECTION("has default id") {
+    REQUIRE(rule.getID() == Rule::DefaultID);
   }
 
   SECTION("is implicit") {

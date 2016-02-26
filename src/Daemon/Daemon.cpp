@@ -206,33 +206,33 @@ namespace usbguard
     return;
   }
 
-  uint32_t Daemon::assignSeqn()
+  uint32_t Daemon::assignID()
   {
-    return _ruleset.assignSeqn();
+    return _ruleset.assignID();
   }
 
   /*
    * IPC service methods
    */
   uint32_t Daemon::appendRule(const std::string& rule_spec,
-			      uint32_t parent_seqn,
+			      uint32_t parent_id,
 			      uint32_t timeout_sec)
   {
     (void)timeout_sec; /* TODO */
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
     logger->debug("Appending rule: {}", rule_spec);
-    const uint32_t seqn = _ruleset.appendRule(rule, parent_seqn);
+    const uint32_t id = _ruleset.appendRule(rule, parent_id);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
     }
-    return seqn;
+    return id;
   }
 
-  void Daemon::removeRule(uint32_t seqn)
+  void Daemon::removeRule(uint32_t id)
   {
-    logger->debug("Removing rule: seqn={}", seqn);
-    _ruleset.removeRule(seqn);
+    logger->debug("Removing rule: id={}", id);
+    _ruleset.removeRule(id);
     if (_config.hasSettingValue("RuleFile")) {
       _ruleset.save(_config.getSettingValue("RuleFile"));
     }
@@ -244,56 +244,56 @@ namespace usbguard
     return _ruleset;
   }
 
-  void Daemon::allowDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void Daemon::allowDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    logger->debug("Allowing device: {}", seqn);
+    logger->debug("Allowing device: {}", id);
     Pointer<const Rule> rule;
     if (append) {
-      rule = appendDeviceRule(seqn, Rule::Target::Allow, timeout_sec);
+      rule = appendDeviceRule(id, Rule::Target::Allow, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
     }
-    allowDevice(seqn, rule);
+    allowDevice(id, rule);
     return;
   }
 
-  void Daemon::blockDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void Daemon::blockDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    logger->debug("Blocking device: {}", seqn);
+    logger->debug("Blocking device: {}", id);
     Pointer<const Rule> rule;
     if (append) {
-      rule = appendDeviceRule(seqn, Rule::Target::Block, timeout_sec);
+      rule = appendDeviceRule(id, Rule::Target::Block, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
     }
-    blockDevice(seqn, rule);
+    blockDevice(id, rule);
     return;
   }
 
-  void Daemon::rejectDevice(uint32_t seqn, bool append, uint32_t timeout_sec)
+  void Daemon::rejectDevice(uint32_t id, bool append, uint32_t timeout_sec)
   {
-    logger->debug("Rejecting device: {}", seqn);
+    logger->debug("Rejecting device: {}", id);
     Pointer<const Rule> rule;
     if (append) {
-      rule = appendDeviceRule(seqn, Rule::Target::Reject, timeout_sec);
+      rule = appendDeviceRule(id, Rule::Target::Reject, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
     }
-    rejectDevice(seqn, rule);
+    rejectDevice(id, rule);
     return;
   }
 
-  void Daemon::DeviceInserted(uint32_t seqn,
+  void Daemon::DeviceInserted(uint32_t id,
 			      const std::map<std::string,std::string>& attributes,
 			      const std::vector<USBInterfaceType>& interfaces,
 			      bool rule_match,
-			      uint32_t rule_seqn)
+			      uint32_t rule_id)
   {
-    logger->debug("DeviceInserted: seqn={}, rule_match={}, rule_seqn={}",
-		  seqn, rule_match, rule_seqn);
+    logger->debug("DeviceInserted: id={}, rule_match={}, rule_id={}",
+		  id, rule_match, rule_id);
 
     json interfaces_json;
     for (auto const& type : interfaces) {
@@ -302,23 +302,23 @@ namespace usbguard
 
     const json j = {
       {         "_s", "DeviceInserted" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes },
       { "interfaces", interfaces_json },
       { "rule_match", rule_match },
-      {  "rule_seqn", rule_seqn }
+      {  "rule_id", rule_id }
     };
 
     qbIPCBroadcastJSON(j);
     return;
   }
 
-  void Daemon::DevicePresent(uint32_t seqn,
+  void Daemon::DevicePresent(uint32_t id,
 			     const std::map<std::string,std::string>& attributes,
 			     const std::vector<USBInterfaceType>& interfaces,
 			     Rule::Target target)
   {
-    logger->debug("DevicePresent: seqn={}, target={}", seqn, Rule::targetToString(target));
+    logger->debug("DevicePresent: id={}, target={}", id, Rule::targetToString(target));
 
     json interfaces_json;
     for (auto const& type : interfaces) {
@@ -327,7 +327,7 @@ namespace usbguard
 
     const json j = {
       {         "_s", "DevicePresent" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes },
       { "interfaces", interfaces_json },
       {     "target", Rule::targetToString(target) },
@@ -337,15 +337,15 @@ namespace usbguard
     return;
   }
 
-  void Daemon::DeviceRemoved(uint32_t seqn,
+  void Daemon::DeviceRemoved(uint32_t id,
 			     const std::map<std::string,std::string>& attributes)
 
   {
-    logger->debug("DeviceRemoved: seqn={}", seqn);
+    logger->debug("DeviceRemoved: id={}", id);
 
     const json j = {
       {         "_s", "DeviceRemoved" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes }
     };
 
@@ -353,60 +353,60 @@ namespace usbguard
     return;
   }
 
-  void Daemon::DeviceAllowed(uint32_t seqn,
+  void Daemon::DeviceAllowed(uint32_t id,
 			     const std::map<std::string,std::string>& attributes,
 			     bool rule_match,
-			     uint32_t rule_seqn)
+			     uint32_t rule_id)
   {
-    logger->debug("DeviceAllowed: seqn={}, rule_match={}, rule_seqn={}",
-		  seqn, rule_match, rule_seqn);
+    logger->debug("DeviceAllowed: id={}, rule_match={}, rule_id={}",
+		  id, rule_match, rule_id);
 
     const json j = {
       {         "_s", "DeviceAllowed" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes },
       { "rule_match", rule_match },
-      {  "rule_seqn", rule_seqn }
+      {  "rule_id", rule_id }
     };
 
     qbIPCBroadcastJSON(j);
     return;
   }
 
-  void Daemon::DeviceBlocked(uint32_t seqn,
+  void Daemon::DeviceBlocked(uint32_t id,
 			     const std::map<std::string,std::string>& attributes,
 			     bool rule_match,
-			     uint32_t rule_seqn)
+			     uint32_t rule_id)
   {
-    logger->debug("DeviceBlocked: seqn={}, rule_match={}, rule_seqn={}",
-		  seqn, rule_match, rule_seqn);
+    logger->debug("DeviceBlocked: id={}, rule_match={}, rule_id={}",
+		  id, rule_match, rule_id);
 
     const json j = {
       {         "_s", "DeviceBlocked" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes },
       { "rule_match", rule_match },
-      {  "rule_seqn", rule_seqn }
+      {  "rule_id", rule_id }
     };
 
     qbIPCBroadcastJSON(j);
     return;
   }
 
-  void Daemon::DeviceRejected(uint32_t seqn,
+  void Daemon::DeviceRejected(uint32_t id,
 			      const std::map<std::string,std::string>& attributes,
 			      bool rule_match,
-			      uint32_t rule_seqn)
+			      uint32_t rule_id)
   {
-    logger->debug("DeviceRejected: seqn={}, rule_match={}, rule_seqn={}",
-		  seqn, rule_match, rule_seqn);
+    logger->debug("DeviceRejected: id={}, rule_match={}, rule_id={}",
+		  id, rule_match, rule_id);
 
     const json j = {
       {         "_s", "DeviceRejected" },
-      {       "seqn", seqn },
+      {       "id", id },
       { "attributes", attributes },
       { "rule_match", rule_match },
-      {  "rule_seqn", rule_seqn }
+      {  "rule_id", rule_id }
     };
 
     qbIPCBroadcastJSON(j);
@@ -430,21 +430,21 @@ namespace usbguard
     attributes["serial"] = device_rule->getSerialNumber();
     attributes["hash"] = device_rule->getDeviceHash();
 
-    DeviceInserted(device_rule->getSeqn(),
+    DeviceInserted(device_rule->getID(),
 		   attributes,
 		   device_rule->refInterfaceTypes(),
 		   matched_rule->isImplicit() ? false : true,
-		   matched_rule->getSeqn());
+		   matched_rule->getID());
 
     switch(matched_rule->getTarget()) {
     case Rule::Target::Allow:
-      allowDevice(device_rule->getSeqn(), matched_rule);
+      allowDevice(device_rule->getID(), matched_rule);
       break;
     case Rule::Target::Block:
-      blockDevice(device_rule->getSeqn(), matched_rule);
+      blockDevice(device_rule->getID(), matched_rule);
       break;
     case Rule::Target::Reject:
-      rejectDevice(device_rule->getSeqn(), matched_rule);
+      rejectDevice(device_rule->getID(), matched_rule);
       break;
     default:
       throw std::runtime_error("BUG: Wrong matched_rule target");
@@ -503,13 +503,13 @@ namespace usbguard
 
     switch(target) {
     case Rule::Target::Allow:
-      allowDevice(device_rule->getSeqn(), matched_rule);
+      allowDevice(device_rule->getID(), matched_rule);
       break;
     case Rule::Target::Block:
-      blockDevice(device_rule->getSeqn(), matched_rule);
+      blockDevice(device_rule->getID(), matched_rule);
       break;
     case Rule::Target::Reject:
-      rejectDevice(device_rule->getSeqn(), matched_rule);
+      rejectDevice(device_rule->getID(), matched_rule);
       break;
     default:
       throw std::runtime_error("BUG: Wrong matched_rule target");
@@ -517,7 +517,7 @@ namespace usbguard
 
     matched_rule->updateMetaDataCounters(/*applied=*/true);
 
-    DevicePresent(device_rule->getSeqn(),
+    DevicePresent(device_rule->getID(),
 		  attributes,
 		  device_rule->refInterfaceTypes(),
 		  target);
@@ -537,7 +537,7 @@ namespace usbguard
     attributes["serial"] = device_rule->getSerialNumber();
     attributes["hash"] = device_rule->getDeviceHash();
 
-    DeviceRemoved(device_rule->getSeqn(), attributes);
+    DeviceRemoved(device_rule->getID(), attributes);
     return;
   }
 
@@ -556,9 +556,9 @@ namespace usbguard
     return;
   }
 
-  uint32_t Daemon::dmHookAssignSeqn()
+  uint32_t Daemon::dmHookAssignID()
   {
-    return assignSeqn();
+    return assignID();
   }
 
   int32_t Daemon::qbSignalHandlerFn(int32_t signal, void *arg)
@@ -668,18 +668,18 @@ namespace usbguard
       logger->debug("Method name = {}", name);
 
       if (name == "appendRule") {
-        uint32_t val = appendRule(jobj["rule_spec"], jobj["parent_seqn"], jobj["timeout_sec"]);
+        uint32_t val = appendRule(jobj["rule_spec"], jobj["parent_id"], jobj["timeout_sec"]);
         retval["retval"] = val;
       }
       else if (name == "removeRule") {
-        removeRule(jobj["seqn"]);
+        removeRule(jobj["id"]);
       }
       else if (name == "listRules") {
         json ruleset_json = json::array();
         RuleSet ruleset = listRules();
         for (auto rule : ruleset.getRules()) {
           json rule_json = {
-            { "seqn", rule->getSeqn() },
+            { "id", rule->getID() },
             { "rule", rule->toString() }
           };
           ruleset_json.push_back(rule_json);
@@ -687,19 +687,19 @@ namespace usbguard
         retval["retval"] = ruleset_json;
       }
       else if (name == "allowDevice") {
-        allowDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        allowDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "blockDevice") {
-        blockDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        blockDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "rejectDevice") {
-        rejectDevice(jobj["seqn"], jobj["append"], jobj["timeout_sec"]);
+        rejectDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
       }
       else if (name == "listDevices") {
         json devices_json = json::array();
         for (auto device_rule : listDevices(jobj["query"])) {
           json device_json = {
-            { "seqn", device_rule.getSeqn() },
+            { "id", device_rule.getID() },
             { "device", device_rule.toString() }
           };
           devices_json.push_back(device_json);
@@ -956,9 +956,9 @@ namespace usbguard
     return;
   }
 
-  void Daemon::allowDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
+  void Daemon::allowDevice(uint32_t id, Pointer<const Rule> matched_rule)
   {
-    Pointer<Device> device = _dm->allowDevice(seqn);
+    Pointer<Device> device = _dm->allowDevice(id);
     /*
      * We don't care about include_port value here, the generated rule isn't
      * used for policy evaluation.
@@ -971,16 +971,16 @@ namespace usbguard
     attributes["vendor_id"] = device_rule->getVendorID();
     attributes["product_id"] = device_rule->getProductID();
 
-    DeviceAllowed(device_rule->getSeqn(),
+    DeviceAllowed(device_rule->getID(),
 		  attributes,
-		  (matched_rule->getSeqn() != Rule::SeqnDefault),
-		  matched_rule->getSeqn());
+		  (matched_rule->getID() != Rule::DefaultID),
+		  matched_rule->getID());
     return;
   }
 
-  void Daemon::blockDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
+  void Daemon::blockDevice(uint32_t id, Pointer<const Rule> matched_rule)
   {
-    Pointer<Device> device = _dm->blockDevice(seqn);
+    Pointer<Device> device = _dm->blockDevice(id);
     /*
      * We don't care about include_port value here, the generated rule isn't
      * used for policy evaluation.
@@ -993,16 +993,16 @@ namespace usbguard
     attributes["vendor_id"] = device_rule->getVendorID();
     attributes["product_id"] = device_rule->getProductID();
 
-    DeviceBlocked(device_rule->getSeqn(),
+    DeviceBlocked(device_rule->getID(),
 		  attributes,
-		  (matched_rule->getSeqn() != Rule::SeqnDefault),
-		  matched_rule->getSeqn());
+		  (matched_rule->getID() != Rule::DefaultID),
+		  matched_rule->getID());
     return;
   }
 
-  void Daemon::rejectDevice(uint32_t seqn, Pointer<const Rule> matched_rule)
+  void Daemon::rejectDevice(uint32_t id, Pointer<const Rule> matched_rule)
   {
-    Pointer<Device> device = _dm->rejectDevice(seqn);
+    Pointer<Device> device = _dm->rejectDevice(id);
     /*
      * We don't care about include_port value here, the generated rule isn't
      * used for policy evaluation.
@@ -1015,10 +1015,10 @@ namespace usbguard
     attributes["vendor_id"] = device_rule->getVendorID();
     attributes["product_id"] = device_rule->getProductID();
 
-    DeviceRejected(device_rule->getSeqn(),
+    DeviceRejected(device_rule->getID(),
 		   attributes,
-		   (matched_rule->getSeqn() != Rule::SeqnDefault),
-		   matched_rule->getSeqn());
+		   (matched_rule->getID() != Rule::DefaultID),
+		   matched_rule->getID());
     return;
   }
 
@@ -1034,9 +1034,9 @@ namespace usbguard
     return device_rules;
   }
 
-  Pointer<const Rule> Daemon::appendDeviceRule(uint32_t seqn, Rule::Target target, uint32_t timeout_sec)
+  Pointer<const Rule> Daemon::appendDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec)
   {
-    Pointer<Device> device = _dm->getDevice(seqn);
+    Pointer<Device> device = _dm->getDevice(id);
 
     bool include_port = true;
     /*
@@ -1071,9 +1071,9 @@ namespace usbguard
     device_rule->setTarget(target);
     const String rule_string = device_rule->toString();
     logger->debug("Appending rule: {}", rule_string);
-    const uint32_t rule_seqn = appendRule(rule_string, Rule::SeqnLast, timeout_sec);
-    logger->debug("Rule seqn is: {}", rule_seqn);
-    return _ruleset.getRule(rule_seqn);
+    const uint32_t rule_id = appendRule(rule_string, Rule::LastID, timeout_sec);
+    logger->debug("Rule id is: {}", rule_id);
+    return _ruleset.getRule(rule_id);
   }
 
   bool Daemon::DACAuthenticateIPCConnection(uid_t uid, gid_t gid)

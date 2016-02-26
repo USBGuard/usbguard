@@ -80,24 +80,24 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_seqn)
+  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id)
   {
-    return d_pointer->appendRule(rule, parent_seqn);
+    return d_pointer->appendRule(rule, parent_id);
   }
 
-  Pointer<const Rule> RuleSet::getRule(uint32_t seqn)
+  Pointer<const Rule> RuleSet::getRule(uint32_t id)
   {
-    return d_pointer->getRule(seqn);
+    return d_pointer->getRule(id);
   }
 
-  bool RuleSet::removeRule(uint32_t seqn)
+  bool RuleSet::removeRule(uint32_t id)
   {
-    return d_pointer->removeRule(seqn);
+    return d_pointer->removeRule(id);
   }
 
-  Pointer<Rule> RuleSet::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_seqn) const
+  Pointer<Rule> RuleSet::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
   {
-    return d_pointer->getFirstMatchingRule(device_rule, from_seqn);
+    return d_pointer->getFirstMatchingRule(device_rule, from_id);
   }
 
   PointerVector<const Rule> RuleSet::getRules()
@@ -110,14 +110,14 @@ namespace usbguard {
     return d_pointer->getTimedOutRule();
   }
 
-  uint32_t RuleSet::assignSeqn(Pointer<Rule> rule)
+  uint32_t RuleSet::assignID(Pointer<Rule> rule)
   {
-    return d_pointer->assignSeqn(rule);
+    return d_pointer->assignID(rule);
   }
 
-  uint32_t RuleSet::assignSeqn()
+  uint32_t RuleSet::assignID()
   {
-    return d_pointer->assignSeqn();
+    return d_pointer->assignID();
   }
 
 } /* namespace usbguard */

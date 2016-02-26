@@ -45,16 +45,16 @@ namespace usbguard {
   void DeviceManagerPrivate::insertDevice(Pointer<Device> device)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    const uint32_t seqn = _hooks.dmHookAssignSeqn();
-    device->setSeqn(seqn);
-    _device_map[seqn] = device;
+    const uint32_t id = _hooks.dmHookAssignID();
+    device->setID(id);
+    _device_map[id] = device;
     return;
   }
 
-  Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t seqn)
+  Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t id)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    auto it = _device_map.find(seqn);
+    auto it = _device_map.find(id);
     if (it == _device_map.end()) {
       throw std::runtime_error("Uknown device, cannot remove from device map");
     }
@@ -75,10 +75,10 @@ namespace usbguard {
     return devices;
   }
 
-  Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t seqn)
+  Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t id)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    return _device_map.at(seqn);
+    return _device_map.at(id);
   }
 
   void DeviceManagerPrivate::DeviceInserted(Pointer<Device> device)
