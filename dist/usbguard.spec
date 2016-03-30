@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.5
-Release:        3%{?dist}
+Release:        5%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -30,6 +30,8 @@ BuildRequires: dbus-glib-devel
 BuildRequires: dbus-devel
 BuildRequires: glib2-devel
 BuildRequires: polkit-devel
+BuildRequires: libxslt
+BuildRequires: libxml2
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
@@ -174,6 +176,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Mon Feb 22 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-3
+* Wed Mar 30 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-5
 - Update to version 0.5
 
