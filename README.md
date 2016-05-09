@@ -34,7 +34,7 @@
 [![Build Status](https://travis-ci.org/dkopecek/usbguard.svg?branch=master)](https://travis-ci.org/dkopecek/usbguard)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/7605/badge.svg)](https://scan.coverity.com/projects/dkopecek-usbguard)
 
-The USBGuard software framework helps to protect your computer against rogue USB devices (a.k.a. [BadUSB](https://srlabs.de/badusb/)) by implementing basic whitelisting/blacklisting capabilities based on USB device attributes.
+USBGuard is a software framework for implementing USB device authorization policies (what kind of USB devices are authorized) as well as method of use policies (how a USB device may interact with the system).
 
 **WARNING**: The 0.x releases are not production ready packages. They serve for tech-preview and user feedback purposes only. Please share your feedback or request a feature in the Github issue trackers for each project:
 
