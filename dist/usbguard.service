@@ -8,4 +8,4 @@ ExecStart=/usr/sbin/usbguard-daemon -k -c /etc/usbguard/usbguard-daemon.conf
 Restart=on-failure
 
 [Install]
-WantedBy=base.target
+WantedBy=basic.target
