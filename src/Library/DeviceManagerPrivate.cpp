@@ -56,7 +56,7 @@ namespace usbguard {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     auto it = _device_map.find(id);
     if (it == _device_map.end()) {
-      throw std::runtime_error("Uknown device, cannot remove from device map");
+      throw std::runtime_error("Unknown device, cannot remove from device map");
     }
     Pointer<Device> device = it->second;
     _device_map.erase(it);

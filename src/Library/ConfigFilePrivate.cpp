@@ -126,7 +126,7 @@ namespace usbguard
       }
 
       if (!checkNVPair(name, value)) {
-	logger->warn("Uknown setting name: {}", name);
+	logger->warn("Unknown setting name: {}", name);
 	continue;
       }
 
