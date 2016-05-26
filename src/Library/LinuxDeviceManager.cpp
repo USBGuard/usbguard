@@ -296,7 +296,7 @@ namespace usbguard {
 	break;
       default:
 	//log->critical("BUG: unknown rule target");
-	throw std::runtime_error("Uknown rule target in applyDevicePolicy");
+	throw std::runtime_error("Unknown rule target in applyDevicePolicy");
       }
 
     char sysio_path[SYSIO_PATH_MAX];
