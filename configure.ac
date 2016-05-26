@@ -269,6 +269,65 @@ else
   polkit_policy_dir="-"
 fi
 
+#
+# AddressSanitizer
+#
+# Based on: https://github.com/machinezone/tcpkali/blob/15903a7692abecbd28899d44e822a6f894caa23c/configure.aci#L73
+#
+# Enable Address Sanitizer, if supported by gcc (4.8+) or clang.
+# http://clang.llvm.org/docs/AddressSanitizer.html
+# https://code.google.com/p/address-sanitizer/wiki/HowToBuild
+#
+AC_ARG_ENABLE([asan],
+  [AS_HELP_STRING([--enable-asan], [Enable Address Sanitizer])],
+  [enable_asan=$enableval], [enable_asan=no])
+
+if test "x$enable_asan" = xyes; then
+  AC_LANG_PUSH([C++])
+  AX_CHECK_COMPILE_FLAG([-faddress-sanitizer],
+                        [ASAN_FLAGS="$ASAN_FLAGS -faddress-sanitizer"],
+                        [enable_asan=no], [])
+  if test "x$enable_asan" = xno; then
+    AX_CHECK_COMPILE_FLAG([-fsanitize=address],
+                          [ASAN_FLAGS="$ASAN_FLAGS -fsanitize=address"
+                           enable_asan=yes],
+                          [enable_asan=no], [])
+    if test "x$enable_asan" = xno; then
+      AC_MSG_FAILURE([--enable-asan is given, but not supported on this platform. Check out https://code.google.com/p/address-sanitizer/wiki/HowToBuild])
+    fi
+  fi
+  # Keep error messages nice. Also consider:
+  # export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+  # export ASAN_OPTIONS=symbolize=1
+  AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
+                        [ASAN_FLAGS="$ASAN_FLAGS -fno-omit-frame-pointer"],
+                        [], [])
+  AC_LANG_POP
+fi
+#
+# Enable Thread Sanitizer, if supported by clang.
+# http://clang.llvm.org/docs/ThreadSanitizer.html
+# https://code.google.com/p/address-sanitizer/wiki/HowToBuild
+#
+AC_ARG_ENABLE([tsan],
+    [AS_HELP_STRING([--enable-tsan], [Enable Thread Sanitizer])],
+    [enable_tsan=$enableval], [enable_tsan=no])
+
+if test "x$enable_tsan" = xyes; then
+  AX_CHECK_COMPILE_FLAG([-fsanitize=thread],
+                        [TSAN_FLAGS="$TSAN_FLAGS -fsanitize=thread"],
+                        [enable_tsan=no], [])
+  if test "x$enable_tsan" = xno; then
+    AC_MSG_FAILURE([--enable-tsan is given, but not supported on this platform. Check out https://code.google.com/p/address-sanitizer/wiki/HowToBuild])
+  fi
+  # Keep error messages nice.
+  AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
+                        [TSAN_FLAGS="$TSAN_FLAGS -fno-omit-frame-pointer"],
+                        [], [])
+  # -fsanitize=thread linking must be done with -pie or -shared
+  # We can't do anything about this message in GCC; use clang.
+fi
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h locale.h netdb.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h wchar.h])
@@ -319,6 +378,16 @@ else
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_DISABLED"
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
    AC_DEFINE([QUEX_OPTION_ASSERTS_DISABLED], [1], [Disable asserts in the Quex generated lexer])
+fi
+
+if test "x$enable_asan" = xyes; then
+  CXXFLAGS="$CXXFLAGS $ASAN_FLAGS"
+  AC_DEFINE([ASAN_ENABLED], [1], [Address Sanitizer is enabled])
+fi
+
+if test "x$enable_tsan" = xyes; then
+  CXXFLAGS="$CXXFLAGS $TSAN_FLAGS"
+  AC_DEFINE([TSAN_ENABLED], [1], [Thread Sanitizer is enabled])
 fi
 
 if test "x$systemd" = xyes; then
@@ -374,5 +443,7 @@ echo " Debug Mode: $debug"
 echo "   CXXFLAGS: $CXXFLAGS"
 echo "   CPPFLAGS: $CPPFLAGS"
 echo "    LDFLAGS: $LDFLAGS"
+echo " ASAN_FLAGS: $ASAN_FLAGS"
+echo " TSAN_FLAGS: $TSAN_FLAGS"
 echo
 
