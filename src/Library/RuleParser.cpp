@@ -61,7 +61,7 @@ namespace usbguard
     try {
       RuleParserState state(rule_spec);
       quex::Lexer lexer(&stream);
-      quex::Token *token_ptr = nullptr;
+      QUEX_TYPE_TOKEN* token_ptr = nullptr;
 
 #ifndef NDEBUG
       RuleParserTrace(stderr, (char*)"RuleParser:");
@@ -69,13 +69,19 @@ namespace usbguard
       for (;;) {
         lexer.receive(&token_ptr);
         if (token_ptr->type_id() != RULE_TOKEN_TERMINATION) {
-          RuleParser(parser_data.get(), token_ptr->type_id(), new QUEX_TYPE_TOKEN(*token_ptr), &state);
+          QUEX_TYPE_TOKEN* token_copy = new QUEX_TYPE_TOKEN(*token_ptr);
+          try {
+            RuleParser(parser_data.get(), token_ptr->type_id(), token_copy, &state);
+          }
+          catch(...) {
+            delete token_copy;
+            throw;
+          }
         } else {
           RuleParser(parser_data.get(), 0, nullptr, &state);
           break;
         }
       }
-
       return std::move(state.rule);
     }
     catch(RuleParserError& ex) {
