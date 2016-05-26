@@ -12,7 +12,7 @@ CLEANFILES=
 if SYSTEMD_SUPPORT_ENABLED
 install-data-hook:
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL) $(top_srcdir)/dist/usbguard.service \
+	$(INSTALL) -m 644 $(top_srcdir)/dist/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
 uninstall-hook:
