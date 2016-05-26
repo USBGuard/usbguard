@@ -1,16 +1,16 @@
 .\" Generated with Ronnjs 0.4.0
 .\" http://github.com/kapouer/ronnjs
 .
-.TH "USBGUARD\-DAEMON\.CONF" "5" "February 2016" "" "5"
+.TH "USBGUARD\-RULES\.CONF" "5" "February 2016" "" "5"
 .
 .SH "NAME"
-\fBusbguard-daemon.conf\fR \-\- USBGuard rule set file
+\fBusbguard-rules.conf\fR \-\- USBGuard rule set file
 .
 .SH "SYNOPSIS"
 \fBusbguard\-rules\.conf\fR
 .
 .SH "DESCRIPTION"
-The \fBusbguard\-daemon\.conf\fR file is loaded by the USBGuard daemon after it parses the main configuration file, usbguard\-daemon\.conf(5)\. The daemon expects the file to contain rules written in a rule language which is described in the \fIRule Language\fR section bellow\.
+The \fBusbguard\-rules\.conf\fR file is loaded by the USBGuard daemon after it parses the main configuration file, usbguard\-daemon\.conf(5)\. The daemon expects the file to contain rules written in a rule language which is described in the \fIRule Language\fR section bellow\.
 .
 .SH "Rule Language"
 The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules\. When an USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either \fIauthorizes\fR (allows), \fIdeauthorizes\fR (blocks) or \fIremoves\fR (rejects) the device, based on the rule target\. If no matching rule is found, the decision is based on an implicit default target\. This implicit default is to block the device until a decision is made by the user\. The rule language grammar, expressed in a BNF\-like syntax, is the following:
@@ -109,7 +109,7 @@ where \fBoperator\fR is one of:
 and \fBport\-id\fR is a platform specific USB port identification\. On Linux it\'s in the form "b\-n" where \fBb\fR and \fBn\fR are unsigned integers (e\.g\. "1\-2", "2\-4", \.\.\.)\.
 .
 .P
-The \fBinterface\-type\fR represents a USB interface and should be formated as three 8\-bit numbers in hexadecimal base delimited by colon, i\.e\. \fBcc:ss:pp\fR\|\. The numbers represent the interface class (\fBcc\fR), subclass (\fBss\fR) and protocol (\fBpp\fR) as assigned by the USB\-IF \fIwww\.usb\.org/about\fR (List of assigned classes, subclasses and protocols \fIhttp://www\.usb\.org/developers/defined_class\fR)\. Instead of the subclass and protocol number, you may write an asterisk character (\fB\\*\fR) to match all subclasses or protocols\. Matching a specific class and a specific protocol is not allowed, i\.e\. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too\.
+The \fBinterface\-type\fR represents a USB interface and should be formatted as three 8\-bit numbers in hexadecimal base delimited by colon, i\.e\. \fBcc:ss:pp\fR\|\. The numbers represent the interface class (\fBcc\fR), subclass (\fBss\fR) and protocol (\fBpp\fR) as assigned by the USB\-IF \fIwww\.usb\.org/about\fR (List of assigned classes, subclasses and protocols \fIhttp://www\.usb\.org/developers/defined_class\fR)\. Instead of the subclass and protocol number, you may write an asterisk character (\fB\\*\fR) to match all subclasses or protocols\. Matching a specific class and a specific protocol is not allowed, i\.e\. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too\.
 .
 .SS "Conditions"
 Whether a rule that matches a device will be applied or not can be further restricted using rule conditions\. If the condition expression is met at the rule evaluation time, then the rule target is applied for the device\. A condition expression is met if it evaluates to true\. Otherwise, the rule evaluation continues with the next rule\. A rule conditions has the following syntax:
