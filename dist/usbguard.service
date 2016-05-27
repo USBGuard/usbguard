@@ -1,6 +1,7 @@
 [Unit]
 Description=USBGuard daemon
 Wants=systemd-udevd.service local-fs.target
+Documentation=man:usbguard-daemon(8)
 
 [Service]
 Type=simple
