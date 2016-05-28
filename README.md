@@ -14,6 +14,7 @@
   - [OS packages](#os-packages)
     - [Fedora Linux, RHEL or CentOS](#fedora-linux-rhel-or-centos)
     - [Gentoo](#gentoo)
+    - [Arch Linux](#arch-linux)
     - [Usage](#usage)
   - [Rules](#rules)
     - [Targets](#targets)
@@ -125,6 +126,10 @@ For Gentoo you can use the [stuge overlay](http://git.stuge.se/?p=stuge-overlay.
 
     $ layman -a stuge-overlay
     $ emerge -av usbguard
+
+### Arch Linux
+
+For Arch Linux there's a package in AUR: [usbguard-git](https://aur.archlinux.org/packages/usbguard-git/)
 
 ### Usage
 
