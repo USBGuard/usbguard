@@ -114,8 +114,7 @@ libcap_ng_summary="not found"]
 #
 # json C++ library
 #
-with_bundled_json=yes
-AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]), [], [with_bundled_json=yes])
+AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]), [with_bundled_json=$withval], [with_bundled_json=no])
 if test "x$with_bundled_json" = xyes; then
 	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
 	json_LIBS=""
@@ -138,7 +137,7 @@ AC_SUBST([json_LIBS])
 #
 # spdlog C++ library
 #
-AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]), [], [with_bundled_spdlog=yes])
+AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]), [with_bundled_spdlog=$withval], [with_bundled_spdlog=no])
 if test "x$with_bundled_spdlog" = xyes; then
 	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
 	spdlog_LIBS=""
