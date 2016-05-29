@@ -19,15 +19,17 @@ uninstall-hook:
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 endif
 
+if HAVE_RONN
 dist_man8_MANS=\
-	doc/usbguard-daemon.roff
+	doc/usbguard-daemon.8
 
 dist_man5_MANS=\
-	doc/usbguard-daemon.conf.roff \
-	doc/usbguard-rules.conf.roff
+	doc/usbguard-daemon.conf.5 \
+	doc/usbguard-rules.conf.5
 
 dist_man1_MANS=\
-	doc/usbguard.roff
+	doc/usbguard.1
+endif
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -345,8 +347,10 @@ desktop_DATA = $(top_builddir)/src/GUI.Qt5/usbguard-applet-qt.desktop
 appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt5/resources/usbguard-icon.svg
 
+if HAVE_RONN
 dist_man1_MANS +=\
-	doc/usbguard-applet-qt.roff
+	doc/usbguard-applet-qt.1
+endif
 
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt5/DeviceDialog.ui.h \
@@ -454,3 +458,7 @@ analyze-clang:
 	  make -j$(JOBS)
 	rm -rf "$(ANALYSIS_ROOT)"
 
+if HAVE_RONN
+doc/%: doc/%.ronn
+	ronn --roff --pipe $^ > $(top_srcdir)/$@
+endif

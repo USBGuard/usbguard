@@ -112,6 +112,16 @@ libcap_ng_summary="not found"]
 )
 
 #
+# Manpage generation
+#
+AC_CHECK_PROGS(RONN, [ronn])
+if test -z "$RONN";
+  then AC_MSG_WARN([Ronn not found - continuing without generating manpages])
+fi
+AM_CONDITIONAL([HAVE_RONN], [test -n "$RONN"])
+
+
+#
 # json C++ library
 #
 AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]), [with_bundled_json=$withval], [with_bundled_json=no])
