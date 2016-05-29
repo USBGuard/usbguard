@@ -327,6 +327,15 @@ if test "x$enable_tsan" = xyes; then
   # We can't do anything about this message in GCC; use clang.
 fi
 
+#
+# Maintainer mode.
+#
+# Runs several additional taks for certain make targets (e.g. tests)
+#
+AC_ARG_ENABLE([maintainer-mode],
+              [AS_HELP_STRING([--enable-maintainer-mode], [Enable maintainer mode (default=no)])],
+              [maintainer_mode=$enableval], [maintainer_mode=no])
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h locale.h netdb.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h wchar.h])
@@ -406,6 +415,7 @@ AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT5_ENABLED], [test "x$with_gui_qt5" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
+AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
 
 AC_CONFIG_FILES([Makefile
                  src/Tests/Makefile
@@ -416,6 +426,8 @@ AC_OUTPUT
 echo
 echo "    Build Configuration Summary    "
 echo "==================================="
+echo
+echo " Maintainer mode: $maintainer_mode"
 echo
 echo "## Libraries"
 echo

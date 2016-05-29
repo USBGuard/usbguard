@@ -22,7 +22,7 @@ before_install:
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
-- ../configure --enable-coverage --disable-shared --disable-silent-rules --with-bundled-json --with-bundled-spdlog
+- ../configure --enable-maintainer-mode --enable-coverage --disable-shared --disable-silent-rules --with-bundled-json --with-bundled-spdlog
 script:
 - make && make check && make analyze-clang
 addons:
