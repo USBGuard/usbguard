@@ -27,6 +27,7 @@
     - [Reject devices with suspicious combination of interfaces](#reject-devices-with-suspicious-combination-of-interfaces)
     - [Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed](#allow-a-keyboard-only-usb-device-only-if-there-isnt-already-a-usb-device-with-a-keyboard-interface-allowed)
     - [Play "Russian roulette" with USB devices](#play-russian-roulette-with-usb-devices)
+  - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -305,4 +306,22 @@ The policy rejects all USB flash disk devices with an interface from the HID/Key
 
     allow if random(0.1666)
     reject
+
+## License
+>
+> Copyright (C) 2016 Red Hat, Inc.
+>
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU General Public License as published by
+> the Free Software Foundation; either version 2 of the License, or
+> (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful,
+> but WITHOUT ANY WARRANTY; without even the implied warranty of
+> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License
+> along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>
 
