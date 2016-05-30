@@ -14,6 +14,7 @@
   - [OS packages](#os-packages)
     - [Fedora Linux, RHEL or CentOS](#fedora-linux-rhel-or-centos)
     - [Gentoo](#gentoo)
+    - [Arch Linux](#arch-linux)
     - [Usage](#usage)
   - [Rules](#rules)
     - [Targets](#targets)
@@ -26,6 +27,7 @@
     - [Reject devices with suspicious combination of interfaces](#reject-devices-with-suspicious-combination-of-interfaces)
     - [Allow a keyboard-only USB device only if there isn't already a USB device with a keyboard interface allowed](#allow-a-keyboard-only-usb-device-only-if-there-isnt-already-a-usb-device-with-a-keyboard-interface-allowed)
     - [Play "Russian roulette" with USB devices](#play-russian-roulette-with-usb-devices)
+  - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -111,7 +113,7 @@ If you want to modify the lexer and/or the parser, you'll have to generate new s
 
 ### Fedora Linux, RHEL or CentOS
 
-Pre-compiled packages for Fedora 21, 22, 23, rawhide and EPEL 7 (RHEL, CentOS) are distributes using a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
+Pre-compiled packages for Fedora 21, 22, 23, rawhide and EPEL 7 (RHEL, CentOS) are distributed in a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
 You can install the repository by executing the following steps:
 
     $ sudo yum install yum-plugin-copr
@@ -125,6 +127,10 @@ For Gentoo you can use the [stuge overlay](http://git.stuge.se/?p=stuge-overlay.
 
     $ layman -a stuge-overlay
     $ emerge -av usbguard
+
+### Arch Linux
+
+For Arch Linux there's a package in AUR: [usbguard-git](https://aur.archlinux.org/packages/usbguard-git/)
 
 ### Usage
 
@@ -300,4 +306,22 @@ The policy rejects all USB flash disk devices with an interface from the HID/Key
 
     allow if random(0.1666)
     reject
+
+## License
+>
+> Copyright (C) 2016 Red Hat, Inc.
+>
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU General Public License as published by
+> the Free Software Foundation; either version 2 of the License, or
+> (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful,
+> but WITHOUT ANY WARRANTY; without even the implied warranty of
+> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License
+> along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>
 
