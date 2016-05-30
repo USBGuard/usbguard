@@ -9,14 +9,20 @@ BUILT_SOURCES=
 DISTCLEANFILES=
 CLEANFILES=
 
+install-data-hook: install-systemd-service install-data-dbus
+uninstall-hook: uninstall-systemd-service uninstall-data-dbus
+
 if SYSTEMD_SUPPORT_ENABLED
-install-data-hook:
+install-systemd-service:
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL) -m 644 $(top_srcdir)/dist/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
-uninstall-hook:
+uninstall-systemd-service:
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
+else
+install-systemd-service:
+uninstall-systemd-service:
 endif
 
 dist_man8_MANS=\
@@ -275,13 +281,13 @@ usbguard_dbus_LDADD=\
 %.service: %.service.in
 	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
 
-install-data-local: $(top_builddir)/src/DBus/org.usbguard.service install-polkit-policy install-systemd-service
+install-data-dbus: $(top_builddir)/src/DBus/org.usbguard.service install-polkit-policy install-systemd-dbus-service
 	mkdir -p $(DESTDIR)$(DBUS_SERVICES_DIR) && \
 	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard.service $(DESTDIR)$(DBUS_SERVICES_DIR)
 	mkdir -p $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
 	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
-uninstall-local: uninstall-polkit-policy uninstall-systemd-service
+uninstall-data-dbus: uninstall-polkit-policy uninstall-systemd-dbus-service
 	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard.service
 	rmdir $(DESTDIR)$(DBUS_SERVICES_DIR)
 	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard.conf
@@ -319,18 +325,21 @@ uninstall-polkit-policy:
 endif
 
 if SYSTEMD_SUPPORT_ENABLED
-install-systemd-service: $(top_builddir)/src/DBus/usbguard-dbus.service
+install-systemd-dbus-service: $(top_builddir)/src/DBus/usbguard-dbus.service
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR) && \
 	  $(INSTALL_DATA) $(top_builddir)/src/DBus/usbguard-dbus.service $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 
-uninstall-systemd-service:
+uninstall-systemd-dbus-service:
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard-dbus.service
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 
 else
-install-systemd-service:
-uninstall-systemd-service:
+install-systemd-dbus-service:
+uninstall-systemd-dbus-service:
 endif
+else
+install-data-dbus:
+uninstall-data-dbus:
 endif #DBUS_ENABLED
 
 #

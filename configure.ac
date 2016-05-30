@@ -225,6 +225,22 @@ if test "x$with_dbus" = xyes; then
   if test "x$dbus_services_dir" = x; then
     AC_MSG_FAILURE([Cannot autodetect the D-Bus system services directory])
   else
+    #
+    # Hack around expanded paths in system_bus_services_dir. Without this distcheck won't
+    # work, because it uses ./configure --prefix=$somedir. The expanded path ignores this
+    # prefix (and DESTDIR won't help here either)
+    #
+    case "$dbus_services_dir" in
+      /usr/share/*|/usr/local/share/*)
+        dbus_services_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$dbus_services_dir)
+      ;;
+      /usr/*|/usr/local/*)
+        dbus_services_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$dbus_services_dir)
+      ;;
+      /*)
+        dbus_services_dir='${prefix}'"$dbus_services_dir"
+      ;;
+    esac
     AC_SUBST(DBUS_SERVICES_DIR, $dbus_services_dir)
     AC_DEFINE([DBUS_SERVICES_DIR], [$dbus_services_dir], [D-Bus system services directory])
   fi
