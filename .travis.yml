@@ -60,7 +60,7 @@ before_install:
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
-- CXX=$COMPILER ../configure --disable-silent-rules --with-bundled-json --with-bundled-spdlog $CONFIGURE_ARGS
+- CXX=$COMPILER ../configure --enable-maintainer-mode --disable-silent-rules --with-bundled-json --with-bundled-spdlog $CONFIGURE_ARGS
 script:
 - if test -n "$MAKE_TARGET"; then make $MAKE_TARGET; else make all check; fi
 after_success:

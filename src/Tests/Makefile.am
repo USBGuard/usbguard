@@ -4,7 +4,8 @@ AM_CPPFLAGS=\
 	-I$(top_srcdir)/src/ThirdParty/Catch/include
 
 EXTRA_DIST=\
-	$(top_srcdir)/src/ThirdParty/Catch
+	$(top_srcdir)/src/ThirdParty/Catch \
+	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh
 
 TESTS=\
 	test-unit \
