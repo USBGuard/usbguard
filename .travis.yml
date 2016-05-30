@@ -2,40 +2,66 @@ env:
   global:
   - secure: ZmM4qgsgTYcxgDaQQMhphPerUo9SYm2TKyxzA07ArEZf9Ur10taagze/sueNa4g5TxeoynxpxeyoUvPpqPrucNPE70uFimH1TW55Hi3WWzBVwNfvLFXIBUcXAmVi3BalNAXJvhyjZgRwP+39wRkJG2V9vZjtDzB7umb0RPjbwBs=
 language: cpp
-sudo: required
-dist: trusty
 compiler:
 - clang
 - gcc
 os: linux
+dist: trusty
+sudo: required
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+      env: COMPILER=g++-5
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6']
+      env: COMPILER=g++-6
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+          packages: ['clang-3.8']
+      env: COMPILER=clang++-3.8
+    - os: linux
+      compiler: gcc
+      env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared"
+    - os: linux
+      compiler: gcc
+      env: MAKE_TARGET=distcheck
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages: ['clang']
+      env: MAKE_TARGET=analyze-clang
+    - os: linux
+      compiler: clang
+      env: CONFIGURE_ARGS=--enable-asan
+    - os: linux
+      compiler: gcc
+      env: CONFIGURE_ARGS=--enable-debug-build
 before_install:
 - sudo add-apt-repository -y ppa:chris-lea/libsodium
 - sudo apt-get -qq update
 - sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
 - sudo apt-get install -y qtbase5-dev qt5-default qtbase5-dev-tools
+- sudo apt-get install -y libglib2.0-dev libdbus-glib-1-dev libxml2-utils libpolkit-gobject-1-dev xsltproc
 - sudo apt-get install -y lcov
-- sudo apt-get install -y clang
-- sudo apt-get install -y libglib2.0-dev libdbus-glib-1-dev libxml2-utils
-- sudo apt-get install -y libpolkit-gobject-1-dev
-- sudo apt-get install -y xsltproc
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
-- ../configure --enable-coverage --disable-shared --disable-silent-rules
+- CXX=$COMPILER ../configure --disable-silent-rules --with-bundled-json --with-bundled-spdlog $CONFIGURE_ARGS
 script:
-- make && make check && make analyze-clang
-addons:
-  coverity_scan:
-    project:
-      name: dkopecek/usbguard
-      version: 0.4
-      description: USBGuard
-    notification_email: dnk1618@gmail.com
-    build_command_prepend: "./autogen.sh && ./configure"
-    build_command: make
-    branch_pattern: coverity_scan
+- if test -n "$MAKE_TARGET"; then make $MAKE_TARGET; else make all check; fi
 after_success:
-- lcov --compat-libtool --directory . --capture --output-file coverage.info
-- coveralls-lcov coverage.info
-
+- test "x$COVERAGE" = xyes -a "x$CXX" = "xg++" && lcov --compat-libtool --directory . --capture --output-file coverage.info && coveralls-lcov coverage.info
