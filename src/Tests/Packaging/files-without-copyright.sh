@@ -25,6 +25,7 @@
 ##################
 GLOBS_INCLUDE=(
 *.[ch]pp
+*.[ch]
 *.am
 *.y
 *.qx
@@ -33,10 +34,17 @@ GLOBS_INCLUDE=(
 )
 
 GLOBS_EXCLUDE=(
+Lexer.cpp
+Lexer-token_ids.hpp
+Lexer-token.hpp
+Lexer-configuration.hpp
+Parser.c
+Parser.h
 )
 
 DIRS_EXCLUDE=(
 ThirdParty
+quex
 )
 ##################
 if [[ -z "$1" ]]; then
