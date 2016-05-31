@@ -85,6 +85,7 @@ libusbguard_la_LIBADD=\
 	@sodium_LIBS@
 
 libusbguard_la_SOURCES=\
+	src/Common/Thread.hpp \
 	src/Common/JSON.hpp \
 	src/Common/ByteOrder.hpp \
 	src/Common/Utility.hpp \
