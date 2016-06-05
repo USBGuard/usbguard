@@ -1,0 +1,78 @@
+.TH "USBGUARD\-DAEMON" "8" "June 2016" "" ""
+.SH NAME
+.PP
+\f[B]usbguard\-daemon\f[] \-\- A tool for implementing USB device usage
+policy
+.SH SYNOPSIS
+.PP
+\f[B]usbguard\-daemon\f[]\ [\f[I]OPTIONS\f[]]
+.SH DESCRIPTION
+.PP
+The USBGuard software framework helps to protect your computer against
+rogue USB devices (a.k.a.
+BadUSB) by implementing basic whitelisting/blacklisting capabilities
+based on USB device attributes.
+.SH OPTIONS
+.TP
+.B \f[B]\-d\f[]
+Enable debugging messages in the log.
+.RS
+.RE
+.TP
+.B \f[B]\-s\f[]
+Log to syslog.
+.RS
+.RE
+.TP
+.B \f[B]\-k\f[]
+Log to console.
+.RS
+.RE
+.TP
+.B \f[B]\-l\f[] <\f[I]path\f[]>
+Log to a file at \f[I]path\f[].
+.RS
+.RE
+.TP
+.B \f[B]\-p\f[] <\f[I]path\f[]>
+Write PID to a file at \f[I]path\f[].
+.RS
+.RE
+.TP
+.B \f[B]\-c\f[] <\f[I]path\f[]>
+Load configuration from a file at \f[I]path\f[] (default:
+\f[I]/etc/usbguard/usbguard\-daemon.conf\f[]).
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[]
+Show the help/usage screen.
+.RS
+.RE
+.SH SECURITY CONSIDERATIONS
+.PP
+The daemon provides the USBGuard public IPC interface.
+Depending on your distribution defaults, the access to this interface is
+limited to a certain group or a specific user only.
+Please refer to the \f[B]usbguard\-daemon.conf\f[](5) man page for more
+information on how to configure the ACL correctly.
+\f[B]Do not leave the ACL unconfigured as that will expose the IPC
+interface to all local users and will allow them to manipulate the
+authorization state of USB devices and modify the USBGuard policy\f[].
+.SH BUGS
+.PP
+If you find a bug in this software or if you\[aq]d like to request a
+feature to be implemented, please file a ticket at
+<https://github.com/dkopecek/usbguard/issues/new>.
+.SH COPYRIGHT
+.PP
+Copyright © 2015 Red Hat, Inc.
+License GPLv2+: GNU GPL version 2 or later
+<http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.SH SEE ALSO
+.PP
+\f[B]usbguard\-daemon.conf\f[](5), \f[B]usbguard\-applet\-qt\f[](1)
+.SH AUTHORS
+Daniel Kopeček <dkopecek@redhat.com>.
