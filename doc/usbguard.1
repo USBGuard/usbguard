@@ -1,0 +1,248 @@
+.TH "USBGUARD" "1" "June 2016" "" ""
+.SH NAME
+.PP
+\f[B]usbguard\f[] \-\- USBGuard command\-line interface
+.SH SYNOPSIS
+.PP
+usbguard\ [\f[I]OPTIONS\f[]]\ \f[I]command\f[]\ [\f[I]COMMAND\-OPTIONS\f[]]\ ...
+.PP
+usbguard\ \f[B]list\-devices\f[]
+.PP
+usbguard\ \f[B]allow\-device\f[]\ <\f[I]id\f[]>
+.PP
+usbguard\ \f[B]block\-device\f[]\ <\f[I]id\f[]>
+.PP
+usbguard\ \f[B]reject\-device\f[]\ <\f[I]id\f[]>
+.PP
+usbguard\ \f[B]list\-rules\f[]
+.PP
+usbguard\ \f[B]append\-rule\f[]\ <\f[I]rule\f[]>
+.PP
+usbguard\ \f[B]remove\-rule\f[]\ <\f[I]id\f[]>
+.PP
+usbguard\ \f[B]generate\-policy\f[]
+.PP
+usbguard\ \f[B]watch\f[]
+.SH DESCRIPTION
+.PP
+The \f[B]usbguard\f[] command provides a command\-line interface (CLI)
+to the \f[B]usbguard\-daemon\f[](8) instance and provides a tool for
+generating initial USBGuard policies.
+.SH SUBCOMMANDS
+.PP
+\f[B]list\-devices\f[]
+.PP
+List all USB devices recognized by the USBGuard daemon.
+.PP
+Available options:
+.TP
+.B \f[B]\-a\f[], \f[B]\-\-allowed\f[]
+List allowed devices.
+.RS
+.RE
+.TP
+.B \f[B]\-b\f[], \f[B]\-\-blocked\f[]
+List blocked devices.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]allow\-device\f[] [\f[I]OPTIONS\f[]] <\f[I]id\f[]>
+.PP
+Authorize a device identified by the device \f[I]id\f[] to interact with
+the system.
+.PP
+Available options:
+.TP
+.B \f[B]\-p\f[], \f[B]\-\-permanent\f[]
+Make the decision permanent.
+A device specific allow rule will be appended to the current policy.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]block\-device\f[] [\f[I]OPTIONS\f[]] <\f[I]id\f[]>
+.PP
+Deauthorize a device indentified by the device \f[I]id\f[].
+.PP
+Available options:
+.TP
+.B \f[B]\-p\f[], \f[B]\-\-permanent\f[]
+Make the decision permanent.
+A device specific block rule will be appended to the current policy.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]reject\-device\f[] [\f[I]OPTIONS\f[]] <\f[I]id\f[]>
+.PP
+Deauthorize and remove a device indentified by the device \f[I]id\f[].
+.PP
+Available options:
+.TP
+.B \f[B]\-p\f[], \f[B]\-\-permanent\f[]
+Make the decision permanent.
+A device specific reject rule will be appended to the current policy.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]list\-rules\f[] [\f[I]OPTIONS\f[]]
+.PP
+List the rule set (policy) used by the USBGuard daemon.
+.PP
+Available options:
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]append\-rule\f[] [\f[I]OPTIONS\f[]] <\f[I]rule\f[]>
+.PP
+Append the \f[I]rule\f[] to the current rule set.
+.PP
+Available options:
+.TP
+.B \f[B]\-a\f[], \f[B]\-\-after\f[] <\f[I]id\f[]>
+Append the new rule after a rule with the specified rule \f[I]id\f[].
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]remove\-rule\f[] [\f[I]OPTIONS\f[]] <\f[I]id\f[]>
+.PP
+Remove a rule identified by the rule \f[I]id\f[] from the rule set.
+.PP
+Available options:
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]generate\-policy\f[] [\f[I]OPTIONS\f[]]
+.PP
+Generate a rule set (policy) which authorizes the currently connected
+USB devices.
+.PP
+Available options:
+.TP
+.B \f[B]\-p\f[], \f[B]\-\-with\-ports\f[]
+Generate port specific rules for all devices.
+By default, port specific rules are generated only for devices which do
+not export an iSerial value.
+.RS
+.RE
+.TP
+.B \f[B]\-P\f[], \f[B]\-\-no\-ports\-sn\f[]
+Don\[aq]t generate port specific rules for devices without an iSerial
+value.
+Without this option, the tool will add a via\-port attribute to any
+device that doesn\[aq]t provide a serial number.
+This is a security measure to limit devices that cannot be uniquely
+identified to connect only via a specific port.
+This makes it harder to bypass the policy since the real device will
+ocupy the allowed USB port most of the time.
+.RS
+.RE
+.TP
+.B \f[B]\-t\f[], \f[B]\-\-target\f[] <\f[I]target\f[]>
+Generate an explicit "catch all" rule with the specified target.
+The target can be one of the following values: \f[B]allow\f[],
+\f[B]block\f[], \f[B]reject\f[]
+.RS
+.RE
+.TP
+.B \f[B]\-X\f[], \f[B]\-\-no\-hashes\f[]
+Don\[aq]t generate a hash attribute for each device.
+.RS
+.RE
+.TP
+.B \f[B]\-H\f[], \f[B]\-\-hash\-only\f[]
+Generate a hash\-only policy.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]watch\f[] [\f[I]OPTIONS\f[]]
+.PP
+Watch the IPC interface events and print them to stdout.
+.PP
+Available options:
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.SH EXAMPLES
+.PP
+\f[B]Creating an initial policy\f[]
+.IP
+.nf
+\f[C]
+\ \ \ \ $\ sudo\ usbguard\ generate\-policy\ >\ rules.conf
+\ \ \ \ $\ vi\ rules.conf
+\ \ \ \ (review/modify\ the\ rule\ set)
+\ \ \ \ $\ sudo\ install\ \-m\ 0600\ \-o\ root\ \-g\ root\ \\
+\ \ \ \ \ \ \ rules.conf\ /etc/usbguard/rules.conf
+\f[]
+.fi
+.SH BUGS
+.PP
+If you find a bug in this software or if you\[aq]d like to request a
+feature to be implemented, please file a ticket at
+<https://github.com/dkopecek/usbguard/issues/new>.
+.SH COPYRIGHT
+.PP
+Copyright © 2015 Red Hat, Inc.
+License GPLv2+: GNU GPL version 2 or later
+<http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.SH SEE ALSO
+.PP
+\f[B]usbguard\-rules.conf\f[](5), \f[B]usbguard\-daemon\f[](8),
+\f[B]usbguard\-daemon.conf\f[](5)
+.SH AUTHORS
+Daniel Kopeček <dkopecek@redhat.com>.

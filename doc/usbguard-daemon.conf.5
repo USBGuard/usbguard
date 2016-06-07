@@ -1,0 +1,58 @@
+.TH "USBGUARD\-DAEMON.CONF" "5" "June 2016" "" ""
+.SH NAME
+.PP
+\f[B]usbguard\-daemon.conf\f[] \-\- USBGuard daemon configuration file
+.SH DESCRIPTION
+.PP
+The \f[B]usbguard\-daemon.conf\f[] file is loaded by the USBGuard daemon
+after it parses its command\-line options and is used to configure
+runtime parameters of the daemon.
+The default search path is \f[I]/etc/usbguard/usbguard\-daemon.conf\f[].
+It may be overridden using the \f[B]\-c\f[] command\-line option, see
+\f[B]usbguard\-daemon\f[](8) for further details.
+.SH OPTIONS
+.TP
+.B \f[B]RuleFile\f[]=<\f[I]path\f[]>
+The USBGuard daemon will use this file to load the policy rule set from
+it and to write new rules received via the IPC interface.
+.RS
+.RE
+.TP
+.B \f[B]IPCAllowedUsers\f[]=<\f[I]username\f[]>\ [<\f[I]username\f[]>\ ...]
+A space delimited list of usernames that the daemon will accept IPC
+connections from.
+.RS
+.RE
+.TP
+.B \f[B]IPCAllowedGroups\f[]=<\f[I]groupname\f[]>\ [<\f[I]groupname\f[]>\ ...]
+A space delimited list of groupnames that the daemon will accept IPC
+connections from.
+.RS
+.RE
+.SH SECURITY CONSIDERATIONS
+.PP
+The daemon provides the USBGuard public IPC interface.
+Depending on your distribution defaults, the access to this interface is
+limited to a certain group or a specific user only.
+Please set either the \f[B]IPCAllowedUsers\f[] or
+\f[B]IPCAllowedGroups\f[] options to limit access to the IPC interface.
+\f[B]Do not leave the ACL unconfigured as that will expose the IPC
+interface to all local users and will allow them to manipulate the
+authorization state of USB devices and modify the USBGuard policy\f[].
+.SH BUGS
+.PP
+If you find a bug in this software or if you\[aq]d like to request a
+feature to be implemented, please file a ticket at
+<https://github.com/dkopecek/usbguard/issues/new>.
+.SH COPYRIGHT
+.PP
+Copyright © 2015 Red Hat, Inc.
+License GPLv2+: GNU GPL version 2 or later
+<http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.SH SEE ALSO
+.PP
+\f[B]usbguard\-daemon\f[](8), \f[B]usbguard\-rules.conf\f[](5)
+.SH AUTHORS
+Daniel Kopeček <dkopecek@redhat.com>.

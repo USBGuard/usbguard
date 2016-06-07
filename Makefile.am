@@ -27,6 +27,37 @@ BUILT_SOURCES=
 DISTCLEANFILES=
 CLEANFILES=
 
+ROFF_PAGES=\
+	doc/usbguard.1.roff \
+	doc/usbguard-applet-qt.1.roff \
+	doc/usbguard-daemon.8.roff \
+	doc/usbguard-daemon.conf.5.roff \
+	doc/usbguard-rules.conf.5.roff
+
+MARKDOWN_PAGES=$(ROFF_PAGES:.roff=.md)
+
+EXTRA_DIST+=\
+	$(ROFF_PAGES:.roff=) \
+	$(MARKDOWN_PAGES)
+
+BUILT_SOURCES+=\
+	$(ROFF_PAGES)
+
+CLEANFILES+=\
+	$(ROFF_PAGES) \
+        $(ROFF_PAGES:.roff=)
+
+if GENERATE_MANPAGES
+$(top_builddir)/%.roff: %.md
+	$(MKDIR_P) $$(dirname $@)
+	$(PANDOC) -s -t man $^ -o $(top_builddir)/$@
+	$(INSTALL) -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
+else
+$(top_builddir)/%.roff: %.md
+	$(INSTALL) -D -m 644 $(^:.md=) $(top_builddir)/$@
+	$(INSTALL) -D -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
+endif
+
 install-data-hook: install-systemd-service install-data-dbus
 uninstall-hook: uninstall-systemd-service uninstall-data-dbus
 
@@ -43,15 +74,15 @@ install-systemd-service:
 uninstall-systemd-service:
 endif
 
-dist_man8_MANS=\
-	doc/usbguard-daemon.roff
+man8_MANS=\
+	$(top_builddir)/doc/usbguard-daemon.8
 
-dist_man5_MANS=\
-	doc/usbguard-daemon.conf.roff \
-	doc/usbguard-rules.conf.roff
+man5_MANS=\
+	$(top_builddir)/doc/usbguard-daemon.conf.5 \
+	$(top_builddir)/doc/usbguard-rules.conf.5
 
-dist_man1_MANS=\
-	doc/usbguard.roff
+man1_MANS=\
+	$(top_builddir)/doc/usbguard.1
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -372,8 +403,8 @@ desktop_DATA = $(top_builddir)/src/GUI.Qt5/usbguard-applet-qt.desktop
 appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt5/resources/usbguard-icon.svg
 
-dist_man1_MANS +=\
-	doc/usbguard-applet-qt.roff
+man1_MANS +=\
+	$(top_builddir)/doc/usbguard-applet-qt.1
 
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt5/DeviceDialog.ui.h \

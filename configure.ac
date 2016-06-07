@@ -344,6 +344,19 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
+# Check whether the utility is present.
+#
+# If pandoc is not present, manpages won't be
+# generated from source and their pre-generated
+# version will be used instead.
+#
+AC_CHECK_PROGS(PANDOC, [pandoc])
+if test -z "$PANDOC"; then
+  AC_MSG_WARN([Unable to find manpage generator (pandoc). Installation will use pre-generated files.])
+fi
+AM_CONDITIONAL([GENERATE_MANPAGES], [test -n "$PANDOC"])
+
+#
 # Maintainer mode.
 #
 # Runs several additional taks for certain make targets (e.g. tests)
