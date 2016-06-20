@@ -37,6 +37,7 @@
 #include "usbguard-append-rule.hpp"
 #include "usbguard-remove-rule.hpp"
 #include "usbguard-watch.hpp"
+#include "usbguard-read-descriptor.hpp"
 
 namespace usbguard
 {
@@ -51,7 +52,8 @@ namespace usbguard
     { "append-rule", &usbguard_append_rule },
     { "remove-rule", &usbguard_remove_rule },
     { "generate-policy", &usbguard_generate_policy },
-    { "watch", &usbguard_watch }
+    { "watch", &usbguard_watch },
+    { "read-descriptor", &usbguard_read_descriptor }
   };
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)
@@ -73,6 +75,7 @@ namespace usbguard
     stream << std::endl;
     stream << "  generate-policy     Generate a rule set (policy) based on the connected USB devices." << std::endl;
     stream << "  watch               Watch for IPC interface events and print them to stdout." << std::endl;
+    stream << "  read-descriptor     Read a USB descriptor from a file and print it in human-readable form." << std::endl;
     stream << std::endl;
   }
 

@@ -1,0 +1,148 @@
+Device Descriptor: type=01 length=18
+              bcdUSB: 0x0200
+        bDeviceClass: 0xef
+     bDeviceSubClass: 0x02
+     bDeviceProtocol: 0x01
+      bMaxPacketSize: 64
+            idVendor: 0x1004
+           idProduct: 0x61fe
+           bcdDevice: 0x0228
+       iManufacturer: 1
+       iSerialNumber: 3
+  bNumConfigurations: 1
+
+Configuration Descriptor: type=02 length=9
+        wTotalLength: 177
+      bNumInterfaces: 5
+ bConfigurationValue: 1
+      iConfiguration: 0
+        bmAttributes: 80
+           bMaxPower: 250
+
+UNKNOWN Descriptor: type=0b length=8
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 0
+   bAlternateSetting: 0
+       bNumEndpoints: 1
+     bInterfaceClass: 2
+  bInterfaceSubClass: 2
+  bInterfaceProtocol: 1
+          iInterface: 9
+
+UNKNOWN Descriptor: type=24 length=5
+
+UNKNOWN Descriptor: type=24 length=5
+
+UNKNOWN Descriptor: type=24 length=4
+
+UNKNOWN Descriptor: type=24 length=5
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 130
+        bmAttributes: 0x03
+      wMaxPacketSize: 16
+           bInterval: 9
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 1
+   bAlternateSetting: 0
+       bNumEndpoints: 2
+     bInterfaceClass: 10
+  bInterfaceSubClass: 0
+  bInterfaceProtocol: 0
+          iInterface: 10
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 129
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 1
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 2
+   bAlternateSetting: 0
+       bNumEndpoints: 2
+     bInterfaceClass: 255
+  bInterfaceSubClass: 255
+  bInterfaceProtocol: 255
+          iInterface: 0
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 131
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 2
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+UNKNOWN Descriptor: type=0b length=8
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 3
+   bAlternateSetting: 0
+       bNumEndpoints: 1
+     bInterfaceClass: 2
+  bInterfaceSubClass: 6
+  bInterfaceProtocol: 0
+          iInterface: 12
+
+UNKNOWN Descriptor: type=24 length=5
+
+UNKNOWN Descriptor: type=24 length=5
+
+UNKNOWN Descriptor: type=24 length=13
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 133
+        bmAttributes: 0x03
+      wMaxPacketSize: 64
+           bInterval: 4
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 4
+   bAlternateSetting: 0
+       bNumEndpoints: 0
+     bInterfaceClass: 10
+  bInterfaceSubClass: 0
+  bInterfaceProtocol: 0
+          iInterface: 0
+
+Interface Descriptor: type=04 length=9
+    bInterfaceNumber: 4
+   bAlternateSetting: 1
+       bNumEndpoints: 2
+     bInterfaceClass: 10
+  bInterfaceSubClass: 0
+  bInterfaceProtocol: 0
+          iInterface: 13
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 3
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+Endpoint Descriptor: type=05 length=7
+    bEndpointAddress: 132
+        bmAttributes: 0x02
+      wMaxPacketSize: 512
+           bInterval: 0
+
+Bytes parsed: 195
+Descriptor type 0x01 count: 1
+Descriptor type 0x02 count: 1
+Descriptor type 0x04 count: 6
+Descriptor type 0x05 count: 8
+Descriptor type 0x0b count: 2
+Descriptor type 0x24 count: 7

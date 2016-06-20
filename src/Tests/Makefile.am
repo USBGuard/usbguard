@@ -23,11 +23,19 @@ AM_CPPFLAGS=\
 
 EXTRA_DIST=\
 	$(top_srcdir)/src/ThirdParty/Catch \
-	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh
+	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh \
+	$(top_srcdir)/src/Tests/USB/test-descriptor-parser.sh \
+	$(top_srcdir)/src/Tests/USB/data/0001.bin \
+	$(top_srcdir)/src/Tests/USB/data/0001.out
+
+TESTS_ENVIRONMENT=\
+	builddir=$(top_builddir) \
+	srcdir=$(top_srcdir)
 
 TESTS=\
 	test-unit \
-	test-regression
+	test-regression \
+	USB/test-descriptor-parser.sh
 
 check_PROGRAMS=\
 	test-unit \
