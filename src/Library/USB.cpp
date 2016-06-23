@@ -22,6 +22,7 @@
 #include "LoggerPrivate.hpp"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 namespace usbguard {
   USBInterfaceType::USBInterfaceType()
@@ -170,105 +171,214 @@ namespace usbguard {
     return a.appliesTo(b);
   }
 
-  const USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size)
+  void USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-    USBDeviceDescriptor descriptor;
-    const USBDeviceDescriptor* rawptr;
+    const USBDeviceDescriptor* device_raw = reinterpret_cast<const USBDeviceDescriptor*>(descriptor_raw);
+    USBDeviceDescriptor* device_out = reinterpret_cast<USBDeviceDescriptor*>(descriptor_out);
 
-    logger->trace("Parsing device descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
-		  data, size, (void *)real_size);
+    /* Copy 1:1 */
+    *device_out = *device_raw;
 
-    if (size < sizeof(USBDeviceDescriptor)) {
-      logger->debug("Provided buffer doesn't have a sufficient size to hold a device descriptor");
-      logger->debug("Expected size is at least {} bytes", sizeof(USBDeviceDescriptor));
-      throw std::runtime_error("Invalid binary descriptor data: too small");
-    }
-    else {
-      rawptr = static_cast<const USBDeviceDescriptor *>(data);
-    }
-
-    /* 1:1 copy */
-    descriptor = *rawptr;
     /* Convert multibyte field to host endianness */
-    descriptor.bcdUSB = busEndianToHost(rawptr->bcdUSB);
-    descriptor.idVendor = busEndianToHost(rawptr->idVendor);
-    descriptor.idProduct = busEndianToHost(rawptr->idProduct);
-    descriptor.bcdDevice = busEndianToHost(rawptr->bcdDevice);
+    device_out->bcdUSB = busEndianToHost(device_raw->bcdUSB);
+    device_out->idVendor = busEndianToHost(device_raw->idVendor);
+    device_out->idProduct = busEndianToHost(device_raw->idProduct);
+    device_out->bcdDevice = busEndianToHost(device_raw->bcdDevice);
 
-    logger->debug("Device descriptor values (host endian):");
-    logger->debug(" bcdUSB: {:x}", descriptor.bcdUSB);
-    logger->debug(" idVendor: {:x}", descriptor.idVendor);
-    logger->debug(" idProduct: {:x}", descriptor.idProduct);
-    logger->debug(" bcdDevice: {:x}", descriptor.bcdDevice);
-    logger->debug(" bDeviceClass: {:x}", descriptor.bDeviceClass);
-    logger->debug(" bDeviceSubClass: {:x}", descriptor.bDeviceSubClass);
-
-    /* Sanity checks */
-    if (descriptor.bLength != sizeof(USBDeviceDescriptor)) {
-      logger->debug("Device descriptor bLength value ({:d} bytes) doesn't match descriptor size ({})",
-		    descriptor.bLength, sizeof(USBDeviceDescriptor));
-      throw std::runtime_error("Invalid binary descriptor data: invalid bLenght value");
-    }
-
-    return descriptor;
+    return;
   }
 
-  const USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size)
+  void USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-    USBConfigurationDescriptor descriptor;
-    const USBConfigurationDescriptor* rawptr;
+    const USBConfigurationDescriptor* configuration_raw = reinterpret_cast<const USBConfigurationDescriptor*>(descriptor_raw);
+    USBConfigurationDescriptor* configuration_out = reinterpret_cast<USBConfigurationDescriptor*>(descriptor_out);
 
-    logger->trace("Parsing configuration descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
-		  data, size, (void*)real_size);
+    /* Copy 1:1 */
+    *configuration_out = *configuration_raw;
 
-    if (size < sizeof(USBConfigurationDescriptor)) {
-      logger->debug("Provided buffer doesn't have a sufficient size to hold a configuration descriptor");
-      logger->debug("Expected size is at least {} bytes", sizeof(USBConfigurationDescriptor));
-      throw std::runtime_error("Invalid binary descriptor data: too small");
-    }
-    else {
-      rawptr = static_cast<const USBConfigurationDescriptor *>(data);
-    }
+    /* Convert multibyte field to host endianness */
+    configuration_out->wTotalLength = busEndianToHost(configuration_raw->wTotalLength);
 
-    /* 1:1 copy */
-    descriptor = *rawptr;
-    descriptor.wTotalLength = busEndianToHost(rawptr->wTotalLength);
-
-    logger->debug("Configuration descriptor data (host endian)");
-    logger->debug(" bNumInterfaces: {:d}", descriptor.bNumInterfaces);
-    logger->debug(" wTotalLength: {:d}", descriptor.wTotalLength);
-    logger->debug(" bConfigurationValue: {:d}", descriptor.bConfigurationValue);
-
-    return descriptor;
+    return;
   }
 
-  const USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size)
+  void USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-    USBInterfaceDescriptor descriptor;
-    const USBInterfaceDescriptor* rawptr;
+    const USBInterfaceDescriptor* interface_raw = reinterpret_cast<const USBInterfaceDescriptor*>(descriptor_raw);
+    USBInterfaceDescriptor* interface_out = reinterpret_cast<USBInterfaceDescriptor*>(descriptor_out);
 
-    logger->trace("Parsing interface descriptor from ptr={:p}, size={}, real_size_ptr={:p}",
-		  data, size, (void *)real_size);
+    /* Copy 1:1 */
+    *interface_out = *interface_raw;
 
-    if (size < sizeof(USBInterfaceDescriptor)) {
-      logger->debug("Provided buffer doesn't have a sufficient size to hold an interface descriptor");
-      logger->debug("Expected size is at least {} bytes", sizeof(USBInterfaceDescriptor));
-      throw std::runtime_error("Invalid binary descriptor data: too small");
+    return;
+  }
+
+  void USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
+  {
+    const USBEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBEndpointDescriptor*>(descriptor_raw);
+    USBEndpointDescriptor* endpoint_out = reinterpret_cast<USBEndpointDescriptor*>(descriptor_out);
+
+    *endpoint_out = *endpoint_raw;
+    endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
+
+    return;
+  }
+
+  /*
+  USBDescriptorParser::USBDescriptorParser()
+  {
+  }
+  */
+
+  const USBDescriptorParser::Handler* USBDescriptorParser::getDescriptorTypeHandler(uint8_t bDescriptorType) const
+  {
+    const auto it = _handler_map.find(bDescriptorType);
+    if (it == _handler_map.end()) {
+      return nullptr;
     }
-    else {
-      rawptr = static_cast<const USBInterfaceDescriptor *>(data);
+    return &it->second;
+  }
+
+  size_t USBDescriptorParser::parse(std::istream& stream)
+  {
+    size_t size_processed = 0;
+
+    while (stream.good()) {
+      USBDescriptorHeader header;
+      stream.read(reinterpret_cast<char*>(&header), sizeof header);
+
+      if (stream.gcount() != sizeof header) {
+        /*
+         * If we read nothing and the stream if at EOF, just break
+         * the loop and return normally. Checking the sanity of the
+         * parsed descriptor data is up to the higher layers.
+         */
+        if (stream.gcount() == 0 && stream.eof()) {
+          break;
+        }
+        /*
+         * Otherwise throw an exception because there's unknown garbage
+         * in the stream which cannot be a valid USB descriptor.
+         */
+        else {
+          throw std::runtime_error("Cannot parse descriptor data: partial read while reading header data");
+        }
+      }
+
+      /*
+       * The bLength value has to be at least 2, because that is the size of the USB
+       * descriptor header.
+       */
+      if (header.bLength < sizeof(USBDescriptorHeader)) {
+        throw std::runtime_error("Invalid descriptor data: bLength is less than the size of the header");
+      }
+
+      /*
+       * Let's try to read the rest of the descriptor data before we start looking
+       * for the descriptor type handler. If there's not enough data in the stream,
+       * then there's no point for searching for the handler.
+       */
+      USBDescriptor descriptor;
+
+      descriptor.bHeader = header;
+      memset(&descriptor.bDescriptorData, 0, sizeof descriptor.bDescriptorData);
+
+      /*
+       * We read (bLength - header_size) amount of data here because the bLength value
+       * counts in the size of the header too and we already read it from the stream.
+       */
+      stream.read(reinterpret_cast<char*>(&descriptor.bDescriptorData), header.bLength - sizeof(USBDescriptorHeader));
+
+      if (stream.gcount() != (std::streamsize)(header.bLength - sizeof(USBDescriptorHeader))) {
+        throw std::runtime_error("Invalid descriptor data: bLength value larger than the amount of available data");
+      }
+
+      /*
+       * Find the descriptor type handler.
+       */
+      const Handler* h = getDescriptorTypeHandler(header.bDescriptorType);
+      if (!h) {
+        h = getDescriptorTypeHandler(USB_DESCRIPTOR_TYPE_UNKNOWN);
+        /*
+         * If there's no handler for this type of descriptor, skip to the next one.
+         */
+        if (!h) {
+          continue;
+        }
+      }
+
+      /*
+       * Check whether the descriptor is of expected length.
+       */
+      if (h->bLengthExpected > 0) {
+        if (header.bLength != h->bLengthExpected) {
+          throw std::runtime_error("Invalid descriptor data: bLength doesn't match expected bLenght for this descriptor type");
+        }
+      }
+
+      USBDescriptor descriptor_parsed;
+      descriptor_parsed.bHeader = header;
+      memset(&descriptor_parsed.bDescriptorData, 0, sizeof descriptor_parsed.bDescriptorData);
+
+      if (h->parser) {
+        h->parser(this, &descriptor, &descriptor_parsed); 
+      }
+      if (h->callback) {
+        h->callback(this, &descriptor_parsed);
+      }
+
+      setDescriptor(header.bDescriptorType, descriptor_parsed);
+      size_processed += header.bLength;
     }
 
-    /* 1:1 copy */
-    descriptor = *rawptr;
+    return size_processed;
+  }
 
-    logger->debug("Interface descriptor data (host endian):");
-    logger->debug(" bInterfaceClass: {:x}", descriptor.bInterfaceClass);
-    logger->debug(" bInterfaceSubClass: {:x}", descriptor.bInterfaceSubClass);
-    logger->debug(" bInterfaceProtocol: {:x}", descriptor.bInterfaceProtocol);
-    logger->debug(" bInterfaceNumber: {:d}", descriptor.bInterfaceNumber);
+  void USBDescriptorParser::setHandler(uint8_t bDescriptorType, uint8_t bLengthExpected, ParserFunction parser, CallbackFunction callback)
+  {
+    auto& handler = _handler_map[bDescriptorType];
+    handler.parser = parser;
+    handler.callback = callback;
+    handler.bLengthExpected = bLengthExpected;
+    return;
+  }
 
-    return descriptor;
+  const USBDescriptor* USBDescriptorParser::getDescriptor(uint8_t bDescriptorType) const
+  {
+    auto const& it = _dstate_map.find(bDescriptorType);
+    if (it == _dstate_map.end()) {
+      return nullptr;
+    }
+    return &it->second;
+  }
+
+  void USBDescriptorParser::setDescriptor(uint8_t bDescriptorType, const USBDescriptor& descriptor)
+  {
+    _dstate_map[bDescriptorType] = descriptor;
+    ++_count_map[bDescriptorType];
+  }
+
+  void USBDescriptorParser::delDescriptor(uint8_t bDescriptorType)
+  {
+    _dstate_map.erase(bDescriptorType);
+  }
+
+  bool USBDescriptorParser::haveDescriptor(uint8_t bDescriptorType) const
+  {
+    return _dstate_map.count(bDescriptorType) == 1;
+  }
+
+  const std::vector<std::pair<uint8_t,size_t>> USBDescriptorParser::getDescriptorCounts() const
+  {
+    std::vector<std::pair<uint8_t,size_t>> counts;
+
+    for (auto const& kv : _count_map) {
+      counts.push_back(std::make_pair(kv.first, kv.second));
+    }
+
+    std::sort(counts.begin(), counts.end());
+
+    return counts;
   }
 
 } /* namespace usbguard */

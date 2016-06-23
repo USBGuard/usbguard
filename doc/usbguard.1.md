@@ -28,6 +28,8 @@ usbguard **generate-policy**
 
 usbguard **watch**
 
+usbguard **read-descriptor** <*file*>
+
 # DESCRIPTION
 
 The **usbguard** command provides a command-line interface (CLI) to the **usbguard-daemon**(8) instance and provides a tool for generating initial USBGuard policies.
@@ -158,6 +160,17 @@ Available options:
 **watch** [*OPTIONS*]
 
 Watch the IPC interface events and print them to stdout.
+
+Available options:
+
+**-h**, **--help**
+:   Show help.
+
+~ ~ ~ ~
+
+**read-descriptor** [*OPTIONS*] <*file*>
+
+Read a USB descriptor from a file and print it in human-readable form.
 
 Available options:
 

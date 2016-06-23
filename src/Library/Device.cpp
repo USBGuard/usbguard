@@ -140,22 +140,27 @@ namespace usbguard {
     return d_pointer->refInterfaceTypes();
   }
 
-  void Device::loadDeviceDescriptor(const USBDeviceDescriptor* const descriptor)
+  void Device::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    d_pointer->loadDeviceDescriptor(descriptor);
+    d_pointer->loadDeviceDescriptor(parser, descriptor);
     return;
   }
 
-  void Device::loadConfigurationDescriptor(const int c_num, const USBConfigurationDescriptor* const descriptor)
+  void Device::loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    d_pointer->loadConfigurationDescriptor(c_num, descriptor);
+    d_pointer->loadConfigurationDescriptor(parser, descriptor);
     return;
   }
 
-  void Device::loadInterfaceDescriptor(const int c_num, const int i_num, const USBInterfaceDescriptor* const descriptor)
+  void Device::loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    d_pointer->loadInterfaceDescriptor(c_num, i_num, descriptor);
+    d_pointer->loadInterfaceDescriptor(parser, descriptor);
     return;
   }
 
+  void Device::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
+  {
+    d_pointer->loadEndpointDescriptor(parser, descriptor);
+    return;
+  }
 } /* namespace usbguard */

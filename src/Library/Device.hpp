@@ -54,9 +54,10 @@ namespace usbguard {
     void setSerialNumber(const String& serial_number);
     std::vector<USBInterfaceType>& refInterfaceTypes();
 
-    void loadDeviceDescriptor(const USBDeviceDescriptor* descriptor);
-    void loadConfigurationDescriptor(int c_num, const USBConfigurationDescriptor* descriptor);
-    void loadInterfaceDescriptor(int c_num, int i_num, const USBInterfaceDescriptor* descriptor);
+    void loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+    void loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+    void loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+    void loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
 
   private:
     DevicePrivate *d_pointer;

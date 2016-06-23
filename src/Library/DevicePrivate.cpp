@@ -29,7 +29,6 @@ namespace usbguard {
     _id = Rule::DefaultID;
     _target = Rule::Target::Unknown;
     _num_configurations = -1;
-    _num_interfaces = -1;
     return;
   }
 
@@ -54,7 +53,6 @@ namespace usbguard {
     _port = device_rule.getDevicePorts()[0]; /* NOTE: A device rule can contain only one port */
     _interface_types = device_rule.getInterfaceTypes();
     _num_configurations = device_rule.getDeviceConfigurations();
-    _num_interfaces = device_rule.getInterfaceTypes().size();
 
     return;
   }
@@ -70,7 +68,7 @@ namespace usbguard {
     _port = rhs._port;
     _interface_types = rhs._interface_types;
     _num_configurations = rhs._num_configurations;
-    _num_interfaces = rhs._num_interfaces;
+
     return *this;
   }
   
@@ -222,59 +220,48 @@ namespace usbguard {
     return _interface_types;
   }
 
-  void DevicePrivate::loadDeviceDescriptor(const USBDeviceDescriptor* const descriptor)
+  void DevicePrivate::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    logger->trace("Loading device descriptor for device {}:{}@{} (name={}); descriptor={:p}",
-		  _vendor_id, _product_id, _port, _name, (void *)descriptor);
-
-    if (descriptor == nullptr) {
-      throw std::runtime_error("loadDeviceDescriptor: NULL descriptor");
+    if (parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
+      throw std::runtime_error("Invalid descriptor data: multiple device descriptors for one device");
     }
-    _num_configurations = descriptor->bNumConfigurations;
-    _num_interfaces = 0;
+    _num_configurations = reinterpret_cast<const USBDeviceDescriptor*>(descriptor)->bNumConfigurations;
+    _interface_types.clear();
     return;
   }
 
-  void DevicePrivate::loadConfigurationDescriptor(const int c_num, const USBConfigurationDescriptor* const descriptor)
+  void DevicePrivate::loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    logger->trace("Loading configuration descriptor {} for device {}:{}@{} (name={}); descriptor={:p}",
-		  c_num, _vendor_id, _product_id, _port, _name, (void *)descriptor);
-
-    if (c_num < 0 || c_num >= _num_configurations) {
-      throw std::runtime_error("loadConfigurationDescriptor: configuration index out-of-range");
+    if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
+      throw std::runtime_error("Invalid descriptor data: missing parent device descriptor while loading configuration");
     }
-    if (descriptor == nullptr) {
-      throw std::runtime_error("loadConfigurationDescriptor: NULL descriptor");
-    }
-
-    logger->debug("Increasing interface count");
-    logger->debug(" from: {}", _num_interfaces);
-    //
-    _num_interfaces += descriptor->bNumInterfaces;
-    //
-    logger->debug(" to: {} (+{:d})", _num_interfaces, descriptor->bNumInterfaces);
+    /*
+     * Clean the descriptor state. There shouldn't be any Interface or Endpoint
+     * descriptors while loading.
+     */
+    parser->delDescriptor(USB_DESCRIPTOR_TYPE_INTERFACE);
+    parser->delDescriptor(USB_DESCRIPTOR_TYPE_ENDPOINT);
 
     return;
   }
 
-  void DevicePrivate::loadInterfaceDescriptor(const int c_num, const int i_num, const USBInterfaceDescriptor* const descriptor)
+  void DevicePrivate::loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
-    logger->trace("Loading interface descriptor {}-{} for device {}:{}@{} (name={}); descriptor={:p}",
-		  c_num, i_num, _vendor_id, _product_id, _port, _name, (void *)descriptor);
-
-    if (c_num < 0 || c_num >= _num_configurations) {
-      throw std::runtime_error("loadInterfaceDescriptor: configuration index out-of-range");
-    }
-    if (i_num < 0 || i_num >= _num_interfaces) {
-      throw std::runtime_error("loadInterfaceDescriptor: interface index out-of-range");
-    }
-    if (descriptor == nullptr) {
-      throw std::runtime_error("loadInterfaceDescriptor: NULL descriptor");
+    if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_CONFIGURATION)) {
+      throw std::runtime_error("Invalid descriptor data: missing parent configuration descriptor while loading interface");
     }
 
-    const USBInterfaceType interface_type(*descriptor);
+    const USBInterfaceType interface_type(*reinterpret_cast<const USBInterfaceDescriptor*>(descriptor));
     _interface_types.push_back(interface_type);
 
+    return;
+  }
+
+  void DevicePrivate::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
+  {
+    if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_INTERFACE)) {
+      throw std::runtime_error("Invalid descriptor data: missing parent interface descriptor while loading endpoint");
+    }
     return;
   }
 } /* namespace usbguard */

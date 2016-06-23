@@ -20,6 +20,8 @@
 #include <Typedefs.hpp>
 #include <cstdint>
 #include <climits>
+#include <unordered_map>
+#include <functional>
 
 namespace usbguard {
   /*
@@ -47,10 +49,38 @@ namespace usbguard {
    *       data to the Device class. The Device class assumes that the
    *       values are in host-specific endianness.
    */
-  struct USBDeviceDescriptor
+  const uint8_t USB_DESCRIPTOR_TYPE_UNKNOWN = 0x00;
+  const uint8_t USB_DESCRIPTOR_TYPE_DEVICE = 0x01;
+  const uint8_t USB_DESCRIPTOR_TYPE_CONFIGURATION = 0x02;
+  const uint8_t USB_DESCRIPTOR_TYPE_STRING = 0x03;
+  const uint8_t USB_DESCRIPTOR_TYPE_INTERFACE = 0x04;
+  const uint8_t USB_DESCRIPTOR_TYPE_ENDPOINT = 0x05;
+  const uint8_t USB_DESCRIPTOR_TYPE_ASSOCIATION_INTERFACE = 0x0b;
+
+  enum class USBDescriptorType : uint8_t {
+    Device = 0x01,
+    Configuration = 0x02,
+    String = 0x03,
+    Interface = 0x04,
+    Endpoint = 0x05,
+    AssociationInterface = 0x0b
+  };
+
+  struct DLL_PUBLIC USBDescriptorHeader
   {
     uint8_t bLength;
     uint8_t bDescriptorType;
+  } __attribute__((packed));
+
+  struct DLL_PUBLIC USBDescriptor
+  {
+    struct USBDescriptorHeader bHeader;
+    uint8_t bDescriptorData[256-sizeof(USBDescriptorHeader)];
+  } __attribute__((packed));
+
+  struct DLL_PUBLIC USBDeviceDescriptor
+  {
+    struct USBDescriptorHeader bHeader;
     uint16_t bcdUSB;
     uint8_t bDeviceClass;
     uint8_t bDeviceSubClass;
@@ -65,10 +95,9 @@ namespace usbguard {
     uint8_t bNumConfigurations;
   } __attribute__((packed));
 
-  struct USBConfigurationDescriptor
+  struct DLL_PUBLIC USBConfigurationDescriptor
   {
-    uint8_t bLength;
-    uint8_t bDescriptorType;
+    struct USBDescriptorHeader bHeader;
     uint16_t wTotalLength;
     uint8_t bNumInterfaces;
     uint8_t bConfigurationValue;
@@ -77,10 +106,9 @@ namespace usbguard {
     uint8_t bMaxPower;
   } __attribute__((packed));
 
-  struct USBInterfaceDescriptor
+  struct DLL_PUBLIC USBInterfaceDescriptor
   {
-    uint8_t bLength;
-    uint8_t bDescriptorType;
+    struct USBDescriptorHeader bHeader; 
     uint8_t bInterfaceNumber;
     uint8_t bAlternateSetting;
     uint8_t bNumEndpoints;
@@ -88,6 +116,15 @@ namespace usbguard {
     uint8_t bInterfaceSubClass;
     uint8_t bInterfaceProtocol;
     uint8_t iInterface;
+  } __attribute__((packed));
+
+  struct USBEndpointDescriptor
+  {
+    struct USBDescriptorHeader bHeader;
+    uint8_t bEndpointAddress;
+    uint8_t bmAttributes;
+    uint16_t wMaxPacketSize;
+    uint8_t bInterval;
   } __attribute__((packed));
 
   class DLL_PUBLIC USBInterfaceType
@@ -119,8 +156,76 @@ namespace usbguard {
   template<>
   bool matches(const USBInterfaceType& a, const USBInterfaceType& b);
 
-  const DLL_PUBLIC USBDeviceDescriptor USBParseDeviceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
-  const DLL_PUBLIC USBConfigurationDescriptor USBParseConfigurationDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
-  const DLL_PUBLIC USBInterfaceDescriptor USBParseInterfaceDescriptor(const void *data, size_t size, size_t *real_size = nullptr);
+  class DLL_PUBLIC USBDescriptorParser
+  {
+  public:
+    using ParserFunction = std::function<void(USBDescriptorParser *, const USBDescriptor *, USBDescriptor *)>;
+    using CallbackFunction = std::function<void(USBDescriptorParser *, const USBDescriptor *)>;
+
+    //USBDescriptorParser(); //size_t max_resident_descriptors = 1024*1024/256 /* 1MiB of descriptors */);
+
+    /**
+     * Initiate parsing of USB descriptors from an input stream.
+     *
+     * Returns number of bytes succesfully parsed/processed from
+     * the stream.
+     */
+    size_t parse(std::istream& stream);
+
+    /**
+     * Sets handler functions (parser and callback) for specific USB descriptor types
+     *
+     * bDescriptorType: Type of the descriptor.
+     * bLengthExpected: Expected length (in bytes/octets) of the descriptor. Set to 0 for variable length descriptors.
+     *
+     */
+    void setHandler(uint8_t bDescriptorType, uint8_t bLengthExpected, ParserFunction parser, CallbackFunction callback);
+
+    /**
+     * Return a pointer to a USBDescriptor of type bDescriptorType that
+     * is stored in the USB descriptor state. If there's no such descriptor,
+     * then nullptr is returned.
+     */
+    const USBDescriptor* getDescriptor(uint8_t bDescriptorType) const;
+
+    /**
+     * Set the active instance of an USB descriptor of bDescriptorType type.
+     */
+    void setDescriptor(uint8_t bDescriptorType, const USBDescriptor& descriptor);
+
+    /**
+     * Delete the active instance of an USB descriptor of bDescriptorType type.
+     */
+    void delDescriptor(uint8_t bDescriptorType);
+
+    /**
+     * Returns true if the descriptor state contains a USB descriptor of type bDescriptorType.
+     */
+    bool haveDescriptor(uint8_t bDescriptorType) const;
+
+    /**
+     * Returns a vector of (bDescriptorType, count) pairs.
+     */
+    const std::vector<std::pair<uint8_t,size_t>> getDescriptorCounts() const;
+
+  private:
+    struct Handler
+    {
+      ParserFunction parser;
+      CallbackFunction callback;
+      uint8_t bLengthExpected;
+    };
+
+    const Handler* getDescriptorTypeHandler(uint8_t bDescriptorType) const;
+
+    std::unordered_map<uint8_t, USBDescriptor> _dstate_map; /**< Descriptor State Map */
+    std::unordered_map<uint8_t, Handler> _handler_map;
+    std::unordered_map<uint8_t, size_t> _count_map;
+ };
+
+ void DLL_PUBLIC USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+ void DLL_PUBLIC USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+ void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+ void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */

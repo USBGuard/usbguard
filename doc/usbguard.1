@@ -23,6 +23,8 @@ usbguard\ \f[B]remove\-rule\f[]\ <\f[I]id\f[]>
 usbguard\ \f[B]generate\-policy\f[]
 .PP
 usbguard\ \f[B]watch\f[]
+.PP
+usbguard \f[B]read\-descriptor\f[] <\f[I]file\f[]>
 .SH DESCRIPTION
 .PP
 The \f[B]usbguard\f[] command provides a command\-line interface (CLI)
@@ -208,6 +210,19 @@ Show help.
 \f[B]watch\f[] [\f[I]OPTIONS\f[]]
 .PP
 Watch the IPC interface events and print them to stdout.
+.PP
+Available options:
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]read\-descriptor\f[] [\f[I]OPTIONS\f[]] <\f[I]file\f[]>
+.PP
+Read a USB descriptor from a file and print it in human\-readable form.
 .PP
 Available options:
 .TP

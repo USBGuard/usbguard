@@ -39,6 +39,7 @@ namespace usbguard {
     void readDescriptors(std::istream& stream);
     void readConfiguration(int c_num, std::istream& stream);
     void readInterfaceDescriptor(int c_num, int i_num, std::istream& stream);
+    void readEndpointDescriptor(int c_num, int i_num, int e_num, std::istream& stream);
 
   private:
     String _syspath;
@@ -62,6 +63,7 @@ namespace usbguard {
 
   protected:
     Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target);
+    void sysioApplyTarget(const String& sys_path, Rule::Target target);
     void thread();
     void udevReceiveDevice();
     void udevEnumerateDevices();

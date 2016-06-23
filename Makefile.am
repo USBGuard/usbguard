@@ -261,7 +261,9 @@ usbguard_SOURCES=\
 	src/CLI/IPCSignalWatcher.hpp \
 	src/CLI/IPCSignalWatcher.cpp \
 	src/CLI/PolicyGenerator.hpp \
-	src/CLI/PolicyGenerator.cpp
+	src/CLI/PolicyGenerator.cpp \
+	src/CLI/usbguard-read-descriptor.hpp \
+	src/CLI/usbguard-read-descriptor.cpp
 
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \

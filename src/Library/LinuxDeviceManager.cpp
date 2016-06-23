@@ -105,52 +105,25 @@ namespace usbguard {
       throw std::runtime_error("cannot load USB descriptors");
     }
     else {
-      readDescriptors(descriptor_stream);
+      using namespace std::placeholders;
+      USBDescriptorParser parser;
+
+      auto load_device_descriptor = std::bind(&LinuxDevice::loadDeviceDescriptor, this, _1, _2);
+      auto load_configuration_descriptor = std::bind(&LinuxDevice::loadConfigurationDescriptor, this, _1, _2);
+      auto load_interface_descriptor = std::bind(&LinuxDevice::loadInterfaceDescriptor, this, _1, _2);
+      auto load_endpoint_descriptor = std::bind(&LinuxDevice::loadEndpointDescriptor, this, _1, _2);
+
+      parser.setHandler(USB_DESCRIPTOR_TYPE_DEVICE, sizeof (USBDeviceDescriptor),
+                        USBParseDeviceDescriptor, load_device_descriptor);
+      parser.setHandler(USB_DESCRIPTOR_TYPE_CONFIGURATION, sizeof (USBConfigurationDescriptor),
+                        USBParseConfigurationDescriptor, load_configuration_descriptor);
+      parser.setHandler(USB_DESCRIPTOR_TYPE_INTERFACE, sizeof (USBInterfaceDescriptor),
+                        USBParseInterfaceDescriptor, load_interface_descriptor);
+      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBEndpointDescriptor),
+                        USBParseEndpointDescriptor, load_endpoint_descriptor);
+
+      parser.parse(descriptor_stream);
     }
-
-    return;
-  }
-
-  void LinuxDevice::readDescriptors(std::istream& stream)
-  {
-    char buffer[sizeof(USBDeviceDescriptor)];
-    stream.read(buffer, sizeof buffer);
-
-    const USBDeviceDescriptor descriptor = \
-      USBParseDeviceDescriptor(buffer, stream.gcount());
-    loadDeviceDescriptor(&descriptor);
-
-    for (size_t c = 0; c < descriptor.bNumConfigurations; ++c) {
-      readConfiguration(c, stream);
-    }
-
-    return;
-  }
-
-  void LinuxDevice::readConfiguration(int c_num, std::istream& stream)
-  {
-    char buffer[sizeof(USBConfigurationDescriptor)];
-    stream.read(buffer, sizeof buffer);
-
-    const USBConfigurationDescriptor descriptor = \
-      USBParseConfigurationDescriptor(buffer, stream.gcount());
-    loadConfigurationDescriptor(c_num, &descriptor);
-
-    for (size_t i = 0; i < descriptor.bNumInterfaces; ++i) {
-      readInterfaceDescriptor(c_num, i, stream);
-    }
-
-    return;
-  }
-
-  void LinuxDevice::readInterfaceDescriptor(int c_num, int i_num, std::istream& stream)
-  {
-    char buffer[sizeof(USBInterfaceDescriptor)];
-    stream.read(buffer, sizeof buffer);
-
-    const USBInterfaceDescriptor descriptor = \
-      USBParseInterfaceDescriptor(buffer, stream.gcount());
-    loadInterfaceDescriptor(c_num, i_num, &descriptor);
 
     return;
   }
@@ -277,6 +250,14 @@ namespace usbguard {
     Pointer<LinuxDevice> device = std::static_pointer_cast<LinuxDevice>(getDevice(id));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
 
+    sysioApplyTarget(device->getSysPath(), target);
+    device->setTarget(target);
+
+    return std::move(device);
+  }
+
+  void LinuxDeviceManager::sysioApplyTarget(const String& sys_path, Rule::Target target)
+  {
     const char *target_file = nullptr;
     int target_value = 0;
 
@@ -300,14 +281,11 @@ namespace usbguard {
       }
 
     char sysio_path[SYSIO_PATH_MAX];
-    snprintf(sysio_path, SYSIO_PATH_MAX, "%s/%s",
-	     device->getSysPath().c_str(), target_file);
+    snprintf(sysio_path, SYSIO_PATH_MAX, "%s/%s", sys_path.c_str(), target_file);
     /* FIXME: check that snprintf wrote the whole path */
     //log->debug("SysIO: writing '{}' to {}", target_value, sysio_path);
     sysioWrite(sysio_path, target_value);
-    device->setTarget(target);
-
-    return std::move(device);
+    return;
   }
 
   void LinuxDeviceManager::thread()
@@ -433,19 +411,29 @@ namespace usbguard {
 
   void LinuxDeviceManager::processDevicePresence(struct udev_device *dev)
   {
-    //log->debug("Processing device presence");
-    Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
-    insertDevice(device);
-    DevicePresent(device);
+    try {
+      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
+      insertDevice(device);
+      DevicePresent(device);
+    }
+    catch(...) {
+      const String sys_path(udev_device_get_syspath(dev));
+      sysioApplyTarget(sys_path, Rule::Target::Reject);
+    }
     return;
   }
 
   void LinuxDeviceManager::processDeviceInsertion(struct udev_device *dev)
   {
-    //log->debug("Processing device insertion");
-    Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
-    insertDevice(device);
-    DeviceInserted(device);
+    try {
+      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
+      insertDevice(device);
+      DeviceInserted(device);
+    }
+    catch(...) {
+      const String sys_path(udev_device_get_syspath(dev));
+      sysioApplyTarget(sys_path, Rule::Target::Reject);
+    }
     return;
   }
 
