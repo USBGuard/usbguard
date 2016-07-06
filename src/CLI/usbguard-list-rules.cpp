@@ -60,7 +60,7 @@ namespace usbguard
     RuleSet ruleset = ipc.listRules();
 
     for (auto rule : ruleset.getRules()) {
-      std::cout << rule->getID() << ": " << rule->toString() << std::endl;
+      std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
     }
 
     return EXIT_SUCCESS;

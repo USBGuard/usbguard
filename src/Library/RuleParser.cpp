@@ -17,89 +17,47 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include <build-config.h>
-#include "RuleParser.hpp"
-#include "RuleParser/Lexer.hpp"
-#include "Typedefs.hpp"
 
+#include "RuleParser.hpp"
+#include "RuleParser/Grammar.hpp"
+#include "RuleParser/Actions.hpp"
+
+#include "Typedefs.hpp"
 #include "RulePrivate.hpp"
 #include "USB.hpp"
-#include "Lexer.hpp"
 #include "Common/Utility.hpp"
 #include "LoggerPrivate.hpp"
 
 #include <cstddef>
 #include <stdexcept>
 #include <stdlib.h>
-#include <sstream>
-#include <cassert>
 
 namespace usbguard
 {
-  struct RuleParserState
+  Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line)
   {
-    RuleParserState(const String& rule_spec)
-      : error(rule_spec)
-      {}
-    Rule rule;
-    RuleParserError error;
-  };
-
-#include "RuleParser/Parser.c"
-
-  static void RuleParserDeleter(void *p)
-  {
-    RuleParserFree(p, &free);
-  }
-
-  Rule parseRuleSpecification(const String& rule_spec, const std::string * const file, unsigned int line)
-  {
-    std::istringstream stream(rule_spec);
-    UniquePointer<void,void(*)(void *)> parser_data(RuleParserAlloc(&malloc), RuleParserDeleter);
-
     logger->debug("Trying to parse rule: \"{}\"", rule_spec);
 
     try {
-      RuleParserState state(rule_spec);
-      quex::Lexer lexer(&stream);
-      QUEX_TYPE_TOKEN* token_ptr = nullptr;
-
-#ifndef NDEBUG
-      RuleParserTrace(stderr, (char*)"RuleParser:");
-#endif
-      for (;;) {
-        lexer.receive(&token_ptr);
-        if (token_ptr->type_id() != RULE_TOKEN_TERMINATION) {
-          QUEX_TYPE_TOKEN* token_copy = new QUEX_TYPE_TOKEN(*token_ptr);
-          try {
-            RuleParser(parser_data.get(), token_ptr->type_id(), token_copy, &state);
-          }
-          catch(...) {
-            delete token_copy;
-            throw;
-          }
-        } else {
-          RuleParser(parser_data.get(), 0, nullptr, &state);
-          break;
-        }
-      }
-      return std::move(state.rule);
+      Rule rule;
+      pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+      return rule;
     }
-    catch(RuleParserError& ex) {
-      logger->debug("Caught RuleParserError: {}", ex.what());
-      /*
-       * If the caller provided a file context, add it to the
-       * exception.
-       */
-      if (file != nullptr) {
-        ex.setFileInfo(*file, line);
+    catch(const pegtl::parse_error& ex) {
+      RuleParserError error(rule_spec);
+      
+      error.setHint(ex.what());
+      error.setOffset(ex.positions[0].byte_in_line);
+
+      if (!file.empty()) {
+        error.setFileInfo(file, line);
       }
-      throw ex;
+
+      throw error;
     }
     catch(const std::exception& ex) {
-      logger->debug("Caught std::exception: {}", ex.what());
+      logger->debug("std::exception: {}", ex.what());
       throw;
     }
-
-    throw std::runtime_error("BUG in parseRuleSpecification");
   }
 } /* namespace usbguard */

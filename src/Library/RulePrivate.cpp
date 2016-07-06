@@ -23,44 +23,53 @@
 
 namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)
-    : _p_instance(p_instance)
+    : _p_instance(p_instance),
+      _device_id("id"),
+      _serial("serial"),
+      _name("name"),
+      _hash("hash"),
+      _via_port("via-port"),
+      _with_interface("with-interface"),
+      _conditions("if")
   {
-    (void)_p_instance;
-    _id = Rule::DefaultID;
+    _rule_id = Rule::DefaultID;
     _target = Rule::Target::Invalid;
-    _timeout_seconds = 0;
-    _device_ports_op = Rule::SetOperator::Match;
-    _device_configurations = 0;
-    _interface_types_op = Rule::SetOperator::Match;
-    _conditions_op = Rule::SetOperator::EqualsOrdered;
     _conditions_state = 0;
-    return;
+    _timeout_seconds = 0;
   }
 
   RulePrivate::RulePrivate(Rule& p_instance, const RulePrivate& rhs)
-    : _p_instance(p_instance)
+    : _p_instance(p_instance),
+      _device_id("id"),
+      _serial("serial"),
+      _name("name"),
+      _hash("hash"),
+      _via_port("via-port"),
+      _with_interface("with-interface"),
+      _conditions("if")
   {
     *this = rhs;
-    return;
   }
   
   const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
   {
-    _id = rhs._id;
     _meta = rhs._meta;
-    _vendor_id = rhs._vendor_id;
-    _product_id = rhs._product_id;
-    _serial_number = rhs._serial_number;
-    _device_name = rhs._device_name;
-    _device_hash = rhs._device_hash;
-    _device_ports = rhs._device_ports;
-    _device_ports_op = rhs._device_ports_op;
-    _device_configurations = rhs._device_configurations;
-    _interface_types = rhs._interface_types;
-    _interface_types_op = rhs._interface_types_op;
+    _rule_id = rhs._rule_id;
     _target = rhs._target;
-    _action = rhs._action;
+
+    _device_id = rhs._device_id;
+    _serial = rhs._serial;
+    _name = rhs._name;
+    _hash = rhs._hash;
+    _via_port = rhs._via_port;
+    _with_interface = rhs._with_interface;
+    _conditions = rhs._conditions;
+
+    _conditions_state = rhs._conditions_state;
     _timeout_seconds = rhs._timeout_seconds;
+
+    return *this;
+#if 0
     try {
       for (auto const& condition : rhs._conditions) {
         _conditions.push_back(condition->clone());
@@ -72,76 +81,11 @@ namespace usbguard {
       }
       throw;
     }
-    _conditions_op = rhs._conditions_op;
-    _conditions_state = rhs._conditions_state;
-    return *this;
+#endif
   }
 
   RulePrivate::~RulePrivate()
   {
-    for (auto& condition : _conditions) {
-      delete condition;
-    }
-  }
-
-  uint32_t RulePrivate::getID() const
-  {
-    return _id;
-  }
-  
-  const String& RulePrivate::getVendorID() const
-  {
-    return _vendor_id;
-  }
-  
-  const String& RulePrivate::getProductID() const
-  {
-    return _product_id;
-  }
-
-  const String& RulePrivate::getSerialNumber() const
-  {
-    return _serial_number;
-  }
-  
-  const String& RulePrivate::getDeviceName() const
-  {
-    return _device_name;
-  }
-  
-  const String& RulePrivate::getDeviceHash() const
-  {
-    return _device_hash;
-  }
-  
-  const StringVector& RulePrivate::getDevicePorts() const
-  {
-    return _device_ports;
-  }
-  
-  const int RulePrivate::getDeviceConfigurations() const
-  {
-    return _device_configurations;
-  }
-
-  const std::vector<USBInterfaceType>& RulePrivate::getInterfaceTypes() const
-  {
-    return _interface_types;
-  }
-  
-  Rule::Target RulePrivate::getTarget() const
-  {
-    return _target;
-  }
-  
-  const String& RulePrivate::getAction() const
-  {
-    return _action;
-  }
-  
-  uint32_t RulePrivate::getTimeoutSeconds() const
-  {
-    return _timeout_seconds;
   }
 
   bool RulePrivate::appliesTo(Pointer<const Rule> rhs) const
@@ -158,119 +102,13 @@ namespace usbguard {
     logger->trace("Checking applicability of rule [{}] to rule [{}]",
         this->toString(/*invalid=*/true), rhs.toString(/*invalid=*/true));
 
-    /*
-     * If a this set of rules contains the rhs rule, return true. Otherwise false.
-     * Ignored fields: rule_id, target, action, ts_added, timeout_sec, ref_syspath
-     */
-    if (!_vendor_id.empty()) {
-      if (_vendor_id != rhs.getVendorID()) {
-        logger->debug("Vendor IDs don't match: {} != {}", _vendor_id, rhs.getVendorID());
-        return false;
-      }
-    }
-    if (!_product_id.empty()) {
-      if (_product_id != rhs.getProductID()) {
-        logger->debug("Product IDs don't match: {} != {}", _product_id, rhs.getProductID());
-        return false;
-      }
-    }
-    if (!_device_name.empty()) {
-      if (_device_name != rhs.getDeviceName()) {
-        logger->debug("Device names don't match: {} != {}", _device_name, rhs.getDeviceName());
-        return false;
-      }
-    }
-    if (!_device_hash.empty()) {
-      if (_device_hash != rhs.getDeviceHash()) {
-        logger->debug("Device hashes don't match: {} != {}", _device_hash, rhs.getDeviceHash());
-        return false;
-      }
-    }
-    if (!_serial_number.empty()) {
-      if (_serial_number != rhs.getSerialNumber()) {
-        logger->debug("Serial numbers don't match: {} != {}", _serial_number, rhs.getSerialNumber());
-        return false;
-      }
-    }
-
-    /*
-     * Solve device ports set match
-     */
-    switch (_device_ports_op) {
-    case Rule::SetOperator::Match:
-      /* Skip device ports matching */
-      logger->debug("Skipping device port matching {}", "(operator Match)");
-      break;
-    case Rule::SetOperator::AllOf:
-      if (!setSolveAllOf(_device_ports, rhs.getDevicePorts())) {
-        logger->debug("Device ports don't match {}", "(operator AllOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::OneOf:
-      if (!setSolveOneOf(_device_ports, rhs.getDevicePorts())) {
-        logger->debug("Device ports don't match {}", "(operator OneOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::NoneOf:
-      if (!setSolveNoneOf(_device_ports, rhs.getDevicePorts())) {
-        logger->debug("Device ports don't match {}", "(operator NoneOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::Equals:
-      if (!setSolveEquals(_device_ports, rhs.getDevicePorts())) {
-        logger->debug("Device ports don't match {}", "(operator Equals)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::EqualsOrdered:
-      if (!setSolveEqualsOrdered(_device_ports, rhs.getDevicePorts())) {
-        logger->debug("Device ports don't match {}", "(operator EqualsOrdered)");
-        return false;
-      }
-      break;
-    }
-
-    /*
-     * Solve interface types set match
-     */
-    switch (_interface_types_op) {
-    case Rule::SetOperator::Match:
-      /* Skip interface type matching */
-      logger->debug("Skipping device interface types matching {}", "(operator Match)");
-      break;
-    case Rule::SetOperator::AllOf:
-      if (!setSolveAllOf(_interface_types, rhs.getInterfaceTypes())) {
-        logger->debug("Device interface types don't match {}", "(operator AllOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::OneOf:
-      if (!setSolveOneOf(_interface_types, rhs.getInterfaceTypes())) {
-        logger->debug("Device interface types don't match {}", "(operator OneOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::NoneOf:
-      if (!setSolveNoneOf(_interface_types, rhs.getInterfaceTypes())) {
-        logger->debug("Device interface types don't match {}", "(operator NoneOf)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::Equals:
-      if (!setSolveEquals(_interface_types, rhs.getInterfaceTypes())) {
-        logger->debug("Device interface types don't match {}", "(operator Equals)");
-        return false;
-      }
-      break;
-    case Rule::SetOperator::EqualsOrdered:
-      if (!setSolveEqualsOrdered(_interface_types, rhs.getInterfaceTypes())) {
-        logger->debug("Device interface types don't match {}", "(operator EqualsOrdered)");
-        return false;
-      }
-      break;
+    if (!_device_id.appliesTo(rhs.internal()->_device_id) ||
+        !_serial.appliesTo(rhs.internal()->_serial) ||
+        !_name.appliesTo(rhs.internal()->_name) ||
+        !_hash.appliesTo(rhs.internal()->_hash) ||
+        !_via_port.appliesTo(rhs.internal()->_via_port) ||
+        !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
+      return false;
     }
 
     logger->debug("Rule applies.");
@@ -282,12 +120,12 @@ namespace usbguard {
     if (!appliesTo(rhs)) {
       return false;
     }
-    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getID(), rhs.getID());
+    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getRuleID(), rhs.getRuleID());
     if (!meetsConditions(rhs, with_update)) {
-      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getID(), getID());
+      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getRuleID(), getRuleID());
       return false;
     }
-    logger->debug("Rule {} meets conditions of rule {}", rhs.getID(), getID());
+    logger->debug("Rule {} meets conditions of rule {}", rhs.getRuleID(), getRuleID());
     return true;
   }
 
@@ -296,7 +134,7 @@ namespace usbguard {
     if (with_update) {
       (void)updateConditionsState(rhs);
     }
-    switch(_conditions_op) {
+    switch(_conditions.setOperator()) {
       case Rule::SetOperator::OneOf:
 	logger->debug("meetsCondition: OneOf: {}", conditionsState() > 0 ? "true" : "false");
         return conditionsState() > 0;
@@ -307,8 +145,8 @@ namespace usbguard {
       case Rule::SetOperator::Equals:
       case Rule::SetOperator::EqualsOrdered:
 	logger->debug("meetsCondition: AllOf, Equals, ...: {}",
-                      conditionsState() == ((((uint64_t)1) << _conditions.size()) - 1) ? "true" : "false");
-        return conditionsState() == ((((uint64_t)1) << _conditions.size()) - 1);
+                      conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1) ? "true" : "false");
+        return conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1);
       case Rule::SetOperator::Match:
         throw std::runtime_error("BUG: meetsConditions: invalid conditions set operator");
     }
@@ -317,7 +155,7 @@ namespace usbguard {
 
   void RulePrivate::initConditions(Interface * const interface)
   {
-    for (auto condition : _conditions) {
+    for (auto condition : _conditions.values()) {
       condition->init(interface);
     }
     /* FIXME: prevent leaks when init() throws an exception */
@@ -325,7 +163,7 @@ namespace usbguard {
 
   void RulePrivate::finiConditions()
   {
-    for (auto condition : _conditions) {
+    for (auto condition : _conditions.values()) {
       condition->fini();
     }
   }
@@ -335,7 +173,7 @@ namespace usbguard {
     uint64_t updated_state = 0;
     unsigned int i = 0;
 
-    for (auto condition : _conditions) {
+    for (auto condition : _conditions.values()) {
       if (i >= (sizeof updated_state * 8)) {
         throw std::runtime_error("BUG: updateConditionsState: too many conditions");
       }
@@ -344,7 +182,7 @@ namespace usbguard {
     }
 
     logger->debug("Condition state of rule {}: current={} updated={}",
-                  rhs.getID(), conditionsState(), updated_state);
+                  rhs.getRuleID(), conditionsState(), updated_state);
 
     if (updated_state != conditionsState()) {
       setConditionsState(updated_state);
@@ -364,108 +202,166 @@ namespace usbguard {
     _conditions_state = state;
   }
 
-  void RulePrivate::setID(uint32_t id)
+  uint32_t RulePrivate::getTimeoutSeconds() const
   {
-    _id = id;
-    return;
+    return _timeout_seconds;
   }
 
-  void RulePrivate::setVendorID(const String& vendor_id)
+  void RulePrivate::setRuleID(uint32_t rule_id)
   {
-    _vendor_id = vendor_id;
-    return;
-  }
-  
-  void RulePrivate::setProductID(const String& product_id)
-  {
-    _product_id = product_id;
-    return;
+    _rule_id = rule_id;
   }
 
-  void RulePrivate::setSerialNumber(const String& serial_number)
+  uint32_t RulePrivate::getRuleID() const
   {
-    _serial_number = serial_number;
-    return;
+    return _rule_id;
   }
-  
-  void RulePrivate::setDeviceName(const String& device_name)
-  {
-    _device_name = device_name;
-    return;
-  }
-  
-  void RulePrivate::setDeviceHash(const String& device_hash)
-  {
-    _device_hash = device_hash;
-    return;
-  }
-  
-  void RulePrivate::setDevicePorts(const StringVector& device_ports)
-  {
-    _device_ports = device_ports;
-    return;
-  }
-  
-  void RulePrivate::setDeviceConfigurations(int num_configurations)
-  {
-    _device_configurations = num_configurations;
-    return;
-  }
-
-  void RulePrivate::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
-  {
-    _interface_types = interface_types;
-    return;
-  }
-
-  StringVector& RulePrivate::refDevicePorts()
-  {
-    return _device_ports;
-  }
-
-  std::vector<USBInterfaceType>& RulePrivate::refInterfaceTypes()
-  {
-    return _interface_types;
-  }
-  
-  void RulePrivate::setDevicePortsSetOperator(Rule::SetOperator op)
-  {
-    _device_ports_op = op;
-    return;
-  }
-
-  void RulePrivate::setInterfaceTypesSetOperator(Rule::SetOperator op)
-  {
-    _interface_types_op = op;
-    return;
-  }
-
+ 
   void RulePrivate::setTarget(Rule::Target target)
   {
     _target = target;
-    return;
-  }
-  
-  void RulePrivate::setAction(const String& action)
-  {
-    _action = action;
-    return;
-  }
-  
-  void RulePrivate::setTimeoutSeconds(uint32_t timeout_seconds)
-  {
-    _timeout_seconds = timeout_seconds;
-    return;
   }
 
-  std::vector<RuleCondition*>& RulePrivate::refConditions()
+  Rule::Target RulePrivate::getTarget() const
+  {
+    return _target;
+  }
+
+  void RulePrivate::setDeviceID(const USBDeviceID& device_id)
+  {
+    _device_id.set(device_id);
+  }
+
+  const USBDeviceID& RulePrivate::getDeviceID() const
+  {
+    return _device_id.get();
+  }
+
+  const Rule::Attribute<USBDeviceID>& RulePrivate::attributeDeviceID() const
+  {
+    return _device_id;
+  }
+
+  Rule::Attribute<USBDeviceID>& RulePrivate::attributeDeviceID()
+  {
+    return _device_id;
+  }
+
+  void RulePrivate::setSerial(const String& value)
+  {
+    _serial.set(value);
+  }
+
+  const String& RulePrivate::getSerial() const
+  {
+    return _serial.get();
+  }
+
+  const Rule::Attribute<String>& RulePrivate::attributeSerial() const
+  {
+    return _serial;
+  }
+
+  Rule::Attribute<String>& RulePrivate::attributeSerial()
+  {
+    return _serial;
+  }
+
+  void RulePrivate::setName(const String& value)
+  {
+    _name.set(value);
+  }
+
+  const String& RulePrivate::getName() const
+  {
+    return _name.get();
+  }
+
+  const Rule::Attribute<String>& RulePrivate::attributeName() const
+  {
+    return _name;
+  }
+
+  Rule::Attribute<String>& RulePrivate::attributeName()
+  {
+    return _name;
+  }
+
+  void RulePrivate::setHash(const String& value)
+  {
+    _hash.set(value);
+  }
+
+  const String& RulePrivate::getHash() const
+  {
+    return _hash.get();
+  }
+
+  const Rule::Attribute<String>& RulePrivate::attributeHash() const
+  {
+    return _hash;
+  }
+
+  Rule::Attribute<String>& RulePrivate::attributeHash()
+  {
+    return _hash;
+  }
+
+  void RulePrivate::setViaPort(const String& value)
+  {
+    _via_port.set(value);
+  }
+
+  const String& RulePrivate::getViaPort() const
+  {
+    return _via_port.get();
+  }
+
+  const Rule::Attribute<String>& RulePrivate::attributeViaPort() const
+  {
+    return _via_port;
+  }
+
+  Rule::Attribute<String>& RulePrivate::attributeViaPort()
+  {
+    return _via_port;
+  }
+
+  const Rule::Attribute<USBInterfaceType>& RulePrivate::attributeWithInterface() const
+  {
+    return _with_interface;
+  }
+
+  Rule::Attribute<USBInterfaceType>& RulePrivate::attributeWithInterface()
+  {
+    return _with_interface;
+  }
+
+  const Rule::Attribute<RuleCondition*>& RulePrivate::attributeConditions() const
   {
     return _conditions;
   }
 
-  void RulePrivate::setConditionSetOperator(Rule::SetOperator op)
+  Rule::Attribute<RuleCondition*>& RulePrivate::attributeConditions()
   {
-    _conditions_op = op;
+    return _conditions;
+  }
+
+  void RulePrivate::setTimeoutSeconds(uint32_t timeout_seconds)
+  {
+    _timeout_seconds = timeout_seconds;
+  }
+
+  template<class ValueType>
+  static void toString_appendNonEmptyAttribute(String& rule_string, const Rule::Attribute<ValueType>& attribute)
+  {
+    if (attribute.empty()) {
+      return;
+    }
+
+    rule_string.append(" ");
+    rule_string.append(attribute.toRuleString());
+
     return;
   }
 
@@ -473,113 +369,24 @@ namespace usbguard {
   {
     String rule_string;
 
-    switch(_target) {
-    case Rule::Target::Allow:
-      rule_string = "allow";
-      break;
-    case Rule::Target::Block:
-      rule_string = "block";
-      break;
-    case Rule::Target::Reject:
-      rule_string = "reject";
-      break;
-    case Rule::Target::Device:
-      rule_string = "device";
-      break;
-    case Rule::Target::Match:
-      rule_string = "match";
-      break;
-    default:
-      if (!invalid) {
-        throw std::runtime_error("Cannot convert Rule to string representation; Invalid target");
+    try {
+      rule_string.append(Rule::targetToString(_target));
+    } catch(...) {
+      if (invalid) {
+        rule_string.append("<invalid>");
       }
       else {
-        rule_string = "<INVALID>";
+        throw;
       }
     }
 
-    if (!_vendor_id.empty() && !_product_id.empty()) {
-      rule_string.append(" ");
-      rule_string.append(_vendor_id);
-      rule_string.append(":");
-      rule_string.append(_product_id);
-    }
-    else if (!_vendor_id.empty() && _product_id.empty()) {
-      rule_string.append(" ");
-      rule_string.append(_vendor_id);
-      rule_string.append(":*");
-    }
-    else if (_vendor_id.empty() && !_product_id.empty()) {
-      if (!invalid) {
-        throw std::runtime_error("Cannot convert Rule to string representation; Vendor ID field missing");
-      }
-      else {
-        rule_string.append("<INVALID>:<INVALID>");
-      }
-    }
-    else {
-      /* DeviceID not specified is the same as "*:*" */
-    }
-    /* Serial Number */
-    toString_addNonEmptyField(rule_string, "serial", _serial_number);
-    /* Device Name */
-    toString_addNonEmptyField(rule_string, "name", _device_name);
-
-    /* Device Ports */
-    if (_device_ports.size() == 1
-        && _device_ports_op == Rule::SetOperator::Equals) {
-      toString_addNonEmptyField(rule_string, "via-port", _device_ports[0]);
-    }
-    else if (_device_ports.size() > 0) {
-      rule_string.append(" via-port ");
-      rule_string.append(Rule::setOperatorToString(_device_ports_op));
-      rule_string.append(" { ");
-      for (auto const& port : _device_ports) {
-        rule_string.append(quoteEscapeString(port));
-        rule_string.append(" ");
-      }
-      rule_string.append("}");
-    }
-
-    /* Interface types */
-    if (_interface_types.size() == 1
-        && _interface_types_op == Rule::SetOperator::Equals) {
-      toString_addNonEmptyField(rule_string, "with-interface",
-                                _interface_types[0].typeString(),
-                                /*quote_escape=*/false);
-    }
-    else if (_interface_types.size() > 0) {
-      rule_string.append(" with-interface ");
-      rule_string.append(Rule::setOperatorToString(_interface_types_op));
-      rule_string.append(" { ");
-      for (auto const& type : _interface_types) {
-        rule_string.append(type.typeString());
-        rule_string.append(" ");
-      }
-      rule_string.append("}");
-    }
-
-    /* Device Hash */
-    toString_addNonEmptyField(rule_string, "hash", _device_hash);
-
-    if (_conditions.size() == 1
-        && _conditions_op == Rule::SetOperator::EqualsOrdered) {
-      toString_addNonEmptyField(rule_string, "if", _conditions[0]->toString(),
-                                /*quote_escape=*/false);
-    }
-    else if (_conditions.size() > 0) {
-      rule_string.append(" if ");
-      rule_string.append(Rule::setOperatorToString(_conditions_op));
-      rule_string.append(" { ");
-      for (auto const& condition : _conditions) {
-        rule_string.append(condition->toString());
-        rule_string.append(" ");
-      }
-      rule_string.append("}");
-    }
-
-    /* Action */
-    toString_addNonEmptyField(rule_string, "action", _action);
+    toString_appendNonEmptyAttribute(rule_string, _device_id);
+    toString_appendNonEmptyAttribute(rule_string, _serial);
+    toString_appendNonEmptyAttribute(rule_string, _name);
+    toString_appendNonEmptyAttribute(rule_string, _hash);
+    toString_appendNonEmptyAttribute(rule_string, _via_port);
+    toString_appendNonEmptyAttribute(rule_string, _with_interface);
+    toString_appendNonEmptyAttribute(rule_string, _conditions);
 
     return rule_string;
   }
@@ -596,30 +403,7 @@ namespace usbguard {
 
   Rule RulePrivate::fromString(const String& rule_string)
   {
-    return parseRuleSpecification(rule_string);
-  }
-
-  void RulePrivate::toString_addNonEmptyField(String& rule, const String& name, const String& value, bool quote_escape)
-  {
-    if (value.empty()) {
-      return;
-    }
-
-    rule.append(" ");
-    rule.append(name);
-    rule.append(" ");
-    rule.append(quote_escape ? quoteEscapeString(value) : value);
-
-    return;
-  }
-
-  String RulePrivate::quoteEscapeString(const String& value)
-  {
-    String result;
-    result.push_back('"');
-    result.append(Rule::escapeString(value));
-    result.push_back('"');
-    return result;
+    return parseRuleFromString(rule_string);
   }
 
   void RulePrivate::updateMetaDataCounters(bool applied, bool evaluated)

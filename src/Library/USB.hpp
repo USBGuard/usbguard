@@ -17,6 +17,8 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
+#include "Predicates.hpp"
+
 #include <Typedefs.hpp>
 #include <cstdint>
 #include <climits>
@@ -127,6 +129,36 @@ namespace usbguard {
     uint8_t bInterval;
   } __attribute__((packed));
 
+  class DLL_PUBLIC USBDeviceID
+  {
+  public:
+    USBDeviceID();
+    USBDeviceID(const String& vendor_id, const String& product_id = String());
+    USBDeviceID(const USBDeviceID& rhs);
+
+    static void checkDeviceID(const String& vendor_id, const String& product_id);
+
+    void setVendorID(const String& vendor_id);
+    void setProductID(const String& product_id);
+
+    const String& getVendorID() const;
+    const String& getProductID() const;
+
+    String toRuleString() const;
+    String toString() const;
+    bool isSubsetOf(const USBDeviceID& rhs) const;
+
+  private:
+    String _vendor_id;
+    String _product_id;
+  };
+
+  namespace Predicates DLL_PUBLIC
+  {
+    template<>
+    bool isSubsetOf(const USBDeviceID& source, const USBDeviceID& target);
+  }
+
   class DLL_PUBLIC USBInterfaceType
   {
   public:
@@ -144,6 +176,7 @@ namespace usbguard {
     bool appliesTo(const USBInterfaceType& rhs) const;
 
     const String typeString() const;
+    const String toRuleString() const;
     static const String typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
 
   private:
@@ -152,9 +185,6 @@ namespace usbguard {
     uint8_t _bProtocol;
     uint8_t _mask;
   };
-
-  template<>
-  bool matches(const USBInterfaceType& a, const USBInterfaceType& b);
 
   class DLL_PUBLIC USBDescriptorParser
   {

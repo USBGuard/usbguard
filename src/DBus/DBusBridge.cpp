@@ -62,7 +62,7 @@ namespace usbguard
         try {
          for (auto rule : rules) {
             g_variant_builder_add(gvbuilder, "(us)",
-              rule->getID(),
+              rule->getRuleID(),
               rule->toString().c_str());
           }
           g_dbus_method_invocation_return_value(invocation, g_variant_new("(a(us))", gvbuilder));
@@ -119,7 +119,7 @@ namespace usbguard
         try {
          for (auto device_rule : devices) {
             g_variant_builder_add(gvbuilder, "(us)",
-              device_rule.getID(),
+              device_rule.getRuleID(),
               device_rule.toString().c_str());
           }
           g_dbus_method_invocation_return_value(invocation, g_variant_new("(a(us))", gvbuilder));

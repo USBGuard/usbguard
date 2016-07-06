@@ -159,7 +159,7 @@ namespace usbguard
 	_p_instance.DevicePresent(jobj["id"],
 				  attributes,
 				  interfaces,
-				  Rule::targetFromString(jobj["target"]));
+                                  Rule::targetFromString(jobj["target"]));
       }
       else if (name == "DeviceRemoved") {
 	const json attributes_json = jobj.at("attributes");
@@ -384,7 +384,7 @@ namespace usbguard
         const uint32_t rule_id = rule_json["id"];
         const std::string rule_string = rule_json["rule"];
         Rule rule = Rule::fromString(rule_string);
-        rule.setID(rule_id);
+        rule.setRuleID(rule_id);
         ruleset.appendRule(rule);
       }
 
@@ -455,7 +455,7 @@ namespace usbguard
         const uint32_t device_id = device_json["id"];
         const std::string device_string = device_json["device"];
         Rule device_rule = Rule::fromString(device_string);
-        device_rule.setID(device_id);
+        device_rule.setRuleID(device_id);
         devices.push_back(device_rule);
       }
 

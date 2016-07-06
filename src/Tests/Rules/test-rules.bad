@@ -1,0 +1,73 @@
+alloww
+asdf
+123
+.:][}{}{(*#*&^!&^%
+@(&(*##$
+#()($#)($#
+())(!
+!@_#)$_#)$!*@
+-=-+_!@#
+"""
+"
+allow allow
+block block
+match allow
+allow { }
+allow id 1234:123
+allow 1234:1234 id 1234:1234
+allow id asdf:*
+allow *:1234
+allow name
+allow name "
+allow name "a
+allow name "\"
+allow name "a\"
+allow name \"asdf"
+allow name "foo'
+allow name one-of
+allow name one-of {
+allow name one-of }
+allow name {
+allow name }
+allow name { a }
+allow name } a {
+allow name \"a\"
+allow with-interface
+allow with-interface 1::
+allow with-interface 12:*:34
+allow with-interface :::
+allow with-interface asdf
+allow with-interface "12:21:32"
+allow with-interface *:*:*
+allow with-interface *:22:22
+allow with-interface one-of
+allow with-interface one-of {
+allow with-interface one-of { a }
+allow with-interface {
+allow with-interface }
+allow with-interface one-of { * }
+allow with-interface some { 12:12:12 }
+allow unknown-attribute
+allow unknown-attribute "s"
+allow if
+allow if unknown-condition
+allow if !unknown-condition
+allow if randomM
+allow if !randomM
+allow if random(
+allow if (true
+allow if )false
+allow if !(true
+allow if !)true(
+allow if true((
+allow if true(((
+allow if false))(()
+allow if !true(
+allow if !!()
+allow name "asdf" name "foo"
+allow hash "a" hash "b"
+allow via-port "1" via-port "2"
+allow with-interface 12:34:56 with-interface 12:34:56
+allow with-interface one-of { 12:12:23 } with-interface 12:11:11
+allow if allowed-matches(fooo)
+allow if !allowed-matches(aaaa)

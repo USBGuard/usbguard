@@ -25,7 +25,7 @@ TEST_CASE("Default constructed rule", "[Rule]") {
   Rule rule;
 
   SECTION("has default id") {
-    REQUIRE(rule.getID() == Rule::DefaultID);
+    REQUIRE(rule.getRuleID() == Rule::DefaultID);
   }
 
   SECTION("is implicit") {
@@ -37,14 +37,12 @@ TEST_CASE("Default constructed rule", "[Rule]") {
   }
 
   SECTION("has empty attributes") {
-    REQUIRE(rule.getVendorID().empty());
-    REQUIRE(rule.getProductID().empty());
-    REQUIRE(rule.getSerialNumber().empty());
-    REQUIRE(rule.getDeviceName().empty());
-    REQUIRE(rule.getDeviceHash().empty());
-    REQUIRE(rule.getDevicePorts().size() == 0);
-    REQUIRE(rule.getInterfaceTypes().size() == 0);
-    REQUIRE(rule.getAction().empty());
+    REQUIRE(rule.attributeDeviceID().empty());
+    REQUIRE(rule.attributeSerial().empty());
+    REQUIRE(rule.attributeName().empty());
+    REQUIRE(rule.attributeHash().empty());
+    REQUIRE(rule.attributeViaPort().empty());
+    REQUIRE(rule.attributeWithInterface().empty());
     REQUIRE(rule.getTimeoutSeconds() == 0);
   }
 

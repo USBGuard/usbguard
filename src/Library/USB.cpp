@@ -25,6 +25,90 @@
 #include <algorithm>
 
 namespace usbguard {
+  USBDeviceID::USBDeviceID()
+  {
+  }
+
+  USBDeviceID::USBDeviceID(const String& vendor_id, const String& product_id)
+  {
+    checkDeviceID(vendor_id, product_id);
+    setVendorID(vendor_id);
+    setProductID(product_id);
+  }
+
+  USBDeviceID::USBDeviceID(const USBDeviceID& rhs)
+  {
+    _vendor_id = rhs._vendor_id;
+    _product_id = rhs._product_id;
+  }
+
+  void USBDeviceID::checkDeviceID(const String& vendor_id, const String& product_id)
+  {
+    if (vendor_id.empty() || vendor_id == "*") {
+      /* product id must be empty or "*" */
+      if (!product_id.empty() && product_id != "*") {
+        throw std::runtime_error("Invalid USB device id format");
+      }
+    }
+  }
+
+  void USBDeviceID::setVendorID(const String& vendor_id)
+  {
+    checkDeviceID(vendor_id, _product_id);
+    _vendor_id = vendor_id;
+  }
+
+  void USBDeviceID::setProductID(const String& product_id)
+  {
+    checkDeviceID(_vendor_id, product_id);
+    _product_id = product_id;
+  }
+
+  const String& USBDeviceID::getVendorID() const
+  {
+    return _vendor_id;
+  }
+
+  const String& USBDeviceID::getProductID() const
+  {
+    return _product_id;
+  }
+
+  String USBDeviceID::toRuleString() const
+  {
+    return _vendor_id + ":" + _product_id;
+  }
+
+  String USBDeviceID::toString() const
+  {
+    return toRuleString();
+  }
+
+  bool USBDeviceID::isSubsetOf(const USBDeviceID& rhs) const
+  {
+    if (rhs._vendor_id.empty() || rhs._vendor_id == "*") {
+      return true;
+    }
+    else if (_vendor_id != rhs._vendor_id) {
+      return false;
+    }
+
+    if (rhs._product_id.empty() || rhs._product_id == "*") {
+      return true;
+    }
+    else if (_product_id != rhs._product_id) {
+      return false;
+    }
+
+    return true;
+  }
+
+  template<>
+  bool Predicates::isSubsetOf(const USBDeviceID& source, const USBDeviceID& target)
+  {
+    return source.isSubsetOf(target);
+  }
+
   USBInterfaceType::USBInterfaceType()
   {
     _bClass = 0;
@@ -137,6 +221,11 @@ namespace usbguard {
     return USBInterfaceType::typeString(_bClass, _bSubClass, _bProtocol, _mask);
   }
 
+  const String USBInterfaceType::toRuleString() const
+  {
+    return typeString();
+  }
+
   const String USBInterfaceType::typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
   {
     String type_string("");
@@ -163,12 +252,6 @@ namespace usbguard {
     }
 
     return type_string;
-  }
-
-  template<>
-  bool matches(const USBInterfaceType& a, const USBInterfaceType& b)
-  {
-    return a.appliesTo(b);
   }
 
   void USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)

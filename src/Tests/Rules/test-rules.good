@@ -1,0 +1,28 @@
+allow
+block
+reject
+allow id 1234:1234
+allow id 1234:*
+allow id *:*
+allow id { 1234:1234 }
+allow id one-of { 1234:1234 }
+allow id one-of { 1234:1234 1234:1235 }
+allow with-interface equals { 08:*:* }
+allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
+reject via-port "1-2"
+allow with-interface equals { 08:*:* }
+reject with-interface all-of { 08:*:* 03:00:* }
+reject with-interface all-of { 08:*:* 03:01:* }
+reject with-interface all-of { 08:*:* e0:*:* }
+reject with-interface all-of { 08:*:* 02:*:* }
+allow with-interface one-of { 03:00:01 03:01:01 } if !allowed-matches(with-interface one-of { 03:00:01 03:01:01 })
+allow if random(0.1666)
+allow if true
+allow if !true
+allow if false
+allow if !false
+allow if one-of { true false }
+allow if { true false }
+allow if { false random }
+allow if localtime(13:37)
+allow if !localtime(13:37)

@@ -34,25 +34,25 @@ namespace usbguard {
     const char *name = udev_device_get_sysattr_value(dev, "product");
     if (name) {
       logger->debug("DeviceName={}", name);
-      setDeviceName(name);
+      setName(name);
     }
     
-    const char *id_vendor = udev_device_get_sysattr_value(dev, "idVendor");
-    if (id_vendor) {
-      logger->debug("VendorID={}", id_vendor);
-      setVendorID(id_vendor);
-    }
+    const char *id_vendor_cstr = udev_device_get_sysattr_value(dev, "idVendor");
+    const char *id_product_cstr = udev_device_get_sysattr_value(dev, "idProduct");
 
-    const char *id_product = udev_device_get_sysattr_value(dev, "idProduct");
-    if (id_product) {
-      logger->debug("ProductID={}", id_product);
-      setProductID(id_product);
+    if (id_vendor_cstr && id_product_cstr) {
+      logger->debug("VendorID={}", id_vendor_cstr);
+      logger->debug("ProductID={}", id_product_cstr);
+      const String id_vendor = id_vendor_cstr;
+      const String id_product = id_product_cstr;
+      USBDeviceID device_id(id_vendor, id_product);
+      setDeviceID(device_id);
     }
 
     const char *serial = udev_device_get_sysattr_value(dev, "serial");
     if (serial) {
       logger->debug("Serial={}", serial);
-      setSerialNumber(serial);
+      setSerial(serial);
     }
 
     /* FIXME: We should somehow lock the syspath before accessing the
@@ -72,12 +72,12 @@ namespace usbguard {
     const char *sysname = udev_device_get_sysname(dev);
     if (sysname) {
       logger->debug("Sysname={}", sysname);
-      setDevicePort(sysname);
+      setPort(sysname);
     } else {
       throw std::runtime_error("device wihtout sysname");
     }
 
-    logger->debug("DeviceHash={}", getDeviceHash());
+    logger->debug("DeviceHash={}", getHash());
 
     setTarget(Rule::Target::Unknown);
     std::ifstream authstate_stream(_syspath + "/authorized", std::ifstream::binary);

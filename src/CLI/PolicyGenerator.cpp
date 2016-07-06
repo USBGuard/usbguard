@@ -92,7 +92,7 @@ namespace usbguard
      * applicability.
      */
     if (!port_specific && _port_specific_noserial) {
-      port_specific = device->getSerialNumber().empty();
+      port_specific = device->getSerial().empty();
     }
 
     Pointer<Rule> rule = device->getDeviceRule(/*include_port=*/port_specific);
@@ -100,19 +100,18 @@ namespace usbguard
     /* Remove everything but the hash value for hash-only rules */
     if (_hash_only) {
       Pointer<Rule> rule_hashonly(new Rule());
-      rule_hashonly->setID(rule->getID());
-      rule_hashonly->setDeviceHash(rule->getDeviceHash());
+      rule_hashonly->setRuleID(rule->getRuleID());
+      rule_hashonly->setHash(rule->getHash());
 
       if (port_specific) {
-        rule_hashonly->setDevicePorts(rule->getDevicePorts());
-        rule_hashonly->setDevicePortsSetOperator(Rule::SetOperator::Equals);
+        rule_hashonly->attributeViaPort().set(rule->attributeViaPort().values(), Rule::SetOperator::Equals);
       }
 
       rule = rule_hashonly;
     }
     /* Remove the hash value if set to do so */
     else if (!_with_hash) {
-      rule->setDeviceHash(std::string());
+      rule->setHash(std::string());
     }
 
     rule->setTarget(Rule::Target::Allow);

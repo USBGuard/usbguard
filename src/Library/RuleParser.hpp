@@ -27,12 +27,12 @@ namespace usbguard
   {
   public:
     RuleParserError(const std::string& rule_spec, const std::string& hint = "",
-                    const std::string& file = "", unsigned int file_row = 0, unsigned int file_col = 0)
+                    const std::string& file = "", size_t error_line = 0, unsigned int error_offset = 0)
       : _rule_spec(rule_spec),
         _hint(hint),
+        _offset(error_offset),
         _file(file),
-        _file_row(file_row),
-        _file_col(file_col)
+        _line(error_line)
     {
     }
 
@@ -41,11 +41,16 @@ namespace usbguard
       _hint = hint;
     }
 
-    void setFileInfo(const std::string& file, unsigned int row, unsigned int col = 0)
+    void setOffset(size_t offset)
+    {
+      _offset = offset;
+    }
+
+    void setFileInfo(const std::string& file, size_t error_line, size_t error_offset = 0)
     {
       _file = file;
-      _file_row = row;
-      _file_col = col;
+      _line = error_line;
+      _offset = error_offset;
     }
 
     const char *what() const noexcept
@@ -70,7 +75,7 @@ namespace usbguard
 
     const std::string fileInfo() const
     {
-      return _file + ": line=" + std::to_string(_file_row) + ": column=" + std::to_string(_file_col);
+      return _file + ": line=" + std::to_string(_line) + ": offset=" + std::to_string(_offset);
     }
 
     const std::string& file() const
@@ -78,23 +83,23 @@ namespace usbguard
       return _file;
     }
 
-    unsigned int fileRow() const
+    size_t line() const
     {
-      return _file_row;
+      return _line;
     }
 
-    unsigned int fileColumn() const
+    size_t offset() const
     {
-      return _file_col;
+      return _offset;
     }
 
   protected:
     const std::string _rule_spec;
     std::string _hint;
+    size_t _offset;
     std::string _file;
-    unsigned int _file_row;
-    unsigned int _file_col;
+    size_t _line;
   };
 
-  DLL_PUBLIC Rule parseRuleSpecification(const String& rule_spec, const std::string * const file = nullptr, unsigned int line = 0);
+  DLL_PUBLIC Rule parseRuleFromString(const String& rule_spec, const String& file = String(), size_t line = 0);
 } /* namespace usbguard */

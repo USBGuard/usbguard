@@ -35,7 +35,7 @@ namespace usbguard
     virtual void init(Interface * const interface_ptr);
     virtual void fini();
     virtual bool update(const Rule& rule) = 0;
-    virtual RuleCondition * clone() const = 0;
+    virtual RuleCondition* clone() const = 0;
 
     bool evaluate(const Rule& rule);
     const String& identifier() const;
@@ -43,8 +43,10 @@ namespace usbguard
     bool hasParameter() const;
     bool isNegated() const;
     const String toString() const;
+    const String toRuleString() const;
 
-    static RuleCondition * getImplementation(const String& identifier, const String& parameter, bool negated);
+    static RuleCondition* getImplementation(const String& condition_string);
+    static RuleCondition* getImplementation(const String& identifier, const String& parameter, bool negated);
 
   private:
     const String _identifier;

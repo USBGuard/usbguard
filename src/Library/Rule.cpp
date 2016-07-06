@@ -18,10 +18,14 @@
 //
 #include "RulePrivate.hpp"
 #include "Common/Utility.hpp"
-#include <utility>
-#include <locale>
 
 namespace usbguard {
+  template<>
+  String toRuleString(const String& value)
+  {
+    return Utility::quoteEscapeString(value);
+  }
+
   const uint32_t Rule::RootID = std::numeric_limits<uint32_t>::min();
   const uint32_t Rule::DefaultID = std::numeric_limits<uint32_t>::max();
   const uint32_t Rule::LastID = std::numeric_limits<uint32_t>::max() - 1;
@@ -40,7 +44,6 @@ namespace usbguard {
   Rule::Rule(const Rule& rhs)
   {
     d_pointer = new RulePrivate(*this, *rhs.d_pointer);
-    return;
   }
 
   const Rule& Rule::operator=(const Rule& rhs)
@@ -51,59 +54,149 @@ namespace usbguard {
     return *this;
   }
 
-  uint32_t Rule::getID() const
+  void Rule::setRuleID(uint32_t rule_id)
   {
-    return d_pointer->getID();
-  }
-  
-  const String& Rule::getVendorID() const
-  {
-    return d_pointer->getVendorID();
-  }
-  
-  const String& Rule::getProductID() const
-  {
-    return d_pointer->getProductID();
+    d_pointer->setRuleID(rule_id);
   }
 
-  const String& Rule::getSerialNumber() const
+  uint32_t Rule::getRuleID() const
   {
-    return d_pointer->getSerialNumber();
+    return d_pointer->getRuleID();
   }
-  
-  const String& Rule::getDeviceName() const
+ 
+  void Rule::setTarget(Rule::Target target)
   {
-    return d_pointer->getDeviceName();
+    d_pointer->setTarget(target);
   }
-  
-  const String& Rule::getDeviceHash() const
-  {
-    return d_pointer->getDeviceHash();
-  }
-  
-  const StringVector& Rule::getDevicePorts() const
-  {
-    return d_pointer->getDevicePorts();
-  }
-  
-  const int Rule::getDeviceConfigurations() const
-  {
-    return d_pointer->getDeviceConfigurations();
-  }
-
-  const std::vector<USBInterfaceType>& Rule::getInterfaceTypes() const
-  {
-    return d_pointer->getInterfaceTypes();
-  }
-  
+ 
   Rule::Target Rule::getTarget() const
   {
     return d_pointer->getTarget();
   }
-  
-  const String& Rule::getAction() const
+
+  void Rule::setDeviceID(const USBDeviceID& value)
   {
-    return d_pointer->getAction();
+    d_pointer->setDeviceID(value);
+  }
+
+  const USBDeviceID& Rule::getDeviceID() const
+  {
+    return d_pointer->getDeviceID();
+  }
+
+  const Rule::Attribute<USBDeviceID>& Rule::attributeDeviceID() const
+  {
+    return d_pointer->attributeDeviceID();
+  }
+
+  Rule::Attribute<USBDeviceID>& Rule::attributeDeviceID()
+  {
+    return d_pointer->attributeDeviceID();
+  }
+
+  void Rule::setSerial(const String& value)
+  {
+    d_pointer->setSerial(value);
+  }
+
+  const String& Rule::getSerial() const
+  {
+    return d_pointer->getSerial();
+  }
+
+  const Rule::Attribute<String>& Rule::attributeSerial() const
+  {
+    return d_pointer->attributeSerial();
+  }
+
+  Rule::Attribute<String>& Rule::attributeSerial()
+  {
+    return d_pointer->attributeSerial();
+  }
+
+  void Rule::setName(const String& value)
+  {
+    d_pointer->setName(value);
+  }
+
+  const String& Rule::getName() const
+  {
+    return d_pointer->getName();
+  }
+
+  const Rule::Attribute<String>& Rule::attributeName() const
+  {
+    return d_pointer->attributeName();
+  }
+
+  Rule::Attribute<String>& Rule::attributeName()
+  {
+    return d_pointer->attributeName();
+  }
+
+  void Rule::setHash(const String& value)
+  {
+    d_pointer->setHash(value);
+  }
+
+  const String& Rule::getHash() const
+  {
+    return d_pointer->getHash();
+  }
+
+  const Rule::Attribute<String>& Rule::attributeHash() const
+  {
+    return d_pointer->attributeHash();
+  }
+
+  Rule::Attribute<String>& Rule::attributeHash()
+  {
+    return d_pointer->attributeHash();
+  }
+
+  void Rule::setViaPort(const String& value)
+  {
+    d_pointer->setViaPort(value);
+  }
+
+  const String& Rule::getViaPort() const
+  {
+    return d_pointer->getViaPort();
+  }
+
+  const Rule::Attribute<String>& Rule::attributeViaPort() const
+  {
+    return d_pointer->attributeViaPort();
+  }
+
+  Rule::Attribute<String>& Rule::attributeViaPort()
+  {
+    return d_pointer->attributeViaPort();
+  }
+
+  const Rule::Attribute<USBInterfaceType>& Rule::attributeWithInterface() const
+  {
+    return d_pointer->attributeWithInterface();
+  }
+
+  Rule::Attribute<USBInterfaceType>& Rule::attributeWithInterface()
+  {
+    return d_pointer->attributeWithInterface();
+  }
+
+  const Rule::Attribute<RuleCondition*>& Rule::attributeConditions() const
+  {
+    return d_pointer->attributeConditions();
+  }
+
+  Rule::Attribute<RuleCondition*>& Rule::attributeConditions()
+  {
+    return d_pointer->attributeConditions();
+  }
+
+  void Rule::setTimeoutSeconds(uint32_t timeout_seconds)
+  {
+    d_pointer->setTimeoutSeconds(timeout_seconds);
   }
   
   uint32_t Rule::getTimeoutSeconds() const
@@ -129,109 +222,9 @@ namespace usbguard {
 
   bool Rule::isImplicit() const
   {
-    return d_pointer->getID() == Rule::DefaultID;
+    return d_pointer->getRuleID() == Rule::DefaultID;
   }
-  
-  void Rule::setID(uint32_t id)
-  {
-    d_pointer->setID(id);
-    return;
-  }
-
-  void Rule::setVendorID(const String& vendor_id)
-  {
-    d_pointer->setVendorID(vendor_id);
-    return;
-  }
-  
-  void Rule::setProductID(const String& product_id)
-  {
-    d_pointer->setProductID(product_id);
-    return;
-  }
-  
-  void Rule::setSerialNumber(const String& serial_number)
-  {
-    d_pointer->setSerialNumber(serial_number);
-    return;
-  }
-
-  void Rule::setDeviceName(const String& device_name)
-  {
-    d_pointer->setDeviceName(device_name);
-    return;
-  }
-  
-  void Rule::setDeviceHash(const String& device_hash)
-  {
-    d_pointer->setDeviceHash(device_hash);
-    return;
-  }
-
-  void Rule::setDevicePorts(const StringVector& device_ports)
-  {
-    d_pointer->setDevicePorts(device_ports);
-    return;
-  }
-
-  void Rule::setDeviceConfigurations(int num_configurations)
-  {
-    d_pointer->setDeviceConfigurations(num_configurations);
-    return;
-  }
-
-  void Rule::setInterfaceTypes(const std::vector<USBInterfaceType>& interface_types)
-  {
-    d_pointer->setInterfaceTypes(interface_types);
-    return;
-  }
-
-  StringVector& Rule::refDevicePorts()
-  {
-    return d_pointer->refDevicePorts();
-  }
-
-  std::vector<USBInterfaceType>& Rule::refInterfaceTypes()
-  {
-    return d_pointer->refInterfaceTypes();
-  }
-
-  void Rule::setDevicePortsSetOperator(Rule::SetOperator op)
-  {
-    d_pointer->setDevicePortsSetOperator(op);
-    return;
-  }
-
-  void Rule::setInterfaceTypesSetOperator(Rule::SetOperator op)
-  {
-    d_pointer->setInterfaceTypesSetOperator(op);
-    return;
-  }
-  
-  void Rule::setTarget(Rule::Target target)
-  {
-    d_pointer->setTarget(target);
-    return;
-  }
-  
-  void Rule::setAction(const String& action)
-  {
-    d_pointer->setAction(action);
-    return;
-  }
-  
-  void Rule::setTimeoutSeconds(uint32_t timeout_seconds)
-  {
-    d_pointer->setTimeoutSeconds(timeout_seconds);
-    return;
-  }
-
-  void Rule::setConditionSetOperator(Rule::SetOperator op)
-  {
-    d_pointer->setConditionSetOperator(op);
-    return;
-  }
-
+    
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||
@@ -246,187 +239,11 @@ namespace usbguard {
   void Rule::updateMetaDataCounters(bool applied, bool evaluated)
   {
     d_pointer->updateMetaDataCounters(applied, evaluated);
-    return;
   }
 
   Rule Rule::fromString(const String& rule_string)
   {
     return RulePrivate::fromString(rule_string);
-  }
-
-  Rule::SetOperator Rule::setOperatorFromString(const String& set_operator_string)
-  {
-    const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
-      { "all-of", SetOperator::AllOf },
-      { "one-of", SetOperator::OneOf },
-      { "none-of", SetOperator::NoneOf },
-      { "equals", SetOperator::Equals },
-      { "equals-ordered", SetOperator::EqualsOrdered }
-    };
-
-    for (auto ttable_entry : set_operator_ttable) {
-      if (ttable_entry.first == set_operator_string) {
-	return ttable_entry.second;
-      }
-    }
-
-    throw std::runtime_error("Invalid set operator string");
-  }
-
-  const String Rule::setOperatorToString(Rule::SetOperator op)
-  {
-    const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
-      { "all-of", SetOperator::AllOf },
-      { "one-of", SetOperator::OneOf },
-      { "none-of", SetOperator::NoneOf },
-      { "equals", SetOperator::Equals },
-      { "equals-ordered", SetOperator::EqualsOrdered },
-      { "<MATCH>", SetOperator::Match }
-    };
-
-    for (auto ttable_entry : set_operator_ttable) {
-      if (ttable_entry.second == op) {
-	return ttable_entry.first;
-      }
-    }
-
-    throw std::runtime_error("Invalid set operator string");
-  }
-
-  Rule::Target Rule::targetFromString(const String& target_string)
-  {
-    const std::vector<std::pair<String,Rule::Target> > target_ttable = {
-      { "allow", Target::Allow },
-      { "block", Target::Block },
-      { "reject", Target::Reject },
-      { "match", Target::Match },
-      { "device", Target::Device }
-    };
-
-    for (auto ttable_entry : target_ttable) {
-      if (ttable_entry.first == target_string) {
-	return ttable_entry.second;
-      }
-    }
-
-    throw std::runtime_error("Invalid rule target string");
-  }
-
-  const String Rule::targetToString(Target target)
-  {
-    const std::vector<std::pair<String,Rule::Target> > target_ttable = {
-      { "allow", Target::Allow },
-      { "block", Target::Block },
-      { "reject", Target::Reject },
-      { "match", Target::Match },
-      { "device", Target::Device }
-    };
-
-    for (auto ttable_entry : target_ttable) {
-      if (ttable_entry.second == target) {
-	return ttable_entry.first;
-      }
-    }
-
-    throw std::runtime_error("Invalid rule target string");
-  }
-
-  const String Rule::escapeString(const String& string)
-  {
-    String result;
-    const std::locale c_locale("C");
-
-    for (auto it = string.cbegin(); it != string.cend(); ++it) {
-      const char c = *it;
-
-      /*
-       * Escape any double-quote and backslash characters.
-       */
-      if (c == '"') {
-	result.append("\\");
-	result.append("\"");
-	continue;
-      }
-      if (c == '\\') {
-	result.append("\\");
-	result.append("\\");
-	continue;
-      }
-      /*
-       * If the current character is printable in the "C" locale,
-       * append it. Otherwise convert it to \xHH form, where HH is
-       * the hexadecimal representation of the character value.
-       */
-      if (std::isprint(c, c_locale)) {
-	result.push_back((char)c);
-      } else {
-	const String hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
-	result.append(hexbyte);
-      }
-    }
-
-    return result;
-  }
-
-  const String Rule::unescapeString(const String& string)
-  {
-    String result;
-    bool escaped = false;
-    const std::locale c_locale("C");
-
-    for (auto it = string.cbegin(); it < string.cend(); ++it) {
-      const char c = *it;
-      /*
-       * Handle an escape sequence if needed, otherwise just
-       * append the current character.
-       */
-      if (escaped) {
-	switch (c) {
-	case '"':
-	  result.append("\"");
-	  break;
-	case '\\':
-	  result.append("\\");
-	  break;
-	case 'x':
-	  {
-	    /* hexadecimal representation of a byte \xHH */
-	    if (std::distance(string.end(), it) >=2) {
-	      throw std::runtime_error("Invalid escape sequence");
-	    }
-
-	    const char hb[] = { *(it + 1), *(it + 2) };
-	    if (!std::isxdigit(hb[0], c_locale) || !std::isxdigit(hb[1], c_locale)) {
-	      throw std::runtime_error("Invalid \\xHH escape sequence: HH is not a hexadecimal number");
-	    }
-
-	    const String hexbyte(hb, 2);
-	    result.push_back((char)stringToNumber<uint8_t>(hexbyte, 16));
-
-	    ++it;
-	    ++it;
-	  }
-	  break;
-	default:
-	  throw std::runtime_error("Unknown escape sequence");
-	}
-	escaped = false;
-      }
-      else {
-	if (c == '\\') {
-	  escaped = true;
-	}
-	else {
-	  result.push_back(c);
-	}
-      }
-    }
-
-    if (escaped) {
-      throw std::runtime_error("Invalid escape sequence");
-    }
-
-    return result;
   }
 
   RulePrivate* Rule::internal()
@@ -437,5 +254,62 @@ namespace usbguard {
   const RulePrivate* Rule::internal() const
   {
     return d_pointer;
+  }
+
+  static const std::vector<std::pair<String,Rule::Target> > target_ttable = {
+    { "allow", Rule::Target::Allow },
+    { "block", Rule::Target::Block },
+    { "reject", Rule::Target::Reject },
+    { "match", Rule::Target::Match },
+    { "device", Rule::Target::Device }
+  };
+
+  const String Rule::targetToString(const Rule::Target& target)
+  {
+    for (auto ttable_entry : target_ttable) {
+      if (ttable_entry.second == target) {
+	return ttable_entry.first;
+      }
+    }
+    throw std::runtime_error("Invalid rule target string");
+  }
+
+  Rule::Target Rule::targetFromString(const String& target_string)
+  {
+    for (auto ttable_entry : target_ttable) {
+      if (ttable_entry.first == target_string) {
+	return ttable_entry.second;
+      }
+    }
+    throw std::runtime_error("Invalid rule target string");
+  }
+
+  static const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
+    { "all-of", Rule::SetOperator::AllOf },
+    { "one-of", Rule::SetOperator::OneOf },
+    { "none-of", Rule::SetOperator::NoneOf },
+    { "equals", Rule::SetOperator::Equals },
+    { "equals-ordered", Rule::SetOperator::EqualsOrdered },
+    { "match", Rule::SetOperator::Match }
+  };
+
+  const String Rule::setOperatorToString(const Rule::SetOperator& op)
+  {
+    for (auto ttable_entry : set_operator_ttable) {
+      if (ttable_entry.second == op) {
+	return ttable_entry.first;
+      }
+    }
+    throw std::runtime_error("Invalid set operator string");
+  }
+
+  Rule::SetOperator Rule::setOperatorFromString(const String& set_operator_string)
+  {
+    for (auto ttable_entry : set_operator_ttable) {
+      if (ttable_entry.first == set_operator_string) {
+	return ttable_entry.second;
+      }
+    }
+    throw std::runtime_error("Invalid set operator string");
   }
 } /* namespace usbguard */

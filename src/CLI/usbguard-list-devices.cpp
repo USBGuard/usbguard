@@ -83,7 +83,7 @@ namespace usbguard
     usbguard::IPCClient ipc(/*connected=*/true);
 
     for (auto device_rule : ipc.listDevices(query)) {
-      std::cout << device_rule.getID() << ": " << device_rule.toString() << std::endl;
+      std::cout << device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
     }
 
     return EXIT_SUCCESS;
