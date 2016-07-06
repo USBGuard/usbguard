@@ -170,7 +170,7 @@ else
 	SAVE_CPPFLAGS=$CPPFLAGS
 	CPPFLAGS="-std=c++11 $CPPFLAGS -I/usr/include/catch"
 	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([catch.hpp], [], [AC_MSG_FAILURE(catch.hpp not found or not usable. Re-run with --with-bundled-json to use the bundled library.)])
+	AC_CHECK_HEADER([catch.hpp], [], [AC_MSG_FAILURE(catch.hpp not found or not usable. Re-run with --with-bundled-catch to use the bundled library.)])
 	AC_LANG_POP
 	catch_CFLAGS="-I/usr/include/catch"
 	catch_LIBS=""
