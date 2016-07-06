@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -85,6 +85,8 @@ a D-Bus interface to the USBGuard daemon component.
 rm -rf src/ThirdParty/{json,spdlog}
 
 %build
+mkdir -p ./m4
+autoreconf -i -v --no-recursive ./
 %configure \
     --disable-silent-rules \
     --disable-static \
@@ -176,6 +178,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Wed Mar 30 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-5
+* Wed Jul  6 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-6
 - Update to version 0.5
 
