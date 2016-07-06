@@ -171,6 +171,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-6
+- release 0.5-6
+
 * Wed Jul  6 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-6
 - Update to version 0.5
 
