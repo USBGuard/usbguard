@@ -36,7 +36,7 @@ matrix:
       env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared"
     - os: linux
       compiler: gcc
-      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-json DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-spdlog"
+      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-json DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-spdlog DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-catch"
     - os: linux
       compiler: clang
       addons:
