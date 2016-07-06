@@ -31,6 +31,7 @@ BuildRequires: glib2-devel
 BuildRequires: polkit-devel
 BuildRequires: libxslt
 BuildRequires: libxml2
+BuildRequires: catch-devel
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
@@ -91,6 +92,7 @@ autoreconf -i -v --no-recursive ./
     --disable-static \
     --without-bundled-json \
     --without-bundled-spdlog \
+    --without-bundled-catch \
     --enable-systemd \
     --with-gui-qt5 \
     --with-dbus \

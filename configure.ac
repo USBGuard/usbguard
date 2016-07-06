@@ -158,6 +158,29 @@ AC_SUBST([spdlog_CFLAGS])
 AC_SUBST([spdlog_LIBS])
 
 #
+# Catch C++ library
+#
+AC_ARG_WITH([bundled-catch], AS_HELP_STRING([--with-bundled-catch], [Build using the bundled Catch library]), [with_bundled_catch=$withval], [with_bundled_catch=no])
+if test "x$with_bundled_catch" = xyes; then
+	catch_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/Catch/include"
+	catch_LIBS=""
+	AC_MSG_NOTICE([Using bundled Catch library])
+	catch_summary="bundled; $catch_CFLAGS $catch_LIBS"
+else
+	SAVE_CPPFLAGS=$CPPFLAGS
+	CPPFLAGS="-std=c++11 $CPPFLAGS -I/usr/include/catch"
+	AC_LANG_PUSH([C++])
+	AC_CHECK_HEADER([catch.hpp], [], [AC_MSG_FAILURE(catch.hpp not found or not usable. Re-run with --with-bundled-json to use the bundled library.)])
+	AC_LANG_POP
+	catch_CFLAGS="-I/usr/include/catch"
+	catch_LIBS=""
+	CPPFLAGS=$SAVE_CPPFLAGS
+	catch_summary="system-wide; $catch_CFLAGS $catch_LIBS"
+fi
+AC_SUBST([catch_CFLAGS])
+AC_SUBST([catch_LIBS])
+
+#
 # Qt 5.x GUI
 #
 AC_ARG_WITH([gui-qt5], AS_HELP_STRING([--with-gui-qt5], [Build the Qt 5.x GUI components]), [], [with_gui_qt5=yes])
@@ -467,6 +490,7 @@ echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "       json: $json_summary"
 echo "     spdlog: $spdlog_summary"
+echo "      Catch: $catch_summary"
 echo "     Qt 5.x: $qt5_summary"
 echo " GLib D-Bus: $dbus_summary"
 echo

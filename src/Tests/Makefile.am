@@ -19,7 +19,7 @@
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src\
 	-I$(top_srcdir)/src/Library\
-	-I$(top_srcdir)/src/ThirdParty/Catch/include
+	@catch_CFLAGS@
 
 EXTRA_DIST=\
 	$(top_srcdir)/src/ThirdParty/Catch \
