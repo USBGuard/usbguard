@@ -21,7 +21,8 @@ SUBDIRS=src/Tests/
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST =\
 	LICENSE \
-	dist/usbguard.service
+	usbguard.service \
+	usbguard-daemon.conf
 
 BUILT_SOURCES=
 DISTCLEANFILES=
@@ -64,7 +65,7 @@ uninstall-hook: uninstall-systemd-service uninstall-data-dbus
 if SYSTEMD_SUPPORT_ENABLED
 install-systemd-service:
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL) -m 644 $(top_srcdir)/dist/usbguard.service \
+	$(INSTALL) -m 644 $(top_srcdir)/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
 uninstall-systemd-service:
@@ -484,8 +485,8 @@ rpmbuild: dist
 	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
 	mkdir -p $(RPMBUILD_SOURCES)
 	mkdir -p $(RPMBUILD_SPECS)
-	cp $(top_srcdir)/dist/usbguard-daemon.conf $(RPMBUILD_SOURCES)
-	cp $(top_srcdir)/dist/usbguard.spec $(RPMBUILD_SPECS)
+	cp $(top_srcdir)/usbguard-daemon.conf $(RPMBUILD_SOURCES)
+	cp $(top_srcdir)/usbguard.spec $(RPMBUILD_SPECS)
 	cp $(top_builddir)/usbguard-*.tar.gz $(RPMBUILD_SOURCES)
 	rpmbuild $(RPMBUILD_FLAGS) \
 		--define "_sourcedir $(RPMBUILD_SOURCES)" \
