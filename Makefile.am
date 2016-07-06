@@ -21,12 +21,14 @@ SUBDIRS=src/Tests/
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST =\
 	LICENSE \
-	usbguard.service \
-	usbguard-daemon.conf
+	usbguard.service
 
 BUILT_SOURCES=
 DISTCLEANFILES=
 CLEANFILES=
+
+usbguard_confdir= $(sysconfdir)/usbguard
+dist_usbguard_conf_DATA= usbguard-daemon.conf
 
 ROFF_PAGES=\
 	doc/usbguard.1.roff \
@@ -485,7 +487,6 @@ rpmbuild: dist
 	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
 	mkdir -p $(RPMBUILD_SOURCES)
 	mkdir -p $(RPMBUILD_SPECS)
-	cp $(top_srcdir)/usbguard-daemon.conf $(RPMBUILD_SOURCES)
 	cp $(top_srcdir)/usbguard.spec $(RPMBUILD_SPECS)
 	cp $(top_builddir)/usbguard-*.tar.gz $(RPMBUILD_SOURCES)
 	rpmbuild $(RPMBUILD_FLAGS) \

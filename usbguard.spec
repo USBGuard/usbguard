@@ -10,7 +10,6 @@ License:        GPLv2+
 # src/ThirdParty/Catch: Boost Software License - Version 1.0
 URL:            https://dkopecek.github.io/usbguard
 Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
-Source1:        usbguard-daemon.conf
 
 Requires: systemd
 Requires(post): systemd
@@ -104,14 +103,6 @@ make check
 
 %install
 make install INSTALL='install -p' DESTDIR=%{buildroot}
-
-# Install configuration
-mkdir -p %{buildroot}%{_sysconfdir}/usbguard
-install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/usbguard/usbguard-daemon.conf
-
-# Install systemd unit
-#mkdir -p %{buildroot}%{_unitdir}
-#install -p -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/usbguard.service
 
 # Cleanup
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
