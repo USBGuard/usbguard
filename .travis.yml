@@ -54,7 +54,7 @@ matrix:
       addons:
         apt:
           packages: ['pandoc']
-      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-json DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-spdlog"
+      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-json DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-spdlog DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-catch"
 before_install:
 - sudo add-apt-repository -y ppa:chris-lea/libsodium
 - sudo apt-get -qq update
