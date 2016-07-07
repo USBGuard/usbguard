@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -172,6 +172,10 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-7
+- Add BuildRequires for autoconf (dnk1618@gmail.com)
+- Use tito.tagger.ReleaseTagger (dnk1618@gmail.com)
+
 * Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-6
 - release 0.5-6
 
