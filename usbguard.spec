@@ -32,7 +32,7 @@ BuildRequires: polkit-devel
 BuildRequires: libxslt
 BuildRequires: libxml2
 BuildRequires: catch-devel
-BuildRequires: autoconf
+BuildRequires: autoconf automake libtool
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
