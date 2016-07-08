@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -172,6 +172,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Fri Jul 08 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-9
+- Updated the spec file to print out test-suite.log after a failed check
+  (dnk1618@gmail.com)
+- Added nlohmann/json locale regression test (dnk1618@gmail.com)
+- Updated submodules (dnk1618@gmail.com)
+
 * Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-8
 - Require also automake and libtool (dnk1618@gmail.com)
 
