@@ -62,6 +62,7 @@ before_install:
 - sudo apt-get install -y qtbase5-dev qt5-default qtbase5-dev-tools
 - sudo apt-get install -y libglib2.0-dev libdbus-glib-1-dev libxml2-utils libpolkit-gobject-1-dev xsltproc
 - sudo apt-get install -y lcov
+- sudo apt-get install -y language-pack-cs language-pack-de
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh
