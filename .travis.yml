@@ -68,6 +68,6 @@ before_script:
 - mkdir build && cd build
 - CXX=$COMPILER ../configure --enable-maintainer-mode --disable-silent-rules --with-bundled-catch --with-bundled-json --with-bundled-spdlog $CONFIGURE_ARGS
 script:
-- if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all check; fi
+- if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; make check || (cat src/Tests/test-suite.log && exit 1); fi
 after_success:
 - test "x$COVERAGE" = xyes -a "x$CXX" = "xg++" && lcov --compat-libtool --directory . --capture --output-file coverage.info && coveralls-lcov coverage.info
