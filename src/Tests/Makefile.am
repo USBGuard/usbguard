@@ -19,7 +19,8 @@
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src\
 	-I$(top_srcdir)/src/Library\
-	@catch_CFLAGS@
+	@catch_CFLAGS@ \
+	@json_CFLAGS@
 
 EXTRA_DIST=\
 	$(top_srcdir)/src/ThirdParty/Catch \
@@ -51,7 +52,8 @@ test_unit_LDADD=\
 
 test_regression_SOURCES=\
 	main.cpp \
-	Regression/test_Rule_ghi37.cpp
+	Regression/test_Rule_ghi37.cpp \
+	Regression/test_json_locale.cpp
 
 test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la
