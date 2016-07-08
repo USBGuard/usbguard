@@ -1,5 +1,7 @@
 AC_PREREQ([2.69])
-AC_INIT([usbguard], [0.5], [dkopecek@redhat.com])
+AC_INIT([usbguard],
+        m4_esyscmd_s([sed -n 's|^\([0-9\.]\+\)-[0-9]\+.*|\1|p' .tito/packages/usbguard]),
+        [dkopecek@redhat.com])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/build-config.h])
 AC_CONFIG_MACRO_DIR([m4])
