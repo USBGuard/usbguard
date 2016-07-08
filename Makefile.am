@@ -21,7 +21,8 @@ SUBDIRS=src/Tests/
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST =\
 	LICENSE \
-	usbguard.service
+	usbguard.service \
+	.tito
 
 BUILT_SOURCES=
 DISTCLEANFILES=
