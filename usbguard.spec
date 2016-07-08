@@ -1,7 +1,7 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.5.9
+Version:        0.5.10
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
@@ -172,6 +172,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Fri Jul 08 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.10-1
+- Distribute the .tito subdir (dnk1618@gmail.com)
+- Parse the version for AC_INIT from .tito/package/usbguard (dnk1618@gmail.com)
+- Don't use the same version scheme for upstream and (rpm) downstream
+  (dnk1618@gmail.com)
+
 * Fri Jul 08 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-9
 - Updated the spec file to print out test-suite.log after a failed check
   (dnk1618@gmail.com)
