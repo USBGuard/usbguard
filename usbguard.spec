@@ -102,7 +102,7 @@ autoreconf -i -v --no-recursive ./
 make %{?_smp_mflags}
 
 %check
-make check
+make check || (cat src/Tests/test-suite.log && exit 1)
 
 %install
 make install INSTALL='install -p' DESTDIR=%{buildroot}
