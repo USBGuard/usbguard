@@ -8,7 +8,7 @@
 
 # DESCRIPTION
 
-The **usbguard-rules.conf** file is loaded by the USBGuard daemon after it parses the main configuration file, **usbguard-daemon.conf**(5). The daemon expects the file to contain rules written in a rule language which is described in the *Rule Language* section bellow.
+The **usbguard-rules.conf** file is loaded by the USBGuard daemon after it parses the main configuration file, **usbguard-daemon.conf**(5). The daemon expects the file to contain rules written in a rule language which is described in the *Rule Language* section below.
 
 # Rule Language
 
@@ -50,7 +50,7 @@ In the rule, it's possible to use an asterisk character to match either any devi
 
 ### Device Attributes
 
-Device attributes are specific value read from the USB device after it's inserted to the system. Which attributes are available is defined bellow. Some of the attributes are derived or based on attributes read directly from the device. The value of an attribute is represented as a double-quoted string.
+Device attributes are specific value read from the USB device after it's inserted to the system. Which attributes are available is defined below. Some of the attributes are derived or based on attributes read directly from the device. The value of an attribute is represented as a double-quoted string.
 
 List of attributes:
 
@@ -85,7 +85,7 @@ where *operator* is one of:
 
 and *port-id* is a platform specific USB port identification. On Linux it's in the form "b-n" where *b* and *n* are unsigned integers (e.g. "1-2", "2-4", ...).
 
-The *interface-type* represents a USB interface and should be formated as three 8-bit numbers in hexadecimal base delimited by a colon character, i.e. *cc:ss:pp*. The numbers represent the interface class (*cc*), subclass (*ss*) and protocol (*pp*) as assigned by the [USB-IF](http://www.usb.org/about). See the [list of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class). Instead of the subclass and protocol number, you may write an asterisk character (`*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
+The *interface-type* represents a USB interface and should be formatted as three 8-bit numbers in hexadecimal base delimited by a colon character, i.e. *cc:ss:pp*. The numbers represent the interface class (*cc*), subclass (*ss*) and protocol (*pp*) as assigned by the [USB-IF](http://www.usb.org/about). See the [list of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class). Instead of the subclass and protocol number, you may write an asterisk character (`*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
 ## Conditions
 
