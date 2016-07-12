@@ -7,4 +7,5 @@ TryExec=usbguard-applet-qt
 Exec=usbguard-applet-qt
 Icon=usbguard-icon
 Categories=System;
+Keywords=USB;Guard;Applet;
 X-Desktop-File-Install-Version=@VERSION@
