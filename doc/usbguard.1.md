@@ -69,7 +69,7 @@ Available options:
 
 **block-device** [*OPTIONS*] <*id*>
 
-Deauthorize a device indentified by the device *id*.
+Deauthorize a device identified by the device *id*.
 
 Available options:
 
