@@ -27,7 +27,9 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh \
 	$(top_srcdir)/src/Tests/USB/test-descriptor-parser.sh \
 	$(top_srcdir)/src/Tests/USB/data/0001.bin \
-	$(top_srcdir)/src/Tests/USB/data/0001.out
+	$(top_srcdir)/src/Tests/USB/data/0001.out \
+	$(top_srcdir)/src/Tests/Packaging/spell-check.sh \
+	$(top_srcdir)/src/Tests/Packaging/spell-check.rws
 
 TESTS_ENVIRONMENT=\
 	builddir=$(top_builddir) \
@@ -36,7 +38,8 @@ TESTS_ENVIRONMENT=\
 TESTS=\
 	test-unit \
 	test-regression \
-	USB/test-descriptor-parser.sh
+	USB/test-descriptor-parser.sh \
+	Packaging/spell-check.sh
 
 check_PROGRAMS=\
 	test-unit \

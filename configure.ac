@@ -369,7 +369,7 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
-# Check whether the utility is present.
+# Check whether the pandoc utility is present.
 #
 # If pandoc is not present, manpages won't be
 # generated from source and their pre-generated
@@ -380,6 +380,17 @@ if test -z "$PANDOC"; then
   AC_MSG_WARN([Unable to find manpage generator (pandoc). Installation will use pre-generated files.])
 fi
 AM_CONDITIONAL([GENERATE_MANPAGES], [test -n "$PANDOC"])
+
+#
+# Check whether the aspell utility is present.
+#
+# If aspell is not present, the test suite will skip spell
+# checking of documentation related files.
+#
+AC_CHECK_PROGS(ASPELL, [aspell])
+if test -z "$ASPELL"; then
+  AC_MSG_WARN([Unable to find the Aspell spell checker. The test suite will skip spell checking of documentation related files.])
+fi
 
 #
 # Maintainer mode.
