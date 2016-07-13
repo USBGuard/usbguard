@@ -8,7 +8,7 @@ author: Daniel Kopeček <dkopecek@redhat.com>
 * **Custom scripts needed for advanced features**.
   Users are forced to write custom scripts to handle advanced features like USB descriptor parsing, which is needed for analyzing USB interfaces of the device before they are allowed to interact with the system.
 
-* **Maintanence and support complexity**.
+* **Maintenance and support complexity**.
   Maintenance of the scripts is complex, each user creates his own solution to the same problem.
 
 * **Static Configuration**.
@@ -21,11 +21,11 @@ author: Daniel Kopeček <dkopecek@redhat.com>
 
 There's no need for custom scripts when using USBGuard because it implements a rule language which covers device matching and actions that need to be performed. However, when there's still something that should be performed using an external script, the rule language allows to specify an external script to be run.
 
-Maintanence of customs scripts is reduced to the minimum if one still wants to use them. The rule set which defines the authorization policy is contained in one text file and can be modified either directly, or using CLI tools provided by the USBGuard framework. Using the CLI tools, which are based on a public IPC interface to the daemon, one can implement dynamic policies.
+Maintenance of customs scripts is reduced to the minimum if one still wants to use them. The rule set which defines the authorization policy is contained in one text file and can be modified either directly, or using CLI tools provided by the USBGuard framework. Using the CLI tools, which are based on a public IPC interface to the daemon, one can implement dynamic policies.
 
 USBGuard uses a best effort method for identifying USB devices from one another. The ability to uniquely identify a USB device depends also on the attribute values a device exports and USBGuard always uses all of the available attributes. The list of USB interfaces that a device provides cannot be faked in way that it would pass a properly written USBGuard policy restricting USB interfaces and then interact with the operating system using a forbidden interface. It handles USB device controlled inputs as untrusted, minimizing the risk of incorrectly authorizing a device or being controlled by a rogue USB device in unexpected ways.
 
-For mitigation of successful exploitaition of security bugs in the software, USBGuard uses a seccomp syscall whitelist and reduces it's process capabilities to a minimum.
+For mitigation of successful exploitation of security bugs in the software, USBGuard uses a seccomp syscall whitelist and reduces it's process capabilities to a minimum.
 
 It's possible to write third-party C++ applications that can interact with the daemon by using the USBGuard API provided in a shared library. The [USBGuard Qt Applet](https://github.com/dkopecek/usbguard-applet-qt/) is based on this library.
 

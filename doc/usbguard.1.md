@@ -83,7 +83,7 @@ Available options:
 
 **reject-device** [*OPTIONS*] <*id*>
 
-Deauthorize and remove a device indentified by the device *id*.
+Deauthorize and remove a device identified by the device *id*.
 
 Available options:
 
@@ -141,7 +141,7 @@ Available options:
 :   Generate port specific rules for all devices. By default, port specific rules are generated only for devices which do not export an iSerial value.
 
 **-P**, **--no-ports-sn**
-:   Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a via-port attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time.
+:   Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a via-port attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will occupy the allowed USB port most of the time.
 
 **-t**, **--target** <*target*>
 :   Generate an explicit "catch all" rule with the specified target. The target can be one of the following values: **allow**, **block**, **reject**

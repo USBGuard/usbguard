@@ -1,15 +1,15 @@
 # How to generate the documentation
 
 The manual page source file is written in the markdown format. You can
-convert it to roff or HTML using ronnjs:
+convert it to roff or HTML using pandoc:
 
-    $ ronn-nodejs --build --roff --manual 8 usbguard-daemon.ronn
-    $ ronn-nodejs --build --roff --manual 5 usbguard-daemon.conf.ronn
-    $ ronn-nodejs --build --roff --manual 5 usbguard-rules.conf.ronn
-    $ ronn-nodejs --build --roff --manual 1 usbguard.ronn
-    $ ronn-nodejs --build --roff --manual 1 usbguard-applet-qt.ronn
+    $ pandoc -s -t man usbguard-daemon.8.md -o usbguard-daemon.8
+    $ pandoc -s -t man usbguard-daemon.conf.5.md -o usbguard-daemon.conf.5
+    $ pandoc -s -t man usbguard-rules.conf.5.md -o usbguard-rules.conf.5
+    $ pandoc -s -t man usbguard.1.md -o usbguard.1
+    $ pandoc -s -t man usbguard-applet-qt.1.md -o usbguard-applet-qt.1
 
-To view the generated files you can use the nroff(1) and less(1) commands:
+To view the generated files you can use the man(1) command:
 
-    $ nroff -u0 -Tlp -man <file>.roff | less
+    $ man ./usbguard-daemon.8
 

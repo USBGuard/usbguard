@@ -58,7 +58,7 @@ Reprogramming  attacks ([BadUSB](https://srlabs.de/badusb/)) which change the ty
 Allowing to attach any USB device to the system exposes it to exploitation of bugs in USB interface drivers in the kernel.
 
 ### Use case #2: USB device blacklisting
-The USB protocol uses a classification system for the various types  of  interfaces a USB device can provide. If an user doesn’t want to use a particular class of interfaces, he can block devices that want to communicate with the computer as an interface from that class.
+The USB protocol uses a classification system for the various types  of  interfaces a USB device can provide. If an user doesn't want to use a particular class of interfaces, he can block devices that want to communicate with the computer as an interface from that class.
 
 ### Use case #3: Triggering actions on USB device events
 The project makes possible to easily implement triggering of various actions when a particular USB device or USB device class is inserted, removed, etc. This feature might be used for example for auditing USB usage, screen locking (per-user via applet), etc.
@@ -71,7 +71,7 @@ if you want to know more.
 
 ### Portability
 
-Altought the primary target and development platform of this project is Linux, the code aims to be portable to other operating systems as well. Internally, the USBGuard daemon tries to abstract USB device handling as much as possible and for this purpose it uses two base classes that define the interface which the daemon uses for interacting with USB devices. A USB device is represented by the `usbguard::Device` class. The seconds class, `usbguard::DeviceManager`, defines an interface for USB device discovery and authorization. Please refer to the `usbguard::LinuxDevice` and `usbguard::LinuxDeviceManager` classes for an example implementation. More detailed documentation will be added as soon as possible.
+Although the primary target and development platform of this project is Linux, the code aims to be portable to other operating systems as well. Internally, the USBGuard daemon tries to abstract USB device handling as much as possible and for this purpose it uses two base classes that define the interface which the daemon uses for interacting with USB devices. A USB device is represented by the `usbguard::Device` class. The seconds class, `usbguard::DeviceManager`, defines an interface for USB device discovery and authorization. Please refer to the `usbguard::LinuxDevice` and `usbguard::LinuxDeviceManager` classes for an example implementation. More detailed documentation will be added as soon as possible.
 
 ## Compilation
 
@@ -84,7 +84,7 @@ If you want to compile the sources from a release tarball, you'll have to instal
 Optionally, you may want to install:
 
  * [libseccomp](https://github.com/seccomp/libseccomp) - used to implement a syscall whitelist
- * [libcap-ng](https://people.redhat.com/sgrubb/libcap-ng/) - used to drop process capabalities
+ * [libcap-ng](https://people.redhat.com/sgrubb/libcap-ng/) - used to drop process capabilities
 
 And then do:
 
@@ -92,7 +92,7 @@ And then do:
     $ make
     $ sudo make install
 
-After the sources are successfully built, you can run the testsuite by executing:
+After the sources are successfully built, you can run the test suite by executing:
 
     $ make check
 
@@ -113,7 +113,7 @@ If you want to modify the lexer and/or the parser, you'll have to generate new s
 
 ### Fedora Linux, RHEL or CentOS
 
-Pre-compiled packages for Fedora 21, 22, 23, rawhide and EPEL 7 (RHEL, CentOS) are distributed in a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
+Precompiled packages for Fedora 21, 22, 23, rawhide and EPEL 7 (RHEL, CentOS) are distributed in a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
 You can install the repository by executing the following steps:
 
     $ sudo yum install yum-plugin-copr
@@ -213,7 +213,7 @@ List of attributes:
 
 `port-id` is a platform specific USB port identification. On Linux it's in the form "b-n" where `b` and `n` are unsigned integers (e.g. "1-2", "2-4", ...).
 
-`interface-type` represents a USB interface and should be formated as three 8-bit numbers in hexadecimal base delimited by colon, i.e. `cc:ss:pp`. The numbers represent the interface class (`cc`), subclass (`ss`) and protocol (`pp`) as assigned by the [USB-IF](http://www.usb.org/about) ([List of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class)). Instead of the subclass and protocol number, you may write an asterisk character (`\*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
+`interface-type` represents a USB interface and should be formatted as three 8-bit numbers in hexadecimal base delimited by colon, i.e. `cc:ss:pp`. The numbers represent the interface class (`cc`), subclass (`ss`) and protocol (`pp`) as assigned by the [USB-IF](http://www.usb.org/about) ([List of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class)). Instead of the subclass and protocol number, you may write an asterisk character (`\*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
 ### Conditions
 
@@ -251,7 +251,7 @@ Using the `usbguard` CLI tool and its `generate-policy` subcommand, you can gene
 
  * `-p`: Generate port specific rules for all devices. By default, port specific rules are generated only for devices which do not export an iSerial value. See the `-P` option for more details.
 
- * `-P`: Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a `via-port` attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will ocupy the allowed USB port most of the time.
+ * `-P`: Don't generate port specific rules for devices without an iSerial value. Without this option, the tool will add a `via-port` attribute to any device that doesn't provide a serial number. This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port. This makes it harder to bypass the policy since the real device will occupy the allowed USB port most of the time.
 
  * `-t <target>`: Generate an explicit "catch all" rule with the specified target. The target can be one of the following values: `allow`, `block`, `reject`.
 
