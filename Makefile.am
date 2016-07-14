@@ -33,6 +33,7 @@ dist_usbguard_conf_DATA= usbguard-daemon.conf
 
 ROFF_PAGES=\
 	doc/usbguard.1.roff \
+	doc/usbguard-dbus.8.roff \
 	doc/usbguard-applet-qt.1.roff \
 	doc/usbguard-daemon.8.roff \
 	doc/usbguard-daemon.conf.5.roff \
@@ -79,7 +80,8 @@ uninstall-systemd-service:
 endif
 
 man8_MANS=\
-	$(top_builddir)/doc/usbguard-daemon.8
+	$(top_builddir)/doc/usbguard-daemon.8 \
+	$(top_builddir)/doc/usbguard-dbus.8
 
 man5_MANS=\
 	$(top_builddir)/doc/usbguard-daemon.conf.5 \
