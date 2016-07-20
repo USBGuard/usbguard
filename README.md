@@ -33,7 +33,9 @@
 
 # USBGuard
 
+[![License](https://img.shields.io/github/license/dkopecek/usbguard.svg)](https://github.com/dkopecek/usbguard/#license)
 [![Build Status](https://travis-ci.org/dkopecek/usbguard.svg?branch=master)](https://travis-ci.org/dkopecek/usbguard)
+[![Coverage Status](https://coveralls.io/repos/github/dkopecek/usbguard/badge.svg)](https://coveralls.io/github/dkopecek/usbguard)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/7605/badge.svg)](https://scan.coverity.com/projects/dkopecek-usbguard)
 
 USBGuard is a software framework for implementing USB device authorization policies (what kind of USB devices are authorized) as well as method of use policies (how a USB device may interact with the system).
