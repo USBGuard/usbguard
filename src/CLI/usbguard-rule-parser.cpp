@@ -30,25 +30,26 @@ int main(int argc, char **argv)
     std::cerr << "Usage: " << ::basename(argv[0]) << " <rulespec>" << std::endl;
   }
   else {
+    const std::string rule_spec(argv[1]);
     try {
-      const std::string rule_spec(argv[1]);
       std::cout << "INPUT: " << rule_spec << std::endl;
-      const usbguard::Rule rule = usbguard::parseRuleSpecification(rule_spec);
+      const usbguard::Rule rule = usbguard::parseRuleFromString(rule_spec);
       std::cout << "OUTPUT: " << rule.toString() << std::endl;
       return EXIT_SUCCESS;
     }
     catch(const usbguard::RuleParserError& ex) {
-      std::cerr << "ERROR: " << ex.what() << std::endl;
-      std::cerr << "HINT: " << ex.hint() << std::endl;
-      if (ex.hasFileInfo()) {
-        std::cerr << "FILE: " << ex.fileInfo() << std::endl;
-      }
+      std::cerr << "! ERROR: " << ex.what() << std::endl;
+      std::cerr << "!!  " << rule_spec << std::endl;
+      std::cerr << "!!  ";
+      std::cerr.width(4 + ex.offset());
+      std::cerr << "^-- " << ex.hint() << std::endl;
+      std::cerr.width(1);
     }
     catch(const std::exception& ex) {
-      std::cerr << "EXCEPTION: " << ex.what() << std::endl;
+      std::cerr << "! EXCEPTION: " << ex.what() << std::endl;
     }
     catch(...) {
-      std::cerr << "EXCEPTION: Unknown" << std::endl;
+      std::cerr << "! EXCEPTION: Unknown" << std::endl;
     }
   }
   return EXIT_FAILURE;

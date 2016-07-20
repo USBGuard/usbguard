@@ -424,27 +424,27 @@ namespace usbguard
 
     std::map<std::string,std::string> attributes;
     
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
-    attributes["serial"] = device_rule->getSerialNumber();
-    attributes["hash"] = device_rule->getDeviceHash();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
+    attributes["serial"] = device_rule->getSerial();
+    attributes["hash"] = device_rule->getHash();
 
-    DeviceInserted(device_rule->getID(),
+    DeviceInserted(device_rule->getRuleID(),
 		   attributes,
-		   device_rule->refInterfaceTypes(),
+		   device_rule->attributeWithInterface().values(),
 		   matched_rule->isImplicit() ? false : true,
-		   matched_rule->getID());
+		   matched_rule->getRuleID());
 
     switch(matched_rule->getTarget()) {
     case Rule::Target::Allow:
-      allowDevice(device_rule->getID(), matched_rule);
+      allowDevice(device_rule->getRuleID(), matched_rule);
       break;
     case Rule::Target::Block:
-      blockDevice(device_rule->getID(), matched_rule);
+      blockDevice(device_rule->getRuleID(), matched_rule);
       break;
     case Rule::Target::Reject:
-      rejectDevice(device_rule->getID(), matched_rule);
+      rejectDevice(device_rule->getRuleID(), matched_rule);
       break;
     default:
       throw std::runtime_error("BUG: Wrong matched_rule target");
@@ -464,11 +464,11 @@ namespace usbguard
     Pointer<Rule> device_rule = device->getDeviceRule(/*include_port=*/true);
     std::map<std::string,std::string> attributes;
 
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
-    attributes["serial"] = device_rule->getSerialNumber();
-    attributes["hash"] = device_rule->getDeviceHash();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
+    attributes["serial"] = device_rule->getSerial();
+    attributes["hash"] = device_rule->getHash();
 
     const PresentDevicePolicy policy = \
       device->isController() ? _present_controller_policy : _present_device_policy;
@@ -503,13 +503,13 @@ namespace usbguard
 
     switch(target) {
     case Rule::Target::Allow:
-      allowDevice(device_rule->getID(), matched_rule);
+      allowDevice(device_rule->getRuleID(), matched_rule);
       break;
     case Rule::Target::Block:
-      blockDevice(device_rule->getID(), matched_rule);
+      blockDevice(device_rule->getRuleID(), matched_rule);
       break;
     case Rule::Target::Reject:
-      rejectDevice(device_rule->getID(), matched_rule);
+      rejectDevice(device_rule->getRuleID(), matched_rule);
       break;
     default:
       throw std::runtime_error("BUG: Wrong matched_rule target");
@@ -517,9 +517,9 @@ namespace usbguard
 
     matched_rule->updateMetaDataCounters(/*applied=*/true);
 
-    DevicePresent(device_rule->getID(),
+    DevicePresent(device_rule->getRuleID(),
 		  attributes,
-		  device_rule->refInterfaceTypes(),
+		  device_rule->attributeWithInterface().values(),
 		  target);
     return;
   }
@@ -531,13 +531,13 @@ namespace usbguard
 
     std::map<std::string,std::string> attributes;
     
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
-    attributes["serial"] = device_rule->getSerialNumber();
-    attributes["hash"] = device_rule->getDeviceHash();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
+    attributes["serial"] = device_rule->getSerial();
+    attributes["hash"] = device_rule->getHash();
 
-    DeviceRemoved(device_rule->getID(), attributes);
+    DeviceRemoved(device_rule->getRuleID(), attributes);
     return;
   }
 
@@ -679,7 +679,7 @@ namespace usbguard
         RuleSet ruleset = listRules();
         for (auto rule : ruleset.getRules()) {
           json rule_json = {
-            { "id", rule->getID() },
+            { "id", rule->getRuleID() },
             { "rule", rule->toString() }
           };
           ruleset_json.push_back(rule_json);
@@ -699,7 +699,7 @@ namespace usbguard
         json devices_json = json::array();
         for (auto device_rule : listDevices(jobj["query"])) {
           json device_json = {
-            { "id", device_rule.getID() },
+            { "id", device_rule.getRuleID() },
             { "device", device_rule.toString() }
           };
           devices_json.push_back(device_json);
@@ -967,14 +967,14 @@ namespace usbguard
 
     std::map<std::string,std::string> attributes;
     
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
 
-    DeviceAllowed(device_rule->getID(),
+    DeviceAllowed(device_rule->getRuleID(),
 		  attributes,
-		  (matched_rule->getID() != Rule::DefaultID),
-		  matched_rule->getID());
+		  (matched_rule->getRuleID() != Rule::DefaultID),
+		  matched_rule->getRuleID());
     return;
   }
 
@@ -989,14 +989,14 @@ namespace usbguard
 
     std::map<std::string,std::string> attributes;
     
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
 
-    DeviceBlocked(device_rule->getID(),
+    DeviceBlocked(device_rule->getRuleID(),
 		  attributes,
-		  (matched_rule->getID() != Rule::DefaultID),
-		  matched_rule->getID());
+		  (matched_rule->getRuleID() != Rule::DefaultID),
+		  matched_rule->getRuleID());
     return;
   }
 
@@ -1011,14 +1011,14 @@ namespace usbguard
 
     std::map<std::string,std::string> attributes;
     
-    attributes["name"] = device_rule->getDeviceName();
-    attributes["vendor_id"] = device_rule->getVendorID();
-    attributes["product_id"] = device_rule->getProductID();
+    attributes["name"] = device_rule->getName();
+    attributes["vendor_id"] = device_rule->getDeviceID().getVendorID();
+    attributes["product_id"] = device_rule->getDeviceID().getProductID();
 
-    DeviceRejected(device_rule->getID(),
+    DeviceRejected(device_rule->getRuleID(),
 		   attributes,
-		   (matched_rule->getID() != Rule::DefaultID),
-		   matched_rule->getID());
+		   (matched_rule->getRuleID() != Rule::DefaultID),
+		   matched_rule->getRuleID());
     return;
   }
 

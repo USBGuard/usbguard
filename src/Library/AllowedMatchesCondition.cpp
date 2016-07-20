@@ -26,7 +26,7 @@ namespace usbguard
   AllowedMatchesCondition::AllowedMatchesCondition(const String& device_spec, bool negated)
     : RuleCondition("allowed-matches", device_spec, negated)
   {
-    _device_match_rule = parseRuleSpecification(std::string("allow ") + device_spec);
+    _device_match_rule = parseRuleFromString(std::string("allow ") + device_spec);
     _interface_ptr = nullptr;
   }
 

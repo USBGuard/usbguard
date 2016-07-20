@@ -183,6 +183,29 @@ AC_SUBST([catch_CFLAGS])
 AC_SUBST([catch_LIBS])
 
 #
+# PEGTL C++ library
+#
+AC_ARG_WITH([bundled-pegtl], AS_HELP_STRING([--with-bundled-pegtl], [Build using the bundled PEGTL library]), [with_bundled_pegtl=$withval], [with_bundled_pegtl=no])
+if test "x$with_bundled_pegtl" = xyes; then
+	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL"
+	pegtl_LIBS=""
+	AC_MSG_NOTICE([Using bundled PEGTL library])
+	pegtl_summary="bundled; $pegtl_CFLAGS $pegtl_LIBS"
+else
+	SAVE_CPPFLAGS=$CPPFLAGS
+	CPPFLAGS="-std=c++11 $CPPFLAGS"
+	AC_LANG_PUSH([C++])
+	AC_CHECK_HEADER([pegtl.hh], [], [AC_MSG_FAILURE(pegtl.hh not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
+	AC_LANG_POP
+	pegtl_CFLAGS=""
+	pegtl_LIBS=""
+	CPPFLAGS=$SAVE_CPPFLAGS
+	pegtl_summary="system-wide; $pegtl_CFLAGS $pegtl_LIBS"
+fi
+AC_SUBST([pegtl_CFLAGS])
+AC_SUBST([pegtl_LIBS])
+
+#
 # Qt 5.x GUI
 #
 AC_ARG_WITH([gui-qt5], AS_HELP_STRING([--with-gui-qt5], [Build the Qt 5.x GUI components]), [], [with_gui_qt5=yes])
@@ -504,6 +527,7 @@ echo "  libcap-ng: $libcap_ng_summary"
 echo "       json: $json_summary"
 echo "     spdlog: $spdlog_summary"
 echo "      Catch: $catch_summary"
+echo "      PEGTL: $pegtl_summary"
 echo "     Qt 5.x: $qt5_summary"
 echo " GLib D-Bus: $dbus_summary"
 echo

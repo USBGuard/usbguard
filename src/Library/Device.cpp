@@ -63,9 +63,24 @@ namespace usbguard {
     return d_pointer->getDeviceRule(include_port);
   }
 
+  String Device::getHash(const bool include_port) const
+  {
+    return d_pointer->getHash(include_port);
+  }
+
+  void Device::setID(uint32_t id)
+  {
+    d_pointer->setID(id);
+  }
+
   uint32_t Device::getID() const
   {
     return d_pointer->getID();
+  }
+
+  void Device::setTarget(Rule::Target target)
+  {
+    d_pointer->setTarget(target);
   }
 
   Rule::Target Device::getTarget() const
@@ -73,71 +88,54 @@ namespace usbguard {
     return d_pointer->getTarget();
   }
 
-  String Device::getDeviceHash(const bool include_port) const
+  void Device::setName(const String& name)
   {
-    return d_pointer->getDeviceHash(include_port);
+    d_pointer->setName(name);
   }
 
-  const String Device::getPort() const
+  const String& Device::getName() const
+  {
+    return d_pointer->getName();
+  }
+
+  void Device::setDeviceID(const USBDeviceID& device_id)
+  {
+    d_pointer->setDeviceID(device_id);
+  }
+
+  const USBDeviceID& Device::getDeviceID() const
+  {
+    return d_pointer->getDeviceID();
+  }
+
+  void Device::setPort(const String& port)
+  {
+    d_pointer->setPort(port);
+  }
+
+  const String& Device::getPort() const
   {
     return d_pointer->getPort();
   }
 
-  const String& Device::getSerialNumber() const
+  void Device::setSerial(const String& serial_number)
   {
-    return d_pointer->getSerialNumber();
+    d_pointer->setSerial(serial_number);
+  }
+
+  const String& Device::getSerial() const
+  {
+    return d_pointer->getSerial();
+  }
+
+  std::vector<USBInterfaceType>& Device::refMutableInterfaceTypes()
+  {
+    return d_pointer->refMutableInterfaceTypes();
   }
 
   const std::vector<USBInterfaceType>& Device::getInterfaceTypes() const
   {
     return d_pointer->getInterfaceTypes();
-  }
-
-  void Device::setID(const uint32_t id)
-  {
-    d_pointer->setID(id);
-    return;
-  }
-
-  void Device::setTarget(const Rule::Target target)
-  {
-    d_pointer->setTarget(target);
-    return;
-  }
-
-  void Device::setDeviceName(const String& name)
-  {
-    d_pointer->setDeviceName(name);
-    return;
-  }
-
-  void Device::setVendorID(const String& vendor_id)
-  {
-    d_pointer->setVendorID(vendor_id);
-    return;
-  }
-
-  void Device::setProductID(const String& product_id)
-  {
-    d_pointer->setProductID(product_id);
-    return;
-  }
-
-  void Device::setDevicePort(const String& port)
-  {
-    d_pointer->setDevicePort(port);
-    return;
-  }
-
-  void Device::setSerialNumber(const String& serial_number)
-  {
-    d_pointer->setSerialNumber(serial_number);
-    return;
-  }
-
-  std::vector<USBInterfaceType>& Device::refInterfaceTypes()
-  {
-    return d_pointer->refInterfaceTypes();
   }
 
   void Device::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)

@@ -132,11 +132,11 @@ namespace usbguard {
      * number counter so that we don't generate a duplicit
      * one if assignID() gets called in the future.
      */
-    if (rule_ptr->getID() == Rule::DefaultID) {
+    if (rule_ptr->getRuleID() == Rule::DefaultID) {
       assignID(rule_ptr);
     }
     else {
-      _id_next = std::max(_id_next.load(), rule_ptr->getID() + 1);
+      _id_next = std::max(_id_next.load(), rule_ptr->getRuleID() + 1);
     }
 
     /* Initialize conditions */
@@ -153,7 +153,7 @@ namespace usbguard {
       bool parent_found = false;
       for (auto it = _rules.begin(); it != _rules.end(); ++it) {
 	const Rule& rule = **it;
-	if (rule.getID() == parent_id) {
+	if (rule.getRuleID() == parent_id) {
 	  _rules.insert(it+1, rule_ptr);
 	  parent_found = true;
 	  break;
@@ -169,14 +169,14 @@ namespace usbguard {
       _rules_timed.push(rule_ptr);
     }
 
-    return rule_ptr->getID();
+    return rule_ptr->getRuleID();
   }
 
   Pointer<const Rule> RuleSetPrivate::getRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto const& rule : _rules) {
-      if (rule->getID() == id) {
+      if (rule->getRuleID() == id) {
 	return rule;
       }
     }
@@ -188,7 +188,7 @@ namespace usbguard {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto it = _rules.begin(); it != _rules.end(); ++it) {
       auto const& rule_ptr = *it;
-      if (rule_ptr->getID() == id) {
+      if (rule_ptr->getRuleID() == id) {
         _rules.erase(it);
         return true;
       }
@@ -209,9 +209,8 @@ namespace usbguard {
 
     Pointer<Rule> default_rule = makePointer<Rule>();
 
-    default_rule->setID(Rule::DefaultID);
+    default_rule->setRuleID(Rule::DefaultID);
     default_rule->setTarget(_default_target);
-    default_rule->setAction(_default_action);
 
     return default_rule;
   }
@@ -251,8 +250,8 @@ namespace usbguard {
 
   uint32_t RuleSetPrivate::assignID(Pointer<Rule> rule)
   {
-    rule->setID(assignID());
-    return rule->getID();
+    rule->setRuleID(assignID());
+    return rule->getRuleID();
   }
 
   uint32_t RuleSetPrivate::assignID()

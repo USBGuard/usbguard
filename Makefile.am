@@ -103,12 +103,12 @@ lib_LTLIBRARIES=\
 libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
-	-I$(top_srcdir)/src/Library/RuleParser \
 	@qb_CFLAGS@ \
 	@json_CFLAGS@ \
 	@spdlog_CFLAGS@ \
 	@udev_CFLAGS@ \
-	@sodium_CFLAGS@
+	@sodium_CFLAGS@ \
+	@pegtl_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
@@ -119,7 +119,8 @@ libusbguard_la_LIBADD=\
 	@spdlog_LIBS@ \
 	@json_LIBS@ \
 	@udev_LIBS@ \
-	@sodium_LIBS@
+	@sodium_LIBS@ \
+	@pegtl_LIBS@
 
 libusbguard_la_SOURCES=\
 	src/Common/Thread.hpp \
@@ -139,17 +140,13 @@ libusbguard_la_SOURCES=\
 	src/Library/Rule.cpp \
 	src/Library/RuleParser.cpp \
 	src/Library/RuleParser.hpp \
+	src/Library/RuleParser/Grammar.hpp \
+	src/Library/RuleParser/Actions.hpp \
 	src/Library/RulePrivate.cpp \
 	src/Library/RulePrivate.hpp \
 	src/Library/RuleSet.cpp \
 	src/Library/RuleSetPrivate.cpp \
 	src/Library/RuleSetPrivate.hpp \
-	src/Library/RuleParser/Lexer-configuration.hpp \
-	src/Library/RuleParser/Lexer.cpp \
-	src/Library/RuleParser/Lexer.hpp \
-	src/Library/RuleParser/Lexer-token.hpp \
-	src/Library/RuleParser/Lexer-token_ids.hpp \
-	src/Library/RuleParser/Parser.h \
 	src/Library/Typedefs.cpp \
 	src/Library/DeviceManagerHooks.cpp \
 	src/Library/Device.cpp \
@@ -178,7 +175,8 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleAppliedCondition.cpp \
 	src/Library/RuleAppliedCondition.hpp \
 	src/Library/RuleEvaluatedCondition.cpp \
-	src/Library/RuleEvaluatedCondition.hpp
+	src/Library/RuleEvaluatedCondition.hpp \
+	src/Library/Utility.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -192,14 +190,9 @@ pkginclude_HEADERS=\
 	src/Library/DeviceManagerHooks.hpp \
 	src/Library/Device.hpp \
 	src/Library/DeviceManager.hpp \
-	src/Library/Logger.hpp
-
-EXTRA_DIST +=\
-	src/Library/RuleParser/Lexer.qx \
-	src/Library/RuleParser/Parser.y \
-	src/Library/RuleParser/Parser.c \
-	src/Library/RuleParser/quex \
-	src/Library/RuleParser/README.md
+	src/Library/Logger.hpp \
+	src/Library/Predicates.hpp \
+	src/Library/Utility.hpp
 
 sbin_PROGRAMS=\
 	usbguard-daemon
@@ -233,7 +226,8 @@ EXTRA_DIST +=\
 	README.md \
 	src/ThirdParty/spdlog \
 	src/ThirdParty/json/src/json.hpp \
-	src/ThirdParty/Catch
+	src/ThirdParty/Catch \
+	src/ThirdParty/PEGTL
 
 bin_PROGRAMS=\
 	usbguard \

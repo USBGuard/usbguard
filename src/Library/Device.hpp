@@ -36,23 +36,30 @@ namespace usbguard {
     
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
+    String getHash(bool include_port = false) const;
+
+    void setID(uint32_t id);
     uint32_t getID() const;
+
+    void setTarget(Rule::Target target);
     Rule::Target getTarget() const;
-    String getDeviceHash(bool include_port = false) const;
-    const String getPort() const;
-    const String& getSerialNumber() const;
+
+    void setName(const String& name);
+    const String& getName() const;
+
+    void setDeviceID(const USBDeviceID& device_id);
+    const USBDeviceID& getDeviceID() const;
+
+    void setPort(const String& port);
+    const String& getPort() const;
+
+    void setSerial(const String& serial_number);
+    const String& getSerial() const;
+
+    std::vector<USBInterfaceType>& refMutableInterfaceTypes();
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
 
     virtual bool isController() const = 0;
-
-    void setID(uint32_t id);
-    void setTarget(Rule::Target target);
-    void setDeviceName(const String& name);
-    void setVendorID(const String& vendor_id);
-    void setProductID(const String& product_id);
-    void setDevicePort(const String& port);
-    void setSerialNumber(const String& serial_number);
-    std::vector<USBInterfaceType>& refInterfaceTypes();
 
     void loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);

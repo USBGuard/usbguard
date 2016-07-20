@@ -28,15 +28,12 @@ namespace usbguard {
     (void)_p_instance;
     _id = Rule::DefaultID;
     _target = Rule::Target::Unknown;
-    _num_configurations = -1;
-    return;
   }
 
   DevicePrivate::DevicePrivate(Device& p_instance, const DevicePrivate& rhs)
     : _p_instance(p_instance)
   {
     *this = rhs;
-    return;
   }
 
   DevicePrivate::DevicePrivate(Device& p_instance, const Rule& device_rule)
@@ -44,17 +41,13 @@ namespace usbguard {
   {
     // TODO: Check that the device_rule is of type "Device"
 
-    _id = device_rule.getID();
+    _id = device_rule.getRuleID();
     _target = device_rule.getTarget();
-    _name = device_rule.getDeviceName();
-    _vendor_id = device_rule.getVendorID();
-    _product_id = device_rule.getProductID();
-    _serial_number = device_rule.getSerialNumber();
-    _port = device_rule.getDevicePorts()[0]; /* NOTE: A device rule can contain only one port */
-    _interface_types = device_rule.getInterfaceTypes();
-    _num_configurations = device_rule.getDeviceConfigurations();
-
-    return;
+    _name = device_rule.getName();
+    _device_id = device_rule.getDeviceID();
+    _serial_number = device_rule.getSerial();
+    _port = device_rule.getViaPort();
+    _interface_types = device_rule.attributeWithInterface().values();
   }
 
   const DevicePrivate& DevicePrivate::operator=(const DevicePrivate& rhs)
@@ -62,12 +55,10 @@ namespace usbguard {
     _id = rhs._id;
     _target = rhs._target;
     _name = rhs._name;
-    _vendor_id = rhs._vendor_id;
-    _product_id = rhs._product_id;
+    _device_id = rhs._device_id;
     _serial_number = rhs._serial_number;
     _port = rhs._port;
     _interface_types = rhs._interface_types;
-    _num_configurations = rhs._num_configurations;
 
     return *this;
   }
@@ -82,54 +73,45 @@ namespace usbguard {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
 
-    logger->trace("Generating rule for device {}:{}@{} (name={}); include_port={}",
-		  _vendor_id, _product_id, _port, _name, include_port);
+    logger->trace("Generating rule for device {}@{} (name={}); include_port={}",
+		  _device_id.toString(), _port, _name, include_port);
 
-    device_rule->setID(_id);
+    device_rule->setRuleID(_id);
     device_rule->setTarget(_target);
-    device_rule->setVendorID(_vendor_id);
-    device_rule->setProductID(_product_id);
-    device_rule->setSerialNumber(_serial_number);
+    device_rule->setDeviceID(_device_id);
+    device_rule->setSerial(_serial_number);
 
     if (include_port) {
-      device_rule->refDevicePorts().push_back(_port);
-      device_rule->setDevicePortsSetOperator(Rule::SetOperator::Equals);
+      device_rule->setViaPort(_port);
     }
 
-    device_rule->setInterfaceTypes(refInterfaceTypes());
-    device_rule->setInterfaceTypesSetOperator(Rule::SetOperator::Equals);
-    device_rule->setDeviceName(_name);
-    device_rule->setDeviceHash(getDeviceHash(/*include_port=*/false));
+    device_rule->attributeWithInterface().set(getInterfaceTypes(), Rule::SetOperator::Equals);
+    device_rule->setName(_name);
+    device_rule->setHash(getHash(/*include_port=*/false));
     
     return device_rule;
   }
 
-  uint32_t DevicePrivate::getID() const
-  {
-    return _id;
-  }
-
-  Rule::Target DevicePrivate::getTarget() const
-  {
-    return _target;
-  }
-
-  String DevicePrivate::getDeviceHash(const bool include_port) const
+  String DevicePrivate::getHash(const bool include_port) const
   {
     unsigned char hash[crypto_generichash_BYTES_MIN];
     crypto_generichash_state state;
 
-    if (_vendor_id.empty() || _product_id.empty()) {
-      throw std::runtime_error("Cannot compute device hash value. Vendor ID and/or Product ID empty.");
-    }
-
     crypto_generichash_init(&state, NULL, 0, sizeof hash);
 
-    for (auto field : {
-	&_name, &_vendor_id, &_product_id, &_serial_number }) {
+    const String vendor_id = _device_id.getVendorID();
+    const String product_id = _device_id.getProductID();
+
+    if (vendor_id.empty() || product_id.empty()) {
+      throw std::runtime_error("Cannot compute device hash: vendor and/or product id values not available");
+    }
+
+    for (auto field : { &_name, &vendor_id, &product_id, &_serial_number }) {
       /* Update the hash value */
       crypto_generichash_update(&state, (const uint8_t *)field->c_str(), field->size());
     }
+
+    /* TODO: hash the descriptor data */
 
     /* Finalize the hash value */
     crypto_generichash_final(&state, hash, sizeof hash);
@@ -143,14 +125,72 @@ namespace usbguard {
     return hash_string;
   }
 
-  const String DevicePrivate::getPort() const
+  void DevicePrivate::setID(uint32_t id)
+  {
+    _id = id;
+  }
+
+  uint32_t DevicePrivate::getID() const
+  {
+    return _id;
+  }
+
+  void DevicePrivate::setTarget(Rule::Target target)
+  {
+    _target = target;
+  }
+
+  Rule::Target DevicePrivate::getTarget() const
+  {
+    return _target;
+  }
+
+  void DevicePrivate::setName(const String& name)
+  {
+    if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
+      throw std::runtime_error("setDeviceName: value size out-of-range");
+    }
+    _name = name;
+  }
+
+  const String& DevicePrivate::getName() const
+  {
+    return _name;
+  }
+
+  void DevicePrivate::setDeviceID(const USBDeviceID& device_id)
+  {
+    _device_id = device_id;
+  }
+
+  const USBDeviceID& DevicePrivate::getDeviceID() const
+  {
+    return _device_id;
+  }
+
+  void DevicePrivate::setPort(const String& port)
+  {
+    _port = port;
+  }
+
+  const String& DevicePrivate::getPort() const
   {
     return _port;
   }
 
-  const String& DevicePrivate::getSerialNumber() const
+  void DevicePrivate::setSerial(const String& serial_number)
+  {
+    _serial_number = serial_number;
+  }
+
+  const String& DevicePrivate::getSerial() const
   {
     return _serial_number;
+  }
+
+  std::vector<USBInterfaceType>& DevicePrivate::refMutableInterfaceTypes()
+  {
+    return _interface_types;
   }
 
   const std::vector<USBInterfaceType>& DevicePrivate::getInterfaceTypes() const
@@ -158,74 +198,31 @@ namespace usbguard {
     return _interface_types;
   }
 
-  void DevicePrivate::setID(const uint32_t id)
-  {
-    _id = id;
-    return;
-  }
-
-  void DevicePrivate::setTarget(const Rule::Target target)
-  {
-    _target = target;
-    return;
-  }
-
-  void DevicePrivate::setDeviceName(const String& name)
-  {
-    if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setDeviceName: value size out-of-range");
-    }
-    _name = name;
-    return;
-  }
-
-  void DevicePrivate::setVendorID(const String& vendor_id)
-  {
+    /* FIXME: move this to USBDeviceID
     if (vendor_id.size() > USB_VID_STRING_MAX_LENGTH) {
       throw std::runtime_error("setVendorID: value size out-of-range");
     }
-    _vendor_id = vendor_id;
-    return;
-  }
-
-  void DevicePrivate::setProductID(const String& product_id)
-  {
+    */
+/*
     if (product_id.size() > USB_PID_STRING_MAX_LENGTH) {
       throw std::runtime_error("setProductID: value size out-of-range");
     }
-    _product_id = product_id;
-    return;
-  }
 
-  void DevicePrivate::setDevicePort(const String& port)
-  {
     if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
       throw std::runtime_error("setDevicePort: value size out-of-range");
     }
-    _port = port;
-    return;
-  }
-
-  void DevicePrivate::setSerialNumber(const String& serial_number)
-  {
+*/
+/*
     if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
       throw std::runtime_error("setSerialNumber: value size out-of-range");
     }
-    _serial_number = serial_number;
-    return;
-  }
-
-  std::vector<USBInterfaceType>& DevicePrivate::refInterfaceTypes()
-  {
-    return _interface_types;
-  }
+    */
 
   void DevicePrivate::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     if (parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
       throw std::runtime_error("Invalid descriptor data: multiple device descriptors for one device");
     }
-    _num_configurations = reinterpret_cast<const USBDeviceDescriptor*>(descriptor)->bNumConfigurations;
     _interface_types.clear();
     return;
   }

@@ -23,13 +23,20 @@ AM_CPPFLAGS=\
 	@json_CFLAGS@
 
 EXTRA_DIST=\
+	$(top_srcdir)/src/Tests/test-driver \
 	$(top_srcdir)/src/ThirdParty/Catch \
 	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh \
 	$(top_srcdir)/src/Tests/USB/test-descriptor-parser.sh \
 	$(top_srcdir)/src/Tests/USB/data/0001.bin \
 	$(top_srcdir)/src/Tests/USB/data/0001.out \
 	$(top_srcdir)/src/Tests/Packaging/spell-check.sh \
-	$(top_srcdir)/src/Tests/Packaging/spell-check.rws
+	$(top_srcdir)/src/Tests/Packaging/spell-check.rws \
+	$(top_srcdir)/src/Tests/Rules/test-rules.sh \
+	$(top_srcdir)/src/Tests/Rules/test-rules.good \
+	$(top_srcdir)/src/Tests/Rules/test-rules.bad
+
+LOG_DRIVER=\
+	$(top_srcdir)/src/Tests/test-driver
 
 TESTS_ENVIRONMENT=\
 	builddir=$(top_builddir) \
@@ -39,7 +46,8 @@ TESTS=\
 	test-unit \
 	test-regression \
 	USB/test-descriptor-parser.sh \
-	Packaging/spell-check.sh
+	Packaging/spell-check.sh \
+	Rules/test-rules.sh
 
 check_PROGRAMS=\
 	test-unit \
@@ -60,3 +68,4 @@ test_regression_SOURCES=\
 
 test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la
+

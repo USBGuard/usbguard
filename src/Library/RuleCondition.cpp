@@ -102,6 +102,11 @@ namespace usbguard
 
     return condition_string;
   }
+
+  const String RuleCondition::toRuleString() const
+  {
+    return toString();
+  }
 } /* namespace usbguard */
 
 #include "AllowedMatchesCondition.hpp"
@@ -114,7 +119,50 @@ namespace usbguard
 
 namespace usbguard
 {
-  RuleCondition * RuleCondition::getImplementation(const String& identifier, const String& parameter, bool negated)
+  RuleCondition* RuleCondition::getImplementation(const String& condition_string)
+  {
+    if (condition_string.empty()) {
+      throw std::runtime_error("Empty condition");
+    }
+    const bool negated = condition_string[0] == '!';
+    const size_t identifier_start = negated ? 1 : 0;
+    const size_t p_pos = condition_string.find_first_of('(');
+
+    String identifier;
+    String parameter;
+
+    if (p_pos == std::string::npos) {
+      /*
+       * The rest of the condition_string should be
+       * a condition identifier -- without a parameter.
+       */
+      identifier = condition_string.substr(identifier_start);
+
+      if (identifier.size() < 1) {
+        throw std::runtime_error("Invalid condition string. Missing identifier.");
+      }
+    }
+    else {
+      const size_t parameter_size = condition_string.size() - p_pos;
+
+      if (parameter_size < 3 /* two parentheses + at least one character */) {
+        throw std::runtime_error("Invalid condition string. Invalid parameter.");
+      }
+
+      const size_t identifier_size = p_pos - identifier_start;
+      identifier = condition_string.substr(identifier_start, identifier_size);
+
+      if (condition_string[condition_string.size() - 1] != ')') {
+        throw std::runtime_error("Invalid condition string. Malformed parameter.");
+      }
+
+      parameter = condition_string.substr(p_pos + 1, parameter_size - 2);
+    }
+
+    return getImplementation(identifier, parameter, negated);
+  }
+
+  RuleCondition* RuleCondition::getImplementation(const String& identifier, const String& parameter, bool negated)
   {
     if (identifier == "allowed-matches") {
       return new AllowedMatchesCondition(parameter, negated);
