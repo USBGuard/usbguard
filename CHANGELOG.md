@@ -3,6 +3,19 @@
 ## [Unreleased]
 ### Added
 - Maintainer script for spellchecking source archive files
+- Rule::Attribute class for representing the rule attributes
+- USBDeviceID class for represing the USB device ID
+- configure script option to control the bundling of PEGTL source files
+- id attribute to the rule language for specifing the USB device ID
+
+### Changed
+- Reimplemented the rule parser using PEGTL
+- Changed public API of the Rule and Device classes because
+- All rule attributes now support both the single and multivalued form
+- A rule attribute can now be specified only once
+
+### Removed
+- Removed Quex related files
 
 ## 0.5.10 - 2016-07-08
 ### Changed
