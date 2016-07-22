@@ -506,8 +506,8 @@ AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
 
 AC_CONFIG_FILES([Makefile
-                 src/Tests/Makefile
                  libusbguard.pc
+                 src/Tests/Makefile
                  src/GUI.Qt5/usbguard-applet-qt.desktop])
 AC_OUTPUT
 

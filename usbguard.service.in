@@ -5,7 +5,7 @@ Documentation=man:usbguard-daemon(8)
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/usbguard-daemon -k -c /etc/usbguard/usbguard-daemon.conf
+ExecStart=%sbindir%/usbguard-daemon -k -c %sysconfdir%/usbguard/usbguard-daemon.conf
 Restart=on-failure
 
 [Install]

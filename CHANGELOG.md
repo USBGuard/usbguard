@@ -13,6 +13,8 @@
 - Changed public API of the Rule and Device classes because
 - All rule attributes now support both the single and multivalued form
 - A rule attribute can now be specified only once
+- The default usbguard-daemon.conf and usbguard.service files now respect
+  the paths set by the configure script
 
 ### Removed
 - Removed Quex related files

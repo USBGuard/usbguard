@@ -7,7 +7,7 @@
 #
 # RuleFile=/path/to/rules.conf
 #
-RuleFile=/etc/usbguard/rules.conf
+RuleFile=%sysconfdir%/usbguard/rules.conf
 
 #
 # Implicit policy target.

@@ -21,15 +21,22 @@ SUBDIRS=src/Tests/
 ACLOCAL_AMFLAGS= -I m4
 EXTRA_DIST =\
 	LICENSE \
-	usbguard.service \
+	usbguard-daemon.conf.in \
+	usbguard.service.in \
 	.tito
 
 BUILT_SOURCES=
 DISTCLEANFILES=
 CLEANFILES=
 
+CLEANFILES+=\
+	$(top_builddir)/usbguard-daemon.conf
+
+usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
+	$(SED) "s|%sysconfdir%|${sysconfdir}|g" $^ > $@ || rm -f $@
+
 usbguard_confdir= $(sysconfdir)/usbguard
-dist_usbguard_conf_DATA= usbguard-daemon.conf
+dist_usbguard_conf_DATA= $(top_builddir)/usbguard-daemon.conf
 
 ROFF_PAGES=\
 	doc/usbguard.1.roff \
@@ -67,9 +74,15 @@ install-data-hook: install-systemd-service install-data-dbus
 uninstall-hook: uninstall-systemd-service uninstall-data-dbus
 
 if SYSTEMD_SUPPORT_ENABLED
-install-systemd-service:
+CLEANFILES+=\
+	$(top_builddir)/usbguard.service
+
+usbguard.service: $(top_srcdir)/usbguard.service.in
+	$(SED) -e "s|%sbindir%|${sbindir}|" -e "s|%sysconfdir%|${sysconfdir}|" $^ > $@ || rm -f $@
+
+install-systemd-service: $(top_builddir)/usbguard.service
 	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL) -m 644 $(top_srcdir)/usbguard.service \
+	$(INSTALL) -m 644 $(top_builddir)/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
 uninstall-systemd-service:
