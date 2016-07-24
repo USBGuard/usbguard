@@ -9,16 +9,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="600"
-   height="600"
-   id="svg3152"
+   width="64px"
+   height="64px"
+   id="svg3098"
    version="1.1"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="usbguard-icon.svg">
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="usbguard-logo-v52p.svg">
   <title
-     id="title3357">USBGuard icon</title>
+     id="title5546">USBGuard logo</title>
   <defs
-     id="defs3154" />
+     id="defs3100" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -26,36 +26,47 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-112.14286"
-     inkscape:cy="520"
-     inkscape:document-units="px"
+     inkscape:zoom="4"
+     inkscape:cx="38.909969"
+     inkscape:cy="30.093665"
      inkscape:current-layer="layer1"
-     showgrid="false"
-     showborder="true"
-     borderlayer="false"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     showborder="false"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1025"
-     inkscape:window-x="-2"
-     inkscape:window-y="1077"
-     inkscape:window-maximized="1" />
+     borderlayer="false"
+     inkscape:window-width="1916"
+     inkscape:window-height="1036"
+     inkscape:window-x="1922"
+     inkscape:window-y="42"
+     inkscape:window-maximized="0" />
   <metadata
-     id="metadata3157">
+     id="metadata3103">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>USBGuard icon</dc:title>
+        <dc:title>USBGuard logo</dc:title>
         <dc:creator>
           <cc:Agent>
-            <dc:title>Daniel Kopecek</dc:title>
+            <dc:title>Daniel Kopeček</dc:title>
           </cc:Agent>
         </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>USB</rdf:li>
+            <rdf:li>Guard</rdf:li>
+            <rdf:li>Logo</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
+        <dc:description>Official USBGuard project logo.</dc:description>
+        <dc:source>https://github.com/dkopecek/usbguard/</dc:source>
+        <dc:date>2016</dc:date>
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/by-sa/3.0/">
@@ -75,37 +86,65 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-452.36218)">
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <path
+       style="fill:#0e232e;stroke:#19aeff;stroke-width:8.12703609;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 4.3071711,13.255416 C 4.3898641,33.396166 10.963528,52.915517 32.748505,60.198129 53.406237,50.872718 60.18103,33.561295 59.666287,13.325349"
+       id="rect3106"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:#19aeff;stroke:#19aeff;stroke-width:5.47860527;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 3.1040211,16.913885 C 0.79919828,1.9147578 20.883124,2.5453072 31.886252,2.8039048 42.88938,3.0625024 62.46255,0.94918066 61.020979,16.882635"
+       id="path3883"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="czc" />
+    <rect
+       style="fill:#364e59;stroke:#364e59;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3912"
+       width="4.1397438"
+       height="3.3771594"
+       x="27.382868"
+       y="6.4395633" />
+    <rect
+       style="fill:#364e59;stroke:#364e59;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3912-6"
+       width="4.1397438"
+       height="3.3771594"
+       x="33.483547"
+       y="6.4940333" />
+    <rect
+       style="fill:#0e232e;stroke:#0e232e;stroke-width:2.79950762;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3948"
+       width="30.220303"
+       height="12.439082"
+       x="16.889849"
+       y="4.6819754" />
+    <rect
+       style="fill:#19aeff;stroke:#19aeff;stroke-width:1.67355406;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3954"
+       width="4.7761703"
+       height="4.0938597"
+       x="25.29273"
+       y="7.5907145" />
     <g
-       id="g3211"
-       transform="matrix(1.6920226,0,0,1.6920226,-222.26199,-526.01206)">
+       style="font-size:49.79320908px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#19aeff;fill-opacity:1;stroke:#19aeff;stroke-width:1.26464999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
+       id="text3978"
+       transform="matrix(0.71886574,0,0,0.71886574,8.0143408,5.7507713)">
       <path
-         inkscape:connector-curvature="0"
-         id="path1334"
-         d="m 469.71455,590.12315 c -18.60468,4.98299 -37.20936,9.96597 -55.81404,14.94896 4.85853,4.85853 9.71706,9.71706 14.57559,14.57559 -60.28156,60.28156 -120.56312,120.56311 -180.84468,180.84467 -0.44498,-24.80819 -1.83869,-49.673 -1.68973,-74.44575 3.62781,-15.86932 19.71435,-24.11383 29.4151,-36.05679 8.13393,-12.23131 28.11367,2.57146 36.82492,-13.29941 13.584,-15.05115 0.83465,-41.86577 -19.41709,-40.8185 -17.71669,-0.78999 -30.91272,20.17069 -22.47275,35.80918 -11.36273,12.07408 -24.37453,22.75559 -34.43331,35.93646 -10.69135,17.30946 -5.59411,36.26428 -6.0082,55.58164 -1.32916,18.31507 4.83489,37.93538 -1.81116,55.41477 -6.71145,9.64456 -16.20397,17.01843 -24.17345,25.63135 -22.63975,-16.42762 -58.07943,-2.27451 -63.70601,24.86771 -7.36915,25.88515 15.77824,53.99126 42.59941,51.69227 28.06931,-0.28667 48.71445,-33.12164 36.26318,-58.53728 -8.11029,-7.49791 3.91843,-11.98625 7.92971,-17.73493 18.98571,-18.53205 37.11703,-38.0453 56.65774,-55.94023 16.39488,-8.56814 35.98699,-1.35796 53.67154,-2.96918 15.40525,-0.40532 30.70679,2.57244 45.08951,-0.32648 18.86598,-3.69668 29.44498,-20.93373 42.883,-32.912 4.02415,-6.462 8.0491,-6.48503 12.07486,-0.0111 4.17784,7.18254 8.35568,5.03753 12.53352,-0.87407 9.5623,-9.5623 19.12461,-19.1246 28.68691,-28.6869 -11.79572,-11.79572 -23.59144,-23.59144 -35.38716,-35.38716 -11.7969,11.7969 -23.5938,23.5938 -35.3907,35.3907 2.74857,4.44422 12.47179,8.89335 10.35681,13.33414 -11.60715,10.23105 -20.82277,23.61993 -34.12276,31.65455 -11.98088,4.13076 -24.9693,0.81063 -37.42131,1.32608 -14.35029,-0.39409 -28.70059,-0.78818 -43.05088,-1.18227 45.53979,-45.53979 91.07959,-91.07959 136.61938,-136.61938 4.86631,4.86631 9.73263,9.73262 14.59894,14.59893 4.99038,-18.59591 9.9593,-37.23952 14.96311,-55.8056 z" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3053"
-         d="m 309.3599,644.19622 c 15.10193,13.96691 3.41088,41.07065 -16.45436,39.96323 -18.03545,0.89581 -30.22006,-22.3447 -19.68575,-36.39422 7.40039,-11.98158 25.87178,-14.27745 36.14011,-3.56901 z"
-         style="fill:#ff0000" />
-      <path
-         inkscape:connector-curvature="0"
-         id="rect3055"
-         d="m 409.69321,722.76116 c 11.21412,-11.21412 22.42824,-22.42824 33.64236,-33.64236 11.21412,11.21412 22.42824,22.42824 33.64236,33.64236 -11.21412,11.21412 -22.42824,22.42824 -33.64236,33.64236 -11.21412,-11.21412 -22.42824,-22.42824 -33.64236,-33.64236 z"
-         style="fill:#ff6600" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3071"
-         d="m 332.60374,612.21204 c -0.24148,-0.8127 0.94164,0.7648 0,0 z"
-         style="fill:#008000" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3131"
-         d="m 450.41664,639.61059 c -11.47007,-11.08965 -22.59691,-22.52662 -33.85289,-33.83209 17.07202,-4.64801 34.10219,-9.45461 51.22388,-13.91648 -4.04734,17.03271 -9.27496,33.773 -13.89345,50.66031 l -1.0469,-0.76534 -2.43086,-2.14617 2.2e-4,-2.3e-4 z"
-         style="fill:#008000" />
+         d="m 52.984503,39.327954 0,-0.896278 -24.05012,0 0,6.373531 15.236722,0 c -1.991726,4.083039 -5.97519,6.473117 -10.805126,6.473117 -7.220008,0 -12.747062,-5.427466 -12.747062,-12.448302 0,-6.921249 5.078915,-12.498095 12.348716,-12.498095 4.282212,0 7.817536,1.692972 10.108022,4.879734 l 8.016706,0 C 48.70229,24.589171 41.133712,19.759223 33.117013,19.759223 c -10.755323,0 -19.369558,8.415063 -19.369558,18.971213 0,10.755322 8.713822,19.120592 20.01687,19.120592 10.854908,0 19.220178,-8.514649 19.220178,-18.523074"
+         style="fill:#19aeff;stroke:#19aeff;stroke-width:1.26464999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
+         id="path3983"
+         inkscape:connector-curvature="0" />
     </g>
+    <rect
+       style="fill:#19aeff;stroke:#19aeff;stroke-width:1.67355406;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3954-7"
+       width="4.7761703"
+       height="4.0938597"
+       x="33.931099"
+       y="7.5351763" />
   </g>
 </svg>
