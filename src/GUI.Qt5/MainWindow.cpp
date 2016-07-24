@@ -36,8 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   setWindowTitle("USBGuard");
   setWindowIcon(QIcon(":/usbguard-icon.svg"));
+  setWindowState(Qt::WindowMinimized);
   setupSystemTray();
-  showMinimized();
 
   qRegisterMetaType<std::map<std::string, std::string> >("std::map<std::string, std::string>");
   qRegisterMetaType<std::vector<usbguard::USBInterfaceType> >("std::vector<usbguard::USBInterfaceType>");
