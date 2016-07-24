@@ -213,7 +213,7 @@ if test "x$with_gui_qt5" = xyes; then
   #
   # Check for Qt 5.x libraries
   #
-  PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0],
+  PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
   [AC_DEFINE([HAVE_QT5], [1], [Required Qt 5.x API available])
   qt5_summary="system-wide; $qt5_CFLAGS $qt5_LIBS"],
   [AC_MSG_FAILURE([Qt 5.x development files not found!])]
