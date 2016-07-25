@@ -31,7 +31,6 @@ namespace usbguard {
     Device();
     ~Device();
     Device(const Device& rhs);
-    Device(const Rule& device_rule);
     const Device& operator=(const Device& rhs);
     
     std::mutex& refDeviceMutex();
