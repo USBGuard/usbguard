@@ -23,6 +23,7 @@
 #include <Rule.hpp>
 #include <USB.hpp>
 #include <mutex>
+#include <istream>
 
 namespace usbguard {
   class DevicePrivate
@@ -35,8 +36,9 @@ namespace usbguard {
 
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
-    String getHash(bool include_port = false) const;
-    
+    void updateHash(std::istream& descriptor_stream, size_t expected_size);
+    const String& getHash() const;
+
     void setID(uint32_t id);
     uint32_t getID() const;
 
@@ -73,5 +75,6 @@ namespace usbguard {
     String _serial_number;
     String _port;
     std::vector<USBInterfaceType> _interface_types;
+    String _hash_hex;
   };
 } /* namespace usbguard */

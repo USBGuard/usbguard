@@ -63,9 +63,14 @@ namespace usbguard {
     return d_pointer->getDeviceRule(include_port);
   }
 
-  String Device::getHash(const bool include_port) const
+  void Device::updateHash(std::istream& descriptor_stream, const size_t expected_size)
   {
-    return d_pointer->getHash(include_port);
+    d_pointer->updateHash(descriptor_stream, expected_size);
+  }
+
+  const String& Device::getHash() const
+  {
+    return d_pointer->getHash();
   }
 
   void Device::setID(uint32_t id)

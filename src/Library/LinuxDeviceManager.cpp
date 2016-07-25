@@ -77,8 +77,6 @@ namespace usbguard {
       throw std::runtime_error("device wihtout sysname");
     }
 
-    logger->debug("DeviceHash={}", getHash());
-
     setTarget(Rule::Target::Unknown);
     std::ifstream authstate_stream(_syspath + "/authorized", std::ifstream::binary);
 
@@ -101,8 +99,12 @@ namespace usbguard {
     }
 
     std::ifstream descriptor_stream(_syspath + "/descriptors", std::ifstream::binary);
+
+    /* Find out the descriptor data stream size */
+    size_t descriptor_expected_size = 0;
+
     if (!descriptor_stream.good()) {
-      throw std::runtime_error("cannot load USB descriptors");
+      throw std::runtime_error("Cannot load USB descriptors: failed to open the descriptor data stream");
     }
     else {
       using namespace std::placeholders;
@@ -122,9 +124,29 @@ namespace usbguard {
       parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBEndpointDescriptor),
                         USBParseEndpointDescriptor, load_endpoint_descriptor);
 
-      parser.parse(descriptor_stream);
+      if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
+        throw std::runtime_error("Descriptor data parsing failed: parser processed less data than the size of a USB device descriptor");
+      }
     }
 
+    logger->debug("Expected descriptor data size is {} byte(s)", descriptor_expected_size);
+
+    /*
+     * Reset descriptor stream before before computing
+     * the device hash.
+     *
+     * Because the eofbit is set, clear() has to be called
+     * before seekg().
+     */
+    descriptor_stream.clear();
+    descriptor_stream.seekg(0);
+
+    /*
+     * Compute and set the device hash.
+     */
+    updateHash(descriptor_stream, descriptor_expected_size);
+
+    logger->debug("DeviceHash={}", getHash());
     return;
   }
 

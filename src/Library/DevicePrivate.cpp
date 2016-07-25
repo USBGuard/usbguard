@@ -59,6 +59,7 @@ namespace usbguard {
     _serial_number = rhs._serial_number;
     _port = rhs._port;
     _interface_types = rhs._interface_types;
+    _hash_hex = rhs._hash_hex;
 
     return *this;
   }
@@ -87,17 +88,21 @@ namespace usbguard {
 
     device_rule->attributeWithInterface().set(getInterfaceTypes(), Rule::SetOperator::Equals);
     device_rule->setName(_name);
-    device_rule->setHash(getHash(/*include_port=*/false));
+    device_rule->setHash(getHash());
     
     return device_rule;
   }
 
-  String DevicePrivate::getHash(const bool include_port) const
+  void DevicePrivate::updateHash(std::istream& descriptor_stream, const size_t expected_size)
   {
-    unsigned char hash[crypto_generichash_BYTES_MIN];
+    const size_t hash_binlen = crypto_generichash_BYTES_MIN;
     crypto_generichash_state state;
-
-    crypto_generichash_init(&state, NULL, 0, sizeof hash);
+    /*
+     * Initialize the hash state.
+     *
+     * TODO: Use a hash salt from the configuration.
+     */
+    crypto_generichash_init(&state, NULL, 0, hash_binlen);
 
     const String vendor_id = _device_id.getVendorID();
     const String product_id = _device_id.getProductID();
@@ -106,23 +111,55 @@ namespace usbguard {
       throw std::runtime_error("Cannot compute device hash: vendor and/or product id values not available");
     }
 
-    for (auto field : { &_name, &vendor_id, &product_id, &_serial_number }) {
-      /* Update the hash value */
-      crypto_generichash_update(&state, (const uint8_t *)field->c_str(), field->size());
+    /*
+     * Hash name, device id and serial number fields.
+     */
+    for (const String& field : { _name, vendor_id, product_id, _serial_number }) {
+      crypto_generichash_update(&state, (const uint8_t *)field.c_str(), field.size());
+    }
+    /*
+     * Hash the device descriptor data.
+     */
+    size_t size_hashed = 0;
+
+    while (descriptor_stream.good()) {
+      uint8_t buffer[4096];
+      size_t buflen = 0;
+
+      descriptor_stream.read(reinterpret_cast<char*>(buffer), sizeof buffer);
+      buflen = descriptor_stream.gcount();
+
+      if (buflen > 0) {
+        crypto_generichash_update(&state, buffer, buflen);
+        size_hashed += buflen;
+      }
     }
 
-    /* TODO: hash the descriptor data */
+    logger->debug("Descriptor hashing complete: hashed={}, expected={}", size_hashed, expected_size);
+
+    if (size_hashed != expected_size) {
+      throw std::runtime_error("Cannot compute the device hash: descriptor stream returned less data than expected");
+    }
 
     /* Finalize the hash value */
-    crypto_generichash_final(&state, hash, sizeof hash);
+    unsigned char hash_bin[hash_binlen];
+    crypto_generichash_final(&state, hash_bin, hash_binlen);
 
     /* Binary => Hex string conversion */
     const size_t hexlen = crypto_generichash_BYTES_MIN * 2 + 1;
-    char hexval[hexlen];
-    sodium_bin2hex(hexval, hexlen, hash, sizeof hash);
+    char hash_hex[hexlen];
 
-    const std::string hash_string(hexval, hexlen - 1);
-    return hash_string;
+    sodium_bin2hex(hash_hex, hexlen, hash_bin, hash_binlen);
+
+    /* Set the hash value */
+    _hash_hex = String(hash_hex, hexlen - 1);
+
+    return;
+  }
+
+  const String& DevicePrivate::getHash() const
+  {
+    return _hash_hex;
   }
 
   void DevicePrivate::setID(uint32_t id)
