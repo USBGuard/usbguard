@@ -7,17 +7,27 @@
 - USBDeviceID class for represing the USB device ID
 - configure script option to control the bundling of PEGTL source files
 - id attribute to the rule language for specifing the USB device ID
+- Added a parent device ID field (and methods) to the Device class which
+  tracks the ID of the parent device
+- The QtSvg module/library is now needed to compile the Qt applet
 
 ### Changed
+- **IMPORTANT**: The device hash value computation was changed to include the
+  USB descriptor data. This is a backwards incompatible change and existing
+  policies that use the hash attribute need to be updated.
 - Reimplemented the rule parser using PEGTL
 - Changed public API of the Rule and Device classes because
 - All rule attributes now support both the single and multivalued form
 - A rule attribute can now be specified only once
 - The default usbguard-daemon.conf and usbguard.service files now respect
   the paths set by the configure script
+- New Qt applet icons with
+- Fixed Qt applet so that it doesn't show an empty window when starting
 
 ### Removed
 - Removed Quex related files
+- The "from Rule" Device class constructor was removed because it's use case
+  is unclear and it wasn't used anywhere
 
 ## 0.5.10 - 2016-07-08
 ### Changed
