@@ -386,6 +386,7 @@ namespace usbguard {
          * If there's no handler for this type of descriptor, skip to the next one.
          */
         if (!h) {
+          size_processed += header.bLength;
           continue;
         }
       }
