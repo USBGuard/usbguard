@@ -77,6 +77,16 @@ namespace usbguard {
     return d_pointer->getID();
   }
 
+  void Device::setParentID(uint32_t id)
+  {
+    d_pointer->setParentID(id);
+  }
+
+  uint32_t Device::getParentID() const
+  {
+    return d_pointer->getParentID();
+  }
+
   void Device::setTarget(Rule::Target target)
   {
     d_pointer->setTarget(target);

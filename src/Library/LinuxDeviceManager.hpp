@@ -28,10 +28,12 @@
 #include <istream>
 
 namespace usbguard {
+  class LinuxDeviceManager;
+
   class LinuxDevice : public Device
   {
   public:
-    LinuxDevice(struct udev_device* dev);
+    LinuxDevice(LinuxDeviceManager& device_manager, struct udev_device* dev);
     const String& getSysPath() const;
     bool isController() const;
 
@@ -60,6 +62,7 @@ namespace usbguard {
     Pointer<Device> rejectDevice(uint32_t id);
     void insertDevice(Pointer<Device> device);
     Pointer<Device> removeDevice(const String& syspath);
+    uint32_t getIDFromSysPath(const String& syspath) const;
 
   protected:
     Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target);

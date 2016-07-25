@@ -41,6 +41,9 @@ namespace usbguard {
     void setID(uint32_t id);
     uint32_t getID() const;
 
+    void setParentID(uint32_t id);
+    uint32_t getParentID() const;
+
     void setTarget(Rule::Target target);
     Rule::Target getTarget() const;
 
@@ -68,6 +71,7 @@ namespace usbguard {
     Device& _p_instance;
     std::mutex _mutex;
     uint32_t _id;
+    uint32_t _parent_id;
     Rule::Target _target;
     String _name;
     USBDeviceID _device_id;

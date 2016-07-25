@@ -41,6 +41,9 @@ namespace usbguard {
     void setID(uint32_t id);
     uint32_t getID() const;
 
+    void setParentID(uint32_t id);
+    uint32_t getParentID() const;
+
     void setTarget(Rule::Target target);
     Rule::Target getTarget() const;
 

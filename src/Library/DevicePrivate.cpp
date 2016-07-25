@@ -27,6 +27,7 @@ namespace usbguard {
   {
     (void)_p_instance;
     _id = Rule::DefaultID;
+    _parent_id = Rule::RootID;
     _target = Rule::Target::Unknown;
   }
 
@@ -156,6 +157,16 @@ namespace usbguard {
   uint32_t DevicePrivate::getID() const
   {
     return _id;
+  }
+
+  void DevicePrivate::setParentID(uint32_t id)
+  {
+    _parent_id = id;
+  }
+
+  uint32_t DevicePrivate::getParentID() const
+  {
+    return _parent_id;
   }
 
   void DevicePrivate::setTarget(Rule::Target target)

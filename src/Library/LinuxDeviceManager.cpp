@@ -28,9 +28,38 @@
 
 namespace usbguard {
 
-  LinuxDevice::LinuxDevice(struct udev_device* dev)
+  LinuxDevice::LinuxDevice(LinuxDeviceManager& device_manager, struct udev_device* dev)
   {
     logger->debug("Creating a new LinuxDevice instance");
+
+    /*
+     * Look for the parent USB device and set the parent id
+     * if we find one.
+     */
+    struct udev_device *parent_dev = udev_device_get_parent(dev);
+
+    if (parent_dev == nullptr) {
+      throw std::runtime_error("Cannot identify the parent device");
+    }
+
+    const char *parent_devtype = udev_device_get_devtype(parent_dev);
+
+    if (parent_devtype == nullptr ||
+        strcmp(parent_devtype, "usb_device") != 0) {
+      /* The parent device is not a USB device/controller */
+      setParentID(Rule::RootID);
+    }
+    else {
+      const char *syspath_cstr = udev_device_get_syspath(parent_dev);
+
+      if (syspath_cstr == nullptr) {
+        throw std::runtime_error("Cannot retrieve syspath of the parent device");
+      }
+
+      const String syspath(syspath_cstr);
+      setParentID(device_manager.getIDFromSysPath(syspath));
+    }
+
     const char *name = udev_device_get_sysattr_value(dev, "product");
     if (name) {
       logger->debug("DeviceName={}", name);
@@ -433,29 +462,52 @@ namespace usbguard {
 
   void LinuxDeviceManager::processDevicePresence(struct udev_device *dev)
   {
+    const String sys_path(udev_device_get_syspath(dev));
     try {
-      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
+      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(*this, dev);
       insertDevice(device);
       DevicePresent(device);
+      return;
+    }
+    catch(const std::exception& ex) {
+      logger->error("Exception caught during device presence processing: {}: {}", sys_path, ex.what());
     }
     catch(...) {
-      const String sys_path(udev_device_get_syspath(dev));
-      sysioApplyTarget(sys_path, Rule::Target::Reject);
+      logger->error("Unknown exception while processing device: {}", sys_path);
     }
+    /*
+     * We don't reject the device here (as is done in processDeviceInsertion)
+     * because the device was already connected to the system when USBGuard
+     * started. Therefore, if the device is malicious, it already had a chance
+     * to interact with the system.
+     */
     return;
   }
 
   void LinuxDeviceManager::processDeviceInsertion(struct udev_device *dev)
   {
+    const String sys_path(udev_device_get_syspath(dev));
     try {
-      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(dev);
+      Pointer<LinuxDevice> device = makePointer<LinuxDevice>(*this, dev);
       insertDevice(device);
       DeviceInserted(device);
     }
-    catch(...) {
-      const String sys_path(udev_device_get_syspath(dev));
-      sysioApplyTarget(sys_path, Rule::Target::Reject);
+    catch(const std::exception& ex) {
+      logger->error("Exception caught during device insertion processing: {}: {}", sys_path, ex.what());
     }
+    catch(...) {
+      logger->error("Unknown exception while processing device: {}", sys_path);
+    }
+
+    /*
+     * Something went wrong and an exception was generated.
+     * Either the device is malicious or the system lacks some
+     * resources to successfully process the device. In either
+     * case, we take the safe route and fallback to rejecting
+     * the device.
+     */
+    sysioApplyTarget(sys_path, Rule::Target::Reject);
+
     return;
   }
 
@@ -499,4 +551,8 @@ namespace usbguard {
     return device;
   }
 
+  uint32_t LinuxDeviceManager::getIDFromSysPath(const String& syspath) const
+  {
+    return _syspath_map.at(syspath);
+  }
 } /* namespace usbguard */
