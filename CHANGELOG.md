@@ -16,7 +16,10 @@
   USB descriptor data. This is a backwards incompatible change and existing
   policies that use the hash attribute need to be updated.
 - Reimplemented the rule parser using PEGTL
-- Changed public API of the Rule and Device classes because
+- Changed public API of the Rule and Device classes because of the new
+  Rule::Attribute class rule attribute representation
+- Extended the public IPCClient::IPCDisconnected method to include exception
+  related information
 - All rule attributes now support both the single and multivalued form
 - A rule attribute can now be specified only once
 - The default usbguard-daemon.conf and usbguard.service files now respect
