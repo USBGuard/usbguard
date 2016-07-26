@@ -34,8 +34,8 @@ namespace usbguard
         GVariant * parameters, GDBusMethodInvocation * invocation);
 
   protected:
-    void IPCConnected();
-    void IPCDisconnected();
+    void IPCConnected() override;
+    void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
     void handlePolicyMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
     void handleDevicesMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);

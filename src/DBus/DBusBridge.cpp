@@ -172,7 +172,7 @@ namespace usbguard
     }
   }
 
-  void DBusBridge::IPCDisconnected()
+  void DBusBridge::IPCDisconnected(bool exception_initiated, const IPCException& exception)
   {
     if (p_ipc_callback != nullptr) {
       p_ipc_callback(/*connected=*/false);

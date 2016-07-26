@@ -85,8 +85,8 @@ protected:
   void DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id);
   void DeviceRejected(quint32 id, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_id);
 
-  void IPCConnected();
-  void IPCDisconnected();
+  void IPCConnected() override;
+  void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception) override;
 
 private:
   Ui::MainWindow *ui;

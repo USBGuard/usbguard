@@ -32,8 +32,24 @@ namespace usbguard
 
   void IPCClientPrivate::processEvent()
   {
-    const json j = receiveOne();
-    processOne(j);
+    try {
+      const json j = receiveOne();
+      processOne(j);
+    }
+    catch(const IPCException& ex) {
+      logger->error("IPC: Disconnecting because of an IPC exception: event_id={}, code={}", ex.requestID(), ex.codeAsString());
+      disconnect(/*exception_initiated=*/true, ex);
+    }
+    catch(const std::exception& ex) {
+      const IPCException ipc_exception(IPCException::ReasonCode::InternalError, ex.what());
+      logger->error("IPC: Disconnecting because of an exception: {}", ex.what());
+      disconnect(/*exception_initiated=*/true, ipc_exception);
+    }
+    catch(...) {
+      const IPCException ipc_exception(IPCException::ReasonCode::InternalError, "BUG: Unknown exception in IPCPrivate::processEvent");
+      logger->error("BUG: IPC: Disconnecting because of an unknown exception.");
+      disconnect(/*exception_initiated=*/true, ipc_exception);
+    }
   }
 
   const json IPCClientPrivate::receiveOne()
@@ -85,7 +101,6 @@ namespace usbguard
       disconnect();
       throw IPCException(IPCException::ProtocolError, "Unknown message");
     }
-    return;
   }
 
   void IPCClientPrivate::processReturnValue(const json& jobj)
@@ -312,16 +327,21 @@ namespace usbguard
     return;
   }
 
-  void IPCClientPrivate::disconnect()
+  void IPCClientPrivate::disconnect(bool exception_initiated, const IPCException& exception)
   {
     if (_qb_conn != nullptr && _qb_conn_fd != -1) {
       qb_loop_poll_del(_qb_loop, _qb_conn_fd);
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
       _qb_conn_fd = -1;
-      _p_instance.IPCDisconnected();
+      _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
     }
-    return;
+  }
+
+  void IPCClientPrivate::disconnect()
+  {
+    const IPCException empty_exception;
+    disconnect(/*exception_initiated=*/false, empty_exception);
   }
 
   bool IPCClientPrivate::isConnected() const

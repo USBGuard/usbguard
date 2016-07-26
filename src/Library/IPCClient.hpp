@@ -47,7 +47,7 @@ namespace usbguard
     }
 
     virtual void IPCConnected() {}
-    virtual void IPCDisconnected() {}
+    virtual void IPCDisconnected(bool exception_initiated, const IPCException& exception) {}
 
     virtual void DeviceInserted(uint32_t id,
                 const std::map<std::string,std::string>& attributes,

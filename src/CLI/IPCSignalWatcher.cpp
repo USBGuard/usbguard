@@ -26,9 +26,14 @@ namespace usbguard
     std::cout << "[IPC] Connected" << std::endl;
   }
 
-  void IPCSignalWatcher::IPCDisconnected()
+  void IPCSignalWatcher::IPCDisconnected(bool exception_initiated, const IPCException& exception)
   {
-    std::cout << "[IPC] Disconnected" << std::endl;
+    std::cout << "[IPC] Disconnected: exception_initiated=" << exception_initiated;
+    if (exception_initiated) {
+      std::cout << " reason=" << exception.codeAsString();
+      std::cout << " message=" << exception.message();
+    }
+    std::cout << std::endl;
   }
 
   void IPCSignalWatcher::DeviceInserted(uint32_t id, const std::map< std::string, std::string >& attributes, const std::vector< USBInterfaceType >& interfaces, bool rule_match, uint32_t rule_id)
@@ -38,7 +43,7 @@ namespace usbguard
       std::cout << " " << attribute.first << "=" << attribute.second;
     }
 
-    std::cout << " if={";
+    std::cout << " interface={";
     for (auto interface : interfaces) {
       std::cout << " " << interface.typeString();
     }

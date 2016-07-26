@@ -360,7 +360,7 @@ void MainWindow::IPCConnected()
   emit uiConnected();
 }
 
-void MainWindow::IPCDisconnected()
+void MainWindow::IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception)
 {
   emit uiDisconnected();
 }

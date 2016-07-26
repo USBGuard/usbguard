@@ -24,8 +24,8 @@ namespace usbguard
   class IPCSignalWatcher : public IPCClient
   {
   public:
-    void IPCConnected();
-    void IPCDisconnected();
+    void IPCConnected() override;
+    void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
     void DeviceInserted(uint32_t id,
                         const std::map<std::string,std::string>& attributes,

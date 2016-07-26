@@ -38,9 +38,10 @@ namespace usbguard
       ProtocolError, /**< An IPC protocol error (missing attribute, return value, incorrect type */
       ConnectionError,
       InternalError,
+      None
     };
 
-    IPCException(ReasonCode code, const std::string& message, uint64_t request_id = 0)
+    IPCException(ReasonCode code = ReasonCode::None, const std::string& message = "", uint64_t request_id = 0)
       : _message(message),
         _code(code),
         _request_id(request_id)
@@ -50,6 +51,11 @@ namespace usbguard
     const char *what() const noexcept
     {
       return _message.c_str();
+    }
+
+    const std::string& message() const
+    {
+      return _message;
     }
 
     ReasonCode code() const
@@ -86,6 +92,8 @@ namespace usbguard
         return "ConnectionError";
       case InternalError:
         return "InternalError";
+      case None:
+        return "None";
       }
       return "<unknown error code>";
     }
@@ -113,7 +121,10 @@ namespace usbguard
       else if(code_string == "InternalError") {
         return InternalError;
       }
-      throw std::runtime_error("Invalid IPCException::ReasonCode string");
+      else if(code_string == "None") {
+        return None;
+      }
+      throw std::runtime_error("BUG: Invalid IPCException::ReasonCode string");
     }
 
   private:
