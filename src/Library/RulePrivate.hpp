@@ -93,6 +93,11 @@ namespace usbguard {
     const Rule::Attribute<String>& attributeHash() const;
     Rule::Attribute<String>& attributeHash();
 
+    void setParentHash(const String& value);
+    const String& getParentHash() const;
+    const Rule::Attribute<String>& attributeParentHash() const;
+    Rule::Attribute<String>& attributeParentHash();
+
     void setViaPort(const String& value);
     const String& getViaPort() const;
     const Rule::Attribute<String>& attributeViaPort() const;
@@ -131,6 +136,7 @@ namespace usbguard {
     Rule::Attribute<String> _serial;
     Rule::Attribute<String> _name;
     Rule::Attribute<String> _hash;
+    Rule::Attribute<String> _parent_hash;
     Rule::Attribute<String> _via_port;
     Rule::Attribute<USBInterfaceType> _with_interface;
     Rule::Attribute<RuleCondition*> _conditions;

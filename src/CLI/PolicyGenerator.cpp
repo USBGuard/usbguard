@@ -102,6 +102,7 @@ namespace usbguard
       Pointer<Rule> rule_hashonly(new Rule());
       rule_hashonly->setRuleID(rule->getRuleID());
       rule_hashonly->setHash(rule->getHash());
+      rule_hashonly->setParentHash(rule->getParentHash());
 
       if (port_specific) {
         rule_hashonly->attributeViaPort().set(rule->attributeViaPort().values(), Rule::SetOperator::Equals);
@@ -109,9 +110,10 @@ namespace usbguard
 
       rule = rule_hashonly;
     }
-    /* Remove the hash value if set to do so */
+    /* Remove the hash attributes if set to do so */
     else if (!_with_hash) {
-      rule->setHash(std::string());
+      rule->attributeHash().clear();
+      rule->attributeParentHash().clear();
     }
 
     rule->setTarget(Rule::Target::Allow);

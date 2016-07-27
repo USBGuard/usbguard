@@ -29,6 +29,7 @@
 namespace usbguard {
 
   LinuxDevice::LinuxDevice(LinuxDeviceManager& device_manager, struct udev_device* dev)
+    : Device(device_manager)
   {
     logger->debug("Creating a new LinuxDevice instance");
 
@@ -43,21 +44,24 @@ namespace usbguard {
     }
 
     const char *parent_devtype = udev_device_get_devtype(parent_dev);
+    const char *parent_syspath_cstr = udev_device_get_syspath(parent_dev);
+
+    if (parent_syspath_cstr == nullptr) {
+      throw std::runtime_error("Cannot retrieve syspath of the parent device");
+    }
+
+    const String parent_syspath(parent_syspath_cstr);
+
+    logger->debug("Parent device syspath: {}", parent_syspath_cstr);
 
     if (parent_devtype == nullptr ||
         strcmp(parent_devtype, "usb_device") != 0) {
-      /* The parent device is not a USB device/controller */
+      /* The parent device is not a USB device */
       setParentID(Rule::RootID);
+      setParentHash(hashString(parent_syspath));
     }
     else {
-      const char *syspath_cstr = udev_device_get_syspath(parent_dev);
-
-      if (syspath_cstr == nullptr) {
-        throw std::runtime_error("Cannot retrieve syspath of the parent device");
-      }
-
-      const String syspath(syspath_cstr);
-      setParentID(device_manager.getIDFromSysPath(syspath));
+      setParentID(device_manager.getIDFromSysPath(parent_syspath));
     }
 
     const char *name = udev_device_get_sysattr_value(dev, "product");

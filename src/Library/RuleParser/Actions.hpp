@@ -33,6 +33,7 @@ namespace usbguard
   struct condition;
   struct str_name;
   struct str_hash;
+  struct str_parent_hash;
   struct str_serial;
   struct str_id;
   struct str_via_port;
@@ -201,6 +202,48 @@ namespace usbguard
     {
       try {
         rule.attributeHash().setSetOperator(Rule::setOperatorFromString(in.string()));
+      }
+      catch(const std::exception& ex) {
+        throw pegtl::parse_error(ex.what(), in);
+      }
+    }
+  };
+
+  template<typename Rule>
+  struct parent_hash_actions : pegtl::nothing<Rule> {};
+
+  template<>
+  struct parent_hash_actions<str_parent_hash>
+  {
+    static void apply(const pegtl::action_input& in, Rule& rule)
+    {
+      if (!rule.attributeParentHash().empty()) {
+        throw pegtl::parse_error("parent-hash attribute already defined", in);
+      }
+    }
+  };
+
+  template<>
+  struct parent_hash_actions<string_value>
+  {
+    static void apply(const pegtl::action_input& in, Rule& rule)
+    {
+      try {
+        rule.attributeParentHash().append(stringValueFromRule(in.string()));
+      }
+      catch(const std::exception& ex) {
+        throw pegtl::parse_error(ex.what(), in);
+      }
+    }
+  };
+
+  template<>
+  struct parent_hash_actions<multiset_operator>
+  {
+    static void apply(const pegtl::action_input& in, Rule& rule)
+    {
+      try {
+        rule.attributeParentHash().setSetOperator(Rule::setOperatorFromString(in.string()));
       }
       catch(const std::exception& ex) {
         throw pegtl::parse_error(ex.what(), in);

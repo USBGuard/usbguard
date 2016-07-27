@@ -24,19 +24,25 @@
 #include <mutex>
 
 namespace usbguard {
+  class DeviceManager;
   class DevicePrivate;
   class DLL_PUBLIC Device
   {
   public:
-    Device();
+    Device(DeviceManager& manager);
     ~Device();
     Device(const Device& rhs);
     const Device& operator=(const Device& rhs);
-    
+
+    DeviceManager& manager() const;
+
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
+    String hashString(const String& value) const;
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
     const String& getHash() const;
+
+    void setParentHash(const String& hash);
 
     void setID(uint32_t id);
     uint32_t getID() const;

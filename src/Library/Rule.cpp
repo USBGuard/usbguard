@@ -154,6 +154,26 @@ namespace usbguard {
     return d_pointer->attributeHash();
   }
 
+  void Rule::setParentHash(const String& value)
+  {
+    d_pointer->setParentHash(value);
+  }
+
+  const String& Rule::getParentHash() const
+  {
+    return d_pointer->getParentHash();
+  }
+
+  const Rule::Attribute<String>& Rule::attributeParentHash() const
+  {
+    return d_pointer->attributeParentHash();
+  }
+
+  Rule::Attribute<String>& Rule::attributeParentHash()
+  {
+    return d_pointer->attributeParentHash();
+  }
+
   void Rule::setViaPort(const String& value)
   {
     d_pointer->setViaPort(value);

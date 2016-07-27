@@ -29,14 +29,19 @@ namespace usbguard {
   class DevicePrivate
   {
   public:
-    DevicePrivate(Device& p_instance);
+    DevicePrivate(Device& p_instance, DeviceManager& manager);
     DevicePrivate(Device& p_instance, const DevicePrivate& rhs);
     const DevicePrivate& operator=(const DevicePrivate& rhs);
 
+    DeviceManager& manager() const;
+
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool include_port = true);
+    String hashString(const String& value) const;
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
     const String& getHash() const;
+
+    void setParentHash(const String& hash);
 
     void setID(uint32_t id);
     uint32_t getID() const;
@@ -69,9 +74,11 @@ namespace usbguard {
 
   private:
     Device& _p_instance;
+    DeviceManager& _manager;
     std::mutex _mutex;
     uint32_t _id;
     uint32_t _parent_id;
+    String _parent_hash;
     Rule::Target _target;
     String _name;
     USBDeviceID _device_id;

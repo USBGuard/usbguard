@@ -17,22 +17,24 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "DevicePrivate.hpp"
+#include "DeviceManager.hpp"
 #include "LoggerPrivate.hpp"
 #include <mutex>
 #include <sodium.h>
 
 namespace usbguard {
-  DevicePrivate::DevicePrivate(Device& p_instance)
-    : _p_instance(p_instance)
+  DevicePrivate::DevicePrivate(Device& p_instance, DeviceManager& manager)
+    : _p_instance(p_instance),
+      _manager(manager)
   {
-    (void)_p_instance;
     _id = Rule::DefaultID;
     _parent_id = Rule::RootID;
     _target = Rule::Target::Unknown;
   }
 
   DevicePrivate::DevicePrivate(Device& p_instance, const DevicePrivate& rhs)
-    : _p_instance(p_instance)
+    : _p_instance(p_instance),
+      _manager(rhs._manager)
   {
     *this = rhs;
   }
@@ -50,7 +52,12 @@ namespace usbguard {
 
     return *this;
   }
-  
+
+  DeviceManager& DevicePrivate::manager() const
+  {
+    return _manager;
+  }
+
   std::mutex& DevicePrivate::refDeviceMutex()
   {
     return _mutex;
@@ -76,8 +83,46 @@ namespace usbguard {
     device_rule->attributeWithInterface().set(getInterfaceTypes(), Rule::SetOperator::Equals);
     device_rule->setName(_name);
     device_rule->setHash(getHash());
-    
+
+    if (!_parent_hash.empty()) {
+      device_rule->setParentHash(_parent_hash);
+    }
+    else {
+      if (_parent_id != Rule::RootID) {
+        auto parent_device = manager().getDevice(_parent_id);
+        device_rule->setParentHash(parent_device->getHash());
+      }
+      else {
+        throw std::runtime_error("Cannot generate device rule: parent hash value not available");
+      }
+    }
+
     return device_rule;
+  }
+
+  String DevicePrivate::hashString(const String& value) const
+  {
+    const size_t hash_binlen = crypto_generichash_BYTES_MIN;
+    crypto_generichash_state state;
+
+    /* Initialize the hash state */
+    crypto_generichash_init(&state, NULL, 0, hash_binlen);
+
+    /* Hash the String value */
+    crypto_generichash_update(&state, (const uint8_t *)value.c_str(), value.size());
+
+    /* Finalize the hash value */
+    unsigned char hash_bin[hash_binlen];
+    crypto_generichash_final(&state, hash_bin, hash_binlen);
+
+    /* Binary => Hex string conversion */
+    const size_t hexlen = crypto_generichash_BYTES_MIN * 2 + 1;
+    char hash_hex[hexlen];
+
+    sodium_bin2hex(hash_hex, hexlen, hash_bin, hash_binlen);
+
+    /* Set the hash value */
+    return String(hash_hex, hexlen - 1);
   }
 
   void DevicePrivate::updateHash(std::istream& descriptor_stream, const size_t expected_size)
@@ -147,6 +192,11 @@ namespace usbguard {
   const String& DevicePrivate::getHash() const
   {
     return _hash_hex;
+  }
+
+  void DevicePrivate::setParentHash(const String& hash)
+  {
+    _parent_hash = hash;
   }
 
   void DevicePrivate::setID(uint32_t id)

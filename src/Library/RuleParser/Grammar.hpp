@@ -37,6 +37,7 @@ namespace usbguard
 
   struct str_name : pegtl_string_t("name") {};
   struct str_hash : pegtl_string_t("hash") {};
+  struct str_parent_hash : pegtl_string_t("parent-hash") {};
   struct str_via_port : pegtl_string_t("via-port") {};
   struct str_with_interface : pegtl_string_t("with-interface") {};
   struct str_serial : pegtl_string_t("serial") {};
@@ -152,6 +153,9 @@ namespace usbguard
   struct hash_attribute
     : action<hash_actions, rule_attribute<str_hash, string_value>> {};
 
+  struct parent_hash_attribute
+    : action<parent_hash_actions, rule_attribute<str_parent_hash, string_value>> {};
+
   struct serial_attribute
     : action<serial_actions, rule_attribute<str_serial, string_value>> {};
 
@@ -168,6 +172,7 @@ namespace usbguard
     : sor<id_attribute,
           name_attribute,
           hash_attribute,
+          parent_hash_attribute,
           serial_attribute,
           via_port_attribute,
           with_interface_attribute,

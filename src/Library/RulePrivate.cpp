@@ -28,6 +28,7 @@ namespace usbguard {
       _serial("serial"),
       _name("name"),
       _hash("hash"),
+      _parent_hash("parent-hash"),
       _via_port("via-port"),
       _with_interface("with-interface"),
       _conditions("if")
@@ -44,6 +45,7 @@ namespace usbguard {
       _serial("serial"),
       _name("name"),
       _hash("hash"),
+      _parent_hash("parent-hash"),
       _via_port("via-port"),
       _with_interface("with-interface"),
       _conditions("if")
@@ -61,6 +63,7 @@ namespace usbguard {
     _serial = rhs._serial;
     _name = rhs._name;
     _hash = rhs._hash;
+    _parent_hash = rhs._parent_hash;
     _via_port = rhs._via_port;
     _with_interface = rhs._with_interface;
     _conditions = rhs._conditions;
@@ -106,6 +109,7 @@ namespace usbguard {
         !_serial.appliesTo(rhs.internal()->_serial) ||
         !_name.appliesTo(rhs.internal()->_name) ||
         !_hash.appliesTo(rhs.internal()->_hash) ||
+        !_parent_hash.appliesTo(rhs.internal()->_parent_hash) ||
         !_via_port.appliesTo(rhs.internal()->_via_port) ||
         !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
       return false;
@@ -307,6 +311,26 @@ namespace usbguard {
     return _hash;
   }
 
+  void RulePrivate::setParentHash(const String& value)
+  {
+    _parent_hash.set(value);
+  }
+
+  const String& RulePrivate::getParentHash() const
+  {
+    return _parent_hash.get();
+  }
+
+  const Rule::Attribute<String>& RulePrivate::attributeParentHash() const
+  {
+    return _parent_hash;
+  }
+
+  Rule::Attribute<String>& RulePrivate::attributeParentHash()
+  {
+    return _parent_hash;
+  }
+
   void RulePrivate::setViaPort(const String& value)
   {
     _via_port.set(value);
@@ -384,6 +408,7 @@ namespace usbguard {
     toString_appendNonEmptyAttribute(rule_string, _serial);
     toString_appendNonEmptyAttribute(rule_string, _name);
     toString_appendNonEmptyAttribute(rule_string, _hash);
+    toString_appendNonEmptyAttribute(rule_string, _parent_hash);
     toString_appendNonEmptyAttribute(rule_string, _via_port);
     toString_appendNonEmptyAttribute(rule_string, _with_interface);
     toString_appendNonEmptyAttribute(rule_string, _conditions);

@@ -124,6 +124,12 @@ namespace usbguard {
           return count() == 0;
         }
 
+        void clear()
+        {
+          _values.clear();
+          _set_operator = SetOperator::Equals;
+        }
+
         const ValueType& get() const
         {
           if (count() == 1) {
@@ -384,6 +390,11 @@ namespace usbguard {
     const String& getHash() const;
     const Attribute<String>& attributeHash() const;
     Attribute<String>& attributeHash();
+
+    void setParentHash(const String& value);
+    const String& getParentHash() const;
+    const Rule::Attribute<String>& attributeParentHash() const;
+    Rule::Attribute<String>& attributeParentHash();
 
     void setViaPort(const String& value);
     const String& getViaPort() const;

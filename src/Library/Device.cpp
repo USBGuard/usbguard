@@ -20,23 +20,20 @@
 #include "DevicePrivate.hpp"
 
 namespace usbguard {
-  Device::Device()
+  Device::Device(DeviceManager& manager)
   {
-    d_pointer = new DevicePrivate(*this);
-    return;
+    d_pointer = new DevicePrivate(*this, manager);
   }
 
   Device::~Device()
   {
     delete d_pointer;
     d_pointer = nullptr;
-    return;
   }
 
   Device::Device(const Device& rhs)
   {
     d_pointer = new DevicePrivate(*this, *rhs.d_pointer);
-    return;
   }
 
   const Device& Device::operator=(const Device &rhs)
@@ -46,7 +43,12 @@ namespace usbguard {
     d_pointer = n_pointer;
     return *this;
   }
- 
+
+  DeviceManager& Device::manager() const
+  {
+    return d_pointer->manager();
+  }
+
   std::mutex& Device::refDeviceMutex()
   {
     return d_pointer->refDeviceMutex();
@@ -57,6 +59,11 @@ namespace usbguard {
     return d_pointer->getDeviceRule(include_port);
   }
 
+  String Device::hashString(const String& value) const
+  {
+    return d_pointer->hashString(value);
+  }
+
   void Device::updateHash(std::istream& descriptor_stream, const size_t expected_size)
   {
     d_pointer->updateHash(descriptor_stream, expected_size);
@@ -65,6 +72,11 @@ namespace usbguard {
   const String& Device::getHash() const
   {
     return d_pointer->getHash();
+  }
+
+  void Device::setParentHash(const String& hash)
+  {
+    d_pointer->setParentHash(hash);
   }
 
   void Device::setID(uint32_t id)
