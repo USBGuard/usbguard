@@ -4,7 +4,7 @@
 
 # NAME
 
-**usbguard-daemon** -- A tool for implementing USB device usage policy
+**usbguard-daemon** -- USBGuard daemon
 
 # SYNOPSIS
 
@@ -12,7 +12,7 @@
 
 # DESCRIPTION
 
-The USBGuard software framework helps to protect your computer against rogue USB devices (a.k.a. BadUSB) by implementing basic whitelisting/blacklisting capabilities based on USB device attributes.
+The **usbguard-daemon** is the main component of the USBGuard software framework. It runs as a service in the background and enforces the USB device authorization policy for all USB devices. The policy is defined by a set of rules using a rule language described in **usbguard-rules.conf**(5). The policy and the authorization state of USB devices can be modified during runtime using the **usbguard**(1) tool.
 
 # OPTIONS
 
@@ -51,4 +51,4 @@ Copyright © 2015 Red Hat, Inc.  License GPLv2+: GNU GPL version 2 or later <htt
 
 # SEE ALSO
 
-**usbguard-daemon.conf**(5), **usbguard-applet-qt**(1)
+**usbguard-daemon.conf**(5), **usbguard-rules.conf**(5), **usbguard**(1), **usbguard-applet-qt**(1)

@@ -1,17 +1,20 @@
 .TH "USBGUARD\-DAEMON" "8" "June 2016" "" ""
 .SH NAME
 .PP
-\f[B]usbguard\-daemon\f[] \-\- A tool for implementing USB device usage
-policy
+\f[B]usbguard\-daemon\f[] \-\- USBGuard daemon
 .SH SYNOPSIS
 .PP
 \f[B]usbguard\-daemon\f[]\ [\f[I]OPTIONS\f[]]
 .SH DESCRIPTION
 .PP
-The USBGuard software framework helps to protect your computer against
-rogue USB devices (a.k.a.
-BadUSB) by implementing basic whitelisting/blacklisting capabilities
-based on USB device attributes.
+The \f[B]usbguard\-daemon\f[] is the main component of the USBGuard
+software framework.
+It runs as a service in the background and enforces the USB device
+authorization policy for all USB devices.
+The policy is defined by a set of rules using a rule language described
+in \f[B]usbguard\-rules.conf\f[](5).
+The policy and the authorization state of USB devices can be modified
+during runtime using the \f[B]usbguard\f[](1) tool.
 .SH OPTIONS
 .TP
 .B \f[B]\-d\f[]
@@ -73,6 +76,7 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 .SH SEE ALSO
 .PP
-\f[B]usbguard\-daemon.conf\f[](5), \f[B]usbguard\-applet\-qt\f[](1)
+\f[B]usbguard\-daemon.conf\f[](5), \f[B]usbguard\-rules.conf\f[](5),
+\f[B]usbguard\f[](1), \f[B]usbguard\-applet\-qt\f[](1)
 .SH AUTHORS
 Daniel Kopeček <dkopecek@redhat.com>.
