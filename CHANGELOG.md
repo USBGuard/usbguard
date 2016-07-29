@@ -10,6 +10,12 @@
 - Added a parent device ID field (and methods) to the Device class which
   tracks the ID of the parent device
 - The QtSvg module/library is now needed to compile the Qt applet
+- Qt Applet: Device Dialog settings work now
+- Qt Applet: The settings state is now remembered (via Qt's QSettings class)
+- Qt Applet: Implemented serial number masking
+- Qt Applet: Initial implementation of DeviceDialog window position randomization
+- Qt Applet: IPC exceptions are shown in the message log
+
 
 ### Changed
 - **IMPORTANT**: The device hash value computation was changed to include the
@@ -26,6 +32,7 @@
   the paths set by the configure script
 - New Qt applet icons with
 - Fixed Qt applet so that it doesn't show an empty window when starting
+- Qt Applet: Reject button is hidden by default.
 
 ### Removed
 - Removed Quex related files
