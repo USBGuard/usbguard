@@ -28,11 +28,23 @@
 #include <QMenu>
 #include <QAction>
 #include <QDateTime>
+#include <QTime>
+#include <QSpinBox>
+#include <QComboBox>
+#include <QCheckBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    _settings("USBGuard", "usbguard-applet-qt")
 {
+  /*
+   * Seed the pseudo-random generator. We use it for
+   * randomizing the position of the DeviceDialog window.
+   */
+  QTime time_rnd_seed = QTime::currentTime();
+  qsrand((uint)time_rnd_seed.msec());
+
   ui->setupUi(this);
   setWindowTitle("USBGuard");
   setWindowIcon(QIcon(":/usbguard-icon.svg"));
@@ -72,6 +84,10 @@ MainWindow::MainWindow(QWidget *parent) :
   QObject::connect(this, SIGNAL(uiDisconnected()),
                    this, SLOT(handleIPCDisconnect()));
 
+  setupSettingsWatcher();
+
+  loadSettings();
+
   _ipc_timer.setInterval(1000);
   _ipc_timer.start();
   ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
@@ -95,6 +111,19 @@ void MainWindow::setupSystemTray()
                    this, SLOT(flashStep()));    
   systray->show();
   return;
+}
+
+void MainWindow::setupSettingsWatcher()
+{
+  for (QCheckBox* checkbox : ui->settings_tab->findChildren<QCheckBox*>()) {
+      QObject::connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(saveSettings()));
+  }
+  for (QComboBox* combobox : ui->settings_tab->findChildren<QComboBox*>()) {
+      QObject::connect(combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(saveSettings()));
+  }
+  for (QSpinBox* spinbox : ui->settings_tab->findChildren<QSpinBox*>()) {
+      QObject::connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
+  }
 }
 
 void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
@@ -126,13 +155,19 @@ void MainWindow::showDeviceDialog(quint32 id, const std::map<std::string, std::s
 
   auto dialog = new DeviceDialog(id);
 
+  dialog->setRejectVisible(ui->show_reject_button_checkbox->isChecked());
+  dialog->setDefaultDecisionTimeout(ui->decision_timeout->value());
+  dialog->setMaskSerialNumber(ui->mask_serial_checkbox->isChecked());
+  dialog->setDecisionIsPermanent(ui->decision_permanent_checkbox->isChecked());
+
   dialog->setName(QString::fromStdString(attributes.at("name")));
   dialog->setSerial(QString::fromStdString(attributes.at("serial")));
   dialog->setDeviceID(QString::fromStdString(attributes.at("vendor_id")),
                  QString::fromStdString(attributes.at("product_id")));
   dialog->setInterfaceTypes(interfaces);
+
   dialog->setModal(false);
-  dialog->show();
+  dialog->setRandomizePosition(ui->randomize_position_checkbox->isChecked());
  
   QObject::connect(dialog, SIGNAL(allowed(quint32,bool)),
                    this, SLOT(allowDevice(quint32,bool)));
@@ -140,6 +175,11 @@ void MainWindow::showDeviceDialog(quint32 id, const std::map<std::string, std::s
                    this, SLOT(rejectDevice(quint32,bool)));
   QObject::connect(dialog, SIGNAL(blocked(quint32,bool)),
                    this, SLOT(blockDevice(quint32,bool)));
+
+  dialog->show();
+  dialog->raise();
+  dialog->activateWindow();
+
   return;
 }
 
@@ -263,7 +303,16 @@ void MainWindow::ipcTryConnect()
   try {
     IPCClient::connect();
   }
-  catch(...) {
+  catch(const usbguard::IPCException& ex) {
+    showMessage(QString("IPC connection failed: %1: %2")
+                .arg(QString::fromStdString(ex.codeAsString()))
+                .arg(QString::fromStdString(ex.message())),
+                /*alert=*/true);
+  }
+  catch(const std::exception& ex) {
+    showMessage(QString("IPC connection failed: std::exception: %1")
+                .arg(QString::fromStdString(ex.what())),
+                /*alert=*/true);
   }
 }
 
@@ -272,7 +321,18 @@ void MainWindow::allowDevice(quint32 id, bool append)
   try {
     IPCClient::allowDevice(id, append, 0);
   }
-  catch(...) {
+  catch(const usbguard::IPCException& ex) {
+    showMessage(QString("IPC call failed: %1: %2: %3")
+                .arg("allowDevice")
+                .arg(QString::fromStdString(ex.codeAsString()))
+                .arg(QString::fromStdString(ex.message())),
+                /*alert=*/true);
+  }
+  catch(const std::exception& ex) {
+    showMessage(QString("IPC call failed: %1: std::exception: %2")
+                .arg("allowDevice")
+                .arg(QString::fromStdString(ex.what())),
+                /*alert=*/true);
   }
 }
 
@@ -281,7 +341,18 @@ void MainWindow::blockDevice(quint32 id, bool append)
   try {
     IPCClient::blockDevice(id, append, 0);
   }
-  catch(...) {
+  catch(const usbguard::IPCException& ex) {
+    showMessage(QString("IPC call failed: %1: %2: %3")
+                .arg("blockDevice")
+                .arg(QString::fromStdString(ex.codeAsString()))
+                .arg(QString::fromStdString(ex.message())),
+                /*alert=*/true);
+  }
+  catch(const std::exception& ex) {
+    showMessage(QString("IPC call failed: %1: std::exception: %2")
+                .arg("blockDevice")
+                .arg(QString::fromStdString(ex.what())),
+                /*alert=*/true);
   }
 }
 
@@ -289,7 +360,19 @@ void MainWindow::rejectDevice(quint32 id, bool append)
 {
   try {
     IPCClient::rejectDevice(id, append, 0);
-  } catch(...) {
+  }
+  catch(const usbguard::IPCException& ex) {
+    showMessage(QString("IPC call failed: %1: %2: %3")
+                .arg("rejectDevice")
+                .arg(QString::fromStdString(ex.codeAsString()))
+                .arg(QString::fromStdString(ex.message())),
+                /*alert=*/true);
+  }
+  catch(const std::exception& ex) {
+    showMessage(QString("IPC call failed: %1: std::exception: %2")
+                .arg("rejectDevice")
+                .arg(QString::fromStdString(ex.what())),
+                /*alert=*/true);
   }
 }
 
@@ -305,6 +388,52 @@ void MainWindow::handleIPCDisconnect()
   notifyIPCDisconnected();
 }
 
+void MainWindow::loadSettings()
+{
+  _settings.beginGroup("Notifications");
+  ui->notify_inserted->setChecked(_settings.value("Inserted", true).toBool());
+  ui->notify_removed->setChecked(_settings.value("Removed", false).toBool());
+  ui->notify_allowed->setChecked(_settings.value("Allowed", true).toBool());
+  ui->notify_blocked->setChecked(_settings.value("Blocked", true).toBool());
+  ui->notify_rejected->setChecked(_settings.value("Rejected", true).toBool());
+  ui->notify_present->setChecked(_settings.value("Present", false).toBool());
+  ui->notify_ipc->setChecked(_settings.value("IPCStatus", false).toBool());
+  _settings.endGroup();
+
+  _settings.beginGroup("DeviceDialog");
+  ui->default_decision_combobox->setCurrentText(_settings.value("DefaultDecision", QString("block")).toString());
+  ui->decision_timeout->setValue(_settings.value("DefaultDecisionTimeout", 23).toInt());
+  ui->decision_method_combobox->setCurrentText(_settings.value("DecisionMethod", QString("Buttons")).toString());
+  ui->decision_permanent_checkbox->setChecked(_settings.value("DecisionIsPermanent", false).toBool());
+  ui->show_reject_button_checkbox->setChecked(_settings.value("ShowRejectButton", false).toBool());
+  ui->randomize_position_checkbox->setChecked(_settings.value("RandomizeWindowPosition", true).toBool());
+  ui->mask_serial_checkbox->setChecked(_settings.value("MaskSerialNumber", true).toBool());
+  _settings.endGroup();
+}
+
+void MainWindow::saveSettings()
+{
+  _settings.beginGroup("Notifications");
+  _settings.setValue("Inserted", ui->notify_inserted->isChecked());
+  _settings.setValue("Removed", ui->notify_removed->isChecked());
+  _settings.setValue("Allowed", ui->notify_allowed->isChecked());
+  _settings.setValue("Blocked", ui->notify_blocked->isChecked());
+  _settings.setValue("Rejected", ui->notify_rejected->isChecked());
+  _settings.setValue("Present", ui->notify_present->isChecked());
+  _settings.setValue("IPCStatus", ui->notify_ipc->isChecked());
+  _settings.endGroup();
+
+  _settings.beginGroup("DeviceDialog");
+  _settings.setValue("DefaultDecision", ui->default_decision_combobox->currentText());
+  _settings.setValue("DefaultDecisionTimeout", ui->decision_timeout->value());
+  _settings.setValue("DecisionMethod", ui->decision_method_combobox->currentText());
+  _settings.setValue("DecisionIsPermanent", ui->decision_permanent_checkbox->isChecked());
+  _settings.setValue("ShowRejectButton", ui->show_reject_button_checkbox->isChecked());
+  _settings.setValue("RandomizeWindowPosition", ui->randomize_position_checkbox->isChecked());
+  _settings.setValue("MaskSerialNumber", ui->mask_serial_checkbox->isChecked());
+  _settings.endGroup();
+}
+
 void MainWindow::changeEvent(QEvent* e)
 {
   switch (e->type()) {
@@ -312,12 +441,10 @@ void MainWindow::changeEvent(QEvent* e)
       ui->retranslateUi(this);
       break;
     case QEvent::WindowStateChange:
-      {
-        if (windowState() & Qt::WindowMinimized) {
-          QTimer::singleShot(250, this, SLOT(hide()));
-        }
-        break;
+      if (windowState() & Qt::WindowMinimized) {
+        QTimer::singleShot(250, this, SLOT(hide()));
       }
+      break;
     default:
       break;
   }

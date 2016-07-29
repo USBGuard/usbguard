@@ -20,7 +20,27 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <widget class="QWidget" name="message_tab">
+       <attribute name="title">
+        <string>Messages</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QTextBrowser" name="messages_text">
+          <property name="font">
+           <font>
+            <family>Monospace</family>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="device_tab">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <attribute name="title">
         <string>Devices</string>
        </attribute>
@@ -101,23 +121,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="message_tab">
-       <attribute name="title">
-        <string>Messages</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QTextBrowser" name="messages_text">
-          <property name="font">
-           <font>
-            <family>Monospace</family>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="settings_tab">
        <attribute name="title">
         <string>Settings</string>
@@ -133,8 +136,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>204</width>
-             <height>146</height>
+             <width>487</width>
+             <height>246</height>
             </rect>
            </property>
            <attribute name="label">
@@ -219,15 +222,32 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>419</width>
-             <height>153</height>
+             <width>487</width>
+             <height>246</height>
             </rect>
            </property>
            <attribute name="label">
             <string>Device Dialog</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_5">
-            <item row="5" column="0">
+            <item row="4" column="0" colspan="3">
+             <widget class="QCheckBox" name="decision_permanent_checkbox">
+              <property name="text">
+               <string>Decision is permanent by default</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="3">
+             <widget class="QCheckBox" name="show_reject_button_checkbox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reject causes the device to be logically removed from the operating system. The device might still get power from the from the bus, however, it has to be reinserted for it to get visible for the operating system again.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Show the Reject button</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -258,13 +278,6 @@
              <widget class="QLabel" name="label">
               <property name="text">
                <string>Default decision</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QCheckBox" name="decision_permanent_checkbox">
-              <property name="text">
-               <string>Decision is permanent by default</string>
               </property>
              </widget>
             </item>
@@ -307,21 +320,29 @@
                 <string>Buttons</string>
                </property>
               </item>
-              <item>
-               <property name="text">
-                <string>Buttons (shuffled)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Math Test</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Math Test (harder)</string>
-               </property>
-              </item>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QCheckBox" name="randomize_position_checkbox">
+              <property name="text">
+               <string>Randomize position of the window</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QCheckBox" name="mask_serial_checkbox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Starting from the end, mask every 2nd character in the displayed serial number value with an asterisk symbol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Mask the serial number value</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
            </layout>

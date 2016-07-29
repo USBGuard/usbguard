@@ -21,6 +21,7 @@
 #include <QDialog>
 #include <QTimer>
 #include <USB.hpp>
+#include <Rule.hpp>
 
 namespace Ui {
 class DeviceDialog;
@@ -31,6 +32,11 @@ class DeviceDialog : public QDialog
   Q_OBJECT
 
 public:
+  enum class DecisionMethod {
+    Buttons,
+    MathTest
+  };
+
   explicit DeviceDialog(quint32 id, QWidget *parent = 0);
   ~DeviceDialog();
 
@@ -38,6 +44,14 @@ public:
   void setSerial(const QString& serial);
   void setDeviceID(const QString& vendor_id, const QString& product_id);
   void setInterfaceTypes(const std::vector<usbguard::USBInterfaceType>& interfaces);
+
+  void setDefaultDecision(usbguard::Rule::Target target);
+  void setDefaultDecisionTimeout(quint32 seconds);
+  void setDecisionMethod(DecisionMethod method);
+  void setDecisionIsPermanent(bool state);
+  void setRejectVisible(bool state);
+  void setRandomizePosition(bool randomize);
+  void setMaskSerialNumber(bool state);
 
 signals:
   void allowed(quint32 id, bool permanent);
@@ -52,6 +66,7 @@ protected:
   void accept();
   void updateDialog();
   void executeDefaultDecision();
+  void setPosition(bool randomized);
 
 private slots:
   void on_allow_button_clicked();
@@ -62,6 +77,13 @@ private slots:
 
 private:
   Ui::DeviceDialog *ui;
+  usbguard::Rule::Target _default_decision;
+  quint32 _default_decision_timeout;
+  DecisionMethod _decision_method;
+  bool _reject_enabled;
+  bool _mask_serial_number;
+  bool _decision_is_permanent;
+
   QTimer timer;
   int time_left;
 

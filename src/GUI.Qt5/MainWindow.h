@@ -21,6 +21,7 @@
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QTimer>
+#include <QSettings>
 #include <IPCClient.hpp>
 
 namespace Ui {
@@ -71,9 +72,13 @@ protected slots:
   void handleIPCConnect();
   void handleIPCDisconnect();
 
+  void loadSettings();
+  void saveSettings();
+
 protected:
   void changeEvent(QEvent *e);
   void setupSystemTray();
+  void setupSettingsWatcher();
   void startFlashing();
   void stopFlashing();
 
@@ -94,5 +99,6 @@ private:
   QTimer _flash_timer;
   bool _flash_state;
   QTimer _ipc_timer;
+  QSettings _settings;
 };
 
