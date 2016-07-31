@@ -40,14 +40,22 @@ namespace usbguard
 
     try {
       Rule rule;
+#if HAVE_PEGTL_LTE_1_3_1
+      pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+#else
       pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+#endif
       return rule;
     }
     catch(const pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
       
       error.setHint(ex.what());
+#if HAVE_PEGTL_LTE_1_3_1
+      error.setOffset(ex.positions[0].column);
+#else
       error.setOffset(ex.positions[0].byte_in_line);
+#endif
 
       if (!file.empty()) {
         error.setFileInfo(file, line);

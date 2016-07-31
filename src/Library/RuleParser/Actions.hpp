@@ -46,7 +46,8 @@ namespace usbguard
   template<>
   struct rule_parser_actions<target>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.setTarget(Rule::targetFromString(in.string()));
@@ -60,7 +61,8 @@ namespace usbguard
   template<>
   struct rule_parser_actions<device_id>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         std::vector<std::string> tokens;
@@ -86,7 +88,8 @@ namespace usbguard
   template<>
   struct name_actions<str_name>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeName().empty()) {
         throw pegtl::parse_error("name attribute already defined", in);
@@ -97,7 +100,8 @@ namespace usbguard
   template<>
   struct name_actions<string_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeName().append(stringValueFromRule(in.string()));
@@ -111,7 +115,8 @@ namespace usbguard
   template<>
   struct name_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeName().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -128,7 +133,8 @@ namespace usbguard
   template<>
   struct id_actions<str_id>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeDeviceID().empty()) {
         throw pegtl::parse_error("id attribute already defined", in);
@@ -139,7 +145,8 @@ namespace usbguard
   template<>
   struct id_actions<device_id_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         std::vector<std::string> tokens;
@@ -156,7 +163,8 @@ namespace usbguard
   template<>
   struct id_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeDeviceID().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -173,7 +181,8 @@ namespace usbguard
   template<>
   struct hash_actions<str_hash>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeHash().empty()) {
         throw pegtl::parse_error("hash attribute already defined", in);
@@ -184,7 +193,8 @@ namespace usbguard
   template<>
   struct hash_actions<string_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeHash().append(stringValueFromRule(in.string()));
@@ -198,7 +208,8 @@ namespace usbguard
   template<>
   struct hash_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeHash().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -215,7 +226,8 @@ namespace usbguard
   template<>
   struct parent_hash_actions<str_parent_hash>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeParentHash().empty()) {
         throw pegtl::parse_error("parent-hash attribute already defined", in);
@@ -226,7 +238,8 @@ namespace usbguard
   template<>
   struct parent_hash_actions<string_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeParentHash().append(stringValueFromRule(in.string()));
@@ -240,7 +253,8 @@ namespace usbguard
   template<>
   struct parent_hash_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeParentHash().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -257,7 +271,8 @@ namespace usbguard
   template<>
   struct serial_actions<str_serial>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeSerial().empty()) {
         throw pegtl::parse_error("serial attribute already defined", in);
@@ -268,7 +283,8 @@ namespace usbguard
   template<>
   struct serial_actions<string_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeSerial().append(stringValueFromRule(in.string()));
@@ -282,7 +298,8 @@ namespace usbguard
   template<>
   struct serial_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeSerial().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -299,7 +316,8 @@ namespace usbguard
   template<>
   struct via_port_actions<str_via_port>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeViaPort().empty()) {
         throw pegtl::parse_error("via-port attribute already defined", in);
@@ -310,7 +328,8 @@ namespace usbguard
   template<>
   struct via_port_actions<string_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeViaPort().append(stringValueFromRule(in.string()));
@@ -324,7 +343,8 @@ namespace usbguard
   template<>
   struct via_port_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeViaPort().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -341,7 +361,8 @@ namespace usbguard
   template<>
   struct with_interface_actions<str_with_interface>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeWithInterface().empty()) {
         throw pegtl::parse_error("with-interface attribute already defined", in);
@@ -352,7 +373,8 @@ namespace usbguard
   template<>
   struct with_interface_actions<interface_value>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         const USBInterfaceType interface_type(in.string());
@@ -367,7 +389,8 @@ namespace usbguard
   template<>
   struct with_interface_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeWithInterface().setSetOperator(Rule::setOperatorFromString(in.string()));
@@ -384,7 +407,8 @@ namespace usbguard
   template<>
   struct condition_actions<str_if>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       if (!rule.attributeConditions().empty()) {
         throw pegtl::parse_error("conditions already defined", in);
@@ -395,7 +419,8 @@ namespace usbguard
   template<>
   struct condition_actions<condition>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         RuleCondition* condition = RuleCondition::getImplementation(in.string());
@@ -410,7 +435,8 @@ namespace usbguard
   template<>
   struct condition_actions<multiset_operator>
   {
-    static void apply(const pegtl::action_input& in, Rule& rule)
+    template<typename Input>
+    static void apply(const Input& in, Rule& rule)
     {
       try {
         rule.attributeConditions().setSetOperator(Rule::setOperatorFromString(in.string()));
