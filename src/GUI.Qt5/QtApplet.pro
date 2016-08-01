@@ -17,11 +17,15 @@ QMAKE_CXXFLAGS += -std=c++11
 SOURCES +=\
     main.cpp\
     MainWindow.cpp \
-    DeviceDialog.cpp
+    DeviceDialog.cpp \
+    DeviceModel.cpp \
+    TargetDelegate.cpp
 
 HEADERS +=\
     MainWindow.h \
-    DeviceDialog.h
+    DeviceDialog.h \
+    DeviceModel.h \
+    TargetDelegate.h
 
 FORMS += MainWindow.ui \
     DeviceDialog.ui

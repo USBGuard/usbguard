@@ -32,11 +32,13 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QTreeView>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    _settings("USBGuard", "usbguard-applet-qt")
+    _settings("USBGuard", "usbguard-applet-qt"),
+    _device_model(this)
 {
   /*
    * Seed the pseudo-random generator. We use it for
@@ -46,6 +48,18 @@ MainWindow::MainWindow(QWidget *parent) :
   qsrand((uint)time_rnd_seed.msec());
 
   ui->setupUi(this);
+  ui->device_view->setModel(&_device_model);
+  ui->device_view->setItemDelegateForColumn(2, &_target_delegate);
+
+  QObject::connect(ui->device_view->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+                   this, SLOT(editDeviceListRow(QModelIndex)));
+  QObject::connect(ui->device_view, SIGNAL(clicked(QModelIndex)),
+                   this, SLOT(editDeviceListRow(QModelIndex)));
+  QObject::connect(ui->apply_button, SIGNAL(pressed()),
+                   this, SLOT(commitDeviceListChanges()));
+  QObject::connect(ui->reset_button, SIGNAL(pressed()),
+                   this, SLOT(resetDeviceList()));
+
   setWindowTitle("USBGuard");
   setWindowIcon(QIcon(":/usbguard-icon.svg"));
   setWindowState(Qt::WindowMinimized);
@@ -59,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
                    this, SLOT(showDeviceDialog(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)));
+  QObject::connect(this, SIGNAL(uiDeviceInserted(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, bool)),
+                   this, SLOT(handleDeviceInsert(quint32)));
 
   QObject::connect(this, SIGNAL(uiDevicePresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)),
                    this, SLOT(notifyPresent(quint32, const std::map<std::string, std::string>&, const std::vector<usbguard::USBInterfaceType>&, usbguard::Rule::Target)));
@@ -68,15 +84,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
   QObject::connect(this, SIGNAL(uiDeviceAllowed(quint32, const std::map<std::string, std::string>&)),
                    this, SLOT(notifyAllowed(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceAllowed(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(handleDeviceAllow(quint32)));
 
   QObject::connect(this, SIGNAL(uiDeviceBlocked(quint32, const std::map<std::string, std::string>&)),
                    this, SLOT(notifyBlocked(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceBlocked(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(handleDeviceBlock(quint32)));
 
   QObject::connect(this, SIGNAL(uiDeviceRejected(quint32, const std::map<std::string, std::string>&)),
                    this, SLOT(notifyRejected(quint32, const std::map<std::string, std::string>&)));
 
   QObject::connect(this, SIGNAL(uiDeviceRemoved(quint32, const std::map<std::string, std::string>&)),
                    this, SLOT(notifyRemoved(quint32, const std::map<std::string, std::string>&)));
+  QObject::connect(this, SIGNAL(uiDeviceRemoved(quint32, const std::map<std::string, std::string>&)),
+                   this, SLOT(handleDeviceRemove(quint32)));
 
   QObject::connect(this, SIGNAL(uiConnected()),
                    this, SLOT(handleIPCConnect()));
@@ -380,12 +402,35 @@ void MainWindow::handleIPCConnect()
 {
   _ipc_timer.stop();
   notifyIPCConnected();
+  loadDeviceList();
 }
 
 void MainWindow::handleIPCDisconnect()
 {
   _ipc_timer.start();
   notifyIPCDisconnected();
+}
+
+void MainWindow::handleDeviceInsert(quint32 id)
+{
+  loadDeviceList();
+}
+
+void MainWindow::handleDeviceAllow(quint32 id)
+{
+  _device_model.updateDeviceTarget(id, usbguard::Rule::Target::Allow);
+}
+
+void MainWindow::handleDeviceBlock(quint32 id)
+{
+  _device_model.updateDeviceTarget(id, usbguard::Rule::Target::Block);
+}
+
+void MainWindow::handleDeviceRemove(quint32 id)
+{
+  ui->device_view->selectionModel()->clearSelection();
+  ui->device_view->reset();
+  _device_model.removeDevice(id);
 }
 
 void MainWindow::loadSettings()
@@ -432,6 +477,70 @@ void MainWindow::saveSettings()
   _settings.setValue("RandomizeWindowPosition", ui->randomize_position_checkbox->isChecked());
   _settings.setValue("MaskSerialNumber", ui->mask_serial_checkbox->isChecked());
   _settings.endGroup();
+}
+
+void MainWindow::loadDeviceList()
+{
+  try {
+    for (auto device_rule : IPCClient::listDevices()) {
+      if (!_device_model.containsDevice(device_rule.getRuleID())) {
+        _device_model.insertDevice(device_rule);
+      }
+    }
+  }
+  catch(const usbguard::IPCException& ex) {
+    showMessage(QString("IPC call failed: %1: %2: %3")
+                .arg("listDevices")
+                .arg(QString::fromStdString(ex.codeAsString()))
+                .arg(QString::fromStdString(ex.message())),
+                /*alert=*/true);
+  }
+  catch(const std::exception& ex) {
+    showMessage(QString("IPC call failed: %1: std::exception: %2")
+                .arg("listDevices")
+                .arg(QString::fromStdString(ex.what())),
+                /*alert=*/true);
+  }
+}
+
+void MainWindow::editDeviceListRow(const QModelIndex &index)
+{
+  ui->device_view->edit(_device_model.createRowEditIndex(index));
+}
+
+void MainWindow::commitDeviceListChanges()
+{
+  auto modified_map = _device_model.getModifiedDevices();
+  auto modified_it = modified_map.begin();
+
+  while (modified_it != modified_map.end()) {
+    auto id = modified_it.key();
+    auto target = modified_it.value();
+
+    switch(target)
+    {
+      case usbguard::Rule::Target::Allow:
+        allowDevice(id, /*append=*/false);
+        break;
+      case usbguard::Rule::Target::Block:
+        blockDevice(id, /*append=*/false);
+        break;
+      case usbguard::Rule::Target::Reject:
+        rejectDevice(id, /*append=*/false);
+        break;
+      default:
+        break;
+    }
+
+    ++modified_it;
+    }
+}
+
+void MainWindow::resetDeviceList()
+{
+  ui->device_view->selectionModel()->clearSelection();
+  _device_model.clear();
+  loadDeviceList();
 }
 
 void MainWindow::changeEvent(QEvent* e)

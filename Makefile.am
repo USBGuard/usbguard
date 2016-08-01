@@ -452,9 +452,12 @@ usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt5/MainWindow.h \
 	src/GUI.Qt5/MainWindow.moc.cpp \
 	src/GUI.Qt5/usbguard.qrc.cpp \
-	src/GUI.Qt5/DeviceTableWidget.h \
-	src/GUI.Qt5/DeviceTableWidget.cpp \
-	src/GUI.Qt5/DeviceTableWidget.moc.cpp
+	src/GUI.Qt5/DeviceModel.cpp \
+	src/GUI.Qt5/DeviceModel.moc.cpp \
+	src/GUI.Qt5/DeviceModel.h \
+	src/GUI.Qt5/TargetDelegate.cpp \
+	src/GUI.Qt5/TargetDelegate.moc.cpp \
+	src/GUI.Qt5/TargetDelegate.h
 
 usbguard_applet_qt_LDADD=\
 	$(top_builddir)/libusbguard.la \

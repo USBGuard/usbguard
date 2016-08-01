@@ -18,6 +18,9 @@
 //
 #pragma once
 
+#include "DeviceModel.h"
+#include "TargetDelegate.h"
+
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QTimer>
@@ -30,6 +33,10 @@ class MainWindow;
 
 class MainWindow : public QMainWindow, public usbguard::IPCClient
 {
+  using IPCClient::allowDevice;
+  using IPCClient::blockDevice;
+  using IPCClient::rejectDevice;
+
   Q_OBJECT
 
 public:
@@ -72,23 +79,33 @@ protected slots:
   void handleIPCConnect();
   void handleIPCDisconnect();
 
+  void handleDeviceInsert(quint32 id);
+  void handleDeviceAllow(quint32 id);
+  void handleDeviceBlock(quint32 id);
+  void handleDeviceRemove(quint32 id);
+
   void loadSettings();
   void saveSettings();
 
+  void loadDeviceList();
+  void editDeviceListRow(const QModelIndex &index);
+  void commitDeviceListChanges();
+  void resetDeviceList();
+
 protected:
-  void changeEvent(QEvent *e);
+  void changeEvent(QEvent *e) override;
   void setupSystemTray();
   void setupSettingsWatcher();
   void startFlashing();
   void stopFlashing();
 
-  void DeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_id);
-  void DevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void DeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
+  void DeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_id) override;
+  void DevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target) override;
+  void DeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes) override;
 
-  void DeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id);
-  void DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id);
-  void DeviceRejected(quint32 id, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_id);
+  void DeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id) override;
+  void DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id) override;
+  void DeviceRejected(quint32 id, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_id) override;
 
   void IPCConnected() override;
   void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception) override;
@@ -100,5 +117,7 @@ private:
   bool _flash_state;
   QTimer _ipc_timer;
   QSettings _settings;
+  DeviceModel _device_model;
+  TargetDelegate _target_delegate;
 };
 
