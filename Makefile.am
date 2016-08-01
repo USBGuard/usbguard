@@ -468,7 +468,7 @@ usbguard_applet_qt_CPPFLAGS=\
 	-fPIC @qt5_CFLAGS@
 
 %.moc.cpp: %.h
-	@MOCQT5@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt5 -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MOC_CPPFLAGS) $<
+	@MOCQT5@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt5 -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(MOC_CPPFLAGS) $<
 
 %.ui.h: %.ui
 	@UICQT5@ -g cpp -o $(top_builddir)/$@ $<
