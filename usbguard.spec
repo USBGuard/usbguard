@@ -24,7 +24,8 @@ BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: json-static
 BuildRequires: spdlog-static
-BuildRequires: qt5-qtbase-devel
+BuildRequires: PEGTL-static
+BuildRequires: qt5-qtbase-devel qt5-qtsvg-devel
 BuildRequires: dbus-glib-devel
 BuildRequires: dbus-devel
 BuildRequires: glib2-devel
@@ -32,6 +33,7 @@ BuildRequires: polkit-devel
 BuildRequires: libxslt
 BuildRequires: libxml2
 BuildRequires: catch-devel
+BuildRequires: pandoc
 BuildRequires: autoconf automake libtool
 
 %description
