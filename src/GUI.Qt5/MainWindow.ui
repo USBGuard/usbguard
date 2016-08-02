@@ -87,7 +87,7 @@
            <enum>Qt::ElideMiddle</enum>
           </property>
           <property name="indentation">
-           <number>2</number>
+           <number>20</number>
           </property>
           <property name="uniformRowHeights">
            <bool>true</bool>
