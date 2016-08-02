@@ -15,7 +15,9 @@
 - Qt Applet: Implemented serial number masking
 - Qt Applet: Initial implementation of DeviceDialog window position randomization
 - Qt Applet: IPC exceptions are shown in the message log
-
+- Qt Applet: added an initial implementation of the device list with the ability
+             to change authorization target for each device
+- Qt Applet: show a grey version of the USBGuard icon in IPC disconnected state
 
 ### Changed
 - **IMPORTANT**: The device hash value computation was changed to include the
@@ -33,6 +35,7 @@
 - New Qt applet icons with
 - Fixed Qt applet so that it doesn't show an empty window when starting
 - Qt Applet: Reject button is hidden by default.
+- Updated usbguard-daemon manual page
 
 ### Removed
 - Removed Quex related files
