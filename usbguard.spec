@@ -162,6 +162,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/dbus-1/system.d/org.usbguard.conf
 %{_datadir}/polkit-1/actions/org.usbguard.policy
 %{_unitdir}/usbguard-dbus.service
+%{_mandir}/man8/usbguard-dbus.8.gz
 
 %preun dbus
 %systemd_preun usbguard-dbus.service
