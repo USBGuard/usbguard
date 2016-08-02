@@ -67,9 +67,9 @@ QVariant DeviceModelItem::data(int column)
 {
   switch(column)
   {
-    case 0:
-      return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
     case 1:
+      return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
+    case 0:
       return QVariant(_device_rule.getRuleID());
     case 2:
       if (_requested_target != _device_rule.getTarget()) {
@@ -160,31 +160,70 @@ DeviceModel::~DeviceModel()
 
 QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-  if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+  if (orientation != Qt::Horizontal) {
     return QVariant();
   }
-
+  if (role != Qt::DisplayRole && role != Qt::TextAlignmentRole) {
+    return QVariant();
+  }
   switch(section)
   {
     case 0:
-      return QVariant(QString("M"));
+      if (role == Qt::DisplayRole) {
+        return QString("ID");
+      }
+      else {
+        return Qt::AlignCenter;
+      }
+      break;
     case 1:
-      return QVariant(QString("ID"));
+      if (role == Qt::DisplayRole) {
+        return QString(" M ");
+      }
+      if (role == Qt::TextAlignmentRole) {
+        return Qt::AlignCenter;
+      }
+      break;
     case 2:
-      return QVariant(QString("Target"));
+      if (role == Qt::DisplayRole) {
+        return QString("Target");
+      }
+      if (role == Qt::TextAlignmentRole) {
+        return Qt::AlignCenter;
+      }
+      break;
     case 3:
-      return QVariant(QString("USB ID"));
+      if (role == Qt::DisplayRole) {
+        return QString("USB ID");
+      }
+      if (role == Qt::TextAlignmentRole) {
+        return Qt::AlignCenter;
+      }
+      break;
     case 4:
-      return QVariant(QString("Name"));
+      if (role == Qt::DisplayRole) {
+        return QString("Name");
+      }
+      break;
     case 5:
-      return QVariant(QString("Serial"));
+      if (role == Qt::DisplayRole) {
+        return QString("Serial");
+      }
+      break;
     case 6:
-      return QVariant(QString("Port"));
+      if (role == Qt::DisplayRole) {
+        return QString("Port");
+      }
+      break;
     case 7:
-      return QVariant(QString("Interfaces"));
+      if (role == Qt::DisplayRole) {
+        return QString("Interfaces");
+      }
+      break;
     default:
-      return QVariant();
+      break;
   }
+  return QVariant();
 }
 
 QModelIndex DeviceModel::index(int row, int column, const QModelIndex &parent) const
@@ -261,6 +300,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
   if (!index.isValid()) {
     return QVariant();
+  }
+  if (role == Qt::TextAlignmentRole) {
+    return headerData(index.column(), Qt::Horizontal, role);
   }
   if (role != Qt::DisplayRole) {
     return QVariant();

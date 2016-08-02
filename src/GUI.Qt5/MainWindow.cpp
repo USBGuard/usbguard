@@ -33,6 +33,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QTreeView>
+#include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   ui->device_view->setModel(&_device_model);
   ui->device_view->setItemDelegateForColumn(2, &_target_delegate);
+  ui->device_view->resizeColumnToContents(1);
 
   QObject::connect(ui->device_view->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
                    this, SLOT(editDeviceListRow(QModelIndex)));
@@ -114,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent) :
   _ipc_timer.start();
   ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
 
+  new QShortcut(QKeySequence(Qt::Key_Escape, Qt::Key_Escape), this, SLOT(showMinimized()));
   return;
 }
 
