@@ -489,6 +489,7 @@ void MainWindow::loadDeviceList()
         _device_model.insertDevice(device_rule);
       }
     }
+    ui->device_view->expandToDepth(2);
   }
   catch(const usbguard::IPCException& ex) {
     showMessage(QString("IPC call failed: %1: %2: %3")
