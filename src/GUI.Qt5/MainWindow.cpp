@@ -119,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setupSystemTray()
 {
-  systray = new QSystemTrayIcon(QIcon(":/usbguard-icon.svg"), this);
+  systray = new QSystemTrayIcon(QIcon(":/usbguard-icon-inactive.svg"), this);
   systray->setToolTip("USBGuard");
   auto menu = new QMenu();
   auto quit_action = new QAction(tr("Quit"), systray);
@@ -402,6 +402,7 @@ void MainWindow::handleIPCConnect()
 {
   _ipc_timer.stop();
   notifyIPCConnected();
+  systray->setIcon(QIcon(":/usbguard-icon.svg"));
   loadDeviceList();
 }
 
@@ -409,6 +410,7 @@ void MainWindow::handleIPCDisconnect()
 {
   _ipc_timer.start();
   notifyIPCDisconnected();
+  systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));
 }
 
 void MainWindow::handleDeviceInsert(quint32 id)
@@ -533,7 +535,7 @@ void MainWindow::commitDeviceListChanges()
     }
 
     ++modified_it;
-    }
+  }
 }
 
 void MainWindow::resetDeviceList()

@@ -14,7 +14,7 @@
    id="svg3098"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="usbguard-icon.svg">
+   sodipodi:docname="usbguard-icon-warning.svg">
   <title
      id="title5546">USBGuard logo</title>
   <defs
@@ -90,13 +90,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <path
-       style="fill:#0e232e;stroke:#dc0000;stroke-width:8.12703609000000071;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#0e232e;stroke:#999999;stroke-width:8.12703609000000071;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 4.3071711,13.255416 C 4.3898641,33.396166 10.963528,52.915517 32.748505,60.198129 53.406237,50.872718 60.18103,33.561295 59.666287,13.325349"
        id="rect3106"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
     <path
-       style="fill:#dc0000;stroke:#dc0000;stroke-width:5.47860527000000008;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#999999;stroke:#999999;stroke-width:5.47860527000000008;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 3.1040211,16.913885 C 0.79919828,1.9147578 20.883124,2.5453072 31.886252,2.8039048 42.88938,3.0625024 62.46255,0.94918066 61.020979,16.882635"
        id="path3883"
        inkscape:connector-curvature="0"
@@ -123,24 +123,24 @@
        x="16.889849"
        y="4.6819754" />
     <rect
-       style="fill:#dc0000;stroke:#dc0000;stroke-width:1.67355406000000007;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#999999;stroke:#999999;stroke-width:1.67355406000000007;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3954"
        width="4.7761703"
        height="4.0938597"
        x="25.29273"
        y="7.5907145" />
     <g
-       style="font-size:49.79320907999999690px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#dc0000;fill-opacity:1;stroke:#dc0000;stroke-width:1.26464998999999989;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
+       style="font-size:49.79320907999999690px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:#999999;stroke-width:1.26464998999999989;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
        id="text3978"
        transform="matrix(0.71886574,0,0,0.71886574,8.0143408,5.7507713)">
       <path
          d="m 52.984503,39.327954 0,-0.896278 -24.05012,0 0,6.373531 15.236722,0 c -1.991726,4.083039 -5.97519,6.473117 -10.805126,6.473117 -7.220008,0 -12.747062,-5.427466 -12.747062,-12.448302 0,-6.921249 5.078915,-12.498095 12.348716,-12.498095 4.282212,0 7.817536,1.692972 10.108022,4.879734 l 8.016706,0 C 48.70229,24.589171 41.133712,19.759223 33.117013,19.759223 c -10.755323,0 -19.369558,8.415063 -19.369558,18.971213 0,10.755322 8.713822,19.120592 20.01687,19.120592 10.854908,0 19.220178,-8.514649 19.220178,-18.523074"
-         style="fill:#dc0000;stroke:#dc0000;stroke-width:1.26464998999999989;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
+         style="fill:#999999;stroke:#999999;stroke-width:1.26464998999999989;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:TeX Gyre Adventor;-inkscape-font-specification:TeX Gyre Adventor Bold"
          id="path3983"
          inkscape:connector-curvature="0" />
     </g>
     <rect
-       style="fill:#dc0000;stroke:#dc0000;stroke-width:1.67355406000000007;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#999999;stroke:#999999;stroke-width:1.67355406000000007;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3954-7"
        width="4.7761703"
        height="4.0938597"

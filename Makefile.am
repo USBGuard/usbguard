@@ -423,7 +423,8 @@ usbguard_applet_qt_UIHEADERS=\
 
 usbguard_applet_qt_RESOURCES=\
 	src/GUI.Qt5/resources/usbguard-icon.svg \
-	src/GUI.Qt5/resources/usbguard-icon-warning.svg
+	src/GUI.Qt5/resources/usbguard-icon-warning.svg \
+	src/GUI.Qt5/resources/usbguard-icon-inactive.svg
 
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \
