@@ -45,7 +45,7 @@ void DeviceModelItem::appendChild(DeviceModelItem *child)
 
 void DeviceModelItem::removeChild(DeviceModelItem *child)
 {
-  _children.removeOne(child);
+  (void)_children.takeAt(_children.indexOf(child));
 }
 
 DeviceModelItem *DeviceModelItem::child(int row)
@@ -313,16 +313,6 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
   return item->data(index.column());
 }
 
-bool DeviceModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-  if (data(index, role) != value) {
-      // FIXME: Implement me!
-      emit dataChanged(index, index, QVector<int>() << role);
-      return true;
-  }
-  return false;
-}
-
 Qt::ItemFlags DeviceModel::flags(const QModelIndex &index) const
 {
   if (!index.isValid())
@@ -394,10 +384,6 @@ void DeviceModel::removeDevice(quint32 device_id)
 }
 
 void DeviceModel::removeDevice(DeviceModelItem* item) {
-  for (int r = 0; r < item->childCount(); ++r) {
-    removeDevice(item->child(r));
-  }
-
   DeviceModelItem* parent_item = item->parent();
 
   if (parent_item == nullptr) {
@@ -406,12 +392,18 @@ void DeviceModel::removeDevice(DeviceModelItem* item) {
 
   layoutAboutToBeChanged();
   beginRemoveRows(createIndex(parent_item->row(), 0, parent_item), item->row(), item->row());
-  parent_item->removeChild(item);
+
+  while (item->childCount() > 0) {
+    removeDevice(item->child(0));
+  }
+
   _hash_map.remove(item->getDeviceHash());
   _id_map.remove(item->getDeviceID());
-  delete item;
   endRemoveRows();
   layoutChanged();
+
+  parent_item->removeChild(item);
+  delete item;
 }
 
 bool DeviceModel::containsDevice(quint32 device_id) const
@@ -440,8 +432,8 @@ QMap<quint32, usbguard::Rule::Target> DeviceModel::getModifiedDevices() const
 void DeviceModel::clear()
 {
   beginResetModel();
-  for (int i = 0; i < _root_item->childCount(); ++i) {
-    removeDevice(_root_item->child(i));
+  while (_root_item->childCount() > 0) {
+    removeDevice(_root_item->child(0));
   }
   endResetModel();
 }

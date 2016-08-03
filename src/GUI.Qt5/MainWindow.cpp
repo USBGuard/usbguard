@@ -304,7 +304,12 @@ void MainWindow::stopFlashing()
 {
   _flash_state = false;
   _flash_timer.stop();
-  systray->setIcon(QIcon(":/usbguard-icon.svg"));
+  if (IPCClient::isConnected()) {
+    systray->setIcon(QIcon(":/usbguard-icon.svg"));
+  }
+  else {
+    systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));
+  }
 }
 
 void MainWindow::flashStep()
@@ -316,7 +321,12 @@ void MainWindow::flashStep()
     _flash_state = false;
   }
   else {
-    systray->setIcon(QIcon(":/usbguard-icon.svg"));
+    if (IPCClient::isConnected()) {
+      systray->setIcon(QIcon(":/usbguard-icon.svg"));
+    }
+    else {
+      systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));
+    }
     systray->show();
     _flash_timer.setInterval(500);
     _flash_state = true;
@@ -406,6 +416,7 @@ void MainWindow::handleIPCConnect()
   _ipc_timer.stop();
   notifyIPCConnected();
   systray->setIcon(QIcon(":/usbguard-icon.svg"));
+  ui->device_view->setDisabled(false);
   loadDeviceList();
 }
 
@@ -414,6 +425,8 @@ void MainWindow::handleIPCDisconnect()
   _ipc_timer.start();
   notifyIPCDisconnected();
   systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));
+  clearDeviceList();
+  ui->device_view->setDisabled(true);
 }
 
 void MainWindow::handleDeviceInsert(quint32 id)
@@ -542,10 +555,16 @@ void MainWindow::commitDeviceListChanges()
   }
 }
 
+void MainWindow::clearDeviceList()
+{
+  ui->device_view->clearSelection();
+  ui->device_view->reset();
+  _device_model.clear();
+}
+
 void MainWindow::resetDeviceList()
 {
-  ui->device_view->selectionModel()->clearSelection();
-  _device_model.clear();
+  clearDeviceList();
   loadDeviceList();
 }
 

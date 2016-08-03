@@ -63,6 +63,9 @@
         </item>
         <item row="0" column="0" colspan="3">
          <widget class="QTreeView" name="device_view">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="font">
            <font>
             <family>DejaVu Sans Mono</family>

@@ -90,6 +90,7 @@ protected slots:
   void loadDeviceList();
   void editDeviceListRow(const QModelIndex &index);
   void commitDeviceListChanges();
+  void clearDeviceList();
   void resetDeviceList();
 
 protected:
