@@ -495,6 +495,7 @@ namespace usbguard {
       Pointer<LinuxDevice> device = makePointer<LinuxDevice>(*this, dev);
       insertDevice(device);
       DeviceInserted(device);
+      return;
     }
     catch(const std::exception& ex) {
       logger->error("Exception caught during device insertion processing: {}: {}", sys_path, ex.what());
