@@ -42,6 +42,7 @@ namespace usbguard {
   const DevicePrivate& DevicePrivate::operator=(const DevicePrivate& rhs)
   {
     _id = rhs._id;
+    _parent_id = rhs._parent_id;
     _target = rhs._target;
     _name = rhs._name;
     _device_id = rhs._device_id;
