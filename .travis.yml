@@ -1,6 +1,6 @@
 env:
   global:
-  - secure: ZmM4qgsgTYcxgDaQQMhphPerUo9SYm2TKyxzA07ArEZf9Ur10taagze/sueNa4g5TxeoynxpxeyoUvPpqPrucNPE70uFimH1TW55Hi3WWzBVwNfvLFXIBUcXAmVi3BalNAXJvhyjZgRwP+39wRkJG2V9vZjtDzB7umb0RPjbwBs=
+  - secure: "mAKqsfksFjBmvtjVEUiUkJ1rG7pp4dGZrTez2SRoEu+bEDh620O931SwBYyWMAdKRNGt9zrV22EASXM9ug1AHboFTOnMM17YCLw/nbioV92EIYV7O+infO9dkGpn0wDVa/jPIiJB++5xeeIF8Lgq7td6wP4jE8WMl97PL5wtEMs="
 language: cpp
 compiler:
 - clang
@@ -24,13 +24,13 @@ matrix:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-6']
       env: COMPILER=g++-6
-#    - os: linux
-#      compiler: clang
-#      addons:
-#        apt:
-#          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
-#          packages: ['clang-3.8']
-#      env: COMPILER=clang++-3.8
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
+          packages: ['clang-3.8']
+      env: COMPILER=clang++-3.8
     - os: linux
       compiler: gcc
       env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared"
@@ -73,3 +73,11 @@ script:
 - if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; make check; fi
 after_success:
 - test "x$COVERAGE" = xyes -a "x$CXX" = "xg++" && lcov --compat-libtool --directory . --capture --output-file coverage.info && coveralls-lcov coverage.info
+addons:
+  coverity_scan:
+    project:
+      name: dkopecek/usbguard
+    notification_email: dnk1618@gmail.com
+    build_command_prepend: ./autogen.sh && ./configure --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-bundled-json --with-bundled-spdlog
+    build_command: make
+    branch_pattern: coverity_scan
