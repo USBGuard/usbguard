@@ -21,7 +21,15 @@
 #include <locale>
 
 TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
-  std::locale::global(std::locale::classic());
+  REQUIRE_NOTHROW(std::locale::global(std::locale::classic()));
+
+  try {
+    auto locale_cs = std::locale("cs_CZ.UTF-8");
+    auto locale_de = std::locale("de_DE.UTF-8");
+  }
+  catch(...) {
+    FAIL("Cannot execute test: missing required cs_CZ.UTF-8 and/or de_DE.UTF-8 locale");
+  }
 
   const std::string method_name = "fooBar";
   const std::string rule_spec = "allow";
