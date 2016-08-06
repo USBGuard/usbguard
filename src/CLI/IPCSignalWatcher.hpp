@@ -31,29 +31,29 @@ namespace usbguard
                         const std::map<std::string,std::string>& attributes,
                         const std::vector<USBInterfaceType>& interfaces,
                         bool rule_match,
-                        uint32_t rule_id);
+                        uint32_t rule_id) override;
 
     void DevicePresent(uint32_t id,
                        const std::map<std::string,std::string>& attributes,
                        const std::vector<USBInterfaceType>& interfaces,
-                       Rule::Target target);
+                       Rule::Target target) override;
 
     void DeviceRemoved(uint32_t id,
-                       const std::map<std::string,std::string>& attributes);
+                       const std::map<std::string,std::string>& attributes) override;
 
     void DeviceAllowed(uint32_t id,
                        const std::map<std::string,std::string>& attributes,
                        bool rule_match,
-                       uint32_t rule_id);
+                       uint32_t rule_id) override;
 
     void DeviceBlocked(uint32_t id,
                        const std::map<std::string,std::string>& attributes,
                        bool rule_match,
-                       uint32_t rule_id);
+                       uint32_t rule_id) override;
 
     void DeviceRejected(uint32_t id,
                         const std::map<std::string,std::string>& attributes,
                         bool rule_match,
-                        uint32_t rule_id);
+                        uint32_t rule_id) override;
   };
 } /* namespace usbguard */
