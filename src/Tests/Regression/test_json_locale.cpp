@@ -56,11 +56,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 
   SECTION("Serialize in cs_CZ.UTF-8 => Parse & Inspect in C") {
@@ -72,11 +72,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 
   SECTION("Serialize in C => Parse & Inspect in de_DE.UTF-8") {
@@ -88,11 +88,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 
   SECTION("Serialize in de_DE.UTF-8 => Parse & Inspect in C") {
@@ -104,11 +104,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 
   SECTION("Serialize in cs_CZ.UTF-8 => Parse & Inspect in cs_CZ.UTF-8") {
@@ -118,11 +118,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 
   SECTION("Serialize in de_DE.UTF-8 => Parse & Inspect in de_DE.UTF-8") {
@@ -132,11 +132,11 @@ TEST_CASE("Regression: nlohmann/json locale", "[regression]") {
 
     REQUIRE(method_name == jobj_from_string["_m"]);
     REQUIRE(rule_spec == jobj_from_string["rule_spec"]);
-    REQUIRE(parent_id == jobj_from_string["parent_id"]);
-    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"]);
-    REQUIRE(unique_id == jobj_from_string["_i"]);
-    REQUIRE(true == jobj_from_string["boolean_true"]);
-    REQUIRE(false == jobj_from_string["boolean_false"]);
+    REQUIRE(parent_id == jobj_from_string["parent_id"].get<uint64_t>());
+    REQUIRE(timeout_sec == jobj_from_string["timeout_sec"].get<uint64_t>());
+    REQUIRE(unique_id == jobj_from_string["_i"].get<uint64_t>());
+    REQUIRE(true == jobj_from_string["boolean_true"].get<bool>());
+    REQUIRE(false == jobj_from_string["boolean_false"].get<bool>());
   }
 }
 
