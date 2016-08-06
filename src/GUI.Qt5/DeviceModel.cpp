@@ -67,10 +67,10 @@ QVariant DeviceModelItem::data(int column)
 {
   switch(column)
   {
-    case 1:
-      return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
     case 0:
       return QVariant(_device_rule.getRuleID());
+    case 1:
+      return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
     case 2:
       if (_requested_target != _device_rule.getTarget()) {
         return QVariant(QString::fromStdString(usbguard::Rule::targetToString(_requested_target)));
@@ -383,24 +383,29 @@ void DeviceModel::removeDevice(quint32 device_id)
   }
 }
 
-void DeviceModel::removeDevice(DeviceModelItem* item) {
+void DeviceModel::removeDevice(DeviceModelItem* item, bool notify) {
   DeviceModelItem* parent_item = item->parent();
 
   if (parent_item == nullptr) {
     return;
   }
 
-  layoutAboutToBeChanged();
-  beginRemoveRows(createIndex(parent_item->row(), 0, parent_item), item->row(), item->row());
+  if (notify) {
+    layoutAboutToBeChanged();
+    beginRemoveRows(createIndex(parent_item->row(), 0, parent_item), item->row(), item->row());
+  }
 
   while (item->childCount() > 0) {
-    removeDevice(item->child(0));
+    removeDevice(item->child(0), notify);
   }
 
   _hash_map.remove(item->getDeviceHash());
   _id_map.remove(item->getDeviceID());
-  endRemoveRows();
-  layoutChanged();
+
+  if (notify) {
+    endRemoveRows();
+    layoutChanged();
+  }
 
   parent_item->removeChild(item);
   delete item;
@@ -433,7 +438,7 @@ void DeviceModel::clear()
 {
   beginResetModel();
   while (_root_item->childCount() > 0) {
-    removeDevice(_root_item->child(0));
+    removeDevice(_root_item->child(0), /*notify=*/false);
   }
   endResetModel();
 }

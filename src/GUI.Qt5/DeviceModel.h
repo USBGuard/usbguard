@@ -84,7 +84,7 @@ public:
   void updateRequestedTarget(DeviceModelItem* item, usbguard::Rule::Target target);
 
   void removeDevice(quint32 device_id);
-  void removeDevice(DeviceModelItem* item);
+  void removeDevice(DeviceModelItem* item, bool notify = false);
   bool containsDevice(quint32 device_id) const;
 
   QModelIndex createRowEditIndex(const QModelIndex& index) const;
