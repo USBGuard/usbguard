@@ -50,6 +50,12 @@ namespace usbguard {
         throw std::runtime_error("Invalid USB device id format");
       }
     }
+    if (vendor_id.size() > USB_VID_STRING_MAX_LENGTH) {
+      throw std::runtime_error("Vendor ID string size out of range");
+    }
+    if (product_id.size() > USB_PID_STRING_MAX_LENGTH) {
+      throw std::runtime_error("Product ID string size out of range");
+    }
   }
 
   void USBDeviceID::setVendorID(const String& vendor_id)

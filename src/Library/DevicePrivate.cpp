@@ -233,7 +233,7 @@ namespace usbguard {
   void DevicePrivate::setName(const String& name)
   {
     if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setDeviceName: value size out-of-range");
+      throw std::runtime_error("device name string size out-of-range");
     }
     _name = name;
   }
@@ -255,6 +255,9 @@ namespace usbguard {
 
   void DevicePrivate::setPort(const String& port)
   {
+    if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
+      throw std::runtime_error("device port string size out of range");
+    }
     _port = port;
   }
 
@@ -265,6 +268,9 @@ namespace usbguard {
 
   void DevicePrivate::setSerial(const String& serial_number)
   {
+    if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
+      throw std::runtime_error("device serial number string size out of range");
+    }
     _serial_number = serial_number;
   }
 
@@ -282,26 +288,6 @@ namespace usbguard {
   {
     return _interface_types;
   }
-
-    /* FIXME: move this to USBDeviceID
-    if (vendor_id.size() > USB_VID_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setVendorID: value size out-of-range");
-    }
-    */
-/*
-    if (product_id.size() > USB_PID_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setProductID: value size out-of-range");
-    }
-
-    if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setDevicePort: value size out-of-range");
-    }
-*/
-/*
-    if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
-      throw std::runtime_error("setSerialNumber: value size out-of-range");
-    }
-    */
 
   void DevicePrivate::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
