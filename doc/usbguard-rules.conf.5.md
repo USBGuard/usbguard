@@ -15,67 +15,36 @@ The **usbguard-rules.conf** file is loaded by the USBGuard daemon after it parse
 The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules. When an USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either authorizes (**allows**), deauthorizes (**blocks**) or removes (**rejects**) the device, based on the rule target. If no matching rule is found, the decision is based on an implicit default target. This implicit default is to block the device until a decision is made by the user. The rule language grammar, expressed in a BNF-like syntax, is the following:
 
 ```
-    rule ::= target device_id device_attributes conditions.
+    rule ::= target attributes.
 
     target ::= "allow" | "block" | "reject".
 
-    device_id ::= "*:*" | vendor_id ":*" | vendor_id ":" product_id.
-
-    device_attributes ::= device_attributes | attribute.
-    device_attributes ::= .
-
-    conditions ::= conditions | condition.
-    conditions ::= .
+    attributes ::= attributes | attribute.
+    attributes ::= .
 ```
 
-See the *Device Attributes* section for the list of available attributes and *Conditions* for the list of supported rule conditions.
+Rule attributes specify which devices to match or what condition have to be met for the rule to be applicable. See the *Device Attributes* section for the list of available attributes and *Conditions* for the list of supported rule conditions.
 
 ## Targets
 
 The target of a rule specifies whether the device will be authorized for use or not. Three types of target are recognized:
 
- * *allow* -- **authorize** the device
- * *block* -- **deauthorize** the device
- * *reject* -- **remove** the device from the system
+ * *allow* -- **Authorize** the device. The device and its interfaces will be allowed to communicate with the system.
+ * *block* -- **Deauthorize** the device, i.e. don't talk to the device for now.
+ * *reject* -- **Remove** the device from the system, i.e. ignore the device as if didn't exist.
 
 ## Device Specification
 
-Except the target, all the other fields of a rule need not be specified. Such a minimal rule will match any device and allows the policy creator to write an explicit default target (there's an implicit one too, more on that later). However, if one want's to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with a device id and/or device attributes.
-
-### Device ID
-
-A USB device ID is the colon delimited pair **vendor\_id:product\_id**. All USB devices have this ID assigned by the manufacturer and it should uniquely identify a USB product. Both **vendor\_id** and **product\_id** are 16-bit numbers represented in hexadecimal base.
-
-In the rule, it's possible to use an asterisk character to match either any device ID `*:*` or any product ID from a specific vendor, e.g. `1234:*`.
+Except the target, all the other fields of a rule need not be specified. Such a minimal rule will match any device and allows the policy creator to write an explicit default target. If no rule from the policy is applicable to the device, an implicit target configured in **usbguard-daemon.conf**(5) will be used. However, if one want's to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with device attributes and rule conditions.
 
 ### Device Attributes
 
-Device attributes are specific value read from the USB device after it's inserted to the system. Which attributes are available is defined below. Some of the attributes are derived or based on attributes read directly from the device. The value of an attribute is represented as a double-quoted string.
+Device attributes are specific values read from the USB device after it's inserted to the system. Which attributes are available is defined below. Some of the attributes are derived and some are based on attributes read directly from the device. All attributes support two forms:
 
-List of attributes:
+ * single-valued with a syntax `name value`
+ * multi-valued with a syntax `name [operator] { value1 value2 ... }`
 
-**hash** `"[0-9a-f]{32}"`
-:   Match a hash of the device attributes (the hash is computed for every device by USBGuard).
-
-**name** `"device-name"`
-:   Match the USB device name attribute. 
-
-**serial** `"serial-number"`
-:   Match the iSerial USB device attribute.
-
-**via-port** `"port-id"`
-:   Match the USB port through which the device is connected.
-
-**via-port** `[operator] { "port-id" "port-id" ... }`
-:   Match a set of USB ports.
-
-**with-interface** `interface-type`
-:   Match an interface the USB device provides.
-
-**with-interface** `[operator] { interface-type interface-type ... }`
-:   Match a set of interface types against the set of interfaces that the USB device provides.
-
-where *operator* is one of:
+where the optional *operator* is one of:
 
  * *all-of* -- The device attribute set must contain all of the specified values for the rule to match.
  * *one-of* -- The device attribute set must contain at least one of the specified values for the rule to match.
@@ -83,7 +52,55 @@ where *operator* is one of:
  * *equals* -- The device attribute set must contain exactly the same set of values for the rule to match.
  * *equals-ordered* -- The device attribute set must contain exactly the same set of values in the same order for the rule to match.
 
-and *port-id* is a platform specific USB port identification. On Linux it's in the form "b-n" where *b* and *n* are unsigned integers (e.g. "1-2", "2-4", ...).
+If the operator is not specified it is set to *equals*.
+
+List of attributes:
+
+**id** `usb-device-id`
+:   Match a USB device ID.
+
+**id** `[operator] { usb-device-id ... }`
+:   Match a set of USB device IDs.
+
+**hash** `"value"`
+:   Match a hash computed from the device attribute values and the USB descriptor data. The hash is computed for every device by USBGuard.
+
+**hash** `[operator] { "value" ... }`
+:   Match a set of device hashes.
+
+**parent-hash** `"value"`
+:   Match a hash of the parent device.
+
+**parent-hash** `[operator] { "value" ... }`
+:   Match a set of parent device hashes.
+
+**name** `"device-name"`
+:   Match the USB device name attribute.
+
+**name** `[operator] { "device-name" ... }`
+:   Match a set of USB device names.
+
+**serial** `"serial-number"`
+:   Match the USB iSerial device attribute.
+
+**serial** `[operator] { "serial-number" ... }`
+:   Match a set of USB iSerial device attributes.
+
+**via-port** `"port-id"`
+:   Match the USB port through which the device is connected. Note that some systems have unstable port numbering which change after the system reboots or certain kernel modules are reloaded (and maybe in other cases). Use the **parent-hash** attribute if you want to ensure that a device is connected via a specific parent device.
+
+**via-port** `[operator] { "port-id" ... }`
+:   Match a set of USB ports.
+
+**with-interface** `interface-type`
+:   Match an interface type that the USB device provides.
+
+**with-interface** `[operator] { interface-type interface-type ... }`
+:   Match a set of interface types against the set of interfaces that the USB device provides.
+
+The *usb-device-id* is a colon delimited pair in the form **vendor\_id:product\_id**. All USB devices have this ID assigned by the manufacturer and it should uniquely identify a USB product. Both **vendor\_id** and **product\_id** are 16-bit numbers represented in hexadecimal base. It's possible to use an asterisk character to match either any device ID `*:*` or any product ID from a specific vendor, e.g. `1234:*`.
+
+The *port-id* value is a platform specific USB port identification. On Linux it's in the form of "usbN" in case of a USB controller (more accurately a "root hub") or "bus-port[.port[.port ...]]" (e.g. "1-2", "1-2.1", ...).
 
 The *interface-type* represents a USB interface and should be formatted as three 8-bit numbers in hexadecimal base delimited by a colon character, i.e. *cc:ss:pp*. The numbers represent the interface class (*cc*), subclass (*ss*) and protocol (*pp*) as assigned by the [USB-IF](http://www.usb.org/about). See the [list of assigned classes, subclasses and protocols](http://www.usb.org/developers/defined_class). Instead of the subclass and protocol number, you may write an asterisk character (`*`) to match all subclasses or protocols. Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
@@ -208,7 +225,7 @@ If you find a bug in this software or if you'd like to request a feature to be i
 
 # COPYRIGHT
 
-Copyright © 2015 Red Hat, Inc.  License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
+Copyright © 2016 Red Hat, Inc.  License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>. This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
 
 # SEE ALSO
 

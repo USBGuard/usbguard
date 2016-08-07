@@ -8,7 +8,7 @@ The \f[B]usbguard\-rules.conf\f[] file is loaded by the USBGuard daemon
 after it parses the main configuration file,
 \f[B]usbguard\-daemon.conf\f[](5).
 The daemon expects the file to contain rules written in a rule language
-which is described in the \f[I]Rule Language\f[] section bellow.
+which is described in the \f[I]Rule Language\f[] section below.
 .SH Rule Language
 .PP
 The USBGuard daemon decides which USB device to authorize based on a
@@ -26,20 +26,17 @@ following:
 .IP
 .nf
 \f[C]
-\ \ \ \ rule\ ::=\ target\ device_id\ device_attributes\ conditions.
+\ \ \ \ rule\ ::=\ target\ attributes.
 
 \ \ \ \ target\ ::=\ "allow"\ |\ "block"\ |\ "reject".
 
-\ \ \ \ device_id\ ::=\ "*:*"\ |\ vendor_id\ ":*"\ |\ vendor_id\ ":"\ product_id.
-
-\ \ \ \ device_attributes\ ::=\ device_attributes\ |\ attribute.
-\ \ \ \ device_attributes\ ::=\ .
-
-\ \ \ \ conditions\ ::=\ conditions\ |\ condition.
-\ \ \ \ conditions\ ::=\ .
+\ \ \ \ attributes\ ::=\ attributes\ |\ attribute.
+\ \ \ \ attributes\ ::=\ .
 \f[]
 .fi
 .PP
+Rule attributes specify which devices to match or what condition have to
+be met for the rule to be applicable.
 See the \f[I]Device Attributes\f[] section for the list of available
 attributes and \f[I]Conditions\f[] for the list of supported rule
 conditions.
@@ -49,82 +46,40 @@ The target of a rule specifies whether the device will be authorized for
 use or not.
 Three types of target are recognized:
 .IP \[bu] 2
-\f[I]allow\f[] \-\- \f[B]authorize\f[] the device
+\f[I]allow\f[] \-\- \f[B]Authorize\f[] the device.
+The device and its interfaces will be allowed to communicate with the
+system.
 .IP \[bu] 2
-\f[I]block\f[] \-\- \f[B]deauthorize\f[] the device
+\f[I]block\f[] \-\- \f[B]Deauthorize\f[] the device, i.e.
+don\[aq]t talk to the device for now.
 .IP \[bu] 2
-\f[I]reject\f[] \-\- \f[B]remove\f[] the device from the system
+\f[I]reject\f[] \-\- \f[B]Remove\f[] the device from the system, i.e.
+ignore the device as if didn\[aq]t exist.
 .SS Device Specification
 .PP
 Except the target, all the other fields of a rule need not be specified.
 Such a minimal rule will match any device and allows the policy creator
-to write an explicit default target (there\[aq]s an implicit one too,
-more on that later).
+to write an explicit default target.
+If no rule from the policy is applicable to the device, an implicit
+target configured in \f[B]usbguard\-daemon.conf\f[](5) will be used.
 However, if one want\[aq]s to narrow the applicability of a rule to a
-set of devices or one device only, it\[aq]s possible to do so with a
-device id and/or device attributes.
-.SS Device ID
-.PP
-A USB device ID is the colon delimited pair
-\f[B]vendor_id:product_id\f[].
-All USB devices have this ID assigned by the manufacturer and it should
-uniquely identify a USB product.
-Both \f[B]vendor_id\f[] and \f[B]product_id\f[] are 16\-bit numbers
-represented in hexadecimal base.
-.PP
-In the rule, it\[aq]s possible to use an asterisk character to match
-either any device ID \f[C]*:*\f[] or any product ID from a specific
-vendor, e.g.
-\f[C]1234:*\f[].
+set of devices or one device only, it\[aq]s possible to do so with
+device attributes and rule conditions.
 .SS Device Attributes
 .PP
-Device attributes are specific value read from the USB device after
+Device attributes are specific values read from the USB device after
 it\[aq]s inserted to the system.
-Which attributes are available is defined bellow.
-Some of the attributes are derived or based on attributes read directly
-from the device.
-The value of an attribute is represented as a double\-quoted string.
+Which attributes are available is defined below.
+Some of the attributes are derived and some are based on attributes read
+directly from the device.
+All attributes support two forms:
+.IP \[bu] 2
+single\-valued with a syntax \f[C]name\ value\f[]
+.IP \[bu] 2
+multi\-valued with a syntax
+\f[C]name\ [operator]\ {\ value1\ value2\ ...\ }\f[]
 .PP
-List of attributes:
-.TP
-.B \f[B]hash\f[] \f[C]"[0\-9a\-f]{32}"\f[]
-Match a hash of the device attributes (the hash is computed for every
-device by USBGuard).
-.RS
-.RE
-.TP
-.B \f[B]name\f[] \f[C]"device\-name"\f[]
-Match the USB device name attribute.
-.RS
-.RE
-.TP
-.B \f[B]serial\f[] \f[C]"serial\-number"\f[]
-Match the iSerial USB device attribute.
-.RS
-.RE
-.TP
-.B \f[B]via\-port\f[] \f[C]"port\-id"\f[]
-Match the USB port through which the device is connected.
-.RS
-.RE
-.TP
-.B \f[B]via\-port\f[] \f[C][operator]\ {\ "port\-id"\ "port\-id"\ ...\ }\f[]
-Match a set of USB ports.
-.RS
-.RE
-.TP
-.B \f[B]with\-interface\f[] \f[C]interface\-type\f[]
-Match an interface the USB device provides.
-.RS
-.RE
-.TP
-.B \f[B]with\-interface\f[] \f[C][operator]\ {\ interface\-type\ interface\-type\ ...\ }\f[]
-Match a set of interface types against the set of interfaces that the
-USB device provides.
-.RS
-.RE
-.PP
-where \f[I]operator\f[] is one of:
+where the optional \f[I]operator\f[] is one of:
 .IP \[bu] 2
 \f[I]all\-of\f[] \-\- The device attribute set must contain all of the
 specified values for the rule to match.
@@ -141,13 +96,106 @@ same set of values for the rule to match.
 \f[I]equals\-ordered\f[] \-\- The device attribute set must contain
 exactly the same set of values in the same order for the rule to match.
 .PP
-and \f[I]port\-id\f[] is a platform specific USB port identification.
-On Linux it\[aq]s in the form "b\-n" where \f[I]b\f[] and \f[I]n\f[] are
-unsigned integers (e.g.
-"1\-2", "2\-4", ...).
+If the operator is not specified it is set to \f[I]equals\f[].
+.PP
+List of attributes:
+.TP
+.B \f[B]id\f[] \f[C]usb\-device\-id\f[]
+Match a USB device ID.
+.RS
+.RE
+.TP
+.B \f[B]id\f[] \f[C][operator]\ {\ usb\-device\-id\ ...\ }\f[]
+Match a set of USB device IDs.
+.RS
+.RE
+.TP
+.B \f[B]hash\f[] \f[C]"value"\f[]
+Match a hash computed from the device attribute values and the USB
+descriptor data.
+The hash is computed for every device by USBGuard.
+.RS
+.RE
+.TP
+.B \f[B]hash\f[] \f[C][operator]\ {\ "value"\ ...\ }\f[]
+Match a set of device hashes.
+.RS
+.RE
+.TP
+.B \f[B]parent\-hash\f[] \f[C]"value"\f[]
+Match a hash of the parent device.
+.RS
+.RE
+.TP
+.B \f[B]parent\-hash\f[] \f[C][operator]\ {\ "value"\ ...\ }\f[]
+Match a set of parent device hashes.
+.RS
+.RE
+.TP
+.B \f[B]name\f[] \f[C]"device\-name"\f[]
+Match the USB device name attribute.
+.RS
+.RE
+.TP
+.B \f[B]name\f[] \f[C][operator]\ {\ "device\-name"\ ...\ }\f[]
+Match a set of USB device names.
+.RS
+.RE
+.TP
+.B \f[B]serial\f[] \f[C]"serial\-number"\f[]
+Match the USB iSerial device attribute.
+.RS
+.RE
+.TP
+.B \f[B]serial\f[] \f[C][operator]\ {\ "serial\-number"\ ...\ }\f[]
+Match a set of USB iSerial device attributes.
+.RS
+.RE
+.TP
+.B \f[B]via\-port\f[] \f[C]"port\-id"\f[]
+Match the USB port through which the device is connected.
+Note that some systems have unstable port numbering which change after
+the system reboots or certain kernel modules are reloaded (and maybe in
+other cases).
+Use the \f[B]parent\-hash\f[] attribute if you want to ensure that a
+device is connected via a specific parent device.
+.RS
+.RE
+.TP
+.B \f[B]via\-port\f[] \f[C][operator]\ {\ "port\-id"\ ...\ }\f[]
+Match a set of USB ports.
+.RS
+.RE
+.TP
+.B \f[B]with\-interface\f[] \f[C]interface\-type\f[]
+Match an interface type that the USB device provides.
+.RS
+.RE
+.TP
+.B \f[B]with\-interface\f[] \f[C][operator]\ {\ interface\-type\ interface\-type\ ...\ }\f[]
+Match a set of interface types against the set of interfaces that the
+USB device provides.
+.RS
+.RE
+.PP
+The \f[I]usb\-device\-id\f[] is a colon delimited pair in the form
+\f[B]vendor_id:product_id\f[].
+All USB devices have this ID assigned by the manufacturer and it should
+uniquely identify a USB product.
+Both \f[B]vendor_id\f[] and \f[B]product_id\f[] are 16\-bit numbers
+represented in hexadecimal base.
+It\[aq]s possible to use an asterisk character to match either any
+device ID \f[C]*:*\f[] or any product ID from a specific vendor, e.g.
+\f[C]1234:*\f[].
+.PP
+The \f[I]port\-id\f[] value is a platform specific USB port
+identification.
+On Linux it\[aq]s in the form of "usbN" in case of a USB controller
+(more accurately a "root hub") or "bus\-port[.port[.port ...]]" (e.g.
+"1\-2", "1\-2.1", ...).
 .PP
 The \f[I]interface\-type\f[] represents a USB interface and should be
-formated as three 8\-bit numbers in hexadecimal base delimited by a
+formatted as three 8\-bit numbers in hexadecimal base delimited by a
 colon character, i.e.
 \f[I]cc:ss:pp\f[].
 The numbers represent the interface class (\f[I]cc\f[]), subclass
@@ -378,7 +426,7 @@ feature to be implemented, please file a ticket at
 <https://github.com/dkopecek/usbguard/issues/new>.
 .SH COPYRIGHT
 .PP
-Copyright © 2015 Red Hat, Inc.
+Copyright © 2016 Red Hat, Inc.
 License GPLv2+: GNU GPL version 2 or later
 <http://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
