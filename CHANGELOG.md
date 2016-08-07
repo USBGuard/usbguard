@@ -9,6 +9,8 @@
 - id attribute to the rule language for specifing the USB device ID
 - Added a parent device ID field (and methods) to the Device class which
   tracks the ID of the parent device
+- Implemented "parent-hash" attribute for associating a device with its
+  parent device.
 - The QtSvg module/library is now needed to compile the Qt applet
 - Qt Applet: Device Dialog settings work now
 - Qt Applet: The settings state is now remembered (via Qt's QSettings class)
@@ -18,6 +20,7 @@
 - Qt Applet: added an initial implementation of the device list with the ability
              to change authorization target for each device
 - Qt Applet: show a grey version of the USBGuard icon in IPC disconnected state
+- usbguard-daemon.conf: added DeviceRulesWithPort setting (set to false by default)
 
 ### Changed
 - **IMPORTANT**: The device hash value computation was changed to include the
@@ -36,6 +39,11 @@
 - Fixed Qt applet so that it doesn't show an empty window when starting
 - Qt Applet: Reject button is hidden by default.
 - Updated usbguard-daemon manual page
+- Permanent device specific rules managed by allowDevice, blockDevice and
+  rejectDevice actions are now handled properly. Existing device rules are
+  updated instead of just appending new rules to the policy.
+- usbguard-daemon.conf: changed the default configuration value of
+  PresentControllerPolicy to keep
 
 ### Removed
 - Removed Quex related files
