@@ -64,20 +64,20 @@ namespace usbguard {
     return _mutex;
   }
 
-  Pointer<Rule> DevicePrivate::getDeviceRule(const bool include_port)
+  Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash)
   {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
 
-    logger->trace("Generating rule for device {}@{} (name={}); include_port={}",
-		  _device_id.toString(), _port, _name, include_port);
+    logger->trace("Generating rule for device {}@{} (name={}); with_port={} with_parent_hash={}",
+		  _device_id.toString(), _port, _name, with_port, with_parent_hash);
 
     device_rule->setRuleID(_id);
     device_rule->setTarget(_target);
     device_rule->setDeviceID(_device_id);
     device_rule->setSerial(_serial_number);
 
-    if (include_port) {
+    if (with_port) {
       device_rule->setViaPort(_port);
     }
 
@@ -85,16 +85,18 @@ namespace usbguard {
     device_rule->setName(_name);
     device_rule->setHash(getHash());
 
-    if (!_parent_hash.empty()) {
-      device_rule->setParentHash(_parent_hash);
-    }
-    else {
-      if (_parent_id != Rule::RootID) {
-        auto parent_device = manager().getDevice(_parent_id);
-        device_rule->setParentHash(parent_device->getHash());
+    if (with_parent_hash) {
+      if (!_parent_hash.empty()) {
+        device_rule->setParentHash(_parent_hash);
       }
       else {
-        throw std::runtime_error("Cannot generate device rule: parent hash value not available");
+        if (_parent_id != Rule::RootID) {
+          auto parent_device = manager().getDevice(_parent_id);
+          device_rule->setParentHash(parent_device->getHash());
+        }
+        else {
+          throw std::runtime_error("Cannot generate device rule: parent hash value not available");
+        }
       }
     }
 

@@ -38,7 +38,7 @@ namespace usbguard
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific reject" << std::endl;
-    stream << "                   rule will be appended to the current policy." << std::endl;
+    stream << "                   rule will be appended to or updated in the current policy." << std::endl;
     stream << "  -h, --help       Show this help." << std::endl;
     stream << std::endl;
   }
@@ -46,7 +46,7 @@ namespace usbguard
   int usbguard_reject_device(int argc, char *argv[])
   {
     uint32_t id = 0;
-    bool append = false;
+    bool permanent = false;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
@@ -55,7 +55,7 @@ namespace usbguard
           showHelp(std::cout);
           return EXIT_SUCCESS;
         case 'p':
-          append = true;
+          permanent = true;
           break;
         case '?':
           showHelp(std::cerr);
@@ -75,7 +75,7 @@ namespace usbguard
     id = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    ipc.rejectDevice(id, append, 0);
+    ipc.rejectDevice(id, permanent, 0);
 
     return EXIT_SUCCESS;
   }

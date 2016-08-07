@@ -42,15 +42,15 @@ namespace usbguard
     virtual const RuleSet listRules() = 0;
 
     virtual void allowDevice(uint32_t id,
-			     bool append,
+			     bool permanent,
 			     uint32_t timeout_sec) = 0;
 
     virtual void blockDevice(uint32_t id,
-			     bool append,
+			     bool permanent,
 			     uint32_t timeout_sec) = 0;
 
     virtual void rejectDevice(uint32_t id,
-			      bool append,
+			      bool permanent,
 			      uint32_t timeout_sec) = 0;
 
     virtual const std::vector<Rule> listDevices(const std::string& query) = 0;

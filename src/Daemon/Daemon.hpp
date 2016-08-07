@@ -64,14 +64,16 @@ namespace usbguard
 
     uint32_t assignID();
 
+    uint32_t upsertRule(const std::string& match_spec, const std::string& rule_spec, bool parent_insensitive = false);
+
     /* IPC methods */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec);
     void removeRule(uint32_t id);
     const RuleSet listRules();
 
-    void allowDevice(uint32_t id, bool append,  uint32_t timeout_sec);
-    void blockDevice(uint32_t id, bool append, uint32_t timeout_sec);
-    void rejectDevice(uint32_t id, bool append, uint32_t timeout_sec);
+    void allowDevice(uint32_t id, bool permanent,  uint32_t timeout_sec);
+    void blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
+    void rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
     const std::vector<Rule> listDevices(const std::string& query);
 
     /* IPC Signals */
@@ -143,7 +145,7 @@ namespace usbguard
     void blockDevice(uint32_t id, Pointer<const Rule> matched_rule);
     void rejectDevice(uint32_t id, Pointer<const Rule> matched_rule);
 
-    Pointer<const Rule> appendDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec);
+    Pointer<const Rule> upsertDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec);
 
     bool DACAuthenticateIPCConnection(uid_t uid, gid_t gid);
     void DACAddAllowedUID(uid_t uid);
@@ -168,5 +170,7 @@ namespace usbguard
     Rule::Target _implicit_policy_target;
     PresentDevicePolicy _present_device_policy;
     PresentDevicePolicy _present_controller_policy;
+
+    bool _device_rules_with_port;
   };
 } /* namespace usbguard */

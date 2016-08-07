@@ -37,7 +37,7 @@ namespace usbguard {
     DeviceManager& manager() const;
 
     std::mutex& refDeviceMutex();
-    Pointer<Rule> getDeviceRule(bool include_port = true);
+    Pointer<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true);
     String hashString(const String& value) const;
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
     const String& getHash() const;

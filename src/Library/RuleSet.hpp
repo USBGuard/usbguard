@@ -83,6 +83,15 @@ namespace usbguard {
     uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID);
 
     /**
+     * Search for a rule that matches `match_rule' rule and update it with a rule specified
+     * by `new_rule'. Fail if multiple rules match. If there are no matching rules, append
+     * the `new_rule' rule to the rule set.
+     *
+     * Returns the id of the updated or new rule.
+     */
+    uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
+
+    /**
      * Get a rule pointer to a rule with the specified sequence number.
      * Returns nullptr if no such rule exists.
      */

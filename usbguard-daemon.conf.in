@@ -76,3 +76,21 @@ IPCAllowedUsers=root
 # IPCAllowedGroups=groupname1 groupname2 ...
 #
 IPCAllowedGroups=wheel
+
+#
+# Generate device specific rules including the "via-port"
+# attribute.
+#
+# This option modifies the behavior of the allowDevice
+# action. When instructed to generate a permanent rule,
+# the action can generate a port specific rule. Because
+# some systems have unstable port numbering, the generated
+# rule might not match the device after rebooting the system.
+#
+# If set to false, the generated rule will still contain
+# the "parent-hash" attribute which also defines an association
+# to the parent device. See usbguard-rules.conf(5) for more
+# details.
+#
+DeviceRulesWithPort=false
+

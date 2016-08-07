@@ -85,6 +85,11 @@ namespace usbguard {
     return d_pointer->appendRule(rule, parent_id);
   }
 
+  uint32_t RuleSet::upsertRule(const Rule& match_rule, const Rule& new_rule, const bool parent_insensitive)
+  {
+    return d_pointer->upsertRule(match_rule, new_rule, parent_insensitive);
+  }
+
   Pointer<const Rule> RuleSet::getRule(uint32_t id)
   {
     return d_pointer->getRule(id);

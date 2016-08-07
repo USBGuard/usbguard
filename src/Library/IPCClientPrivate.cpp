@@ -415,12 +415,12 @@ namespace usbguard
     }
   }
 
-  void IPCClientPrivate::allowDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "allowDevice" },
       {        "id", id },
-      {      "append", append },
+      {      "permanent", permanent },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
     };
@@ -429,12 +429,12 @@ namespace usbguard
     return;
   }
 
-  void IPCClientPrivate::blockDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "blockDevice" },
       {        "id", id },
-      {      "append", append },
+      {      "permanent", permanent },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
     };
@@ -443,12 +443,12 @@ namespace usbguard
     return;
   }
 
-  void IPCClientPrivate::rejectDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void IPCClientPrivate::rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     const json jreq = {
       {          "_m", "rejectDevice" },
       {        "id", id },
-      {      "append", append },
+      {      "permanent", permanent },
       { "timeout_sec", timeout_sec },
       {          "_i", IPC::uniqueID() }
     };

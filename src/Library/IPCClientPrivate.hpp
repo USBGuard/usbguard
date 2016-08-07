@@ -48,9 +48,9 @@ namespace usbguard {
     void removeRule(uint32_t id);
     const RuleSet listRules();
 
-    void allowDevice(uint32_t id, bool append, uint32_t timeout_sec);
-    void blockDevice(uint32_t id, bool append, uint32_t timeout_sec);
-    void rejectDevice(uint32_t id, bool append, uint32_t timeout_sec);
+    void allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
+    void blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
+    void rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
     const std::vector<Rule> listDevices(const std::string& query);
 
   protected:

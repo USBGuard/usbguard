@@ -121,9 +121,14 @@ namespace usbguard {
     return;
   }
 
-  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_id)
+  uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_id, bool lock)
   {
-    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    std::unique_lock<std::mutex> op_lock(_op_mutex, std::defer_lock);
+
+    if (lock) {
+      op_lock.lock();
+    }
+
     auto rule_ptr = makePointer<Rule>(rule);
 
     /*
@@ -170,6 +175,33 @@ namespace usbguard {
     }
 
     return rule_ptr->getRuleID();
+  }
+
+  uint32_t RuleSetPrivate::upsertRule(const Rule& match_rule, const Rule& new_rule, const bool parent_insensitive)
+  {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    Pointer<Rule> matching_rule;
+
+    for (auto& rule_ptr : _rules) {
+      if (rule_ptr->internal()->appliesTo(match_rule, parent_insensitive)) {
+        if (!matching_rule) {
+          matching_rule = rule_ptr;
+        }
+        else {
+          throw std::runtime_error("Upsert failed: multiple matching rules");
+        }
+      }
+    }
+
+    if (matching_rule) {
+      const uint32_t id = matching_rule->getRuleID();
+      *matching_rule = new_rule;
+      matching_rule->setRuleID(id);
+      return id;
+    }
+    else {
+      return appendRule(new_rule, Rule::LastID, /*lock=*/false);
+    }
   }
 
   Pointer<const Rule> RuleSetPrivate::getRule(uint32_t id)

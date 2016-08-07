@@ -91,12 +91,12 @@ namespace usbguard {
   {
   }
 
-  bool RulePrivate::appliesTo(Pointer<const Rule> rhs) const
+  bool RulePrivate::appliesTo(Pointer<const Rule> rhs, bool parent_insensitive) const
   {
-    return appliesTo(*rhs);
+    return appliesTo(*rhs, parent_insensitive);
   }
-  
-  bool RulePrivate::appliesTo(const Rule& rhs) const
+
+  bool RulePrivate::appliesTo(const Rule& rhs, bool parent_insensitive) const
   {
     /*
      * This method checks whether the rule referenced by rhs belongs to
@@ -109,8 +109,8 @@ namespace usbguard {
         !_serial.appliesTo(rhs.internal()->_serial) ||
         !_name.appliesTo(rhs.internal()->_name) ||
         !_hash.appliesTo(rhs.internal()->_hash) ||
-        !_parent_hash.appliesTo(rhs.internal()->_parent_hash) ||
-        !_via_port.appliesTo(rhs.internal()->_via_port) ||
+        !(parent_insensitive || _parent_hash.appliesTo(rhs.internal()->_parent_hash)) ||
+        !(parent_insensitive || _via_port.appliesTo(rhs.internal()->_via_port)) ||
         !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
       return false;
     }

@@ -351,10 +351,10 @@ void MainWindow::ipcTryConnect()
   }
 }
 
-void MainWindow::allowDevice(quint32 id, bool append)
+void MainWindow::allowDevice(quint32 id, bool permanent)
 {
   try {
-    IPCClient::allowDevice(id, append, 0);
+    IPCClient::allowDevice(id, permanent, 0);
   }
   catch(const usbguard::IPCException& ex) {
     showMessage(QString("IPC call failed: %1: %2: %3")
@@ -371,10 +371,10 @@ void MainWindow::allowDevice(quint32 id, bool append)
   }
 }
 
-void MainWindow::blockDevice(quint32 id, bool append)
+void MainWindow::blockDevice(quint32 id, bool permanent)
 {
   try {
-    IPCClient::blockDevice(id, append, 0);
+    IPCClient::blockDevice(id, permanent, 0);
   }
   catch(const usbguard::IPCException& ex) {
     showMessage(QString("IPC call failed: %1: %2: %3")
@@ -391,10 +391,10 @@ void MainWindow::blockDevice(quint32 id, bool append)
   }
 }
 
-void MainWindow::rejectDevice(quint32 id, bool append)
+void MainWindow::rejectDevice(quint32 id, bool permanent)
 {
   try {
-    IPCClient::rejectDevice(id, append, 0);
+    IPCClient::rejectDevice(id, permanent, 0);
   }
   catch(const usbguard::IPCException& ex) {
     showMessage(QString("IPC call failed: %1: %2: %3")
@@ -539,13 +539,13 @@ void MainWindow::commitDeviceListChanges()
     switch(target)
     {
       case usbguard::Rule::Target::Allow:
-        allowDevice(id, /*append=*/false);
+        allowDevice(id, /*permanent=*/false);
         break;
       case usbguard::Rule::Target::Block:
-        blockDevice(id, /*append=*/false);
+        blockDevice(id, /*permanent=*/false);
         break;
       case usbguard::Rule::Target::Reject:
-        rejectDevice(id, /*append=*/false);
+        rejectDevice(id, /*permanent=*/false);
         break;
       default:
         break;

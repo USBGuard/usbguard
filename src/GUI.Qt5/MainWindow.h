@@ -72,9 +72,9 @@ protected slots:
   void notifyIPCConnected();
   void notifyIPCDisconnected();
 
-  void allowDevice(quint32 id, bool append);
-  void blockDevice(quint32 id, bool append);
-  void rejectDevice(quint32 id, bool append);
+  void allowDevice(quint32 id, bool permanent);
+  void blockDevice(quint32 id, bool permanent);
+  void rejectDevice(quint32 id, bool permanent);
 
   void handleIPCConnect();
   void handleIPCDisconnect();

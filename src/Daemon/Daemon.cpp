@@ -53,7 +53,8 @@ namespace usbguard
     "PresentDevicePolicy",
     "PresentControllerPolicy",
     "IPCAllowedUsers",
-    "IPCAllowedGroups"
+    "IPCAllowedGroups",
+    "DeviceRulesWithPort"
   };
 
   Daemon::Daemon()
@@ -87,6 +88,8 @@ namespace usbguard
     _implicit_policy_target = Rule::Target::Block;
     _present_device_policy = PresentDevicePolicy::Keep;
     _present_controller_policy = PresentDevicePolicy::Allow;
+    _device_rules_with_port = false;
+
     return;
   }
 
@@ -164,6 +167,21 @@ namespace usbguard
       _ipc_dac_acl = true;
     }
 
+    /* DeviceRulesWithPort */
+    if (_config.hasSettingValue("DeviceRulesWithPort")) {
+      const String value = _config.getSettingValue("DeviceRulesWithPort");
+      if (value == "true") {
+        _device_rules_with_port = true;
+      }
+      else if (value == "false") {
+        _device_rules_with_port = false;
+      }
+      else {
+        throw std::runtime_error("Invalid DeviceRulesWithPort value.");
+      }
+      logger->debug("DeviceRulesWithPort set to {}", _device_rules_with_port);
+    }
+
     logger->debug("Configuration loaded successfully");
     return;
   }
@@ -212,6 +230,28 @@ namespace usbguard
   }
 
   /*
+   * Search for a rule that matches `match_spec' rule and
+   * update it with a rule specified by `rule_spec'. Fail
+   * if multiple rules match. If there are no matching
+   * rules, append the `rule_spec' rule.
+   *
+   * Return the id of the updated or new rule.
+   */
+  uint32_t Daemon::upsertRule(const std::string& match_spec,
+                              const std::string& rule_spec,
+                              const bool parent_insensitive)
+  {
+    const Rule match_rule = Rule::fromString(match_spec);
+    const Rule new_rule = Rule::fromString(rule_spec);
+    logger->debug("Upserting rule: match={}, new={}", match_spec, rule_spec);
+    const uint32_t id = _ruleset.upsertRule(match_rule, new_rule, parent_insensitive);
+    if (_config.hasSettingValue("RuleFile")) {
+      _ruleset.save(_config.getSettingValue("RuleFile"));
+    }
+    return id;
+  }
+
+  /*
    * IPC service methods
    */
   uint32_t Daemon::appendRule(const std::string& rule_spec,
@@ -244,12 +284,12 @@ namespace usbguard
     return _ruleset;
   }
 
-  void Daemon::allowDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void Daemon::allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     logger->debug("Allowing device: {}", id);
     Pointer<const Rule> rule;
-    if (append) {
-      rule = appendDeviceRule(id, Rule::Target::Allow, timeout_sec);
+    if (permanent) {
+      rule = upsertDeviceRule(id, Rule::Target::Allow, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
@@ -258,12 +298,12 @@ namespace usbguard
     return;
   }
 
-  void Daemon::blockDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void Daemon::blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     logger->debug("Blocking device: {}", id);
     Pointer<const Rule> rule;
-    if (append) {
-      rule = appendDeviceRule(id, Rule::Target::Block, timeout_sec);
+    if (permanent) {
+      rule = upsertDeviceRule(id, Rule::Target::Block, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
@@ -272,12 +312,12 @@ namespace usbguard
     return;
   }
 
-  void Daemon::rejectDevice(uint32_t id, bool append, uint32_t timeout_sec)
+  void Daemon::rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
   {
     logger->debug("Rejecting device: {}", id);
     Pointer<const Rule> rule;
-    if (append) {
-      rule = appendDeviceRule(id, Rule::Target::Reject, timeout_sec);
+    if (permanent) {
+      rule = upsertDeviceRule(id, Rule::Target::Reject, timeout_sec);
     }
     else {
       rule = makePointer<Rule>();
@@ -687,13 +727,13 @@ namespace usbguard
         retval["retval"] = ruleset_json;
       }
       else if (name == "allowDevice") {
-        allowDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
+        allowDevice(jobj["id"], jobj["permanent"], jobj["timeout_sec"]);
       }
       else if (name == "blockDevice") {
-        blockDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
+        blockDevice(jobj["id"], jobj["permanent"], jobj["timeout_sec"]);
       }
       else if (name == "rejectDevice") {
-        rejectDevice(jobj["id"], jobj["append"], jobj["timeout_sec"]);
+        rejectDevice(jobj["id"], jobj["permanent"], jobj["timeout_sec"]);
       }
       else if (name == "listDevices") {
         json devices_json = json::array();
@@ -1034,17 +1074,20 @@ namespace usbguard
     return device_rules;
   }
 
-  Pointer<const Rule> Daemon::appendDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec)
+  Pointer<const Rule> Daemon::upsertDeviceRule(uint32_t id, Rule::Target target, uint32_t timeout_sec)
   {
     Pointer<Device> device = _dm->getDevice(id);
 
-    bool include_port = true;
+    bool with_port = true && _device_rules_with_port;
+    bool with_parent_hash = true;
+
     /*
      * Generate a port specific or agnostic rule depending on the target
      */
     switch(target) {
       case Rule::Target::Allow:
-        include_port = true;
+        with_port = true && with_port;
+        with_parent_hash = true;
         break;
       case Rule::Target::Block:
         /*
@@ -1053,7 +1096,8 @@ namespace usbguard
          * generates a port specific rule and the same device won't be allowed
          * when inserted in a different port.
          */
-        include_port = false;
+        with_port = false;
+        with_parent_hash = false;
         break;
       case Rule::Target::Reject:
         /*
@@ -1061,18 +1105,26 @@ namespace usbguard
          * reject a device, we don't want to reject it again when the same
          * device is inserted in a different port.
          */
-        include_port = false;
+        with_port = false;
+        with_parent_hash = false;
         break;
       default:
-        throw std::runtime_error("appendDeviceRule: invalid device rule target");
+        throw std::runtime_error("upsertDeviceRule: invalid device rule target");
     }
 
-    Pointer<Rule> device_rule = device->getDeviceRule(include_port);
+    /* Generate a match rule for upsert */
+    Pointer<Rule> match_rule = device->getDeviceRule(false, false);
+    match_rule->setTarget(Rule::Target::Match);
+    const String match_spec = match_rule->toString();
+
+    /* Generate new device rule */
+    Pointer<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash); 
     device_rule->setTarget(target);
-    const String rule_string = device_rule->toString();
-    logger->debug("Appending rule: {}", rule_string);
-    const uint32_t rule_id = appendRule(rule_string, Rule::LastID, timeout_sec);
-    logger->debug("Rule id is: {}", rule_id);
+    const String rule_spec = device_rule->toString();
+
+    /* Upsert */
+    const uint32_t rule_id = upsertRule(match_spec, rule_spec, /*parent_insensitive=*/true);
+
     return _ruleset.getRule(rule_id);
   }
 

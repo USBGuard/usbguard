@@ -56,8 +56,8 @@ namespace usbguard {
     const RulePrivate& operator=(const RulePrivate& rhs);
     ~RulePrivate();
 
-    bool appliesTo(Pointer<const Rule> rhs) const;
-    bool appliesTo(const Rule& rhs) const;
+    bool appliesTo(Pointer<const Rule> rhs, bool parent_insensitive = false) const;
+    bool appliesTo(const Rule& rhs, bool parent_insensitive = false) const;
     bool appliesToWithConditions(const Rule& rhs, bool with_update = false);
     
     bool meetsConditions(const Rule& rhs, bool with_update = false);
