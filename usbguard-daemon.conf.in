@@ -49,7 +49,7 @@ PresentDevicePolicy=keep
 # * apply-policy - evaluate the ruleset for every present
 #                  device
 #
-PresentControllerPolicy=allow
+PresentControllerPolicy=keep
 
 #!!! WARNING: It's good practice to set at least one of the !!!
 #!!!          two options bellow. If none of them are set,  !!!
