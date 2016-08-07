@@ -30,6 +30,7 @@ QWidget *TargetDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
 {
   QComboBox* editor = new QComboBox(parent);
   editor->setFrame(false);
+  editor->setAutoFillBackground(true);
   editor->addItems({ "allow", "block", "reject" });
   return editor;
 }
