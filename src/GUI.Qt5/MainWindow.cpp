@@ -531,6 +531,7 @@ void MainWindow::commitDeviceListChanges()
 {
   auto modified_map = _device_model.getModifiedDevices();
   auto modified_it = modified_map.begin();
+  const bool permanent = ui->permanent_checkbox->isChecked();
 
   while (modified_it != modified_map.end()) {
     auto id = modified_it.key();
@@ -539,13 +540,13 @@ void MainWindow::commitDeviceListChanges()
     switch(target)
     {
       case usbguard::Rule::Target::Allow:
-        allowDevice(id, /*permanent=*/false);
+        allowDevice(id, permanent);
         break;
       case usbguard::Rule::Target::Block:
-        blockDevice(id, /*permanent=*/false);
+        blockDevice(id, permanent);
         break;
       case usbguard::Rule::Target::Reject:
-        rejectDevice(id, /*permanent=*/false);
+        rejectDevice(id, permanent);
         break;
       default:
         break;

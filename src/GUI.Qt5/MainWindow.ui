@@ -48,7 +48,7 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="2">
+        <item row="1" column="3">
          <widget class="QPushButton" name="apply_button">
           <property name="enabled">
            <bool>true</bool>
@@ -61,7 +61,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="3">
+        <item row="0" column="0" colspan="4">
          <widget class="QTreeView" name="device_view">
           <property name="enabled">
            <bool>false</bool>
@@ -110,6 +110,13 @@
           <attribute name="headerStretchLastSection">
            <bool>true</bool>
           </attribute>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="permanent_checkbox">
+          <property name="text">
+           <string>Permanently</string>
+          </property>
          </widget>
         </item>
        </layout>
