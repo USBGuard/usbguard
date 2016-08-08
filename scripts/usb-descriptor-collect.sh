@@ -73,7 +73,7 @@ $RM -rf "$TEMPDIR/usb-descriptor-data"
 echo "========================================="
 echo
 echo " Data collection complete!"
-echo " Please send the data archive to dkopecek@redhat.com"
+echo " Please send the data archive to dnk.usbdev@gmail.com"
 echo
 echo " Archive path: $ARCHIVE_PATH"
 echo
