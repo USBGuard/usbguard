@@ -19,21 +19,15 @@
 #
 set -e -o pipefail
 
-function check_cmd {
-  path=$(which $1 || (echo "missing script dependency: $1"; exit 1))
-  echo $path
-}
-
-SED=$(check_cmd sed)
-CAT=$(check_cmd cat)
-FIND=$(check_cmd find)
-LSUSB=$(check_cmd lsusb)
-SHA1SUM=$(check_cmd sha1sum)
-TAR=$(check_cmd tar)
-MKTEMP=$(check_cmd mktemp)
-CP=$(check_cmd cp)
-WC=$(check_cmd wc)
-RM=$(check_cmd rm)
+SED=$(which sed)
+FIND=$(which find)
+LSUSB=$(which lsusb)
+SHA1SUM=$(which sha1sum)
+TAR=$(which tar)
+MKTEMP=$(which mktemp)
+CP=$(which cp)
+WC=$(which wc)
+RM=$(which rm)
 
 TEMPDIR=$($MKTEMP -d --tmpdir usb-descriptor-collect.XXXXXX || (echo "Failed to create temporary directory"; exit 1))
 ROOTDIR="$TEMPDIR/usb-descriptor-data"
