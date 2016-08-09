@@ -56,7 +56,7 @@ for dev_syspath in $($FIND /sys/bus/usb/devices/ -regex '.*/[0-9]+-[0-9]+\(\.[0-
   popd
 done
 
-ARCHIVE_PATH="$TEMPDIR/usb-decriptor-data.tar.gz"
+ARCHIVE_PATH="$TEMPDIR/usb-descriptor-data.tar.gz"
 
 echo "Creating data archive: $ARCHIVE_PATH"
 pushd "$TEMPDIR"
