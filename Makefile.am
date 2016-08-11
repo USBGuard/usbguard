@@ -189,7 +189,9 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleAppliedCondition.hpp \
 	src/Library/RuleEvaluatedCondition.cpp \
 	src/Library/RuleEvaluatedCondition.hpp \
-	src/Library/Utility.cpp
+	src/Library/Utility.cpp \
+	src/Library/Base64.cpp \
+	src/Library/Base64.hpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
