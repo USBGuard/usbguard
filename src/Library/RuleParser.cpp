@@ -32,18 +32,30 @@
 #include <stdexcept>
 #include <stdlib.h>
 
+#include <pegtl/trace.hh>
+
 namespace usbguard
 {
-  Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line)
+  Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line, bool trace)
   {
     logger->debug("Trying to parse rule: \"{}\"", rule_spec);
 
     try {
       Rule rule;
 #if HAVE_PEGTL_LTE_1_3_1
-      pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+      if (!trace) {
+        pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+      }
+      else {
+        pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
+      }
 #else
-      pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+      if (!trace) {
+        pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+      }
+      else {
+        pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
+      }
 #endif
       return rule;
     }
