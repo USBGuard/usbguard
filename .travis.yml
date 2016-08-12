@@ -51,6 +51,9 @@ matrix:
       env: CONFIGURE_ARGS=--enable-debug-build
     - os: linux
       compiler: gcc
+      env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
+     - os: linux
+      compiler: gcc
       addons:
         apt:
           packages: ['pandoc']
@@ -64,6 +67,7 @@ before_install:
 - sudo apt-get install -y lcov
 - sudo apt-get install -y language-pack-cs language-pack-de
 - sudo apt-get install -y aspell aspell-en
+- sudo apt-get install -y libgcrypt-dev
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh
