@@ -100,7 +100,7 @@ libsodium_available=yes,
 #
 # gcrypt library
 #
-AM_PATH_LIBGCRYPT([1.6.0],
+AM_PATH_LIBGCRYPT([1.5.0],
 [AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt API available])
 gcrypt_CFLAGS="$LIBGCRYPT_CFLAGS"
 gcrypt_LIBS="$LIBGCRYPT_LIBS"
