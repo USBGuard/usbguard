@@ -25,7 +25,7 @@ namespace usbguard
   size_t base64DecodedSize(size_t encoded_size);
 
   String base64Encode(const String& value);
-  String base64Encode(const void *buffer, size_t buflen);
+  String base64Encode(const uint8_t *buffer, size_t buflen);
 
   String base64Decode(const String& value);
   size_t base64Decode(const String& value, void *buffer, size_t buflen);

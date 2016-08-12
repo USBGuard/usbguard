@@ -120,7 +120,7 @@ libusbguard_la_CPPFLAGS=\
 	@json_CFLAGS@ \
 	@spdlog_CFLAGS@ \
 	@udev_CFLAGS@ \
-	@sodium_CFLAGS@ \
+	@crypto_CFLAGS@ \
 	@pegtl_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
@@ -132,7 +132,7 @@ libusbguard_la_LIBADD=\
 	@spdlog_LIBS@ \
 	@json_LIBS@ \
 	@udev_LIBS@ \
-	@sodium_LIBS@ \
+	@crypto_LIBS@ \
 	@pegtl_LIBS@
 
 libusbguard_la_SOURCES=\
@@ -191,7 +191,9 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleEvaluatedCondition.hpp \
 	src/Library/Utility.cpp \
 	src/Library/Base64.cpp \
-	src/Library/Base64.hpp
+	src/Library/Base64.hpp \
+	src/Library/Hash.cpp \
+	src/Library/Hash.hpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \

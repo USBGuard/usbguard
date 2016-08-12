@@ -19,8 +19,8 @@
 #include "DevicePrivate.hpp"
 #include "DeviceManager.hpp"
 #include "LoggerPrivate.hpp"
+#include "Hash.hpp"
 #include <mutex>
-#include <sodium.h>
 
 namespace usbguard {
   DevicePrivate::DevicePrivate(Device& p_instance, DeviceManager& manager)
@@ -49,7 +49,7 @@ namespace usbguard {
     _serial_number = rhs._serial_number;
     _port = rhs._port;
     _interface_types = rhs._interface_types;
-    _hash_hex = rhs._hash_hex;
+    _hash_base64 = rhs._hash_base64;
 
     return *this;
   }
@@ -105,39 +105,14 @@ namespace usbguard {
 
   String DevicePrivate::hashString(const String& value) const
   {
-    const size_t hash_binlen = crypto_generichash_BYTES_MIN;
-    crypto_generichash_state state;
-
-    /* Initialize the hash state */
-    crypto_generichash_init(&state, NULL, 0, hash_binlen);
-
-    /* Hash the String value */
-    crypto_generichash_update(&state, (const uint8_t *)value.c_str(), value.size());
-
-    /* Finalize the hash value */
-    unsigned char hash_bin[hash_binlen];
-    crypto_generichash_final(&state, hash_bin, hash_binlen);
-
-    /* Binary => Hex string conversion */
-    const size_t hexlen = crypto_generichash_BYTES_MIN * 2 + 1;
-    char hash_hex[hexlen];
-
-    sodium_bin2hex(hash_hex, hexlen, hash_bin, hash_binlen);
-
-    /* Set the hash value */
-    return String(hash_hex, hexlen - 1);
+    Hash hash;
+    hash.update(value);
+    return hash.getBase64();
   }
 
   void DevicePrivate::updateHash(std::istream& descriptor_stream, const size_t expected_size)
   {
-    const size_t hash_binlen = crypto_generichash_BYTES_MIN;
-    crypto_generichash_state state;
-    /*
-     * Initialize the hash state.
-     *
-     * TODO: Use a hash salt from the configuration.
-     */
-    crypto_generichash_init(&state, NULL, 0, hash_binlen);
+    Hash hash;
 
     const String vendor_id = _device_id.getVendorID();
     const String product_id = _device_id.getProductID();
@@ -150,51 +125,22 @@ namespace usbguard {
      * Hash name, device id and serial number fields.
      */
     for (const String& field : { _name, vendor_id, product_id, _serial_number }) {
-      crypto_generichash_update(&state, (const uint8_t *)field.c_str(), field.size());
+      hash.update(field);
     }
     /*
      * Hash the device descriptor data.
      */
-    size_t size_hashed = 0;
-
-    while (descriptor_stream.good()) {
-      uint8_t buffer[4096];
-      size_t buflen = 0;
-
-      descriptor_stream.read(reinterpret_cast<char*>(buffer), sizeof buffer);
-      buflen = descriptor_stream.gcount();
-
-      if (buflen > 0) {
-        crypto_generichash_update(&state, buffer, buflen);
-        size_hashed += buflen;
-      }
-    }
-
-    logger->debug("Descriptor hashing complete: hashed={}, expected={}", size_hashed, expected_size);
-
-    if (size_hashed != expected_size) {
+    if (hash.update(descriptor_stream) != expected_size) {
       throw std::runtime_error("Cannot compute the device hash: descriptor stream returned less data than expected");
     }
 
-    /* Finalize the hash value */
-    unsigned char hash_bin[hash_binlen];
-    crypto_generichash_final(&state, hash_bin, hash_binlen);
-
-    /* Binary => Hex string conversion */
-    const size_t hexlen = crypto_generichash_BYTES_MIN * 2 + 1;
-    char hash_hex[hexlen];
-
-    sodium_bin2hex(hash_hex, hexlen, hash_bin, hash_binlen);
-
-    /* Set the hash value */
-    _hash_hex = String(hash_hex, hexlen - 1);
-
+    _hash_base64 = hash.getBase64();
     return;
   }
 
   const String& DevicePrivate::getHash() const
   {
-    return _hash_hex;
+    return _hash_base64;
   }
 
   void DevicePrivate::setParentHash(const String& hash)

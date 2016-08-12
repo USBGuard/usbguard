@@ -92,9 +92,61 @@ libqb_summary="system-wide; $qb_CFLAGS $qb_LIBS"],
 #
 PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
 [AC_DEFINE([HAVE_LIBSODIUM], [1], [libsodium API available])
-libsodium_summary="system-wide; $sodium_CFLAGS $sodium_LIBS"],
-[AC_MSG_FAILURE([libsodium development files not found!])]
+libsodium_summary="system-wide; $sodium_CFLAGS $sodium_LIBS"]
+libsodium_available=yes,
+[]
 )
+
+#
+# gcrypt library
+#
+AM_PATH_LIBGCRYPT([1.6.0],
+[AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt API available])
+gcrypt_CFLAGS="$LIBGCRYPT_CFLAGS"
+gcrypt_LIBS="$LIBGCRYPT_LIBS"
+libgcrypt_summary="system-wide; $gcrypt_CFLAGS $gcrypt_LIBS"
+libgcrypt_available=yes],
+[]
+)
+
+#
+# --with-crypto-library=<selector>
+#
+# Supported selectors:
+#
+#  sodium ... libsodium
+#  gcrypt ... libgcrypt
+#
+AC_ARG_WITH([crypto-library], AS_HELP_STRING([--with-crypto-library],
+            [Select crypto backend library. Supported values: sodium, gcrypt.]),
+            [with_crypto_library=$withval], [with_crypto_library=sodium])
+
+case "$with_crypto_library" in
+  sodium)
+    if test "x$libsodium_available" = xyes; then
+      crypto_CFLAGS="$sodium_CFLAGS"
+      crypto_LIBS="$sodium_LIBS"
+      crypto_summary="$libsodium_summary"
+      AC_DEFINE([USBGUARD_USE_LIBSODIUM], [1], [Use libsodium as crypto backend])
+     else
+      AC_MSG_ERROR([The selected crypto backend library is not available.])
+    fi
+  ;;
+  gcrypt)
+    if test "x$libgcrypt_available" = xyes; then
+      crypto_CFLAGS="$gcrypt_CFLAGS"
+      crypto_LIBS="$gcrypt_LIBS"
+      crypto_summary="$libgcrypt_summary"
+      AC_DEFINE([USBGUARD_USE_LIBGCRYPT], [1], [Use libsodium as crypto backend])
+    else
+      AC_MSG_ERROR([The selected crypto backend library is not available.])
+    fi
+  ;;
+  *)
+  AC_MSG_FAILURE([Invalid crypto library selector. Supported selectors: sodium, gcrypt])
+esac
+AC_SUBST([crypto_CFLAGS])
+AC_SUBST([crypto_LIBS])
 
 #
 # Check for optional libraries
@@ -553,7 +605,7 @@ echo "## Libraries"
 echo
 echo "    libudev: $libudev_summary"
 echo "      libqb: $libqb_summary"
-echo "  libsodium: $libsodium_summary"
+echo "     crypto: $crypto_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "       json: $json_summary"

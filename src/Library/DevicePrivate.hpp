@@ -85,6 +85,6 @@ namespace usbguard {
     String _serial_number;
     String _port;
     std::vector<USBInterfaceType> _interface_types;
-    String _hash_hex;
+    String _hash_base64;
   };
 } /* namespace usbguard */

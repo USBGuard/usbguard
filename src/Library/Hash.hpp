@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2016 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,47 +18,33 @@
 //
 #include <build-config.h>
 
+#include "Typedefs.hpp"
+#include <cstddef>
+#include <istream>
+
 #if defined(USBGUARD_USE_LIBSODIUM)
 #include <sodium.h>
-#endif
-#if defined(USBGUARD_USE_LIBGCRYPT)
+#elif defined(USBGUARD_USE_LIBGCRYPT)
 #include <gcrypt.h>
+#else
+#error "Don't know which crypto library to use."
 #endif
-
-#include <stdexcept>
-#include <clocale>
 
 namespace usbguard
 {
-  class LibraryInit
+  class Hash
   {
-  public:
-    LibraryInit()
-    {
-      std::setlocale(LC_NUMERIC, "C");
-
-      /*
-       * FIXME: Provide a mechanism to disable the crypto library
-       * initialization as it might interfere with initialization
-       * done by third-party applications.
-       *
-       * gcrypt: whether initialization was performed or not can
-       * be queried using:
-       *  gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P, 0);
-       */
+    public:
+      Hash();
+      size_t update(const String& value);
+      size_t update(std::istream& stream);
+      String getBase64();
+    private:
 #if defined(USBGUARD_USE_LIBSODIUM)
-      if (sodium_init() == -1) {
-	throw std::runtime_error("Cannot initialize the sodium library");
-      }
+      crypto_hash_sha256_state _state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-      if (!gcry_check_version(GCRYPT_VERSION)) {
-        throw std::runtime_error("Cannot initialize the gcrypt library");
-      }
-      gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+      gcry_md_hd_t _state;
 #endif
-    }
   };
-
-  static LibraryInit library_init;
 } /* namespace usbguard */
