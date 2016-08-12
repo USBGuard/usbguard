@@ -21,11 +21,14 @@
              to change authorization target for each device
 - Qt Applet: show a grey version of the USBGuard icon in IPC disconnected state
 - usbguard-daemon.conf: added DeviceRulesWithPort setting (set to false by default)
+- Added support for selecting crypto backend library at compile time using the
+  --with-crypto-library configure script switch
 
 ### Changed
 - **IMPORTANT**: The device hash value computation was changed to include the
-  USB descriptor data. This is a backwards incompatible change and existing
-  policies that use the hash attribute need to be updated.
+  USB descriptor data. Additionally, the algorithm was changed to SHA-256 and
+  the hash value representation to base64. These changes are backwards incompatible
+  and existing policies that use the hash attribute need to be updated.
 - Reimplemented the rule parser using PEGTL
 - Changed public API of the Rule and Device classes because of the new
   Rule::Attribute class rule attribute representation
@@ -44,6 +47,8 @@
   updated instead of just appending new rules to the policy.
 - usbguard-daemon.conf: changed the default configuration value of
   PresentControllerPolicy to keep
+- Changed the device hashing algorithm to SHA-256
+- Switched hash value representation from hex to base64
 
 ### Removed
 - Removed Quex related files
