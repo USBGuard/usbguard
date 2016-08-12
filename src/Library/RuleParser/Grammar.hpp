@@ -54,13 +54,13 @@ namespace usbguard
    * Generic rule attribute
    */
   struct multiset_operator
-    : sor<str_all_of, str_one_of, str_none_of, str_equals, str_equals_ordered> {};
+    : sor<str_all_of, str_one_of, str_none_of, str_equals_ordered, str_equals> {};
 
   template<class attribute_value_rule>
   struct attribute_value_multiset
     : seq<opt<multiset_operator, plus<ascii::blank>>,
           one<'{'>, star<ascii::blank>,
-          list<attribute_value_rule, ascii::blank>,
+          list<attribute_value_rule, plus<ascii::blank>>,
           star<ascii::blank>, one<'}'>> {};
 
   template<class attribute_identifier, class attribute_value_rule>
@@ -190,7 +190,7 @@ namespace usbguard
   struct rule
     : seq<target,
           opt<plus<ascii::blank>, device_id>,
-          opt<plus<ascii::blank>, list<rule_attributes, ascii::blank>>> {};
+          opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>> {};
 
   /*
    * Grammar entry point
