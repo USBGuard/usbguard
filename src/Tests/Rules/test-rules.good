@@ -1,32 +1,735 @@
 allow
+allow hash "0,;UW~fn" id { 7Dbb:* } serial "R0Ci+jH'" parent-hash { "f<A^w5kG" } name "g-!};_LI" with-interface equals { 4d:61:* B1:bA:* db:dE:A9 B2:*:* 3A:aE:* 6d:*:* } via-port { "|+|iC%y4" "}SB@jbVd" }
+allow hash { "0xl,MC&i" "NlcFk|zb" }
+allow hash "4pAg0-_k" with-interface equals-ordered { Cd:*:* D7:Ff:ae E2:*:* 52:B0:* 4D:*:* 0d:21:* } via-port "<Q~kbL2x" name equals { "wSNm}ee/" "ZlGma_Cc" }
+allow hash "6CJS2jC_" id 5cBE:fc52 with-interface equals { 00:c1:A6 2E:*:* 1e:*:* c6:ae:0F 9F:*:* 3C:*:* } serial "=5G-xMpI" parent-hash { "S/jizvNq" "Iv?at~-p" "xX'-L[Rh" "l i}~|dJ" "y,pb@rb;" "klo/3LRA" "2[U$~|x~" "##GJ'tW|" } via-port "A?DY5T+{"
+allow hash "6^~>+n`s" via-port "/^WlPN7G"  if rule-evaluated
+allow hash "7<i=TJ=;" id e66F:* via-port "<}/&8+-<" name one-of { "^]MT5JD+" "juNe:J|l" "RRm}H<2'" "G e0ly.H" "BuivZ A!" "3Tk'J{F." "i6<0Tr{'" "`xT+ub1[" } parent-hash "Wu qXWbR"
+allow hash "]8cP`~0'"  if !true
+allow hash all-of { "in?Q!sXJ" "rMbv+-Ez" "kY_0YN3j" "osI$Flk{" "t!'e0|?q" "3d{P>/<m" }
+allow hash all-of { "z$6EAE`V" "5n?ou$O/" } parent-hash none-of { "Uc>G>!^p" "qV*i-WBa" "n0|g}USf" "dcQck[gN" "PQ<$8>`<" "9p#l$|Zz" } id none-of { F53A:* EE2D:f1aD 37AC:* 3F4E:64Cc Bdae:C0Fa }  if !localtime(2:00)
+allow hash "`dcN*WO{" name "77QNHYnV"  if true
+allow hash "]:.drVPa" serial "v]s`5riB" via-port "%C`qdl9b" id all-of { fA6E:* b8aE:* } parent-hash "!dcVB5iT"  if allowed-matches(name "mIba4_Mk")
+allow hash "ED2+}Aq;" via-port { "40&EC96o" "R}h>w8bo" } parent-hash none-of { "O-r:.&r@" "!8q1mk`]" "~RaG}];g" } name "xk52974}"
+allow hash "}ENfT*po" serial "+!5<!NIS"
+allow hash equals { ">>^#.e57" "Bh:H^^]p" "iKyrj'pU" "@9#Y[L`b" "h<}5Bx8Q" ".`B2yV%]" "sk.KTkP?" "c0JwUOVF" }
+allow hash equals { "^~{X`8%G" "l2ZG4|0;" "7KfL'b}G" "lt]n3L6?" "FG5k+TZ=" "Vz G3qgF" }  if localtime(1:00)
+allow hash "G4Rs_h^K"  if equals { true false !true false }
+allow hash ";[+iMTt8" parent-hash "<|t33w6A" serial "[IM:Uk_x" via-port { "-+<P/6/V" "M&[oGt*@" "gO{9=mwU" "L`i]o,Qj" "g-RKv3WE" ",L<m7 T{" } name equals-ordered { "?vg>C%r2" }  if !true
+allow hash ".J5^}hQb" with-interface 5F:2e:7E name { "h<i%z5/w" "b5p~T|@n" "s!2lMYCH" "=W``_H!K" "0-EzB0$$" ".b24c!>&" "?K[l4Aqj" "DT4mJ'l:" } parent-hash "+%B|QI?J" serial one-of { ";1r?7CK{" "B[{$Z9Zs" }
+allow hash "nK1,uv0#"  if random
+allow hash none-of { "_aIEAY0#" "%T&N>rOM" }
+allow hash none-of { ".g$YW/wh" } id { 68bd:* }  if false
+allow hash none-of { "l1p^N/f|" "WT9J&<'o" "%9B:~Gsj" "TL,%eV^;" } id one-of { 5abc:9CF8 251b:* 3cE8:* fEA4:E9c2 eC4b:cBb2 } parent-hash equals { "X7N]j&@&" " ZC73tCY" "Mh~*pfG5" "A!IMm wH" "=mAH/N3x" "1fcf>wS4" } name "{Fm1CveV" with-interface equals-ordered { 7b:*:* CE:*:* 9d:*:* c9:86:56 } serial "v5 r!_%z"  if !localtime(2:00)
+allow hash none-of { "ZHf7%6|N" "FA'+RV+9" "?>T.<>!W" "yG%'yESl" "z`auPzt]" "rZ /Xcz'" "uhW8Gx{," "mee*EO7c" } parent-hash equals-ordered { "1+oKbeQS" "$[!I+$9y" "Lfs-6a.}" "}&+<&ImA" } with-interface equals { 6F:*:* d7:3c:* f7:3D:* } serial one-of { "Mapp{$~A" "|D05t[i3" }
+allow hash one-of { "Dkd!Q#=+" "CfE5nF8k" "'s#S9?|." } id all-of { 1F7E:* c071:6f21 802e:* 597f:D40D D7DC:* 5Fb5:E9A7 } serial { ":0d&r~!K" "XM~fa90H" "D 6TPPY%" } name "J>'#e%a9" with-interface CC:*:* parent-hash equals-ordered { "l9~!%<Hz" "6r9zo+kX" }  if !true
+allow hash one-of { "sb5B=K39" "0kmYyNo$" "c<1,9:K}" "6 7P&;=`" "&Rc#%VYH" "lO'#ANN5" "NSsHt-8q" "/Z/ry:j<" } id equals-ordered { 193f:4c3f 3EA2:* ecA6:* 7F6A:* EcdA:e0C9 } via-port equals-ordered { "}wIpUFxQ" "$J{h]iNb" "Z2HHx]rS" "2Zt][,wl" "qpsBx ,," "&&rw5J>M" "s=j,ae%{" "&%6;CGO!" } with-interface 6B:CC:aE
+allow hash { "PPF@}b$w" "kWEdlQP]" "xf1.6KU." "[W}|d8@w" "iiegC8j'" "b:,Oz7b`" }  if !false
+allow hash "$`.V[[pp" serial all-of { "~&4>K V/" } parent-hash one-of { "lhY4P~HZ" "e=Ffoxc$" } via-port all-of { "1ojWQ6aI" "7XX!-Wl7" } with-interface { 59:*:* bD:*:* 6e:e6:1d 48:B0:* } name "/p`.VJo3" id { C08f:B236 a3C6:* c172:* 172e:* b4EC:5Abe 3fFc:* }
+allow hash { "XGhA|X2O" "$m1pNS?Z" "dJ^14C5G" "m_6$Ih?>" "Y8T~fQEw" }  if !false
+allow hash { "Yh-b02~R" } via-port "1:,-fGHp" parent-hash "4 /Y,%7#" id 9E22:* serial equals-ordered { "Q5Pf{3,o" "Mz'ins,j" "8St ![=~" ",.aGjpEF" "[~2hoeW+" "Okz:luY$" } with-interface f1:B7:*  if !false
+allow hash "Ze$Y]H-}" serial { "Vf0rpbah" "OABxYWKs" "gr%EW`a8" } name { "W[X7V?5H" "4lRj=/z:" "i,xidFv?" "GFk%I*Kw" "hYw;84}>" "| Pcppq]" "{Dq:R2I[" } parent-hash "V=Tm&QNu" via-port "5pkH%vF1" with-interface one-of { 9b:DC:* bE:*:* e1:FE:8E }
+allow hash "}z;-h7lN" serial { "r9}TsY|a" "8 %Fm9qt" "8GN+~AhO" "4#F5/umx" "]j+B8_X " "re0J-H&g" "BTB@VR!~" } with-interface 7c:ef:9d id none-of { bDaC:93a9 c89B:E54E Aa0d:6b1F add8:* 88c4:F43c 1951:* 6bAF:* 525a:aEd5 } parent-hash none-of { "SeiB;IA2" "#5NgvMKr" "`uGLEvkc" }  if rule-evaluated
+allow id { 05fe:2F6d dc7E:2D96 58b1:C3Fc Bdba:1FF9 }  if equals { true false !true false }
+allow id 0da4:bCa4 with-interface { 8B:A1:33 Fd:F0:* CE:88:Aa bC:b0:B6 7F:dc:* dc:a0:* 49:5C:* F5:91:c9 } parent-hash all-of { "Qzr|1q[_" "KJ[jX{xE" "Q.!1S]6L" "4$--bt$0" }
+allow id 20F6:*
+allow id 48c9:B016 name "KOGY9jPX" with-interface fe:0b:* hash "oyH8A,$!"
+allow id { 5D3C:* 1b7A:b4Fd 8e78:* BD37:* } name { "ylD+:/QD" "Y@euy;FU" "F`^H5kN/" "XO}Lx,a|" "<x3W.Hr?" "Nq2^BN~q" } parent-hash "YXu_=*5Q"
+allow id 6A3A:* name "kB3U.zKZ" with-interface { 25:*:* 96:f6:* Ac:*:* 3B:72:DE 35:5b:* 59:81:* BA:*:* } hash one-of { "YBLvJ[v0" "&QJyrBdo" } serial { "gs{?lP:&" "zQP7>H6!" "DgB[7?5T" "uj.[jx!u" }  if random(0.4)
+allow id 72Af:bfba
+allow id 7DfA:* with-interface DD:e5:Be parent-hash "YTv7H7H%" via-port "0uq<hva?"  if rule-applied
+allow id { 82C0:b010 } with-interface 1d:f4:C3 via-port equals-ordered { "NzsW$RqY" "iOh.SY|=" "`CYCr2k4" "9pdCNp82" "nalczg|b" "^^Wpl]mt" } hash "<:>Z07UE"
+allow id 8eC5:2C0c
+allow id { A3Ad:* e055:* b604:* E5Ad:F2fe } hash "ET_HeN*q"  if one-of { true false !true false }
+allow id aB52:77bF parent-hash equals-ordered { "A3v9`>/+" "p~rv^nX " "rz8?C3:Y" "3SZ`SCw{" } via-port { "VIt>_={s" "cT]4COiw" } name none-of { "aG;R`0ds" "NgG{A:@h" "eN,+x=$r" "C0;EZ+g8" "<4n=yjC4" } serial { "+$7LGe.y" "F6s-r`%@" "WO_J|n,>" } with-interface { F2:*:* } hash "P&qIs}z."  if random(0.4)
+allow id all-of { 451C:B71F 43bb:* DEBF:EAFA 1Dea:70a7 bd2e:D081 bf2D:0520 965b:D9b5 9Ac6:FfFb } hash "PyG; {74" via-port "dUWuEnRL" name "}gYy!+%@" parent-hash "V_<Tqgr#" with-interface bB:BB:*
+allow id all-of { AC2a:CECd 9c2B:4fb3 f0A1:65Be fEdF:4E5B } hash "7CAl3?=G" via-port { "06-Vx>/o" } serial "X|B74.!P"
+allow id all-of { f30E:* 5958:D3b6 f011:0F3e B8ca:* 490b:* 62f5:* 83C3:03CF 4feb:8670 } name "2Qe];N4v" parent-hash "+QWdQN5a"  if none-of { true false !true false }
+allow id { B946:* 80D2:* FEac:BfD0 3c95:1Bc7 5D17:5FB5 } via-port { "~QpGvq4J" "`@<Q;}%Z" "2#f5J@$ " "2MSM]w87" "Ucl}1*Vz" "fx-hT1BI" "hzNA,khE" } with-interface 8F:Bf:*
+allow id { BdcE:9327 F3E3:b2c1 13F6:* BCd2:2Bdd FF57:A675 } serial none-of { "2.>*JB^v" "Q&A7Gl%r" "3ft_s>k{" } parent-hash equals-ordered { "dA&3ON]`" "O2OS|dD#" "TDYRcq1a" "a'kBKxjc" "]FTZ>Z=N" "]:;YJpx3" "K6W }mA~" }  if random
+allow id c260:db5a name "p;_SQ#>L" hash { "Oes4J15<" "x&XKMkp&" "2V+woIfH" } serial ":/2T.nBf" with-interface { 35:18:0f e8:F9:* 17:d3:2F Ff:*:* 71:CB:A2 03:dE:C6 Ff:*:* } via-port one-of { "W9nu]BwQ" "N}_J'*IG" "PFrDg`6Y" "%dRgg= $" }
+allow id c76C:C376 parent-hash "1UWK2fl0" name ">]yZsrHU" with-interface Cd:D9:d7 hash "sJL''W3r"
+allow id c7ed:*
+allow id C8bB:dcCC name none-of { ". m'^RD*" "'zj,of#m" "-2RwM-rh" "hOH8S;`_" "Xm{CNeaN" "Ce-G@=A5" "-/y:O4Qs" } hash one-of { "/jBC#9kV" "[Dp,S=D{" "$dL:dX@a" }
+allow id Cb83:a9Be with-interface { 8d:DF:* 35:1F:09 F6:0d:* 3B:f4:* c7:DB:d0 } hash "zHD=j|a+" via-port "$H*'?,iB" parent-hash one-of { "N,h-'/f4" "$OOiB7K[" "86*X;B]1" "4C7PDxoQ" "WA?`>:]~" "6te1E5%j" }  if rule-applied
+allow id D408:10FE
+allow id { E55A:ECce Dc25:AC43 E2e0:1Eeb f2bb:* EDcE:Ca4B FC5a:8E2c 05D4:* } serial all-of { "]7@n[1ne" "+'YRO_ `" "PX3B?e{h" "DT@~'zRU" } with-interface A0:Df:aE via-port { "1`&!3HwN" "@%l4H Xc" "E<pRgj2M" "xaDN=aW_" "GO=F6$aC" "`T%!3F'_" "OF}-@CVr" }
+allow id { Eac7:* 05Fd:* BbCe:B086 7D9a:* } with-interface 7d:01:*
+allow id Ef0E:* name ".NY8:SMr" hash { "#;4/fq@B" "BH8r0Q:x" } serial { "tRKdra|8" "SOY?iio." "q1|p5IA`" "JYT~oW*V" "o2euUu6z" "-c4vVg!]" "Q3n 9iB!" "C =>^rGr" } parent-hash "o'hfJcWM" with-interface d3:6E:5E via-port "<$'q;*z;"  if equals-ordered { true false !true false }
+allow id equals { eAf0:* 8c1F:BdbA A4c2:* } with-interface Fa:Ed:B5 serial { "Z$VaGc @" "dpk[]q.E" ".=]vVV7h" "u[8zh9VJ" "brrZLkLC" "PGyQyu3{" ">9ji5:GV" "s97swV4U" }
+allow id equals { fAfB:* } with-interface { 2A:32:* Ac:eB:* c9:c8:* B7:fA:7A 63:eb:1f } hash "&.o~[n@+" parent-hash "oZ?:o'W[" name "y]jIUd2~"  if !true
+allow id equals-ordered { 2Ddf:22ef } parent-hash "A!egv?S<"  if rule-applied
+allow id equals-ordered { 6c7F:* 6D6b:DdDe } via-port none-of { " h~c1<Df" } name none-of { "1~K/GS8[" ",2~zv EX" "C8baZnhF" "tG:b6rSW" "*hni#6ac" "*_'z|p/@" } parent-hash { "@b8MCWQp" "3?<3N?v@" } serial "h:_/,ntP" with-interface { 31:C8:4b 8B:1a:* 3a:fA:2A fA:*:* AD:F4:F4 }  if rule-applied
+allow id equals-ordered { A2eA:c2CD DCc3:* cdD4:455A 7FE7:dB91 fBa5:cFF4 EcEA:5B41 3F8F:* 9fAF:FBa4 } with-interface { 5A:2c:* DD:62:1A } name "4o`!`s@*" via-port "p.w9~HaL" hash "dPpVn$Q;" serial one-of { "CRr'iT3_" "'^-/N/r/" "d{&b_cxd" "n^^R?B7u" "TE/L_+M*" "tgB_~'xh" "lqxX{&li" }
+allow id equals-ordered { B10F:* 4eAa:76Ed Bc8F:4e47 b228:FbFb } hash { "eJ2`e#YQ" "ZXE'@^mB" "yDWE4'A]" } with-interface 08:b5:80 serial equals-ordered { "9[i9z'zx" "Dc8i;K,+" "BykN' %H" "{U5L@+iQ" "f3Vu<p>*" ":M%Ui>8<" "FY1bT9D3" } name "j]t7<2v7"  if one-of { true false !true false }
+allow id equals-ordered { D495:* 056f:* 7FB3:* d1fF:eE79 } parent-hash { "$8LO231_" "5SP0qyB9" "~[5+nh2X" "VjuuAOQ9" "3wuU8Xz5" "ARF@0Y2>" "GnM>tIAN" "3%?K+uuA" } via-port "qEMw&;Oy"
+allow id equals-ordered { ec40:* 33ae:* 0132:DEAa 3e9D:* Cae1:c797 04aF:6Da1 } hash equals { "L[!1|}Ac" "u?,^/[-|" "zph#X|D%" } with-interface Fd:*:* name all-of { ".PIxe29n" "zL9vQizi" "Vne?{?'Y" }  if !false
+allow id equals-ordered { EcE1:* 0240:B0AF EB5D:* 65A6:bc64 B994:E8F6 EFD6:* } with-interface equals { 8b:3C:cb dB:Bf:9d d0:*:* C6:aF:fE 62:8f:cC } parent-hash "07[`C+9u" via-port all-of { "lw&'GZ>p" "oKlvq+{g" "}i]Xb'pO" } name "9u>+Np/." hash all-of { "Hve1[Jx-" "-[7ltq:#" "DPru/Dtu" "D,7bJQ~o" "-@0F&<=&" "M'Bjgq?v" "5Q~Xx.{X" } serial "J,n~<ZBP"  if false
+allow id { f958:39Fa BeDe:0eFa dCf9:B01C c9ca:27Fd 14ff:A007 } parent-hash one-of { "-A@<!Ig." "rkKu.yQ0" " K<S/x3'" "dq$33bB|" ";$*$dcM+" "i^M|ePnd" "|8zGf1X*" }
+allow id FDD3:* via-port none-of { "?e=;%SOJ" "c$~6soIP" "NWs,-N%3" "sG9w3Qez" "Dv'z/zt6" "xgkZ~uY]" }  if random
+allow id none-of { 235A:C08e 25AE:* 250b:D94c a0e9:* FCAd:* } serial "P_>b9X%q" via-port { "fTptq#Q9" "~['/1 2L" "8c@pX7hX" "Fou=^`~S" } with-interface 5d:65:C3
+allow id none-of { 4B70:* } serial one-of { "6JqhX7a|" "}dV^t{gv" "!y>~auXi" "3X4,.Tls" "54n_J;Q?" } via-port "kgA81,-r" with-interface CB:*:* parent-hash { "s, <oI.$" "nszxLsUK" "B*,rp5]S" "nB&m81a-" "h4p9yI>X" "_PwWqo=1" }  if !true
+allow id one-of { 874a:A0B8 } parent-hash all-of { "GMb!D3I_" "bxF4[l5N" "*tM{'!'+" ",Tco:?hg" "D?U`;=0-" "P_GfeNV%" } hash { "rOHjh;8%" "E'[[Fq3=" "U{3aVyHL" "[c rnTm$" "z3'rghe[" "8]TGNLO%" "66E[G40h" } with-interface 07:Ea:*  if !false
+allow  if all-of { true false !true false }
+allow  if allowed-matches(name ":[-iqZSZ")
+allow  if allowed-matches(name "<Jlcv}$N")
+allow  if allowed-matches(name "mfoB!!Z-")
+allow  if false
+allow  if !false
+allow  if localtime(1:00)
+allow  if !localtime(2:00)
+allow  if random
+allow  if rule-applied
+allow  if rule-evaluated
+allow  if true
+allow name "`2[cOu&8" serial "nw@acm?>"  if !false
+allow name { "37p3KD0x" "5z~b</+Y" "BkgQ[5qQ" } id 3Eea:4caf serial { "z&r,R`w0" "rF+'iI]V" " }|_@c_C" "0M*+RhbB" } via-port none-of { "AThi9rDW" ",x@[G^lB" "}tg`8F>z" "h ?2LMf&" "oCV{w=8h" "8qHrb,d[" "s[9kX,yz" ":!^uH[Vy" }
+allow name "3D~eQFQn"
+allow name "3Z|DTZq=" with-interface 85:Ef:Cf serial "d`~6Cu=>"
+allow name "6'G^QN?x" id { d762:65D3 EFbd:* ed10:F7CF c396:EE28 } hash "}${i|4!o" via-port one-of { "EQb9Mzv*" "R}|/Ai_{" "VpoE,d7@" "'QJ`NUgS" "3T/50kAt" ",uW%p<&o" "-xZcF~$t" "#]TZfEFQ" }  if rule-evaluated
+allow name "9@7!n{A%" id { aEa1:* 6bfC:* 1aa8:1685 } serial "9fh47>H%" parent-hash { "zxcUD&.2" "Aw=j+-'i" }
+allow name "cD&=*qkq" hash none-of { "/WSKm8b?" "mb++4:3I" "3UY#SZXf" "hDjN;{a_" "@U vf|4L" } parent-hash { "K_i=]Hx>" "#UZeheA@" "Na9D>'!v" "j/,b[ nL" "fAYN!*;N" "}M<$,h7K" } serial "KgEYoZxx"
+allow name "']D0sP&M"
+allow name "/DCOH}@<"
+allow name { "du9L16I " "RiKHm8Tn" "gE/kbws}" } parent-hash "1N^nE0-6" id 4C7F:* hash "#}u?P~Tq"  if rule-applied
+allow name equals { " :6#e*Q;" "6>ja^0mE" "cde=`$kf" "!Q>F2][." ":4uLy@?N" "e7qJkQ=d" "s4w#JWZn" } hash "BZ:Rs,AF" via-port { ":{bSGo0^" } serial { "#|0#fK/M" "<#Y_oIT_" } parent-hash { "q{UtS-B0" "3Af*y&SP" "6OFD!,']" "ryf1'F,'" "xx!Et !_" "HQiPr:Db" ",Y =LT4u" "[T8dN:C6" } with-interface one-of { d5:F8:* 63:*:* Cc:1D:* c8:c2:09 } id one-of { aA08:* aB8B:C85a cdA4:53bE 9dAe:* B4ef:7C82 }
+allow name equals-ordered { "&],UqnDi" } hash "Db{f$[Lv" parent-hash "HHC@t4%w" serial "]*M}[r=5" via-port { "e6rPZ]t." ";=DY-Wqz" "J@q!t'@v" "H;-~rFd:" } with-interface bE:12:*  if rule-evaluated
+allow name equals-ordered { "#+YB h:2" "mE=:SKc," "q{@4fsSv" } id 0f2B:* with-interface { 8E:0B:39 fA:*:* 21:58:* 9e:A6:0a } via-port "Vp#rh#m,"
+allow name "GqUY{0Ut" parent-hash "?;iHlp Z" serial "f6?,LBv}" with-interface { 83:E4:eF c2:11:* a3:4f:* a9:94:* F1:*:* Cc:*:* bA:ed:Ab fe:38:f2 } hash all-of { "%`$ec*.Y" "f4,G}6lB" "&w`Ucdcq" "MUVz'UI}" "D6.PaC1g" ".UA5xz3N" } id 7fAe:* via-port equals { "A<0dr.AA" "7N0iB;X}" "W!e^1G&&" "a4BH<s6Y" ";Ty4xk=y" "]jjH**kk" "Rc:Hjiy7" }
+allow name "}!gXOrTV" id one-of { 8BbE:* b10D:DAbf 7A2f:* } hash "g^#pI:[d"
+allow name ".~=%h/3V" id 06dC:* with-interface b4:DD:db serial { "g7slq8@f" "KtK@aJ##" "AyAPq]mp" "#_f-@,1^" "rLGO:|{H" "jYHqg8dt" } via-port none-of { "I+l|1ZI-" ",p.Vm~__" "<'|I;}#T" " {KOT.Aa" "mV2qQ0Jf" } parent-hash { "`wvM+LSD" " x-lp-P'" "mz!I[*BN" "l49|0f[R" "io}f_KGe" "'H%Gn/wm" } hash none-of { "*pKSdB#Z" "I<#$$Zbc" }  if !true
+allow name "jB]]IetK" via-port one-of { "' Jzi/o<" "!p>z:XOx" "W!mhO{L}" "DOdT/ 5A" } parent-hash "2$^xC7-`" serial all-of { ",I2r9;3}" "1CI_]QEu" "DTg78`Zp" "e,5`PfuZ" "|q^LpDd1" "-m3DH3'v" } id equals-ordered { 8dda:8BBf }  if false
+allow name "`k?PG#J4" parent-hash one-of { "{i3{jwf`" "0!6efXQ!" "7?Uog-X;" ",roZSqx0" "o?L7H+g?" "NDYoy5s^" } serial "Wha!%Rq9" via-port equals { "Mw3s1*#g" "-Ro@q0M~" } hash "20OO7g>z"
+allow name "l+I-j+&q" hash "81_}}RUb" id { ebe7:* aDCf:* D329:e8e0 9fab:A659 f4e6:* 7Bc4:78Bd FcAb:ABe9 } via-port none-of { "ZZr$x->i" "uTW7l^JO" } parent-hash equals-ordered { "bg?j!M3O" "~iWT#~uZ" " OsS6L7m" } serial "%GVv.0<r" with-interface equals { 4f:*:* 2d:87:* 7B:*:* bF:*:* A7:e1:* }
+allow name none-of { "$-].7oN," "&ac{_p6@" "NjH _5IA" "mBu2~5^w" "NGFlC$ I" } serial { "JoT@Fw0l" } id c7Cf:* parent-hash { "9mQnzlur" "yhFy-ZmV" "70x80j~Y" "*.NWj>P3" "8Bd%DyNg" "ORRNa!_~" "ARr!_a?h" "[e:Z-4WK" } via-port { "*|W~G;%E" "k@nh6<sj" "r4+= 5r%" "#?#<17xL" "gX!`A@T9" "Br~TI[Y>" "Vn^W<!uq" "{0%*ib^%" }
+allow name none-of { ".B 4RAJ[" "R*A6M9<|" "s1{XP-*=" "d}#@G4*s" "D&=N>cD6" } serial "M+z$_lfi" with-interface { 6C:*:* cf:*:* 92:07:* } hash "Zb#]:;`e" via-port equals-ordered { ";q0M6N2B" }  if one-of { true false !true false }
+allow name none-of { "S3Q2/$4a" "q=~JA!0:" }
+allow name one-of { "q=-gjqt$" ">kt31^bN" "`7xQAsIr" " 2hwgFS-" ">?O+c.b]" } with-interface 63:*:* via-port "GAN{&i_Y" id { a389:CA3D 91dB:* ac8A:* DA4D:2F10 6707:5F13 5D0c:* 6FEF:* } serial equals { "tk5'E`5Q" "co|R-ibm" "+?awhGRs" "@iH1%wZ-" "wqu^QUv%" "jBAD]_pt" }
+allow name one-of { "}Q&<UrIB" "8&}l.dm;" } via-port "5-5VeC=I" serial none-of { ".bW?9?I=" "`G,1L*M+" "0ncp6$8F" "Q/Cy8G:?" }
+allow name "P>-.Ak:t" id 9Fef:9460 parent-hash { "u8'C+%lK" " 8cH|KUz" "=[=}Lc*r" "5o+Vn[+V" } via-port ",95<gVfK"  if !localtime(2:00)
+allow name "p.$OYQia" parent-hash "NMu^ZyUs" with-interface e7:CD:*
+allow name "rm#|'dFR" id aE62:4071 hash { "^PHDz=T8" "XE8vrcu}" "yPjD%ulA" "qM{_}!2o" ">vqo!sC1" "lr&+jB&T" ">4f$1ayK" "5F_1d7G*" } parent-hash { "<2+,T,52" ",XYEO?P*" }
+allow name "R=sdxV,Y" via-port "=d[t5h4," parent-hash all-of { "YmqYD78V" "+T5$rA>M" "_%@X>Xb]" "7~8=&uj~" "%+:ch]kG" } id all-of { 41CF:* 8CB5:B2E8 A6c8:d4FD d3Ab:6BF1 eceD:93c0 6bcB:4caB }  if rule-applied
+allow name ">SqzPBsW" serial "e8-9+zcm" via-port { "oD*t>I2G" "]P@Q}FE%" "zN^EB[3A" "T=gq07]%" "h +1A/#p" "E Oex~!J" } id B98f:a9eC
+allow name "$*tE^1xL" hash "zvcmQ0rP" id { ADcf:Dad1 eCa7:* 49c7:* 8495:4fDC CfA8:* cacc:* } serial "E$,i-GG#" via-port "}XJ<<y/J" parent-hash equals { "4_,XqtLL" }
+allow name { "$tvS}+c@" "mGl7Yq,~" "513_+T{j" "]2#g],J-" ".=!; C{i" "Hd{V:+F%" "~Wuymq/0" "lEKsU9ks" } parent-hash "[M^1{jGF" id 87Ba:* with-interface D9:36:F9 via-port ".Q]c-`fR" hash "T4T.h@_k" serial "uL^{AAUx"
+allow name { "viG*}@ZA" "Dr;8L$u!" "^N*.$TFP" } serial "rV3v}? d" via-port "+?=JJZJp" with-interface 59:03:* parent-hash all-of { "?o` FYS'" } id 9Fd6:*
+allow name "w4bC+xKv" with-interface 1c:*:* hash "WiuW5<EH" via-port none-of { "2riG1X%F" "F$1,hm8J" ".3I=J-f&" ";qiEg'g5" } parent-hash one-of { "R8T<r[Va" "m'1uD~+G" "x0eVLGr8" ":*+QZDpv" "Nm/%:_&V" } id { 5bE3:* DBaE:43eb 224E:28AB } serial "8 t=~d0i"
+allow name { "w&} C.%&" "+m=!O<|>" "^Oy5cxN " "j?+ul]g[" "PxfVC4?n" }  if allowed-matches(name "&hGim?6C")
+allow name { "XM<9p =]" "q:3N!abA" "@rt00mps" "2qBA[-M9" "vql-d~Ni" } parent-hash "Fc7d?/.o"
+allow name { "~Y-7/9*'" "c4UzgH}Q" "TYXi#LvP" "g}ZK~$rs" } with-interface 64:d9:29 id { a1a6:08d7 A7Fa:* } hash { "$M[mDQhq" "KWFpzE4Q" "+7-{36$M" "ic8+wB[g" "tp#Q@r2}" "MS/YNz:1" "gtN$b1*." } serial { "3LZ@=P.h" "e1G]_~QV" } parent-hash { "YOJ^DlF6" "p#v>3u!6" "zJkH/<>`" "*hBtqYA}" "f'4E,#;o" "2}-A Ez}" "=RGciD#F" "DXxtELsu" } via-port equals { "Q<sK'Y{=" "#tH.YMb`" "aYmXIqu2" "A[_d@G%." "t:riFCDG" "rGW/Z>n=" "j}j3uC;~" "8&b=Y_SX" }
+allow name " ,YBx6N_" with-interface none-of { 0E:*:* B5:*:* 10:*:* F5:5e:* 0d:BA:88 C6:b5:* }
+allow name "z|IB SEY" parent-hash { "+n_fFr`q" "F#$yVikY" "R%5gTF^a" } via-port "&D.%`l{N" serial "{*DrR]zU" hash { "%{7uRMfn" "bU';0e$w" "arg-[<w!" "y/R +;tC" "t<K`v0T:" "Gd`7zNbC" "/4_6m<h|" } with-interface 0B:2E:* id { d2Dd:8D56 02B7:664b }  if rule-applied
+allow parent-hash { "-3_DuXxH" ",v:Fz>ys" "M2/@&O!'" "_#~N!c>0" } id 6E30:* with-interface e9:*:* serial { "B:Jka`S_" "#l }5^lr" "Oxy%w|FX" "Rjsn;x#K" }
+allow parent-hash "3[&-m_~;" id E28a:*
+allow parent-hash { "3&zqdh8[" "Mjv0D_MN" "jhVFba3?" } via-port { "E,67tOTO" "?@Un*TsF" ",+0C@3f7" "4^KE1n<Z" "f@ZeB0=W" ";Xe/u|~h" } name { "U 9foe/v" " /z4|VAc" ":DdAj+a3" "$DJ|!J#P" "oYI2K>]d" ".mP1wP._" }
+allow parent-hash "'5pDBaw<" hash "Ya|;FG'+" name "Og^#MkS0" with-interface F0:12:86  if localtime(1:00)
+allow parent-hash "A4=eRNin" with-interface C6:25:* serial "* 6Z~LPp" id none-of { CBBA:C1c9 D7dA:* B6E3:Dc48 8293:* 9185:* 8f4C:F9a2 } via-port equals-ordered { "n]t/5m-g" } name "+#&[9Bev" hash { "%fTl{ u*" "n4-`0DIY" "=tALKv=b" }  if random(0.4)
+allow parent-hash all-of { "D=AaAX]7" "=`S 4xFt" "ZA]c15 9" "K[z]i 1B" "|S'nQ,E3" "zfwpF<`T" "G@>3P'~N" "n5alcGz]" } serial one-of { "]njX,04R" "I7?`E=n`" "{sK]nGUP" "q3k%kk2x" "=tcG}rXP" "34c.oB$;" "?[sBK!7?" "A`X+oJ D" } hash ">jM6~J]m" name { "]?]xb=hi" } via-port { "{dZAF&>-" "%JU0{xTM" "BfYzE>+6" "h:<1[TbO" "4M+fce[?" "wOe&Y3lp" } with-interface { 3f:*:* A2:*:* b2:26:* CE:DC:* }
+allow parent-hash { ".b]|+$8e" "q*]AB8ly" } hash "<s?'4!S="
+allow parent-hash "CI?M m@%" id none-of { 1FDB:B3c3 DaB9:4b6a 430e:fDF1 E4e3:6b46 DA5C:* } serial { "8R~J#9sV" "qNG=,jL8" "wm?i;%Kr" " XZ{<!0Y" "x2E?G?=+" "-ptVo.!~" } name { "@$=|j>8%" "q*$~CQ{r" "2xq M}.r" "jZ&o8.hK" "b^lx*@oZ" "]}B[V~f4" "A4Ws$}u'" } with-interface 8A:44:0b hash "}Q{Z1G+I"
+allow parent-hash "dycoj6=Y" name ";^$HUw78"
+allow parent-hash equals { "6>5oT*QC" "nC/Y{x:-" } hash "XS|2m_>%"
+allow parent-hash equals { "6vK,de0o" "<6zj49sE" "Qsdp*CXN" "9k'!4k8y" "A`dDkxXc" } via-port "}Zh2*^>3" id DB7C:5cc4 name "h$eT+AGD" serial { "61wIC.n}" "}S=t/JA<" "6+zCIpB@" } hash { "`G4Q_D:," "6ns^MSHQ" "!,`?=2<P" "JTt79sj8" "-Dn+yW[R" "'Jz7nJ_*" }  if false
+allow parent-hash equals { "nSp2_JpK" "L@H#@6gU" } hash "'ax`ujcg"  if false
+allow parent-hash equals-ordered { "|BF-Rxf?" } serial "~D.@] `5"  if localtime(1:00)
+allow parent-hash equals-ordered { "D*16%vFC" ">5@-Tjue" } serial equals-ordered { "'WO8VRS}" "X_aq-O M" } with-interface dB:*:* id 169A:*
+allow parent-hash equals-ordered { "Dr#u7kLk" "S:Q3|PED" "g|YuJBTf" "DuKE=VIR" "';gAGW#v" "zYTf:[u1" "E$H*<q%O" "zOXP>#Tc" } hash none-of { "LdT=}aPm" "Y-X}4;N8" ">]K]<jFS" } name none-of { "xsBW3!h*" "-J0p,gn/" "P8TNYy0?" "-|XxX{DD" "KQsG!NL;" }  if random(0.4)
+allow parent-hash equals-ordered { "t|38|n<K" "k_fLE1:8" "!V:Hm]LO" } via-port "mA@bB?C," hash { "v%K7|9xX" "^*^.`T>;" "}R#YcGAW" "xYDD-qJ_" "]d[05hdg" "jV?`Lf'Y" "uwwgTx>G" "*hJ6xz20" }
+allow parent-hash "eqW u;t$"
+allow parent-hash "f1F`]460" via-port none-of { "1*B=r%ZC" } id one-of { E8ea:* CD3f:9022 } hash none-of { "3dC;=a7^" "HAs4PM.%" "jWC8BP^Y" "ubSo=drk" }
+allow parent-hash "g1E d'mB" via-port "AM&o;>ja" serial { "Wjjgt<;l" "hV@a.sKQ" "$}$W7nl!" ">2'Rfeas" } id dd0A:*
+allow parent-hash "hI<5-~BV"
+allow parent-hash "j?keU3u0" hash { "^RxX'9No" "0NFX870}" "VGj0ey_2" } id none-of { 0Dda:FAbc } name none-of { "LUcTt<83" } serial "P};lVbS`" with-interface { F2:*:* 10:b4:1b 81:*:* 2d:4e:6c f3:69:67 b2:*:* 0e:02:8A 29:*:* }
+allow parent-hash "?k05p`{P" name { "NaW&vobv" "HJ;9IJ<J" "F,O?$3Hq" "eSFj3!!8" "9~ql~!B]" } serial { "${w<I-N<" "62w@Wwq'" "5suaX.a_" "+m?9Lh,^" } with-interface 6a:A1:1e id none-of { aBB9:d562 f17A:EBeF aa9a:* e9d8:22Cf } hash "q&GNQv+q" via-port "l8GEnOW?"  if localtime(1:00)
+allow parent-hash "kQ4JS0up" hash all-of { "8J*xyiY%" "J8SyKS,$" "v0u{mPE:" "^UR<1k!;" "frG3EzY5" "eiwUA}%2" } id 0DbA:f20c via-port "s'sxYrpY" name { "NcjSz*B#" "tN Ajy}M" "6{,L6-RL" "no8g$7Pr" } with-interface 9F:d3:Cd
+allow parent-hash "l<7d8H?:"  if random(0.4)
+allow parent-hash "N:hegQ+&" with-interface equals-ordered { d6:A1:* ae:3e:CB Ed:fd:f5 6b:10:* ad:*:* b5:bb:* } hash { "{^m9-lG6" "h!P{qN[n" "ag*?`pHR" "Wb}!MJvg" "`HJoPZ+k" "%+U2N!S9" "Hv0C3ZZH" } name one-of { "g0&m<-R=" "1e9;6nJk" "g-~jmIaX" "NIzr^_>U" } via-port all-of { "f-#G^eiT" ",U8CGp6%" "U%>I4h#A" "L|gwgzt_" "_8JzwYW2" } serial { "&KO<b8?S" "V]/cW+c_" "88a&wIg0" }
+allow parent-hash none-of { "7K V2Fxi" "P1=VGckU" "<]ZuM7n?" "Ozv$8!i1" } serial one-of { "EaWP4KU3" "BX8:k!Sw" } via-port "o{wTJ-Z*" with-interface 9B:A3:* hash { "0WUT5y^j" "'[ks=6y|" } id equals-ordered { bcF8:a4db 7A61:eB41 6db2:* Ead1:CF7D }  if false
+allow parent-hash none-of { "}QI6g.#=" "S-NdhnGP" } via-port one-of { "0b-I;o4>" "G`g`6Zx9" "=L@q[t/M" "Cw3fTNsU" "oT%/m{|l" "cwTq2~e:" "o:v8;mK7" "ibX2M,jX" } serial "xQY?[l}S" hash none-of { ";vD*dCVS" "Umg|w}n1" "-zR8eb$=" "&uF1!1Of" "1deUS+,V" "Pgc}}#T6" "VV*9?NYc" }  if true
+allow parent-hash none-of { "wWAlt+a2" "$|p_HABv" "7@dF#y#Q" "i0;+qg^j" "grc wTv2" "e9/F{PmO" } with-interface cd:*:* serial "{^THpO#8" via-port one-of { "!Lw2?sbP" "C%#tO``]" "X;M=p>rz" "y=VKS?kP" "p8^`4s$<" } hash equals { "dscOOhUE" "UF4Z@LE;" "wY.*RV^2" "b'xY7yIs" "MGf;wg7X" } name { "-Gi3xX_b" "RdEq$oE0" "%:[X&IO!" "IVt|{0ov" "sM%P|hIf" }  if true
+allow parent-hash one-of { "1!c sXx." "0?OSRz]'" "pHd2:j2C" ";+n:wE5r" } with-interface all-of { d1:*:* 96:E9:F3 Ee:ee:* 03:*:* } id 72EA:2feE serial "xWht+3z2" name "IjD9>JQL"
+allow parent-hash { "-P5iX2'i" " vEpe_<J" "2SqYC6q#" "yJSE{cI-" "vWz2slxk" }
+allow parent-hash "sbFA6?94" via-port " U298zg`"
+allow parent-hash "!`X[k@16" name { "hLyI-bJ5" } with-interface 8A:*:* serial "';<.t4lC"
+allow parent-hash "Y0]$w8/=" via-port equals-ordered { ">rn/:?3n" } hash equals { "'m89QdGH" "cl.oFO9<" "PIjylETk" "Co7Zw!;k" "wySgI&Km" "WvAz|4+s" "`28gOaOc" } with-interface equals { 52:ba:* BD:Ef:* c2:*:* } serial none-of { "Ns'PECqA" "[qSQdvr1" "MoT[zjp7" } id 2F08:a478 name all-of { "v3:g5kYZ" "noV[8ufu" " '|h=he7" "v nDRB@m" "'v20C{`*" }  if true
+allow parent-hash "zs87c%:_" name "vF#*!p=|" with-interface { BF:eb:* 6E:c5:AE } hash one-of { "w 1<;MF1" "z9Q$[,52" "UlD]a#C^" ":C~R.f~q" "xa1hxvMS" "E }TNsit" "s&rBcjA#" "@K,Ao5/c" } id 3465:*  if !false
+allow parent-hash "z.,+?>;|" via-port { ":@V1!w8|" "_OiWE[N;" "!NGSs#:Y" "DC@1uv!:" "qnf$d[nl" } serial { "'{e*.PKQ" } hash "sk*>:>0g" id Fbc5:BCEF
+allow serial "13gwVVH5" parent-hash "^$#pYu'q" via-port " ;Oqn1Y-" id 34B6:05b0 hash "Gme/.b;n" name "uB69{#>*"  if !localtime(2:00)
+allow serial "#-|2VG'4"  if rule-evaluated
+allow serial { "4ZAH# [a" "_K.HiYlO" "RuH9uNPX" "JSB}mk`L" } id 38D7:C5a3 name "otYR$=X2" with-interface { Fb:bc:b8 Be:*:* DD:*:* Ac:*:* 11:49:* 00:*:* 9d:*:* }
+allow serial "5%[xymld"
+allow serial "7>lGW!SQ" id AfA2:9aAA parent-hash "Jc{r^WNm"  if rule-applied
+allow serial { "9!MA;6gh" "*E8l%9;>" "o6u'hRRI" "p `m@N-S" "rnmK[1M%" "//+a79&t" } via-port equals-ordered { "]/EQL?a2" "Imk7@r=E" ":,a-OO{l" "JW/|jwu3" "WDNq;;7?" "WJ;x@6@6" } parent-hash "i&mhTu/!"  if !localtime(2:00)
+allow serial ";}!>]9]o" via-port { "nHGDZ6.Q" "U_[C!lOE" "A3hL1:Vw" "1nHso<fO" } id one-of { D5eD:* 3cC3:03C1 F54a:5Ed0 e2E6:* 0aF1:* D5cE:E85F Dd5d:* 22a9:* } parent-hash all-of { "X@SBC9_G" "WqLB@ng8" "_lH{>OWB" "f/Kl}-E*" "6v  %^hZ" } with-interface 3F:30:* hash { ">_,N9e>w" "[H*I6oM^" "&c4$C3]~" "'VH5</OU" "/g5uH=7=" "=ru&[+dk" "LL%TY*%$" } name "iDRZfl?P"
+allow serial all-of { "3/Q6_CU{" "T_JZ8D.W" "BtH:zD,w" ";>*=1&N%" } name "j+lljhgn"  if rule-evaluated
+allow serial all-of { "Q]a4D;'-" "w^QOYRtT" } with-interface 9E:*:* name one-of { ".cqJn~i=" }
+allow serial all-of { "YZ^O^HfL" "Xc9/|?T$" "F>ab@Yq^" } name { ",ysz`6* " "xV1|i:~&" "u37WO][m" "JJnBEv89" "BM1..j!-" "2RFBXTBU" "+5&nHUe$" } with-interface 1e:*:* id { E2e3:* aE3c:Fa1d 37E3:* } hash "QH.BnmL." parent-hash "?&0>iFQw"
+allow serial "ba/53DHw" hash "NB8T<0+]" name { "UFVo Ze1" } parent-hash "SXz6H$e]" with-interface { 4f:9F:Ad A1:a8:A8 } id { baA9:36BE e5a8:875f fE1d:* EFFd:* bF1f:b5C3 03bB:* d2Ce:b1Db 570A:* } via-port all-of { "aV<xC?k8" "HFhlI;P3" "A->E]qHo" "p@hwy<PU" "K.`*MbJ~" "dN;yq[2j" "`V'f%@le" }  if false
+allow serial "bZe*h:QG" name equals { "q$FcEWD " } via-port "UW-#.Z/$" with-interface { Bd:bB:* 82:2c:65 D3:*:* 2f:FF:* 24:d9:* A7:*:* 2F:6d:D6 } hash { "&Mde]!VT" } parent-hash { "FSqYy5KP" "{f^%-lta" } id { 5bAB:a20D 7c6e:* 570f:c7dB fdA4:caFE 57Ef:e1a7 7005:F785 EfdB:* 99ad:5394 }
+allow serial "DU@R]?.3" via-port { "`9Dy-GI4" "&qy$09?v" "8>-nI@ks" "5I8}nUXl" "8;@,13g]" }  if !true
+allow serial "%dyTA'MH" via-port { " fa:z['B" ".*;Kc%AT" "te~8wquE" "%/#VKyfS" }  if rule-evaluated
+allow serial equals-ordered { "J#Ak$o3t" "jh[n.8cd" "baM`%%3e" "&bHo-b=a" "Y'I5ZW4@" "|K64FHR`" "l9sPVPr4" "3i'`_Z.Q" }
+allow serial equals-ordered { "jEKy4X&4" "IJD.><+l" } hash none-of { "A%Z$&Y;5" "q+Q7w-#7" "DOl$aKm^" "c4eKs$;2" "A5O%3?Oa" ",I#V{![0" "tU3f{ao&" } name { "S34X`%W$" "T;ePLNJG" "7x~qOD,." "Q?6d<htQ" "l8$Yq#1v" "E@H8/:x/" "yWYmI07?" } via-port { "]dI`K8[|" "ckh+<0jL" "wA-[UM, " } with-interface Db:*:* parent-hash { "Kt><f$k," "7.8AZyRd" "Oqxu:~N$" } id { 5A62:* FBca:* ce65:* 574A:0296 }  if localtime(1:00)
+allow serial equals-ordered { "?UI~5c?$" "lJct+HzV" ":mnstT5K" "f7]#7x9&" "8nH=4cTX" } id { 10Ec:7d40 c44e:DE77 36F6:* dC3C:A8E2 f9ff:8f70 ebfE:dF37 AbB6:* aAde:8F2d } name { "Kj'c]lbk" "0[~z>_Yd" "1rv`lev{" "`M@QqQ>." ":MN7Jh;=" "uRQ|tG[G" } with-interface 96:20:* via-port { "jvE;f2v]" "t1sH?c45" "}q{$6X.Y" "$&EDA_ez" "G@l]P#hc" } parent-hash "JRa3 TBB"
+allow serial "<E/y@$d@" id { fDd2:* feAb:40fb 26E5:B560 987d:* 033F:3cFd } with-interface D2:CD:4C parent-hash "~XN9l`1W" via-port { "KwlnKB=r" "8gBNxxEa" "#DRu?=,Q" "pa$B@BLK" "<10;VI7'" "A5B]kxBT" "EAVicM8c" } name none-of { "}WFm.sR2" "Ar<kLN4P" "-j'as-6&" } hash all-of { "FfSD^';U" }  if random
+allow serial "GBSq~u*~"  if rule-evaluated
+allow serial "gJ=um|c1" parent-hash { "6S&=r9K1" "0P}Z]Dqd" } hash "c|xSp-|8" id { F64b:* 638a:5AF3 0Ceb:F7AE D59D:* 5Fa9:E3d8 aEBa:* Ea87:* E4a0:a2Bd } via-port all-of { "'Mcg:Leo" "iH:AZPD7" "ey$q[@VW" " HB2W:Ip" "CP#7^.l_" "%tH'JT8V" "YyWNlZ~7" } with-interface 34:F1:99 name "4]}A?Q5j"  if random(0.4)
+allow serial "[.+h7t$C" with-interface aA:*:* parent-hash "2e}daktj" hash "GZi`#805" name "LD q5|%|" id 9588:eB7c  if random(0.4)
+allow serial "&I:Y~sG," parent-hash "O>; =[@`"  if rule-evaluated
+allow serial { "j[C^[]83" "g;ZB88;o" "_u5RxUr<" "bos/#6v:" "-e-'xp!S" } via-port { "~_nV#:Zp" "lv+8UnAo" "g/'*O@V]" "^uC$>d[}" "oA B;-}V" } id b569:* name "~XKeZMrl" parent-hash ">J:{MFJ$" hash "a5JEFomo" with-interface { 1E:f6:48 8B:d6:4f 0E:FC:* d0:5d:* 4a:*:* 1B:*:* }  if localtime(1:00)
+allow serial " Kc01#Po"  if !false
+allow serial ",MN%?.Y>" via-port ":^~;QaQq" name none-of { "3#G_;-a$" ".|mn0#_y" "tIq5=5nZ" "kBHA2_`y" "F4wUJ!-A" "=[0NEa.>" "latZgmqU" } id { 99fA:* 8fB8:* bD00:F90B eBCa:b0CC 49A3:* 495F:7F6A } parent-hash one-of { "sE0ORb:C" "ViwOg75q" ":x~,ntB%" "yKvoEhW@" "iy/,{&cf" "R~WcTWC3" "7u^SodZ1" } hash none-of { "m'%!b@Wy" "^v%pr|v " } with-interface { B5:*:* 3F:Cb:E3 F1:*:* FD:*:* Bc:*:* b6:F0:7e 17:c9:* }  if true
+allow serial none-of { "3H5B@Hdm" "uA_q2`~U" "!syR`O,s" "DaX=w5%!" "}C=-=#%J" "3lp4BeIA" "@V|L#{Q*" "hf:?q'!Y" } via-port ".sZAu,K#" parent-hash "lR-:Z~S*"
+allow serial none-of { "7ZS>.Z_L" "^JC~{@J;" "LHIAhTY*" "t0XzZ,Aa" } with-interface aC:f9:78  if true
+allow serial { "nR*zOrIM" }  if rule-evaluated
+allow serial "?Of=@o&9" id equals-ordered { b2f9:D590 9aA2:fF4a BF83:b6eC Ff1F:* 2fFF:* } parent-hash " ;ndZ.|N"
+allow serial one-of { "8JZG.Sv," } id { f38C:3FeC 3e37:* aAaB:* 9B0e:3eD3 Ec82:4a10 dAeA:916f c099:* } name "R5kbH4hm" parent-hash { "-0wkb,S5" "}:?%{mEK" "3t;L%x;:" "n_n>XID5" }  if rule-applied
+allow serial one-of { "y]ZovAW[" "LO|~3Z^c" "0S|IIQ;%" "ev,<kAWB" "'I`V/RT*" "USikY~nm" "Gnp>O$V1" } parent-hash "6e1>8lB#" id equals-ordered { 2ecd:62C0 } hash { "jfX=U2-l" "6D~'X`zd" "9Mwid$/b" "o;p@JxY>" "2{Du3+iT" "}C0aw,>D" "?EEjh8/-" "Q+ve-G!{" } name ":/Y|DfTc"
+allow serial "R3!drwed" hash "La`$Iv[~" via-port none-of { "nD*y`It:" "_KI 27ER" "i3A`9<oP" "Km6-U6Dv" "*VSB {>]" "GC[:}B%T" "3wUV< &4" } with-interface { f2:eb:ee AC:*:* 16:36:63 85:74:* } parent-hash "6LD`eCtV" id all-of { 687C:* }  if random
+allow serial "+{sxQai6" with-interface 9B:*:*
+allow serial "TB$*R1FV" name "FJsN 5G]" via-port "L&2wy`d%"
+allow serial "wzv*1-?;" id 530E:* parent-hash "z~1]XEki"
+allow serial "[x{r=@3?" via-port "XAqCV`lo" name " oND]_[e" id 9dB5:6eCe hash one-of { "]'0ySg`@" } with-interface all-of { 3d:*:* } parent-hash none-of { "L}aJXUI7" }
+allow serial "Ysvz,r^=" parent-hash "pABE8HA:" via-port ".WT$UVKO" id Fc9E:7Ae4 name "$m_fy '." hash "'*'$p]V=" with-interface { Fa:*:* Dd:cF:* ac:5F:ce 49:EF:* 84:Ea:Ed }  if !localtime(2:00)
+allow serial { "_Zf`R.Ow" "ZsrHlOHR" } parent-hash all-of { "*ev,d+a0" "]bk9[l/s" "6 7f66c6" "dwq|U+-{" "dV3ufcs<" "Ao$m@tW9" } with-interface none-of { 27:*:* 5d:da:* 1A:EF:* }
+allow serial { ",zqU4:Et" "@wn77Y]6" "% =wSK'p" "7?xc-:P~" "@N`5h13]" "hpTi^C~q" ",I3xAfmW" "@BcWV1{~" } hash "ko%GG-j." id { 5A8c:* Fbe7:6425 C2Cc:* 7BDf:1e6d f9C1:* 4B92:79A7 }  if localtime(1:00)
+allow serial { "}Zy8#M%K" "Kk}@K-Ad" "rs=9 |@/" "z0x[[%om" "HVsG5*vk" "Yzb.i<7%" "kq0pM%4|" "%K/cN{Pe" } id one-of { 1cab:fF2A c963:* baCa:* 212D:* }  if random(0.4)
+allow via-port { "0$kiH'b2" ":*x`tsTZ" "EDujY+cd" "s&Y@bFS~" "q QEPzk[" "zEZ+{$?j" "%ieRj@~h" "pvor/A<`" } hash one-of { "w$a#5o'1" "Xj{E1|HE" } serial one-of { "Md'Ms-W|" "1NJuuJjP" "wV6Wkc^D" "rr3go=Fa" } parent-hash "Xza{L#/X"
+allow via-port { "18wAQlLj" "*{R|trH4" "&Q:M6cMj" "DJDO=$bA" } name "wqx/*A'C" id { 6d37:* 906F:6a5E AEDe:* Ff20:* e20d:73Dc CFcd:F3eC ea94:* bFd2:* }
+allow via-port { "4ic+&t{-" "j;y<q_3+" ";^T4niRX" "be2Ietv<" } with-interface none-of { bB:2D:* 7D:*:* } parent-hash none-of { "lg LS71_" "gl4VVOJh" "H.SzjVM2" "_T?>K~HH" "m;dO6a4+" "S t|lsQ " "k5Ye/qgb" "L3H4$bok" } serial "l#[1-pdf" id 1eDf:aC95
+allow via-port all-of { "8hKR|Fu," } hash "/3ow6o*c" parent-hash "=gkx9? ?"
+allow via-port all-of { "xOqZKm8O" "MWR#= Kt" "X7:T,]/O" "Zyqi><=/" } parent-hash equals-ordered { "Zt9k8aYP" "pKJK}@dx" "SE9]?aJ1" "A5^,0+ne" "1*iKy%c~" } with-interface 4D:ee:8D hash "s}QJp=EU"  if localtime(1:00)
+allow via-port "A~m~~kR@" name "3Rv<E0+z" parent-hash equals { "~G?hka1D" "YoJc&*9*" "Z#6VinAi" "q!y>DO:J" "Q%$[nB`<" "?5W<ww6A" "8'EqIujO" }
+allow via-port "aV5+G6vc" with-interface Ff:*:*  if one-of { true false !true false }
+allow via-port "BJ;D1C*!" hash { "PQQC0&;R" "gUXh>/1L" "<N?WLO!t" } id CbdB:* name one-of { "B[<Hq:*W" "s,5s>W78" "7>BYqJFW" "a ,9qYS#" } with-interface 1e:CC:* parent-hash { "R]z/CO>]" "!lPQ_T/g" "F>-j2#!M" ":amy4QD^" }  if !localtime(2:00)
+allow via-port "b/&kaa& "  if rule-evaluated
+allow via-port "E58yEB,A" id { B2f9:beb2 } with-interface 6b:6B:DF
+allow via-port equals { "M=alL4,~" "xbe`6m-<" "}i1WqZE|" "s9R2acSQ" } id all-of { FE9D:* 8ecD:* 3836:4F1f bA4E:EFdb 16a1:* E6B4:66CA } serial { "9$77IY}." "dbKA654h" "eiZkAE<l" } parent-hash equals { "BHHza7!N" "@.yTO^G9" "?DxF6vf." ";$Bks[on" "*=g|,C]W" "/ew!Y|Fm" "C$gjkojp" } with-interface { c8:*:* bD:A9:* DB:*:* bb:39:* F0:EB:7b 27:Ed:8D } name "C=;xuitV" hash { "m6y DYz*" "|YIYyo{4" "$n{P0'Do" "sR%TUaYa" }
+allow via-port equals-ordered { "!:GLE~_Y" ":<BJDRcb" ">=/GT[{o" "6I6@`#BR" "yitwi F%" "9yu_In4c" "vMa'C8>`" } name "q5'*2eOv"  if true
+allow via-port equals-ordered { "K^p-OhWU" "4Z3H!}U8" "cfn9R$'E" "lYccdk*j" "@mL<&f,<" "1d9,9.Zj" "L_%J]tR%" }  if allowed-matches(name "Go|<6C~'")
+allow via-port "}Fk=2,1E" serial "`=+!$1A|" hash all-of { "B9,>T+qK" ">dOVxI`@" } name { "g_d~maU!" "`g8bJ6?." "X%&|'ZVQ" "O_A+/oUH" ".!wOMBvS" "[dzi@mC/" ";nCL,7TQ" "A!9*m[7U" } id equals { D5ad:51f4 33Ba:9D4b 4c1d:de75 03bF:E9D3 49eb:* B93D:7F3B 2320:9cCd cBa6:* } with-interface 7B:0a:BE parent-hash equals-ordered { ",ZTVihf," "R`n'%W?!" "?D~.![q&" "5H=;[FM{" "J;d,?-q]" "m*:y9DD%" }
+allow via-port "HnEl>4*5" parent-hash none-of { "taS6,Ly&" "0bju}_,A" "GtlS[Vrf" "kZ$x#x|l" "w,iZw`<%" "c=s3!Wed" "Fu1Ep`:Z" } hash { "p%C1e &k" "XYJ#~iig" } with-interface { cB:D4:09 7F:Ad:* Fd:AB:E6 4B:DC:c8 ec:af:c6 9b:C0:* 4F:3E:00 } name "ylhT1~6m"  if localtime(1:00)
+allow via-port "'I3[&dV^" serial { "zKl>>$UF" "Gna5cvVv" "17=s3D-9" "[05-~_n2" "+*xe!oY|" "FV^?Qv.O" "ELmS;E[Y" "o{bMdi2P" } name { "H2Mva{T9" "Z?<$?Yu>" "s~b%?*9X" "VP5K5@}f" } hash "qyzNDvL|" id dcd7:2f35 with-interface one-of { 9D:*:* f0:EA:* D8:*:* } parent-hash equals { "|!-Qg--v" "^evR]Vg2" "8Eg*Z!IL" }
+allow via-port "I'}e!NBd" name { "clgkJ/.1" "_~gKmJ6c" "uJ!{<t8*" "'CCAdDCo" } parent-hash "7Paf&M#L" id none-of { bcc3:* eACE:0bbb E3EE:* Bea0:01a8 5C8a:b864 1BAE:AeDE aa3D:* ef0f:ccfb } serial "x-=70D^w" with-interface 4A:*:*
+allow via-port "iy3ScNxx" hash { "Ske.g@JA" "BE>b{kf6" "X:r'|Ql-" "|g:vSQPo" "&J6*wr'u" "bcN{k4'7" "%%k.R;`V" "3Pf;hL[," } with-interface { df:fD:* 0A:4F:* } name equals { "6CRf.#D^" "4$;M@PtL" "zODT&~k@" "vP iD<U^" "*sWUJG%z" "#fA~5p8r" } serial equals-ordered { "W%GH*.^6" "r[,Srj*N" "yw[u#Taf" "[pfb_j[X" "rojX.wT[" "wWO+{?]f" } parent-hash "<n3{W#mf"
+allow via-port ">jHgdl%D" with-interface equals-ordered { 4d:*:* 14:fc:* } serial "u1@4;qy@" hash "C+?T.}L+" id all-of { A2ec:* } parent-hash "9wkrTo}/"
+allow via-port "jKG$9?]y" name "^#*REo<!" id equals-ordered { ab86:* 8b78:48D2 F6c4:* aE05:* 0E77:* c1C6:aD7F 78Cd:ef4C 9C87:* } serial { "Yt=?:.P:" "l+G'{`h2" "@_>%g<Bd" "#5B$=!+P" ">V|*%7gd" ";==4qGOg" "$~vN-g&C" } with-interface c6:CF:* parent-hash equals { "LyAJ`.0R" "s^{1LRq~" ">EMk=l9^" "FP=|?&[d" "v.V[` T!" "JwL#x35f" } hash "@4?1nf8d"
+allow via-port "l,C[xF9q" with-interface { 9F:Dc:* c4:*:* a3:F8:EC cb:*:* 7C:b2:2D 76:6D:* }
+allow via-port " N'Drw /" name { "yM}En>b." "}&zN1e|6" } id all-of { 7cFb:* 4E08:AAda ccfC:9000 7DBA:838D 51eb:* 1AEb:* } hash "dk^GY`u?" with-interface none-of { c2:DB:* 17:f0:bF 4D:c2:* 2D:*:* } serial "q/<i[mB6"  if false
+allow via-port none-of { "_=vG;,a@" "$w?BY.f-" "/Jw}F.4]" "dTlf9h?b" } with-interface B3:*:*
+allow via-port one-of { "UAq5mK>[" } parent-hash equals { "h0n0UAV:" "=D]l*N}m" "fi4hn}of" "~kO9Jbv'" "UQu*t#C1" "B fA?>Oa" }  if true
+allow via-port "pb5CfNij" id all-of { Caa3:DeC6 0B2B:* } parent-hash { "FoYn&pG%" "BlS1aCnl" }
+allow via-port "pqwFCcs&"
+allow via-port "=qD&%u6x" hash "Xt3Nj#0!" id 0Ffb:66af with-interface 72:*:* name { "HTaWQswf" "S&|otHSN" "uhi6etZ{" } parent-hash "Vt*!ktW-"
+allow via-port "[Qk2vU8k" with-interface C3:b1:B2 id equals { aFe4:* deBB:6f6D F439:E77e 1e2a:* C7B5:dEDf }
+allow via-port "rf+1o/d]" parent-hash { "eA*,txrY" }  if random(0.4)
+allow via-port { "^rTs?/lg" "ZE2L?#?c" "n-k~&6c>" } parent-hash { "Oa[S*Ln/" "RsG#@J&W" "b[]4m7W<" "&rM`le#t" } with-interface db:58:* serial "WM}iEQT]" name one-of { "OK:rpzt$" "I2yzR0|@" "FL>tTY{K" "7[/K2Nvx" }  if rule-applied
+allow via-port "tTNJq{Bb"
+allow via-port "-=UR']>v"  if localtime(1:00)
+allow via-port { "VU[i`N0W" "fB<%eCU9" "@SQ&do ~" "Qe?0Wkgn" } hash all-of { "N?e5Ax8p" "{Sn|T?w'" "j'~s8Q{q" "oM?S6?r8" } parent-hash "$sS4Fl9o" with-interface none-of { 96:*:* E2:*:* Fa:2e:0c f4:*:* e3:12:* }
+allow via-port { "VX'5,yGt" } serial none-of { "YdyFnK4r" }  if localtime(1:00)
+allow with-interface { 0C:08:97 Aa:e0:* } via-port { "MU;,4G[h" "]v$$XKFh" ";,MZT'Dh" "g00{lD%j" "wRUZ*``0" "8#!J{gQ@" "`Z?3p92&" } hash "KYHTnNgP" id one-of { C60C:* d2EE:aDe8 ead7:214B 75Bc:59a6 3129:* AE7E:d25d ee2e:* A21D:* } name "n0CKUNor"
+allow with-interface { 14:E1:ee a9:ef:1e } name "$T[<!1Op" via-port "h?/.,fRv" hash one-of { "dx1ciKB/" "^v%3PS_<" "jOTYF-_x" "8JQe^A{]" "0J=;i6Cy" "aRr7J7Eh" }  if !true
+allow with-interface 16:*:* serial "27xKlGv8" parent-hash "2IhpTB<T" id one-of { 5AEe:* 258c:8B13 dE5a:224b bdD9:CFD1 6fcB:afa0 51A9:623e } name "o's?zUkO" via-port "iaPHYSWU" hash "il`&{g4+"
+allow with-interface 17:*:* serial "`b^mk[ m" parent-hash equals-ordered { "k>3!PZT'" } name "5K;E#z &" via-port { "Td'H/ VL" ":JR8Pf-y" "bcPr&3-N" "m,mo$xhm" "z+y&F4DE" "2J*&~~Q5" "%:{xUtY*" }  if !true
+allow with-interface 28:fC:* id { ea02:8AA5 a850:18D3 db89:7D4e A936:* f9Fa:4ac5 5459:A4Ff } hash none-of { "w$4hD/zo" ">_kkI0SC" } via-port { "K 2yQU+K" "fFeBLR]-" "$4nL V]/" "McY*:%l*" "XHw.PIY~" "2f^.Riim" "!g;w8d3f" } name { "a@'MGh%H" "^c ?*4m;" "8+zFVU$^" "Fd]OSOtL" "7[:I!zm/" "16ef=Dwr" "g'!iYZf#" "5E [lcvs" } serial { "Y&Dek#;E" "n,SM_P.`" "uam6mmBw" }  if random
+allow with-interface { 3D:*:* dd:8f:* 52:*:* 1B:*:* dD:5f:* C0:60:* } hash "VO>%S5V7"
+allow with-interface { 43:b0:46 1d:*:* }  if true
+allow with-interface { 4f:*:* 2E:F2:* df:*:* bD:ab:* } id all-of { 00F4:A611 14Ca:e9fD bbBc:* 6ac0:* 6bBb:* 2CbD:* A451:* } name all-of { "s8MybXM1" "%of*apu1" ";XgD.EWB" "$ry_*ET9" "dy3c34$q" "7B:IGp'W" } hash "8ubY&%6F" serial ":d.ZIO8O" parent-hash { "J'lqfII1" } via-port "IQ11oX7G"  if random
+allow with-interface 67:*:* id { C2cE:* 443F:* a9Aa:* 55cE:* 7c56:CcC4 b3e3:5ED9 } serial { "6T<ozAr{" "mQKMDksa" "~ze'>kd8" "Yc&T]av-" "/a'c2kC0" "_PsP6?rO" } parent-hash "noA73;e " hash { "xy:]/`lW" "R9EGbN1s" "D'2[:{`M" "c[R|zY.I" "S}S/Q6@8" ";n|+@}IC" }
+allow with-interface 70:8D:12 hash { "dOA|E$KY" }  if false
+allow with-interface 7b:1D:* hash none-of { "+?E1L~L^" "=bx #1t$" "C99wrqMY" "ipuISR23" } via-port "xHe$bQv=" serial { "e5Z7M,dp" "Yn?y@k{>" "cs#_v<oi" "kc6M1-}G" "ddey5hP:" } parent-hash { "b8g]|I9E" "k6x*tXSg" } id none-of { 4dCA:* cD84:3EFb BF56:* 1Feb:* f164:* 15f5:* 21f7:* 4fbF:5A5b } name all-of { "lP]`V2_S" "H@vr7HlK" "x>=C}|T9" "c8N/kzhI" "'_10jW!s" "#[ijCZT?" }
+allow with-interface { 7B:FF:15 cE:8b:* 53:07:* 11:*:* 6b:ef:44 72:C5:E0 e5:4d:14 eA:a5:f7 } name equals-ordered { "#aJ3LxP:" "N-KYq1[!" }  if random
+allow with-interface { 87:aA:Fd F0:eC:* 52:59:76 0a:5e:* 08:*:* cD:*:* Ad:Ac:* } id { 28EB:* B4aA:ea2d eb0E:* } serial one-of { "0'n*r_cs" "iw8WWWLl" "Lsg}?$:1" "|RHjrA_/" "vJEBSSwb" } via-port "plL|:RZH" parent-hash equals-ordered { "}14Ly8L." } name "'1&7cKcR"  if false
+allow with-interface { 9E:50:ce 8E:*:* 00:*:* 72:*:* 95:58:* }
+allow with-interface a0:c0:* hash "7&;B'tjr" id 077c:* parent-hash one-of { "S09lIr][" "U=<4iNZO" "ZiC5C%zw" "S?{>D_v%" "-l--E/ 5" } via-port "t8[0kfcv" serial equals-ordered { "7&ui :_p" "xlXLn{[0" "[Eohy@T1" "/8z3ntu:" "Vlia.R}h" }
+allow with-interface { AB:E9:* c4:EE:a9 44:95:* Db:*:* FB:41:* a9:44:* e5:*:* fe:*:* } via-port all-of { "S[XnKOGQ" "no;O<Ue{" "wC=l78l#" } name { "X2ff%hq[" }
+allow with-interface all-of { a0:2b:* 37:8f:b5 0d:*:* 36:*:* 34:9D:FB } parent-hash "~5dLGqYl" serial "ti'eurG]"  if false
+allow with-interface all-of { D5:95:a5 Ed:*:* 75:79:CA 2D:Bb:1f 3e:b5:* } hash "^|O+,zt{" parent-hash "u:|yp]r3" id { A585:* 8b99:* 5fDA:* Cc36:BfC3 AA7E:D400 } name equals-ordered { "[Yn4#~jE" "{?4mNdl5" "d7EOGe<2" "aZRI_aE]" } serial none-of { "/bVK<F*'" "jCI:u9H$" "cE99?!,;" "lM6=dqn*" } via-port all-of { "WXa/clVL" "X_ 4Km**" "$Cl7WHeZ" "nH1i*Kb=" "# 87Qj%6" "zx0Il]X=" "&7w8PX7Y" }
+allow with-interface all-of { eF:9c:* fE:F9:A8 DE:4D:* 9e:D1:5a 9A:Ef:* } parent-hash "xs2Xb_-," hash { "'t6:qG:K" "8jtp6.:F" } serial "1|W22?IK" via-port ".]NS25H?" name one-of { "CuIWp48j" "17wMkn1X" "B7j}kwQH" "w5&,GzZ_" "<|m<S6[&" ";a.+o9]e" } id { FfBA:2Fe5 }  if localtime(1:00)
+allow with-interface all-of { f7:*:* 9A:*:* } id BB3e:* name "rZ7Djz`z" via-port { "U]{n; 7B" "o{c{?]|?" "d>uBFCY7" ";9_u6Z`," "Ib-xY8QF" } hash "+NWLov?c" serial none-of { "2Gi$mO%3" } parent-hash "Cj>HG@S-"
+allow with-interface bA:24:aa hash "!e!GLMrL" serial "6zRoS=#<"  if true
+allow with-interface c7:F7:1A via-port { "|G6xBNe}" "_Vq7=tvM" }
+allow with-interface d3:03:2D parent-hash "}c4h_7%u" serial { "fWj!mqv^" ":}u~?I-l" "+ur+ WP9" "WT*6Wh|d" "O{@J,-+V" ";6IV^ec9" "EFjCq35E" "@6XSX3Kg" } via-port { "=mNB3G6z" "cy~o3RC%" "tZNj_T~y" "LPmId,3{" "i$M=pT#2" } id 9Ce0:* name { "0SH8.KEt" "galw}Sp3" "q3BQaY4y" "mP'DrTlq" "frxCfAif" "di<ZZ0@+" } hash "V@b^kM8K"
+allow with-interface D8:8D:* parent-hash ":Zu0wc$Q" serial "tJ]5+%QP" name equals { "F[2hf<8z" "3@zh=6y/" }
+allow with-interface dA:C5:7a parent-hash { "ev QBzub" } id { 88e4:9252 Dbfd:* BeD4:CFE5 96dD:* D594:1af0 F5Fb:* E88e:* 0ef8:F00f } via-port one-of { "8s,bY @g" "kB7e,eIm" "TnwB-288" "X'QQWpmi" "Yq8..1F6" }  if none-of { true false !true false }
+allow with-interface da:*:* id one-of { 4cb1:* 7ae8:DeA7 BACd:* 2cce:* 73AB:2eA7 } via-port { "moZL<L~n" "O2[2W|s*" "[-~/HM@3" "03JG_k]9" "~3S0;kTO" ">x=6YG_x" "LQy7f=<B" } serial { "S-DDmbTs" "$EO`E^p[" "kRU[;BRk" "fvGw/Rod" } hash equals { "qWaE@yD6" "f[9^.?v}" }
+allow with-interface equals { 41:*:* F1:*:* FE:FE:* aA:Cf:* D0:d7:* } parent-hash { "W`G.6Y:v" "l',6M , " ".!/r5}Dz" "9HOHPNuk" "k}{N*X%m" "gsr?KNZ8" "OypL42xt" } serial { "dTNG+F-L" "cqomCC/r" "oI7P_=D2" "z~:y^Sgb" } id { 0397:4c5d 0f9d:* } name "{?N|IzD," hash { "$$e]1W6`" }
+allow with-interface equals { B3:9c:* eF:*:* 3f:*:* } hash "%cKt6nL#"
+allow with-interface one-of { 46:C4:FB } id { 917b:* B92b:* 7a2D:B4c5 } name { " Z@Nl.YV" "8kDE@'s1" } via-port { "a[~WbiZ|" "6[k#BZ^3" "]{BO,owD" "VH&=0W_8" "&Kyn%J$U" "gC3qtT=W" "VS0]YK1L" "yw;1UXB." } parent-hash "ISG]O'dw" serial "8C+UQyRj" hash "<]dAsS=>"  if false
+allow with-interface one-of { A1:*:* DF:3E:e9 AA:*:* D3:d0:B2 7D:*:* Af:*:* } serial one-of { "6n%M`N$E" "9/,dG;Ur" "bI-NjCOw" "7XxBE}pR" "s=x~XEj5" "i}0R#%;V" } parent-hash equals-ordered { ">QOe0;Y]" "o`=]c:|$" "MSMcbHJA" "^`.4!7w7" } id eEb2:* hash "5-0v1wDe" via-port "Pao*1:w/"
+allow with-interface one-of { Aa:A5:fF a2:b0:4c Bc:cD:Ab Ea:B2:B8 Bf:*:* d5:B8:dB } hash equals { "'=GN}0o=" "E]cGge^s" } name "!qCiGB,J" parent-hash "yneIkx'u"
+allow with-interface one-of { c3:5A:cD A8:af:* } id a1fe:* via-port "Qh5Fl.$9" parent-hash "GYqxZ?a["
 block
+block hash "7k9=0w;>" via-port equals { "uAn$>}g'" " Idtdm=Z" "L5+~$p9G" ".<2^/*_#" } name all-of { "CH'-JLED" "A!a^flj}" "VZB4bM29" "zQibW[lk" "~.O];jOw" } id b96e:* with-interface none-of { b8:*:* 1a:fA:* 7e:B6:97 57:*:* 8D:d8:* } serial "&02OlmQ." parent-hash "Y{cAzv[U"
+block hash "8$^jgkWg"
+block hash "aeTX#Tfw" via-port "V!N3Ipm@" parent-hash { ";l}?;R.9" } id 0Cc2:*
+block hash all-of { "I8{]4TvS" ";>w8mQ3E" "iU_;>55>" "de.:[T/{" "8@Y~;~Ud" } id equals { 8B12:ABF2 dcEf:* ddfE:24A6 FEa2:a862 e0ac:61dF 2612:709b 3Ff0:* 90Be:* }
+block hash all-of { "wfr9j]&," "aM}B47'0" "u]Nso^u`" "Rs U3PGv" "Bd0PDz{&" " .T@Ue6:" "-Ca=Qf34" } parent-hash "?,dfADqq" with-interface one-of { 0d:*:* bE:7B:9a }  if allowed-matches(name "E:!wSp0/")
+block hash { "CN/]>ajf" "z0K/.E<m" "O^tEB#FW" } parent-hash { "4#t!kGu1" "-q^Z~#=*" "2LG^n>/~" } id fa24:a8B3 name "Pkw.EF=y"
+block hash equals-ordered { "!,@nBB+`" "xH@nx/vL" "~@}AC*Ly" "0mH@|z$f" } with-interface equals { E7:3A:* Ea:*:* 15:3f:* BE:*:* de:Bd:a3 Df:bF:* a0:c2:* } parent-hash "zy5`RAoP" via-port "hF/%W||k"
+block hash equals { "S MTzat_" "}y?9*DWF" "'1CZDI`s" "-J/qh^QB" "&[*Wb_/7" "@e^dU:tQ" "+t5<C_$U" "[<sK$N8Q" } serial { "&PQx7ugP" } id { cb17:9fA6 1bBD:* 9eDf:* d8C9:BAE0 d2EF:6FEE e3aa:* 1818:DEd3 } name none-of { "0GN ;cy6" "DfnrdKXZ" " eeluS7G" "Z9ZSul.C" "Es4G`&V|" "/qgt0fv!" "67Yp%~.$" "'sYy#8Wf" } with-interface ee:*:* via-port "h%>v%1$8"  if random
+block hash { "F>ws8LBg" "4oHO_`ho" "p82KS+hW" "&$PM2XAg" "#r>H#ci*" ",S:LX&96" "%5f`N/uF" "^}v{9$U9" } parent-hash "%YGaV~vW" id { 96df:52c7 aDbD:fFb7 94Bc:* ccdD:c235 ebB9:48EA 9969:a8A9 } via-port "K|@HOjK9" serial none-of { "3-lGLJWE" } name { "?fYq.09H" }  if !false
+block hash "KsHd#KO7"  if !false
+block hash "LoI;c;|;" id { 3AE3:1AC7 ba1f:* f4cf:5ca4 33F3:EDDf C42C:* }
+block hash none-of { "vwFpit9'" "-JOnStM>" "G1N~ qo=" } id cD21:* serial none-of { "ymL7n{J#" "VFxa[d?`" }  if !false
+block hash one-of { "^!H2I&&>" "zEe#+kmV" } serial "6qCWFY8N" id one-of { dFaC:3fE8 Bea9:b380 } parent-hash { "DwO;./Z~" "L[A%lFK@" "0=p;s|wy" "R#`w4kI<" "tsA<!7q+" "'1]=SD:C" } with-interface f2:82:* name "Pa#{<@z3" via-port "XznW1{xK"  if true
+block hash one-of { "r<d {KG1" "b'&BVuK," "S16F_Ze'" } id { bD1B:* } parent-hash "#~rRrq<*" via-port none-of { "Zf;E~^}b" "&DJIgw2V" "%CE}?|zs" "g-e,w,l3" "&T^]U&{ " "^]{EGJ.^" }  if allowed-matches(name "{`.Z@lO-")
+block hash "onT_%@5D" name "7pdZMP^5" with-interface 9b:*:* serial equals-ordered { "NiyVw!%~" "8#Vm8YAK" "&qg60?qQ" "8KeEyGj~" "%==/Io~Z" "h&Lobxyg" "[X- LS}h" "9}@T~`]k" } id 01b5:2A9E parent-hash { "N$JeV~%N" "A+!UP>0y" "tMDz<3%Q" "-+.e|mmH" }
+block hash "oumf218x" serial "~7ptfL|S" via-port equals-ordered { ".w.ANTfz" } parent-hash { "mZ]JlT9:" }
+block hash { ".P%.>a{w" "wC[{`i8^" "8W`:aPG." "{eB8'|J>" }
+block hash "Pl;NW^Kb"
+block hash { "$q4Dl?8>" "#b3;ft]c" "vH4O#2Vo" "@3-o4p>." "|r =Obpa" } name { "7|+eABNJ" } via-port "E!4R'w^F"  if true
+block hash "&Qf696`H" serial "/yO&59%H" with-interface Fa:54:* name "E,=~G<.x" via-port all-of { "lDrl.tlM" ";n}9z?W+" "U6`<[?}|" "Be/u 'JI" }  if !true
+block hash "QW`eGv7n" via-port "{c*W-Ba'" serial "2=Ii_1z3" name { "@qlK{p}X" } with-interface { 14:21:DB 1e:fF:* e2:*:* } id { 5A3e:* 2D3D:a95F Aaf9:* }  if rule-applied
+block hash { "R2]4[$HM" "L?^FEDKK" "Y,A|pSj," "]l8AIp;x" "z]59obZ<" } serial "+|zv[<Tw" parent-hash equals-ordered { "R3G/`o~f" "'?Q{_Bj'" "7BVXH!bI" } with-interface a6:*:* id e1CF:*  if !true
+block hash "SfL!pLDL" with-interface { C2:*:* ec:De:Db C1:c3:* 0C:*:* e5:f1:* } via-port { "VG3?<mUv" "+,oqYwys" "Z2?G<n}|" "|4-[pKiJ" "-7SB@>%X" "'/`v17ou" }
+block hash "V_1<mv9F" via-port { "g'6hKm-`" "T$y=5nmY" "_o+wY{_u" "'D>:S1^|" "= ig5cd|" "B@Wc+90b" "hYoiJ8j8" } parent-hash "tc=!Fe@a"
+block hash "vu9;@,zf" name { "AI5GR%}}" "4*Y6#;A&" "w[7270C4" "8%x#+WSy" "fstZ6{MN" } via-port { "Vf4KG%]a" "56:/Yh`3" "6g12o*Y8" "e6]u7?C<" } id 45Bc:7eDD with-interface Ef:*:*
+block hash "XKY9u-i`" name { "Di^w/[6j" "qDuN82P<" "pSEsRC+m" "h6xx'H4n" "}kO%Yf.8" "Wjg T@g<" } parent-hash equals-ordered { "Z`iH X1@" "3f% -uN." "ab3&IXW}" "I&[ee27]" "1&}~P88|" "@u0rQJtY" "?[21I&C#" } id one-of { 04Ad:* f5EC:* 8b6D:* DaAD:* BAF2:5ADb 6cFF:0ffb }
+block hash { "Y@2^&:1J" } name { "z65Hr9[n" "OBR`.4Ac" "gp:rgD5-" } via-port { "aX$s/<wZ" "k.N!>Is&" "M[_C.dXB" } id B06E:* parent-hash "4nG|WX{E" serial "Q5LK-k0m"  if allowed-matches(name "TP5S>yMp")
+block hash { "yG<]?d;&" "1b|1g!1x" "iHmS?^ys" } serial { "Jx9eD!L," "/l t^MGd" ".QM[QCnd" "O956P'v;" }  if random(0.4)
+block hash { "'yq[dzkm" } serial "I5OdR;B " with-interface AE:*:* parent-hash ";B>c2noM" name { "<05hjw]z" "d5{Z#Krs" "~aS{~?|m" "AY`XF-.&" "sm-FCmrr" "VE^8J,mG" "$yx&AkNS" "TBvj}%u%" } via-port ">'S`PR{^" id cd3f:c410
+block hash "]Yq/zy7."
+block hash "^YTGF'cy" via-port " x*^{P23" name "Uy~j6mo%" id 167E:3E86 serial "pTI-k^x3" with-interface 30:*:* parent-hash "4KwDj+Mb"  if localtime(1:00)
+block hash "z/,=KJA^" id { 5A34:* DA7d:* } parent-hash "#7Vbsiwb" with-interface { F3:Ab:ab } name "!Wk!y48D"
+block hash { "zkz'l%|e" "mn<MylmK" "*OV'}:+h" } via-port equals { "sf#xC0+Y" "N%3xlGDu" "ho!JE O4" "&o&+.]k," "8mm%!^bc" } parent-hash { "x32;-n/s" "X2Gd-*WJ" } with-interface 5e:8F:C6 serial "{WJ^TkBd" id Cc6F:*  if false
+block id { 0282:* E81C:DAE7 8fAB:e5ed 4c7C:D3Af 5E69:c355 4326:* } parent-hash "q`}mNhgC" serial "{<|wxFm*"  if !localtime(2:00)
+block id 1500:* parent-hash equals { "hyI#I3|I" " 3hr.P1?" "W#7xMH~]" } with-interface f0:02:6e serial { "ckoz2s#d" "szH7{pT:" "p3bfXg=|" "1iX%=Jk1" "2MC1-x-E" "pnn$_}oX" "@zYef>:-" "Tnf;c[,9" }
+block id 1d94:* via-port ";6m3hr,#" name equals { "u5BL~+Iw" "8V>4|N,g" "GG-SP%F " } parent-hash "D~yq2!`U" with-interface { d8:0A:* 9e:*:* f0:bE:* } hash "+9,I5<'U"  if none-of { true false !true false }
+block id { 2B53:ebe5 a450:263f 8CD6:65Bb F938:* } parent-hash equals-ordered { "1bXFHB=V" } name "$Ta3nV?n" via-port equals { "e4{l-'.{" "HPbds!s-" ",p~tl}H;" "Q$pM:Dyx" } hash "9V:G&u0R" with-interface { 7e:*:* 01:80:* 10:*:* DA:ad:* 72:*:* aF:F3:5d }
+block id { 3BCb:E9Ac } with-interface equals { 5E:27:* d0:*:* b4:*:* } name equals { "K1?S?{QO" "Go|IG[D=" ",QhlJ/K=" "2XPr{.Qm" "LHBidWpJ" "e`N}8U.." "e%]y`i@w" } parent-hash equals { "Zs. GigL" "dM+n,UiW" "UjjY}+9?" "@Y nskCK" } via-port { "XL^>,O.4" "q&rZ'1q{" "sy#%6k4q" }  if random(0.4)
+block id 44b4:5df8 serial { "uMRoMBw+" } name { "xb0$* rD" "*8;NyRL0" ">SHv+p#d" ",UAi0[Z," "- SrX62C" ";}XcO;?y" "{.27Uh<*" "@:DqXN8q" } parent-hash "h[n+P@kT" hash one-of { "/^sy_5=n" "bf^`gu?m" "~eW<.0OA" "xB$~&z&*" "O.JtGL63" "j^xE=&X[" }  if random(0.4)
+block id 4AAd:4b12 serial { "Mn01^T*6" "U<-b4YcS" "&KXb>a9~" ".HGwBgPs" } via-port one-of { "'1SpdnS3" "95O/~:Kf" "7LOYj*uP" "8dgeM}6T" "K_v&tJli" } with-interface CF:EA:fe hash "ajwu53_r"
+block id { 582F:dF7C 3cFB:* 9FdF:* } parent-hash ".f,8PG5;" via-port none-of { "-wmvAWJ6" "U{_*+s9K" "36#:;hDp" "ayEl.@J." ".Wg;O[x1" "M7H?n[|," "!n5'neLK" "UR/;l*id" } name { "U@9@6_wp" "r#=+WCY>" "4Q!%>u> " "rUPDX=N!" "a>{3OEH1" "<095NUYL" } hash "PsffPxFy" with-interface 13:*:* serial "KlA{huO%"  if false
+block id 58F7:Eb14 via-port ">s_V[KA~" serial { ">L^$v|u+" "%e PCE+u" ">#[0jB4P" } parent-hash "^9AeMvRH" name "SDw{l&Ao" hash "cI8_@gq8" with-interface { 97:*:* dc:E5:* ce:57:64 5B:6B:* e5:*:* BF:cf:b7 c2:e9:9c }
+block id { 95d1:8F77 0eCa:* ea6e:Ed87 2c38:* } hash "6k9t'FmU" name "i`Wc6n^m" serial { "X<pl<EA'" ".*xr/rXU" "]<PB3@*P" } with-interface { CA:*:* a3:F7:* 72:95:aC aA:*:* 07:35:* 54:*:* }
+block id a7b8:80Fe hash "#|r7?]lM"  if !localtime(2:00)
+block id { A84f:* 9EFE:e43F 72F8:3F1B 61d7:C1Ac dCc4:* } hash { "amQ%r@_O" "n$-FMtHc" "~xm9Kz!L" ">7HHs[t." "'O5_vE1X" "lxf3v&z2" ".z:: yj," } with-interface 8C:*:* serial "m!s3.;fB"
+block id { ac1D:17F3 1E69:3C4c 96C8:* f5cE:* 79f6:* 1C3E:CA80 4F62:fE6F 5cAB:* } parent-hash "t?_DE75_" hash "QC7cocdT"  if localtime(1:00)
+block id { B5A7:* 32A7:* 68d1:84F3 509a:* } via-port "w%RRQZ-`" parent-hash "pq_r!4}*" with-interface one-of { c5:e9:* fd:D4:D1 B0:04:15 } serial "<<B:?wF," name "4*oyz.T2" hash all-of { "[7LWTp:e" "W`J!W~cE" "z>}~5zxX" "*$V+ vU{" "M4Tm+T[," "]_j^xQ;:" "l'Ek6f1'" }  if all-of { true false !true false }
+block id Bb10:*
+block id { bCdc:fbd7 FaF3:* 3fCe:* f48a:* 3eD3:24Da 65E3:06EB BeFd:2b29 0fDD:* } name "lg;`0??e" parent-hash "FL;%ohya"
+block id bEf8:DFc1 serial { "=$*M5&,]" "> G6>u A" "gXpU|UjS" } via-port equals-ordered { "X SfAtNy" "g-0Pxz'a" "|&kP#Zo0" "s_4qo@2U" "a={k/y%]" "$J|5$HpJ" "MWpbA_v~" "vf&+vM0S" }
+block id C349:* with-interface { 4e:*:* } hash { "iz6%]gx&" "'8saqxFU" "q_oUgsnH" "EmP}l^HZ" "LCLZElyo" " ;aRXKVu" } parent-hash "pf4^r3O@" via-port { "Wo*4CG<!" "2|X<jqYS" "fQ{Y`J{-" "oxh2N[Iv" "D],hfcAV" "+l}3E8;m" "WAtyd6`n" } serial "BG-^c:w."
+block id c8D5:* name { "IDvgXsrJ" "[g[7aza%" "[yp6GzY{" "H/.Sa>-|" "XIfhL!E<" "1R1x-T$j" } hash "'_G ygl;" with-interface 1d:ed:5B serial none-of { "CcRRT|4A" "$esS|n<c" "m>Rf];G>" } via-port "UPbzX}8w" parent-hash "TS.u5Zkn"
+block id { C9dC:* c7ff:F1aa bB5e:* D1A1:* befC:* 4Cf9:8DcF e804:EaFf D181:EfdA } with-interface { B0:*:* 15:*:* 9A:*:* F2:c7:A2 }
+block id { cA9C:a91A eF08:* 1e19:c9dF E02A:* D0Ca:6717 fAf9:d9cf cfaD:* } parent-hash "^%vz#? ]" hash equals-ordered { "f$wv-oK[" "C[YfK4Rp" "rA,Y/YrS" "syCs^^q+" "ept^7P,B" "!G56=1[o" "P@=RPXR4" } with-interface all-of { De:*:* 72:2E:71 } via-port { " jJ-Tk#6" "Du6- &-_" "b0BOwEx1" "Gf3bpJ86" } name { "*6,0XVx#" "SoXPDrC4" "*[-wmbki" "6^DHj4of" "I]HM*47l" }  if !false
+block id { CDDb:* F2Fb:* 3B71:* } with-interface none-of { E3:Cb:* 8E:*:* 56:9b:* Ab:Ef:* } parent-hash equals { "!+}7|z[&" "7SoEJ,ha" "Yt}z85lb" "dzNn.mPQ" } via-port { "iMJ30j_v" "oI|W5':r" "bRk&$*%9" "arT]]~T~" } serial all-of { "Fji<[ku+" ":=5MTQt0" "UDBA8cc2" "4IuitCCq" }  if !true
+block id { d669:* 25F2:32fc c5Cb:cED7 f9dC:9AaA 43A3:* b3A0:BaF7 } serial { "cwXg3|J8" "bMi&3 mt" "7=Vz,po?" "jNEk=Yns" "?Nx}#XZ+" "Y+eP8V{g" "t8H{kV}@" } via-port { "`d&dZ<1p" } name { "o-d/}:O1" } with-interface none-of { 3f:*:* 70:*:* A2:*:* 81:*:* c0:10:37 1F:91:7C C4:*:* Ee:91:5F } hash "+Fmdx!Nq"  if localtime(1:00)
+block id deEf:* hash "<Xz~Xs48" serial "a;m%TY?B" with-interface equals-ordered { 8e:48:dF fB:5A:* 44:*:* 4A:06:* 8C:9f:DE bb:c7:3D } parent-hash all-of { "3g-lMoKW" "1w8uN'ns" "+xiTSN}[" "hQVL:,.&" "&oM_[s<:" "niE;QY=~" "bHcxb9yv" } name { "79-U3TTq" "Ns<h-+4z" "FvbcwApR" }  if random(0.4)
+block id e55E:*
+block id { E602:88ef B44E:* c28A:B073 25Fd:* A071:* 090D:* } parent-hash "Y2w3X8~m" hash { ":+XbwEx0" "xC8B8XE/" "l>Cb'`nt" "|M%.S;+," "wYa[{$c>" } with-interface D6:Ac:d1 name "|~dFo*-9" via-port "[h[a?<im" serial "*IOw/E>X"
+block id equals-ordered { A5FF:* d9C4:* d93e:262D 017d:* Fa3D:* C245:F2D6 7c22:c885 } with-interface { E4:*:* eC:90:9a 79:57:Cf Ad:*:* fE:2e:3A }  if !localtime(2:00)
+block id FC2A:fc1a name "t7;XHw+[" serial { ":yZ_=iA`" "G&t]D*Qj" "A[pb4&v|" "=*tl2#]6" "E[qo89KQ" "}J]_EsQk" } parent-hash "$oIha'+}" via-port { "[E3-p,Iz" "y%jM!IaQ" "5<A1FOkk" "`3Jd<%iR" "rDD&z!}V" "b1l#>/4." "*j$OZyJo" } with-interface none-of { 4f:a1:7d de:*:* 2a:50:7A 06:BF:* D6:*:* 76:CB:e3 bB:*:* } hash { "Z*q4it!8" "8ZLct+~*" "P[^>T8V?" "xv`h?|{w" "%p=7/].P" "mDqnI1-k" "<TC0;#uN" "X;XF}CD8" }
+block id Ff63:*
+block id { FfB7:* EfE7:72A9 } with-interface 9F:*:* name "G*w2_IF*" via-port { "XDdowriE" ">sRtPt:b" "}!s<gNgC" "D7f9^l.;" "pFA7MN@L" "WvBzHC3I" }  if !localtime(2:00)
+block id { FffD:* 1BbB:9c2b D6d2:E3c9 7eD3:dc2D } with-interface { Fb:*:* 53:*:* be:eD:5C 3B:26:* 47:*:* 9E:*:* aa:FD:82 4c:*:* } serial "l:ZEsmWx" via-port "smr$5nkL" hash "  ]=nBo<" name equals { "Yg&+aq$G" }
+block id none-of { 62AA:* 3dB3:* befD:* fcAD:5520 } serial "&YTi=M-R" hash { "S|gWJ]<Y" "jwYh}v O" "D&OW$Bn*" "V3r*Xtk[" "d&|0A}j~" "M4G&F=ly" } via-port "VRu&S&O4" with-interface f3:67:Bf name { "1[aP7C s" }
+block  if equals { true false !true false }
+block  if !false
+block  if localtime(1:00)
+block  if !localtime(2:00)
+block  if none-of { true false !true false }
+block  if random
+block  if random(0.4)
+block  if rule-evaluated
+block  if true
+block name "5'nxFQIS" with-interface { 02:88:* } id 21B7:* serial { "Tj>7ukY0" "q7yW-mP;" "yy_q6f>$" "W=Yu]8O7" } hash equals { "hi|{6=1'" "dLQ;-r=o" } parent-hash { "6hEH/~k3" "8A*CMnow" "9AMY,0BW" "Nmh-r #R" "Hr3 7-%X" "Xg-br3sO" "`pg@plOh" "1g2`GP*Q" } via-port "Si'[X:80"  if false
+block name { "6irqmUO|" "wc2zD9zE" "YA6e,TvV" "P#GyJ{z;" "vEWJpA4D" "EPR[XX&w" }
+block name { "6N@c|yfs" "85;l0EN'" "zf2a6D4D" } id F666:7BB3 with-interface equals { 8e:*:* 42:*:* } parent-hash "la5Y~kCa" via-port equals { "ZYUd[o&<" "4mxQB ~q" } hash all-of { "`aTH'6,U" ".zi!rs@4" "+W+'pp+%" }
+block name "8sP5!q'n" id { c146:8950 88E7:* ac5f:* } hash equals-ordered { "fKjG%nI7" "R;h_K_JO" "_pTjwmyU" "Z]'z}q&v" "g6KP4I./" }
+block name "9<CFNlhH" id { 59bB:B482 f321:* } with-interface 95:bD:0e via-port "`Zj~x{gp" serial { "ppA6;j}@" "q3bU?L{$" }  if random
+block name all-of { "OaRn.a,D" "&Wy_Txq," } parent-hash "OVz[K{*n" hash none-of { "k`bsPF^?" "R8JOs'=?" "6l4KLL*K" "nyKdY! }" "n|PJ%{-O" "b$]+_DGc" "[YlTS<}8" "F!pCfiu8" } serial "mxY=V.>9" id { f7ad:* fDaF:* a5ae:b0EC af7A:d1F7 }  if equals { true false !true false }
+block name "CpAt5Ay2" serial equals-ordered { "F`9{B=;p" }
+block name equals-ordered { "J~eG={i=" "bj/6G~S6" "+]3qNl&G" "A*]:O|Qx" ">pKayUO," "/[e*uMsP" "IsdXZR_i" "c.*~mB%s" }  if random(0.4)
+block name equals-ordered { "N+#*FMv>" "XM@jR13G" "Q2gggu4D" "73[,G4pr" "htmp0n;y" }
+block name equals-ordered { ":rW~XH,e" "?qD M^By" "VV0JtdV4" "6n4Mu][+" "02%d8|]}" "/*sEX2g+" ".z1Eq'g6" } serial one-of { "^q~TNw9g" "viT|A&+:" "#_FK,oD}" "&~q?kBJe" } with-interface { db:3B:40 6F:2a:7a Cf:cD:bb 0B:9e:2a 98:Aa:* fB:*:* 1A:*:* f8:B9:* } via-port "5R;@ZFk#" hash "n75?R^Pj"  if random(0.4)
+block name equals { "_qV8 T/;" "I{3^%: t" "!hmlB?~R" "M'JZ1/5w" "!'LF[=;7" } serial "3SF!lO:$" parent-hash "l#d+Rh-i" id 85cC:*
+block name "FVDdAU{7" with-interface 33:7a:* hash { "yLj2N2|!" "Pp/ [&j?" "<qk}8V{]" "eAF||<H " "Q!I{4_$O" " X4}^@b?" "4w^LrNU}" "=S{ivQ/^" } parent-hash equals-ordered { "XkXH!F!}" "z^#=577R" } id c8CC:*
+block name "fVL2Gc8r" parent-hash "SCbW{ PP" hash "o7f5S.P?"
+block name "JS,5#+!|" serial { "`p2[|yd&" "nMw}Q1S:" } id equals { 79dc:E73d D6DD:* Eaec:* Dc37:* } with-interface A5:*:* via-port "uF&dW nS"
+block name "j`Zw4daP" parent-hash "zeuPGVWk" serial "8ufKBi*s" id f9FE:479E via-port "OeiCWUhc" hash ">O[@}^Gd" with-interface AE:c1:*  if true
+block name "Mg=WgqmF" id { 9FED:* 3383:* 5bFc:* 83b3:79a7 45Cd:* } hash { "-*~qnBh<" "9k:>Jrv7" "@sLqxO6`" "vzL?1t|p" "M|n1{Jna" } via-port "bcd08y#^" with-interface 02:*:*
+block name none-of { ">M?`+X$C" ">i^b,U~%" "sY>xvTT0" "H^TOz]W;" "&>$YbViY" "gkK1S5rp" } id 22da:* parent-hash equals-ordered { "C|@zP8Z_" "#z]cv4xk" "%n|W`J?]" } with-interface 5B:Bd:* serial "C+`?Fz]k" via-port { "/fS9*4_j" "ev%;X+2B" "9GUN~7'<" "qsS+/q0J" "K/_>vPoF" }
+block name none-of { "NU{W;w`u" "$b[r3m8~" "f5t@ms#h" "/>AA~2=V" }  if random(0.4)
+block name one-of { "AA-/&9$~" "bOp/li_$" "CfW:vfv4" "yS9:!IMO" "7IxD/:vz" } id { eb7B:* 3dd6:* A5E5:* Aacf:2d28 7d6A:c6a3 } hash { "C/inU2S}" "p^u6Z@P3" "f!G9*IfP" "zR|'8`;w" "+PAxJimJ" "5{XNx2oA" "xGCt;e5h" "=@LgMsm#" } parent-hash all-of { "fwFQ1DT5" "L%;jVz:{" }
+block name one-of { "^u[!p>QI" } parent-hash "f9b;ZhA9"  if !localtime(2:00)
+block name { "/oP`X?*z" "_!X,AqnB" "T=16?BEd" } id none-of { 1dbd:* 1eCE:* fF9b:* 4C95:* faEE:Ddf2 b0dC:* e6Ec:E1c4 } via-port equals { " py~xw9g" "[j34#b.r" } parent-hash none-of { "H2SgFn F" "[%%nLycE" "#?1C[?Xs" "Veft}bxH" "!P<@,#pK" "|fa1}4#t" "N |^5wbY" "kM@>]21B" } with-interface C1:Ae:* hash "Q3^HT${I"
+block name "QAqob,a!" serial "rEw%U^w/" parent-hash "bDPkocYi" id equals-ordered { 0AD0:* 4C9A:* FafC:* } via-port { "q[B88NOc" "T=xNUK=g" "_o|al.T2" "l&_4,aPi" "Kw]7Qb.x" }  if !false
+block name "r,,u!0{i"  if true
+block name { "%:.rVab}" "]xBCyk}D" } with-interface 66:94:* hash all-of { "^$Bf&qU7" "o7Y^3$/R" "l`>[Pj3i" "ynJ9FJY&" "$d6G|Q'D" "@p<vxL;8" "i.Dy+TYl" "w0,F]SoQ" } serial "gwor1W_S"
+block name "Xh*I-oEp" serial equals { "|:/hoeX3" "[BBV`YaP" "V=*h#;MK" "l#-T;X};" "[kL^%ED2" "m]JPglCv" }
+block parent-hash "6/K[4]7q" name equals-ordered { "Mb/t>%N " "TOMlmlNI" "Fb8m6I+Q" "H~:QL.UD" "Dpf#Pu!G" "/Lwj=Z#N" } id 4E5D:* with-interface 3A:C8:0f serial "FN*fZ;-#" via-port { "E,87V'+I" "sUy~uY:1" "]UlXaH7*" "t.HD<usS" "HD*-zDVp" "%9JB[TYI" ";f g[Q8#" "G$4#RaPI" } hash { "kn@`+*2v" "Xd@Q}kQX" "j<5N*g$x" "{~w4u5T2" }  if rule-applied
+block parent-hash { "7Ws|CbT^" } with-interface Ad:*:* serial ":_EbfVQ5" via-port "qmQkl5L}" hash { "ti-8,HbI" "W[5BOX<X" } id equals-ordered { 0FCa:ba2B 22B6:* f6bd:* C17C:* }
+block parent-hash "_#+9L^Nk" via-port { "p_GEL:k:" "wQTV31+q" "KU+#qIfl" ":a$xWcm0" "*;p@y_er" "h>A6Jf3X" } serial "VyFloU7r" id equals { b3b5:BcE6 15dC:600b B472:* b6Bc:* 2590:e9b6 9DEa:* } with-interface one-of { 7A:7F:3f a1:Ce:7b 36:99:fE fd:*:* 09:AB:* 34:35:14 0E:d9:8D E7:8d:* }
+block parent-hash all-of { "2^b>tMZ9" } hash { "B?hC,{Bj" "<.-E<M!&" "xa>8DU-Y" "awZ`Ef}r" "J4Mu$G:s" "]O4a_6J>" }  if rule-applied
+block parent-hash all-of { "b,3j{ppL" " A8Uwj<d" "H<pcjv5E" "c@#R[Qdp" "sAe4b4x'" "ba4~}KX-" "`_8}mmX0" "1p!ff-Ch" } via-port "9FU,;?+C" name ";=7 [uoP" with-interface 9C:cd:* serial all-of { "cpGQvWH," "4JI|CIWh" "~SUiF.g=" "jm8+;FCQ" } hash { "SDR$nOgY" ">$ZJYqNB" "|mc #!Y'" "pMoA'8Rl" "KCl=_M99" "w|5xT9it" } id { 7f3C:* fdcF:67FC f9D8:* }
+block parent-hash all-of { "J]:[6Jqx" } serial { "2|2<4JP5" "rLIqprTN" "-2q*d-j&" "E=^sZK:v" "Z%PAs<qh" "F,<u@dsx" } with-interface dE:aC:* name { "ZJ[mhXBn" "51#,:+c|" "qLlOmWpO" "AUt7[]r?" } hash "Y#5/u|iY"
+block parent-hash all-of { ":nU5wLBs" } hash { "X-{'A_Ha" "a>TS/>Rb" ",m|Ey].r" "m>3^d|<t" } id all-of { A78E:7cED 9168:DA2D Acf5:F20e } name "P-t-Ov,G" with-interface { 3B:D5:8D e6:9A:12 4c:*:* D5:Fb:9C ee:75:* } via-port "LVnU=4PT"
+block parent-hash "d}8ln0S~" hash { "-s%]g|P&" "Cin1,gR'" "C{Q2jFL0" "dU$e{OM:" "os9zk#yQ" "fE/P4AB/" } id addf:* with-interface b1:*:*
+block parent-hash equals-ordered { "2y3_MU5[" "HHZa;G,_" "@}u|0|F:" "rX/_3ix8" "yol9T3!D" "8JaePrc4" "y?oj+c+2" "fT1@]Yg$" } id 13A2:*  if false
+block parent-hash equals-ordered { "rO50>4%J" "YPS=~{vK" } id 6FFc:b1aE hash equals { "wi}|9GhL" "B{zbT|B}" "?>]]H6ap" " N:v*10/" }
+block parent-hash equals { "uJ^#2y6i" "Ff!laFJ0" "}f}h.g4X" "1MbV8da0" "C+8%?Q6U" "s1[lmY%#" }
+block parent-hash equals { "V vAP>Nk" }
+block parent-hash "ezm[2y!>"  if !localtime(2:00)
+block parent-hash "fX@NNuz<"  if random
+block parent-hash "hFVb=a]v" via-port "_>yes/3e" name "Fs:h_Dgi"  if rule-evaluated
+block parent-hash "H/jAM?aA" id 2E41:7bb8 serial "@kx!V/0="  if all-of { true false !true false }
+block parent-hash "kA_-2C{P" id none-of { 7ed2:* D0a6:* 1CE2:6A3C } with-interface fc:9c:*
+block parent-hash "KB`ggh%$" name one-of { "0VHg Mj7" "CXJpN}&_" "78ZY[J,9" "S/fMOsBS" "i<O;IW@g" "tJGu!+cq" "0IhgW-/$" } serial { "?9v|UrO!" } hash "0B!TgN]b"
+block parent-hash "Md-LMXA," hash { "he;ULA+w" "*Dm2$pGl" "?v,D6?K>" "@~#eew$W" "9{I{]&AL" } via-port ">kGIuTly" with-interface none-of { fa:Ca:fb 5D:71:* cc:4F:* 9f:D3:* 0e:*:* 97:02:* F5:*:* d4:eD:6c }  if !false
+block parent-hash "nNNAz.^`"
+block parent-hash none-of { "=p2'G%/R" "`rSM/{<p" "j]|>V41V" "'e=o-JZ6" "1N+cIu57" } via-port "SvFZ[vIF" id EAbA:b670  if localtime(1:00)
+block parent-hash none-of { "RjZ?hi>z" }
+block parent-hash none-of { "zYLz C[<" "F'#=,hSP" "I~m]3CL&" "{VYPWoaV" "0h7pXVvW" } hash all-of { "U>oPSzpi" ">Bw-q,r." " ~N4-u]'" "6f}{r9ac" "#>`{ou?2" "NmUv<Z@2" "| lR6_:Q" "@YqC&0=*" }  if localtime(1:00)
+block parent-hash one-of { "A|gUnss^" "&T=j{gi," "0S`Dz}*," "S'Tl91[v" } name ".+u41Ub." via-port none-of { "K9r$ E'?" "#GLo8eiu" "!3`vX~Ic" "GX4TqwuJ" "7Qgvyel>" "G[?4[80D" }  if rule-evaluated
+block parent-hash one-of { "T}_IDn.B" "]u^-]`@2" ":VdFg}@k" "chNfa#4y" } via-port "f[e5Tgy "
+block parent-hash "?`^OyjQz" name none-of { "Grq=9g?N" "?`{W;u$1" "!:qHkOnE" "PoS;!L%4" "uknBuD.c" "$q,O|>nb" "7JiWxXz2" } via-port { "_:>SwR9G" "+4*n?JQu" } id b01c:*  if allowed-matches(name "+c?MisE]")
+block parent-hash "|#q$o`;;"
+block parent-hash ";q#>P&gx" serial "PxV.Uk`&" hash "/hm>#_di"  if !true
+block parent-hash "qV9zTUu'" via-port "#X1xQi w" id { CCE0:* bD2f:1c3C 5171:* 8c7f:FdC1 a6eB:* Ee29:* } serial "vP{R-v8n" with-interface equals { 9d:40:fc Fc:*:* cc:*:* BF:EC:1e a1:8E:* }
+block parent-hash "t5i40Mi5" via-port "v.|gmD$u" with-interface { A9:A9:F1 dd:*:* 71:6a:* } hash one-of { ",.`s6&B3" "g|1._Ad~" "r~&lp@I|" "czL_mWbB" "3m<a%c,." "u?mymbsW" }  if !localtime(2:00)
+block parent-hash { "T?k5+H9j" "7>5HC^6F" "?{+PsB8#" "<K!25y+?" } via-port { "zj|8IONE" "vHMDw~pz" ".44,PIRu" "#il`^@,C" "[*iH7gyP" "_StJt}B&" } hash " b*RL0=9" name "/oZ5'Ys9"
+block parent-hash "-Uu!+dT," id equals { 1e8e:563F ECbc:a63e F4c4:2CcD 2F7a:Ef37 } via-port "3K%8$48c"
+block parent-hash { "?}VPQAC>" " _?Fi$MY" "J5J<j;/{" "j1pk$q-U" "t?I8lq<i" "CG4mU9A'" } via-port "7Fq>aU|&" id EcEd:525f with-interface 3b:53:a6
+block parent-hash "*[+*v?Qa"  if rule-evaluated
+block parent-hash "XBI[m=}6" id A6Ce:Bb2C
+block parent-hash "@yxQxKg+" serial "0ArW{g%m" id EccD:* name none-of { ">H7VTb~G" "a^j3,$g9" } via-port ".74DS:u>" hash "{Y`7LS@F"
+block parent-hash "'>&Z7>LM" via-port "]=B#ZaTF" name equals-ordered { "M[~MU2xp" "~!F5:^my" "hAM!{1m4" }  if rule-applied
+block serial "5k!NtdOw" parent-hash { "knBr`sDw" "M#p@X{n7" "-1!FSbvy" } with-interface F5:A7:81 hash none-of { "WgXXjR%0" ":yp4~W1i" "IN|/{}iZ" "@LF'@,f}" "|%fU_L:[" }
+block serial "7:cGHL-q" hash "36H6N7qN" via-port equals { "w|6+~n$~" "4HBa~Jc^" "3J#4Hr{A" "4uV?>m'R" "-vhhXm_4" "OF=srz=k" "t@Glk!9]" } id a3a8:61Cc  if !localtime(2:00)
+block serial { "[A[%d}}I" "AsEQI#|A" "sO ,kKyx" ",pgym~+]" "c7~YSz8@" "w@%`=__`" "H`94zga~" } parent-hash { "}XqLyP56" "D;n@Ck5y" " fiyNEYZ" ",2E>IUxz" "wqK.BwsP" ">DX=NBX2" "+-Rl'G8u" "i2h&iQTC" }
+block serial all-of { "#c8.X:-Y" } id { 41Ed:d98B bdEc:3816 a310:* }  if false
+block serial all-of { "!r]r9n%j" " q_j`lom" "0SWfwBi^" } with-interface { 0c:9d:d2 c4:8f:38 }
+block serial { " AU~L GJ" "w'HG$9lw" "!<@~jUnM" "e8{o-Gx5" "ZoCZc,*-" "_uk>L?J7" "xZS:xwZ_" } id 35aE:* via-port "HBAs5HUE"  if equals-ordered { true false !true false }
+block serial { "BifnQB;f" "1EzqbCm-" "sr%T8ku1" "M1I{Kbbi" "`=vu'  ]" } hash { "~ipRFqXt" "a7koW-?I" "bnc=Hq>[" "7hry-AQw" "Ja=L,,vN" }  if !false
+block serial "Cpbo$~Wm" name none-of { "KY`5FjbW" } parent-hash "+#pSB|sv"  if rule-applied
+block serial { "Dk<KB>ms" "Ui'U-%F@" "2n$q;q$N" "g^:_0JFU" "{@$|DC:{" }
+block serial "`;!;DLHl" with-interface equals { D6:*:* 42:bD:* F3:Cf:0a DF:c1:9D e3:86:* 2E:CD:EC 9B:65:1c } hash { "_Hbk{9Gr" "cW;&v2*1" } id 347c:* name "uLRP|dS{" via-port "Md}pzTT?" parent-hash all-of { "Ckp2HGG^" "<1dTG{R4" "L+JGxo#g" "'GZ5<LZn" "K4-j_XQ7" }
+block serial "^dw}6o{<" via-port "I{0PC-d}" parent-hash "BF??A]dq" name " bAW}L`R" hash "zCGB%^1X" id all-of { A1B6:* 0F26:* 5cc8:A114 c8B7:* FA50:38ED }  if rule-evaluated
+block serial { "' eJBBd'" "F=~s|urr" "+DeuS|OZ" "}&f$dJ:l" "m[;a7BXb" "E1s3aVS@" "CyzfUx=W" "L%@7Q}&S" } with-interface ce:ba:08 hash "q!^vAM]r" id fF9F:*  if localtime(1:00)
+block serial equals-ordered { "YO8dkFwQ" "<VCEk$rH" "BK>;72<'" "SZ'9L|0+" "nb4f8RQz" "%+nj5uJs" "lH7mX[{B" } parent-hash none-of { "VR.!VZX:" "&7Tajs#j" } via-port "4+Ob__&2" hash equals-ordered { "f;W/ v{Q" "F>Q:t#.2" ",@%aQY_E" } id 8dfb:*
+block serial equals { "xWWz!iq-" } parent-hash { "Ub$=]95S" "mt&G6+Eu" }  if true
+block serial { "EtM=.0H=" "7wvO_c>h" "RqHmhcsb" "<cldoC<|" "d#L|^Jke" ";G H&9YE" } with-interface { 48:a7:AC }  if false
+block serial "eysw`F:5" name { "x&PA+n86" "{EBX/:tI" } parent-hash { "h/H]?UV5" "dv',hk3>" "MOp%AD]8" "y~*@-5&@" "j>?8YCa4" "[-X'%8?^" } id 8eBd:* with-interface F1:5c:*  if true
+block serial "G7Hl0@@U" with-interface none-of { 3b:f5:* b7:*:* } hash "Vc0:K}4s" via-port equals-ordered { "5hp=l9_8" "% QvSSSf" ":,B~_>W/" "1n3XbOh3" "~Y'.ex'N" "vMR$&2!X" "DcB*rc}!" } id { 1f2A:* 00B2:* e0a5:4bF2 } name { "Oe8#Cxz[" "K^v%Z H%" "n;%%>%;5" "k>2bu<L8" "SMNBi?[O" }  if random(0.4)
+block serial { "k.H~unpD" "`_^+xFQ " "ur^5wI]^" ",YLG0&T}" "^>v{d_8S" "|DA`7z,{" "Q0m}qYqH" }
+block serial "KnLBtuVQ" hash "FiI:Bz}W" via-port one-of { "%S-b%9+;" "Dpg0#>Sa" "E$K*v%+E" "IJpS]k6q" } id all-of { aACF:* 90C5:* A7A8:ccC7 } name { "d!7:npy2" } with-interface { Dc:2C:8e 63:eE:* 9D:*:* 24:*:* } parent-hash "wW^-A|#2"  if !localtime(2:00)
+block serial "l>00&hpe" name { "_XnAr}w=" " g!AX5y~" "4Z>eHm;^" }  if false
+block serial "@mG|`A=;" with-interface { D6:*:* cA:BF:41 } hash equals { "Li_axYd9" } parent-hash "n4Sh7/rB" via-port "_TF++qc5"
+block serial "NM`pS}J," via-port "axRr3:6 " id eBC5:* with-interface { 8A:D9:ed D6:d1:58 }  if false
+block serial none-of { "h-Dd;##S" "QCrcpQjW" "$?+ue*4n" "'cL*DpQ-" ">=|fzWe/" } with-interface 45:a4:* id equals-ordered { b4Fd:BE2f bADF:* dfB1:5Ca9 }  if !false
+block serial none-of { "ss*lxBk8" "=!c'A[A " "' IYFYQ?" "`u+X*Qlq" "bf7iVpu]" "#}$%!hJM" "[OCDq**f" "[zrj/>9+" } parent-hash "e Dv9jX9" name { "#`^4g4K_" "0{15Sc;7" "7=w?`OZg" "k{pxJQE|" } id 1CA3:* via-port "@?r/_-H7"
+block serial { "nTNZzl6n" "71B>?fM-" } parent-hash "8*9yJk{3" via-port "c0tbr0|&"
+block serial "$-=Nza+3" name none-of { "30d9s1Dg" "N':gAJOd" "pf&ZKJ$a" } with-interface 8E:*:* hash { "Kjx&s,h4" "-pwN/r``" } via-port equals { "P>weG^H`" " J/$!?|2" "kBpu;493" "I:`pMk%x" "x+:H5M^m" "8k}A9.s." "L:[C$cTH" "Ss|=h1gp" }
+block serial { "O2J*vt@U" "Xxg6?Ht'" "<^JN5g?m" "KPb}83d>" "9Yzu^@QF" "QPFRo/e0" } parent-hash all-of { "2u!WdQ9d" "av2]',Yy" "*N;8S!f_" "N9yO&7F_" }  if rule-applied
+block serial { "`q!QOU<," "T= L1xgN" } hash "QV4Uuq'L" name "BtA,$^P_" parent-hash { "%t{F, !g" "TZ!a&sG-" "~UfoGl#r" "Vr8&#7/2" "c;bGTwYg" }
+block serial "s2Z~_#iZ" hash "3Bedsrzv"  if false
+block serial "snK~dU2{" id { 0f5e:Eca7 90cF:* aAff:cDEb 1BEA:* 34ab:3BA2 e4C5:bF82 8B55:* E1Ea:2B40 } parent-hash "://Xl0 F" via-port "k%*vc#+d" hash none-of { "Nf3@+-.B" } name all-of { "vi3?1<5C" "[Zs%3'{l" "kRsA^@e$" "jreX %09" } with-interface E3:*:*
+block serial "s`Q4u%&?"  if rule-applied
+block serial "SY}dZ1}R"
+block serial "u_&3&b2:" name equals { "/o5R>cVR" "cvf@{5=_" "FRz{FM2m" "oD<[]IWK" "BLPBm$KH" "wH##;BPs" "`np5?fe " "$Wgsg7m." } hash { "B~ib$R#P" "Q:PuxpS " "bmD{ Bnc" "%0PiV/~n" "8#%37{5Y" "K${[-h}Q" } parent-hash "2Oi{W{D+" id one-of { ce4E:* D90e:* cb7A:* D304:* DBc0:E21C 5635:dD4A }  if rule-evaluated
+block serial "u%:ve#!R" name { "UkA,q gP" "@0OnrN3c" "X&p;CS|y" "~,giQ?QB" "~`BVQ^O$" } hash equals { "D?;Tl]_J" "/Jl,y@G " "s,}Y__1Y" "!FlBcp{i" "@4f;T#a'" } parent-hash "wT-L-=NE"
+block serial { "wc_5YL@~" } name equals { "WCpMtmIV" "|sS}Qkxw" }
+block serial ",@WJ;`;Q" with-interface equals { 5f:FC:* B9:aF:* 14:d5:* }
+block serial "z]2+_&LL"
+block via-port { "5 !K1-==" "*jn`b+LB" "$`Ues@P*" } hash { "T4/UgQMZ" "iW05a@lm" "6&|@Fm1E" "TkS~;Pg[" "!:5dX-Pm" "^CzASK^o" "%z<CzE'V" "F;k~gQ-." }
+block via-port { "612dQ!W." "DEXQXRk'" "?}Yunl!r" "d!!}GA/3" } with-interface { bd:*:* DE:bE:* A7:1a:f4 dA:74:eb fB:f3:b8 fC:4C:* } serial "V2`+ _Ym" name { "=up!p3*a" "41mCb>`4" "lU?A9f<}" "1J`|uGKU" "KH3*zjhu" "eV@ 2K*k" "HOXUA%6<" }
+block via-port "78fe][qA" hash "e{A-Z^T|" name { "?2czF>QW" ",.4Bfl*m" "$tdEa~ev" } serial "?D51Ae'@" id fCdF:* parent-hash "$LD+}w`l"  if !false
+block via-port { "7' ._x2S" "-s+cEk?X" "u_nn 7Qn" } with-interface { 2f:71:Aa 7a:eB:* 52:1d:* 1d:AB:* 1F:*:* 16:5C:48 } name "4}TCw0:^"  if !true
+block via-port all-of { "IIJ_W<N&" "r/Sc,>:%" "^cw<3`ov" "xlBNXbrF" } parent-hash { "2Y3Ym>|I" ";L$-&U3^" }
+block via-port all-of { "YlI:D}r6" "qlv,DT?^" "aUt'`4oo" "I-Z{F%y/" } parent-hash equals-ordered { "*tmW,F=," "SIf]?V5k" "[@dCg f&" "'{'74Xd<" "p/VxfJ>j" "uiSH@o3^" "NORxWxcC" "T/z0rpS`" } with-interface Cf:7a:*
+block via-port "BE?i[yLS"
+block via-port { "!BWzM} Z" "$Rqc0on/" "ax%P!bsy" } parent-hash "l~%9d6~=" id equals { Ec8c:* E8B1:4F11 cEdE:* eD6D:* Bbb1:* }
+block via-port { "c%v x{w2" "I]Bqt^Qp" "c$y F_:R" "A<WkUJ9R" "<'GcLu%e" "CVLPPw_O" } name { "'@I_9^zL" " djFFIT%" "+3Fvz^vU" "{-{XMTFm" "kpQr!gpt" } serial one-of { "B1!Nxt>4" "cXjmDFId" "0$<9Q3;!" "huaXz&Rj" } id all-of { 0CCa:25d2 c6E2:5B9c 699B:* ABC7:* } hash none-of { "qCDG|.!c" "*F/='Y}7" "[u1=P9iY" "KHg&fL'n" "RyOZxhti" "e0R V/c'" ">O 8+O*M" }
+block via-port "cX`c|1-J" name "{`8.Jg=y"  if true
+block via-port "DLIukMxR" parent-hash equals { ":a+CUZHG" ",eGZK{5s" "f`>?TzN," "$GqQ6t{}" "]I_dTJ/o" "G8Z'}@=X" } name { ";i5hOE14" "7OX#}Ewl" "a$~BJ@GO" "A9ZZ=&=p" "Z'F0JZg/" "~nc>Y5[ " } serial "'$TaI/F "
+block via-port "-D^Y&axw" hash { "!-0_ZcyV" "xDdWv6Yk" "[*vXaN7*" "b:j[[`c1" "njTVUT&{" "_1OX ; U" } serial all-of { "G`}$C'6V" ".bl,>ZI*" "!+:xPC=P" "]v}j>KxA" "/wKPw?u}" "jV?yr0q!" "nNxp#Z,~" } id one-of { 2212:* BF1d:* cfC5:E9Ba FBCc:* b964:* 1B1b:ffCA } with-interface BE:7E:*  if equals-ordered { true false !true false }
+block via-port { "!:,DZGae" "B=PI9ou;" "B_GCHKA@" "v_gKi+1>" "/-;54U:B" "+D_rvG>2" } id aa2c:955e name none-of { "0N@FwwnE" "u1g$Nwsi" "4@=@Ucbm" }
+block via-port "E8.Tq;%<" id { CDfD:ad9d B3a8:* 5E9b:A7e7 1cCb:* } hash "GKzYp{e{" parent-hash equals { "la8'so#b" } serial "w4[W|3q=" with-interface { 7B:*:* BD:*:* EF:*:* 62:*:* 75:B8:3B } name { "K$$r10V." "lEf^6<0N" "S]W-m-Ef" "O#E?L*.O" "D8!qvAY3" }  if false
+block via-port { "eFNbse*f" ";YM:OHPa" } id 4ab6:*
+block via-port "g_54F !j" parent-hash "l H.2?NR"
+block via-port "h']48,_c" with-interface Db:*:* name "}`[=L6/Z"
+block via-port "KbX_Hib3"  if true
+block via-port ">KeBB?~9"
+block via-port { "@$l~5]&i" "okMY~gz|" "uJ=:`4#/" "Tbd4tk@*" "a%BaM?#[" "Q3'=tU{F" }
+block via-port "lYgo0V-i" with-interface a4:6C:f0 serial "j,Go$M}X" parent-hash "_5*11g7g" id 01D1:*
+block via-port { "m`[7N-`>" "bWvd#kCF" "xLp qu&w" "Q_Cf4+MD" "n9X3dQxN" "=9NjE2nJ" "7mFzm6n_" "nD[fq@kZ" } name { "r5/FW`Bf" ".?l:5#s%" } serial "8u!SAX#[" parent-hash { "Ff%e^mN%" "gE'fl:,|" "IF%9Tb9O" ";m  VCHt" " TuirsMZ" "g~?tLWKZ" } with-interface a3:8d:* id 2AA9:f295
+block via-port "NGSav7D0" id cB95:99Ce  if !true
+block via-port none-of { "o!Xn/sA?" "U^}l_$`?" } parent-hash "zrKp|0?V" serial { "|[[:VRFb" "#IA=Myg&" "ha9FbW&?" "SeB3CYXm" } with-interface { 07:*:* 83:e1:BC dA:*:* }
+block via-port none-of { "pgDBVQrE" "Jmbl_<!y" "YgJGN4dG" "'<tS/?;I" "'S#pRf75" } parent-hash "I, zO12g"
+block via-port none-of { "zZDeXn>]" } parent-hash equals-ordered { "q_Whut;E" "f`M',oua" "qKo],I6Y" "fU!F'9u>" "{5 x]LDt" "{`;uC4~[" ",~zk|#zl" } serial "{]}WymuR"
+block via-port one-of { "*FWFX{J0" "Y>Ll09>Y" "9hnX8@6k" "yshm'r~N" } hash "#gYL&?I[" name one-of { "-i|.z<Gh" "|^GsQK}f" "tZ<~IWx%" "}u=h=f+R" "l^,?HR6T" "1%$}^23C" "w-_Gf-`F" } parent-hash all-of { "1L0CA@Y#" "*_RF?~SQ" "v Z%sB%*" "Sj;x}ybO" } id equals-ordered { EcEF:Bae3 f40A:FEF0 4e04:* } with-interface 96:df:D3 serial "yPu]GlBQ"
+block via-port one-of { "P6Lu0]*9" "8K-H-b9." "g8:cuWB/" } name all-of { ".lL k%ka" ";'&6_p{H" "b3C:;iCq" } hash { "`5JnP>`T" ",8W}YNwd" } with-interface FC:D0:0c parent-hash "W+{ef2tz" id { EdC9:* BB37:5D3e Ed2d:B077 9631:* EA0C:c146 e0b4:73E5 B22f:Efd9 77Ae:* } serial equals { "ZK@9x6N<" "}7ZbM!E#" "A,O.3%Gn" "%0Ti{l0L" ",T-AO?_?" }
+block via-port one-of { "Sc,B.qfh" "%L R~8N6" "r$-rC;~v" "yp[U~ /Y" ", ERO/cJ" "pN{Se]+6" } id 1739:* name "~5B}c8EA" with-interface 1B:0d:F7 serial "KX.te?$/"  if rule-applied
+block via-port { ".^P:/EpE" "o;[LbPKD" "7H^Tn%84" "Zs VtIbi" "D6T%w}Q " "&g'L`Dpj" "ni}XBvS<" } parent-hash "o'>CI~Oa" serial "eqrAJ+E+" name one-of { "`zX02f&e" ">7^rmj:h" "LN+GDy>H" "2e74XFrX" ":jT3|Ni." "8T1y.V#a" "O&IUV,o:" "AaiziRVW" }
+block via-port { "rpT[fRm<" "o8Five`v" } hash all-of { "<$t25oR|" "/+ >vwv=" } parent-hash ":ORfv_2J" id one-of { 0a72:2cCE bfE4:* eB54:37A8 } with-interface Ca:78:* serial "l sRp5*m" name "c!*vZnWr"
+block via-port "R`Z`gX6i" parent-hash "= @pD7g*" with-interface 8c:80:52 id Bdd6:Ade3
+block via-port "U>=| @=6" serial { "C;szU@6P" "NA,32MR:" "8m5}c:~p" ".UgZK{^3" "?3*t!j[1" "EgY]OrbQ" "hKd70&?u" }
+block via-port "UAH43man" parent-hash all-of { "A+Vq<!|z" ":d{Z/S}1" "$Cb*g>oH" ":m'ymU[f" } with-interface equals-ordered { e3:4b:* ce:Cf:* 4D:*:* } name "CBsuMcGQ" hash equals-ordered { "gtlY7]U:" "x}u 7*[>" "IpTb9YWc" }
+block via-port { "vVuXkgvY" } hash equals { "+Xg7|nS?" "LBAh7[&Z" "0jBo=3Lf" "d,XM@ruj" } parent-hash none-of { "L;,RTXMG" "T%'R=E>V" }
+block via-port "w6a`xG_@" hash equals-ordered { "n*/}JO_W" "8Y2WK`kD" "?<YAf#:a" "=^q!Cp9o" "*z8e KR9" "+}ae8|[Z" "&OqOX%hp" "45h m<fY" } name "w=AZ#B =" id dAfF:* parent-hash { "H4nliaRB" "CDD6}'{I" "/6Wkxx@|" ",xe*R{G]" "f;Ik[@`+" } with-interface { E4:db:* D2:eC:* ae:*:* 63:FC:6D Ce:Fd:9e } serial "m&2efNi`"
+block via-port { ">wpZ [mV" "y4:!MWqM" "ANbq$6v-" "LmXDIGJ9" "2mPA2Z|l" "6!M:LDz*" "hDM&i_h^" "LwU[z:Ol" } id { 0Ef7:* aFB2:* aaf5:aFd3 cE48:* 4419:CBce 92Ad:ec12 } hash one-of { "-A&SRAU " "p}Lv6~7!" "qE@ p7a$" }  if !false
+block via-port { "ZB/]rEkt" "x-!F0S_$" } name "h4Ea!k`L" id { 00E5:* d33B:e9f7 568F:* } with-interface 6E:*:* parent-hash { "Rn.49Ml/" ".hM?Kl0!" ";>DagLEX" "qNireG/M" "wq']dhK9" "59QKT?8w" "^a}~Y~^e" }
+block via-port "ZqDuUpoG" serial "&D==,?!e" hash all-of { "TN5aEI7[" "SF5&ERkU" } with-interface 5e:*:* id all-of { dCe7:* 78Eb:D3D1 bbad:4B57 BD4b:8dd9 DC8D:BC9F 0Ea6:* EAd7:Eb2D f95e:e70B } name "5<Y^IQL "
+block with-interface 0C:6b:* id FB86:E90F
+block with-interface 0c:*:* hash { "hTv!-!bc" "I1;xW@j0" "1i5'Q|zw" "-u~0Y1&B" "c|Pgh` 7" "~HZEjd/R" "Srla0q4V" "b2RSbIr7" } name one-of { "G#q1r_C4" ">m!o~Xfc" } serial equals { "p#f_vo+#" "5.a`[rDI" "/@$V`L,`" "ZA?@;!K`" "<{Ov{x8c" "'ML0kxaG" ",di|TmXj" } via-port { "r3WLsN@ " "$O:K<+Oq" ":xICCvk_" "uooBkLi`" } parent-hash { "&xj!Qfun" }
+block with-interface 24:*:* via-port equals { "$XN`8p$r" "TqS8;!L6" "sw&v0?We" "6CK@#?u/" } serial equals { "r{JT!cVJ" "fq9dCeG9" "?.jmW=p2" "_Vv?2A-:" "!%Ud;e1T" } hash equals { "En,#'S~f" "UAsT?dU+" "^0+t$:ms" "56%n>n%w" "rpPp?7Mn" "@]`SAq7f" } id b8c6:*
+block with-interface 25:*:* parent-hash equals-ordered { "ht_Hm5eP" "e%n?q'iF" "Tua5=t1/" "ktRw_P'U" "6vr>j;iV" } serial { "`YyM?>fF" "o'K1ve1n" "f/[D;X$H" "VY_yn0G]" }
+block with-interface 3b:A9:BF id { 59a5:Cad7 B9A4:B28A eEb6:* } hash all-of { "1?X2u9A7" "_`]`neGo" "Q M{30d6" ">-pqob~!" "VzM,Y<-^" } serial ">4J~>=e4" name { "+Z%U,Y00" "NM{+o^}%" "T.9qaZ^A" "HJ-Q{6z[" "8c+uJ<=." "3/J][.8." }  if localtime(1:00)
+block with-interface { 3c:*:* 19:DD:* aA:3c:12 20:EE:* B0:A5:96 d2:Ec:* 90:*:* } id 5c1e:baBF parent-hash { "eP%]m#5H" "*]o,:N3@" "#&BkVZ4L" "wBnmz=[U" } name { "_<Xuu|,V" } hash one-of { "!0R*ruoW" "4rQsKWH/" "5]b*A%}+" ";@bGtEp5" " +0x Z0N" "z6{ 6U+l" "x9&B*Uw^" } serial { "KR55lE'<" "j%*s35*A" "`^7:CInN" "ZtD6?;25" "W,Y5TrgS" "m9G|o1vE" }
+block with-interface { 3c:*:* D0:*:* 32:*:* ED:dc:Ef 83:*:* 7c:2d:A2 } name { "S;T'4hh." "j!bJQ6SX" "_lPYz,N*" "4OI|Q&O5" "{SO|k&W>" "r5EX5>kH" "b|lqU<a|" "Ba8gWhMf" } via-port one-of { "G${buJK6" "9,_m7L6W" "2BWEcgcw" "'=UqI!rg" }
+block with-interface 4c:*:* parent-hash "S 139<=i" hash "3Fjn1t5c" id 047e:bc87 name { "bCF,jO~U" "^QL=r2+/" "^$CMZcCR" "b%RMYW+Z" "?te<km1U" "z`BXcEY~" }  if !false
+block with-interface 68:3a:9c via-port "tq|!x03/"
+block with-interface { 6D:6c:* Df:c0:* } id equals { dc9C:af9e } hash { "v>XYfvcq" ".F0A*k41" "'r2h-dh6" "7h`f1-f7" } name "8G7kkhQ7" serial "OsNC2zYh"  if equals-ordered { true false !true false }
+block with-interface 6d:*:* id 7FCb:* parent-hash { "BGqqqM56" "?dp[q72M" "SMeEnhAR" } hash equals-ordered { "LYHvjL^?" ",yi7>{K'" "m@>epG}]" "Z5VXM7q3" "8?V<pvld" "7]hiKgKJ" } serial "M/p1/'Y!" via-port "ky5m+?:2"  if false
+block with-interface 76:*:* parent-hash none-of { "^>3/J@Sh" "d1!=aN:j" "u5oPoIU~" "PK~S_xcM" "tY-6>':e" "k_et|o@w" "4xam[7[2" "f:s$YH;H" } serial "v1zlks:D" id Efcc:bFEc via-port equals-ordered { "I`??fBQ2" "~ g|pv`I" "bIO,g<ZF" }
+block with-interface 95:60:* name { "Ao%^,8Xh" "7_}8966g" "t4C_H?[|" "P:7cyPU?" "sD{r %#{" "OWkIl;8N" } parent-hash "B#{LJEp1" serial equals-ordered { "~JtwdBag" "4@`w,'-F" "bZeItd~s" "~sZk|8|@" "n]nPhi%i" "HDBGIb~O" "vb@dwE#F" } hash "H>l^/RbH" id AcCd:7CB5 via-port none-of { "n|0aM2`!" " iD/>]cC" }
+block with-interface a4:*:* id all-of { 1cdb:5E8a Ff2f:75dA A6EE:D743 } parent-hash one-of { "Pc}|020l" "'G@Jrnb8" "~v8C-Yz4" "9^$W0A8A" "V/E+]D[x" "3?>{VB,w" } via-port { "yX~x;K=|" } hash { "vJuCVhx<" "fP{Dp0Xt" } name "pUZ*qJUW" serial { "?Tl/5dt-" "I^lZgZHl" "0s5_XF%-" "4v$Q@8^`" "-X_,HHAc" "]&vYO P<" }
+block with-interface aE:7b:* name "|8#QiJ33" hash "D~U9`z:k" parent-hash "X<@j9O;%" serial all-of { "*%,Ky/HE" } via-port { "rl58j%kf" "{~@CDQB*" }
+block with-interface { AE:cE:* d9:3a:* 8E:*:* cb:eC:aE 95:*:* CD:4E:bC AF:7a:04 } hash "_CKMJ0]N" name equals { "Gop@bU;Q" "1_s;X2=|" "z&63>bW{" "Z {~TV!?" "LO%KQla3" "H`F0+|k{" }  if rule-applied
+block with-interface all-of { 0e:1e:7c CA:Ad:* d3:75:BE Fc:*:* A7:C2:58 b4:23:df be:b3:* } id { fC57:* 58ae:9e5a 61d9:bfCC Eb22:* 7d29:89dA } serial "k]JqDsf>" via-port equals-ordered { "-.XB7dRR" "xG_Ccd/c" "LC!$Xgq*" "Y#,$uq;]" "MD@bdIg?" "%A<SkpuF" } parent-hash none-of { "->^I5 s3" "Oq@7FSBo" "cFTQ<HHY" }
+block with-interface all-of { ae:C5:* a5:41:* fb:e8:71 Cc:*:* CD:*:* } serial equals { "5h^*j`<O" "9=HT/8.m" "v'l8S,qb" } id { E7Ef:eA61 7f4a:CeDa 6b1E:* EEFD:* 7e0B:* 6F17:* } via-port { "N|5xuq%L" "df7A~p#U" } name none-of { "H1Uugk`," }
+block with-interface { b2:09:bf 00:A1:* } parent-hash { "x<xen} =" "as.WKaGt" } hash { "/'Xedk 2" "-U,WmB@'" "O27I/iVj" ",7J=x?ul" "hL^#QEJC" "PM,Q<edS" } via-port "9L+cYCkg" name "PU/uE>dt" serial "G!qbaP^{"  if rule-applied
+block with-interface b6:AD:1C id { B3Ce:9CBD } parent-hash none-of { "HquSqjm^" "%zUK}a[&" "$Zi,1`Xo" "YZ0`2j/G" } via-port { "A/+1F$no" "w 9{C`hn" "o67!`!bx" "QK6uQ!;]" "1r7v]E|i" "Z%S*:#~3" "eK[84Jxa" ",tMvkD.E" }
+block with-interface bd:cc:*  if !false
+block with-interface d7:F3:* hash "2D88zYyS" id { b5BD:* FAFa:8a31 bd0e:6EA4 8ffF:AbfF bFbe:* AAe5:A0fb 90A7:* } parent-hash equals { "d1MLIn+P" "t}pD*D'^" } via-port { "F.#ANH0I" "dI`AdJfx" "aWNs9!tI" "d`pqB@jU" }
+block with-interface e0:cc:66 hash "/olqC{fb" parent-hash { "dX%$0jUD" "[Bc6D>$_" "Y+;Ck0sY" ".MWzF/t." "$9h`HI7p" "D2Xqa.pQ" "D^4us:7&" "C4D5z}&*" } id 7C39:*  if rule-applied
+block with-interface { E4:dE:* fE:EA:* } hash "Z$,WkT?t" name { "@zKN_{v~" "ww68=L]a" "/yR}Nx_Y" } id 995f:*  if false
+block with-interface { e7:16:* 00:8c:* B7:*:* 96:85:B1 F3:DC:c7 8d:*:* 4D:FB:C1 f9:F6:* }
+block with-interface equals { D6:6b:* 5C:7d:d6 1A:A9:fd } id E24e:* name "ATnytMKm" serial "thT 8a>6" hash none-of { "l?//cX4|" "kJ3PKdA3" "h-xcKG{c" "'GyRKy05" } parent-hash "nLQ&6Z'C"
+block with-interface equals-ordered { 61:d4:0D f7:a4:* 5F:a8:* 10:BE:* 5F:6e:* B7:ea:* } id 7e3D:C64C hash one-of { "4S_>uLhN" "ymB40UjR" " [X^20f~" "DXY zCQ$" "ZkZIh0<7" "*R[^3%'=" "E#M&lB~a" } via-port { "C3{mIl4K" "]T%X~7Ny" } name { "MN4&f^:T" "nxc@Yu-+" "$.ucE&=x" "+Rd,6AJ%" "jpKp{93A" ">'|Ajd1x" "~/pN#L~a" } serial "2u{i/oM~" parent-hash "3E:mtsZ?"  if false
+block with-interface equals-ordered { 78:e6:0c 6C:3C:1D 3d:*:* 6A:25:* F9:04:Ad }  if rule-applied
+block with-interface fA:3e:* hash "AmTqP5 p" serial "[|toucRl" id 1C5e:363f name "05Q9Xl3c" parent-hash none-of { "ATrZW!5r" "V<cH&/i-" "hZ{B 4}|" }
+block with-interface one-of { c7:fD:A6 } name "UBgB@;fY" serial "Or[l$ijN" id { FDA3:* aC06:4a7A 54D5:* } parent-hash "_lcXaSi}" hash one-of { "5/5bBZMt" }  if !localtime(2:00)
+block with-interface one-of { d2:A7:4A Bb:*:* eA:CC:* 41:7D:* d1:38:* } name "*5-sgN>^" via-port "t72rZLXt"
 reject
-allow id 1234:1234
-allow id 1234:*
-allow id *:*
-allow id { 1234:1234 }
-allow id one-of { 1234:1234 }
-allow id one-of { 1234:1234 1234:1235 }
-allow with-interface equals { 08:*:* }
-allow 1050:0011 name "Yubico Yubikey II" serial "0001234567" via-port "1-2" hash "044b5e168d40ee0245478416caf3d998"
-reject via-port "1-2"
-allow with-interface equals { 08:*:* }
-reject with-interface all-of { 08:*:* 03:00:* }
-reject with-interface all-of { 08:*:* 03:01:* }
-reject with-interface all-of { 08:*:* e0:*:* }
-reject with-interface all-of { 08:*:* 02:*:* }
-allow with-interface one-of { 03:00:01 03:01:01 } if !allowed-matches(with-interface one-of { 03:00:01 03:01:01 })
-allow if random(0.1666)
-allow if true
-allow if !true
-allow if false
-allow if !false
-allow if one-of { true false }
-allow if { true false }
-allow if { false random }
-allow if localtime(13:37)
-allow if !localtime(13:37)
-allow hash "00000000000000000000000000000000"
-allow hash one-of { "00000000000000000000000000000000" "10000000000000000000000000000001" }
-allow parent-hash "00000000000000000000000000000000"
-allow parent-hash one-of { "00000000000000000000000000000000" "10000000000000000000000000000001" }
+reject
+reject hash "[0D4_&K2" parent-hash { "P0L~#5M6" }
+reject hash "2-{,;c y" via-port { "*g=;-wyW" "d!+ySDV7" "+;!DYf`N" "Gk-HT-,}" }
+reject hash { "$9]ka$?6" "3rpd<jkw" } parent-hash equals { "{.LSVxC1" "piz&S{Pl" "%T5!@KS0" "Ca[%N05T" } id 6d1E:* serial "2/drPpGu" name equals { "?EtU[Hne" "oQV<;w=J" } with-interface 56:1B:1B via-port "c 4YZq[!"  if !localtime(2:00)
+reject hash all-of { "n^~'_6{&" "UThwj<p&" "tD<iOV0>" "X<3c%D*e" "UB%S[so7" "Z}.[Q6WF" "1>hZhf]5" "<34Evd'X" }  if allowed-matches(name "*[*x9]~u")
+reject hash "b0D'QA*e" id { 2aDc:A2Ba C8FB:fcEB EBBA:* 695C:f516 468b:* 5804:454D 1DC9:cbFF } serial { "3X: ,Cf!" "ugaG98K{" "Ezn~!j6`" "% Ues8z{" "[ZovP4^~" "lW$nec<i" } name "6G&zoJw?" via-port "nXDx>!U>" with-interface 0b:0A:* parent-hash "C?]%!-7<"  if false
+reject hash "Bo2h^]Oz"  if false
+reject hash { "@C|3,Ouw" "PBPB=,5p" "3,M=HXmp" "^d/Oc`]{" "sXO6hG'x" }
+reject hash "[}~e0hn0"
+reject hash equals { "1kh30%d[" "p1=<H.cu" "V;g@.4=T" "Bm8H@xPM" }
+reject hash equals { "~ujN9>De" "EV8^{G}v" }
+reject hash "-~>gG%<W" via-port "y?!Q4*UY" name "XHG`{]_;" serial equals { ",26PID8S" "<0v1a[6l" "9hL~'i^}" "?^LCpriv" "=cj b^%#" "q_Xt2{Fl" "~/;I+]K]" "g_cQ2it." } id 12e7:* with-interface bC:EF:fA parent-hash { "hUX-M1zm" "BWagr;!X" "R~oy,xvP" ">fTv{:T*" "Z=&nbK?+" }  if !localtime(2:00)
+reject hash "Gm`6pj&%" via-port "@-]2I=^g" id equals { 7DFC:ae9E 2171:a7A8 } parent-hash { "GKN!A_k'" "apUd'LSC" "4ekw`kiU" "~!wwwVYI" "?]=;<|l#" "jI$!aT/b" "A?2SM7|:" "a;`8kMK}" }
+reject hash { "I[PNT@Z~" "rsW97@.3" "?6=P@J'^" "j=;_bXLR" "->gZH*ra" "O]tZ5$$F" } id { 79E5:3eeC Fe67:fbB8 72C4:FD9A } parent-hash one-of { "T+2EUtG5" "ZK>VO'@Z" "ad7#,UQc" "N1}.@',O" "3>34^D{|" "@$F2%=kf" "7B/OD4/K" } via-port "$DU<y66B" serial "`b,V+L?U" with-interface one-of { CA:71:* 3C:C0:F5 D3:FC:* dd:3e:* bF:2B:* a3:cA:* }
+reject hash { "JCdk jBZ" "l_`Ldjc@" } name "LScG15,[" serial "+u[P%C44" via-port one-of { "E'p!6ln-" "eZsoQHq0" "/+qD?<f7" "LT#v Ffo" "quU_I2~@" "~kDgnkDa" } parent-hash { "nbr.~z%S" "[l%p8;kT" "M?fFI=nZ" "mNnV-_.D" "V7zqXjMo" "Mq3'7`?W" "*L>YR{`T" "6TMrB1hg" }
+reject hash "lT#?*;OP" with-interface 41:06:60 serial { "MM<Uk@69" "n=?tGC0*" "q>lyhV=s" } via-port equals { ":VQzu!nI" "BZ%+~>By" "&5bF,jcd" } id 52b4:0b4C name "%=IHTdHV"  if localtime(1:00)
+reject hash "?[mV2hbt" via-port { "NTL#35VS" "GNF;i$Gc" "[Pc*YAv#" } with-interface 8B:AB:* parent-hash one-of { "8ev{?iL{" "z/nzXAyC" "o*xz=03E" "Y]%[`A61" }
+reject hash "N:E8h;Kj" with-interface { CB:11:c8 83:21:E3 2a:*:* FD:1d:8F } serial { "FWnuG'ZV" "M2/T-:We" "2kVF7G{H" } parent-hash "*F39Z}Cl"
+reject hash none-of { "CJ1Nz9Z{" "WcuHsk6>" "NpjWM.]7" "NkY:--> " "V5jH}mW-" "t.m;e<#X" "pMHOwS[;" "1E~~5{tc" } with-interface 4a:A5:* via-port "Z^6=5TWc" serial ",W%frw%#" name { "S#+wxp:M" "VYeg}Ha " "z3PF,:q:" "N@b}A>am" "St!$s@vI" "!*-!t!Dd" }
+reject hash none-of { "~m_rz19P" "J7K,'hSj" "n|#{gV7=" "`AB'I2Jc" } serial "R1GLA_n5" name { "p8rjMj/p" ";-Fu-,TR" "S;oHd<d6" } with-interface c2:4b:D1 parent-hash "9'*0F,q8" via-port "oOYd!H[." id { 9d16:* 6870:* C01F:* fB90:* 94e5:C858 fefe:* dB89:* }
+reject hash "O4I<!!,h" id { e6b7:adeD F09b:Af28 E8Ba:5d5E E4ba:* fc6B:* } with-interface 1A:AA:*  if localtime(1:00)
+reject hash one-of { "7#':$HF " "|2fB9_NP" "nj~C@gC3" } id { 62DE:CA96 fbBf:6223 3274:* } name none-of { "DAH0Wa[|" "Dg!92jrm" "U1I<C2=Q" "|+BQA-Qg" "*%T.Uw.4" "!J{yeI8?" "lBhN`'<x" "VVGYN60d" } parent-hash { "uFj/yFLS" "+MbG49]t" "L@_C~|ER" "%m+@T2fW" "]ws7A.jO" }
+reject hash one-of { "Y&bk.f%2" "|o'x^3.H" } serial { "-k$8v|s_" "7T%D]E&t" "c}B$&3`Y" }
+reject hash one-of { "Z-bVAICm" ",&x'NVZ'" "hA[?swVS" "hv,KPMX " "V{]Ebz-r" } name { "B![=}0$z" "wZ{Oo`yG" "/t2u|V'L" "/vj=3*,5" } parent-hash { "Y`kO2<Z9" } id 313f:1Aa6
+reject hash "qcr=%`}n" via-port none-of { "PQS6C{h<" "fH>Gm:Eg" "3FikLCM=" "7=3FQZu?" "_a-Ztiry" "lQHw4oN6" "516SZiMV" } with-interface { 55:*:* bb:28:* } name none-of { "$}eZ+%-Q" "AlJ8CEZ!" "1M8nkB*|" } serial "@U_9bo:."  if !true
+reject hash "U38UP9GX" with-interface 75:Be:79 name "m21T_Y_j" parent-hash "j{AjXFP-"  if equals-ordered { true false !true false }
+reject hash "U lD+u:]" serial all-of { "Fb8b%OjY" } parent-hash "1b^k[@3v" name "1Wq*}{,J" via-port { "Nd[?'s8i" } with-interface c7:15:* id none-of { Ad7d:* }  if false
+reject hash "Up*][U%n" with-interface bA:e3:* via-port { "@ApJ.7#w" "+gA:sEtD" "Ir}3O901" } id { c4Bc:dcBa 6B95:9eAE c314:* } name "Z/]z+HW&" serial "L=D9AEA="
+reject hash "-XE`#cnz" parent-hash "chqw^{-s" serial "Z,JLN4a=" with-interface 58:3b:* id fb6d:* via-port "+EcI1:HO" name { "mVZvzunQ" "[Lbg9}A;" "Jzy5h}-]" "_K;gC -c" "fdP7{+IX" "O-$|L*o[" "_wv9$Eh3" }  if false
+reject hash "*^xG]YbX" id equals-ordered { 2EBA:A9DF Af4f:66cf d37C:* A1E3:a938 eAbC:* 42A7:Cf26 92cC:bf9c } parent-hash "?I/^7:LM" name ".yZMM>NV" serial "7=1~1MLH" via-port "sv+L,vRL" with-interface none-of { 75:93:7B 5D:0A:* d1:*:* bD:*:* C2:*:* d1:c6:* 01:37:* 44:A0:* }  if random
+reject hash "XYUYMU=z"  if !true
+reject id 0F1B:* name { "#,U,0 *^" ",$1P Vnl" "r%qhbEFO" "h5N8f Vw" "*d-Q_uyi" ">hTH <I]" "NJDKi:IB" "jg-w.wF'" } hash { "Ae`e0t;k" "}2*WhPBY" "H>I E1 {" } via-port none-of { "`di7N>ib" "vL:^QSP~" "_Zns|#e<" "S!Cp*0~n" }
+reject id { 0fEE:* } serial "i516'{x;" via-port "nZCN'n_." name "lLSY}3#U" with-interface { 6B:D8:* } hash "]$t6GN5:"
+reject id 2aad:* with-interface { D2:*:* 94:D3:9a F3:F2:1A 0d:cE:d8 dE:Aa:* 5c:B4:bA 62:ED:* } parent-hash all-of { "qq=]MS0s" "x|iO,5Hd" "GTb10H--" "8K+a seT" "8O^G=NEj" "E<8[gIRD" "Qf ],<jQ" "]Y@ObPg/" } name equals { "@1XZcdxZ" } via-port one-of { "`'HbV}<7" " ksL5{{n" } serial equals-ordered { "gDwCkjAx" "O>4 }nW;" "=#rDr^{L" }
+reject id 3B2B:* via-port { "+s2n~GJW" "G.R23S~y" "i55Jl'0_" "Wl4L~IAG" ":,!KzKtD" "v~]+0kAj" } serial { "23WapeE6" "@DVJk/td" "G~DpkBu&" "bM<{pcd{" "a :KAV&$" "Nw[?+~dj" "vupgW]+3" "EFHrH<!j" }
+reject id 3DB7:4ECb via-port "K>*r^~io" name "MR|#3K1e" parent-hash all-of { "i,nW517[" "S/#8 d.7" ",czl7.$+" "$Hf~Duzd" "]7v&Evwq" "=SA-{ R;" } with-interface e6:*:*
+reject id { 3FfE:* E3E9:d174 dCa7:136F BC1a:* c21F:1c0c f060:* }  if !false
+reject id { 49AD:* ec5f:5EB1 1A44:e4c4 afA4:8a4d af89:755E 0b63:* 47c9:E34F } serial "&iwWT|6x" with-interface CC:60:* via-port "#hlL8Q12" name none-of { "s}$O<ZqO" } parent-hash all-of { "{,ZwND2_" "#_id5jN&" "g]OWk/i?" "_-Noj%S{" "Qj7~u&}_" "vb7j~5cl" }
+reject id { 5F5a:F0cd Bc8c:EE3C } parent-hash " B3*prLj" hash "/IZ74RVa" serial "ZI=M%}*y" name { "7$Q13_w+" "K+RRWO+M" "`LJ8I~&z" "|D7U.`q!" ";}qfkYBb" "m:q8 M1+" } with-interface one-of { af:*:* 92:3D:* 31:*:* EA:*:* 0b:29:cE 63:a2:* } via-port "?`;ye}K4"  if true
+reject id 7CDB:* hash "W??VWMpM" parent-hash "k*BHWU93"
+reject id { 87bc:43E7 C6F4:* DcaE:* 2ef5:C743 Ce70:* b6cC:* } name "]JDg{oH0" with-interface none-of { BD:65:* }
+reject id { 87CB:* 1b88:* E4c9:1985 ADE2:dFdC 6764:ECc6 05A8:4C7B 39FF:* } with-interface { 8F:A7:0f 0F:*:* eE:AC:57 } hash one-of { "l9^?8d89" "kAR:Rmkq" ":e2oKMi/" "`?X8C8.P" "r`xb[&vc" ":}ngfSg@" "8l3W/RpE" } serial ";>qHc&AB" name equals-ordered { "kIXbZ&Iv" "b%GDhUO " "uyF*6|c&" "ImC&Pt.K" } parent-hash all-of { "x25nCP=&" "b16r` -:" "*p}+KS`=" "sW21L0_N" "dk=q|XmO" "iC~C`dY " ":-vuH@+k" "@ &6Nr`K" }
+reject id { 92b0:* A9E4:43cF 09E8:* DFce:3a8A 4f5a:5EBb b5d6:* 8c9f:* } serial { "s~vn=?,Y" "fXV1gP'S" "dfjw;tkd" "}yiH]agp" "Yr=~E3a_" "L33Y3lBb" } name "Qr+W'o5@" with-interface equals-ordered { 38:*:* D0:A5:* A2:*:* 47:*:* } parent-hash { "1T<HR+uZ" }  if random
+reject id { 9DBA:* F05d:* DffD:* 4e55:* d326:A6Ca 5d1f:* 28c0:a318 FbE9:1a79 } serial "H^HY0<BF" hash { "=hqGxq67" "BWaf' ZH" "f3,XP$!9" "Q/uXx|E[" } parent-hash none-of { "av~?RK{#" } via-port { "dZoUCN+Q" "z'-`sKP{" "ZE@4iB+Q" "p?^h~T;B" } name { ";ZadX95e" }  if rule-evaluated
+reject id A094:* with-interface CD:Ba:5b via-port { "@WY-6l}x" } serial "5^i6Q9*;" parent-hash "28w=l TW"
+reject id A1b0:* hash one-of { "/Ed!_x{{" "^?q?N&=c" "Wtv2h2XS" "C.YZOZ1n" "I<&$[VRF" "qX_&,>jf" } via-port { "iJ#[#f`T" "D1PIZjW6" "JX1ov!fr" "Qr.R`0Hc" "|oM@a,8U" "f-1~]lMw" "Hw2wlpKR" "e85}*T%." } parent-hash { "1Hw1mIX4" "5Ozd.v88" "0FkXsJ^B" "2c&>*dcz" ">9|dWE3%" } serial "2XEV7NhW" name { "ys;K%M!Y" "kv%{TNI1" "F@gO+~cM" }  if true
+reject id all-of { 6f3e:4B62 7abc:7F67 6270:52B8 bEEB:14eb }  if random(0.4)
+reject id all-of { AdF0:* aF48:6BB4 6437:* 6C06:9cf8 9d72:94cc afaE:* 0D5f:6f89 } serial equals { "t?@u8guJ" "3tlipcoe" "&%AzJBDr" "`K;/4B1`" } with-interface 8A:*:* via-port "8jom+v6k" hash all-of { "Z*HiOkgt" "s$$_,o:m" "Fe${.H,v" "2jRbyQk=" "_UM<GYQ1" "[u~VVi{G" "RmZX/sW@" "67R>ahp." } name "NdIzfn7p"  if random(0.4)
+reject id B7a5:* via-port "8ij/qhi2" parent-hash "CPP6Sw3h" serial { "lx+VNll0" "%MKO_>R~" "~.yx/ri+" } with-interface equals { Ef:*:* }
+reject id BF5C:8CBD
+reject id { c291:* F3a3:* a6F7:a1cF ffF2:* } serial equals { "I?a3bI5l" } via-port one-of { "029&qKTb" "=EJ N$h;" "F2g6CjE&" "psu#e2-x" "i!NbSlDi" "eh9Z`x@I" "j_!jE+ku" }
+reject id c3cC:* hash all-of { "LE@#m=8^" "r. TLT~X" "lwHAY7FD" "x0A7@};4" "H:fBT5My" } name "~zx9Sr!2" with-interface equals-ordered { 6c:*:* f6:*:* e9:dE:ec 20:*:* } serial "[FG+Oqb9" parent-hash equals-ordered { "';?3}Ehp" "ALVSz7pU" ",$N5l:9T" "2LFU50s*" "?6Ht-3jA" "Vo.1@{1 " "2%7$o6um" }
+reject id C658:DC06 parent-hash none-of { "jT9W65}`" "Vdq]R$w|" "r=9cOI[4" "-;Ucr/<7" "u!}jK%zO" "@i /{qhA" "+c.n8C,<" "KPP}fiSt" } serial "LIX CA#3" name "AXI*a'!|" via-port { "D54{9Lr1" "w8^^9*b&" "FQ]@PUrG" "n~!sV_D5" "3*q.T,>B" "YRfS%0ii" "bX{lH=FP" } with-interface fE:28:aD
+reject id cEbB:* name "dA$k/Gfl"  if !false
+reject id D858:* hash all-of { "wYj *H.i" "Kzl[m3p[" "=8z5EbX=" } serial "g>_?<DFR" parent-hash { "e`Hx5a]%" ";nTzfQZQ" "iVZ8eZkK" "SH0oo/Y3" } with-interface { Cd:8D:* 13:*:* }
+reject id { E5FD:063B f71c:C79f Aed3:* C2E4:A3d8 2985:3cA1 bA0a:* } hash "q'R,D R " serial { ":2+7i~@J" "@S>@dsqc" }  if !false
+reject id { E9D1:F5FD } serial "<Ed- n1F" via-port { "+'Yfc{-V" } parent-hash "&Nx@Mf<-" hash "_Yh_5]Z`" name "0F g5#'{" with-interface { DD:24:* dC:*:* c7:74:* }
+reject id Ea10:a0fd with-interface equals { 71:Db:Ec 2C:03:* fA:*:* } via-port equals { "[;D'x~A=" "PKifRM7s" "i{|03plB" "hd@lKSb6" "`4#wVLG>" "X^6mK4x`" "'%@dOV#_" } hash "x0CHSDxC"  if allowed-matches(name "K Gfi!1p")
+reject id { Eacc:* a6bb:* 5B7F:* E5aB:* d064:fA1D Eb2F:* d623:* E50c:DF47 } serial none-of { "hVmcqCF," "!P_+f]1c" "fdfng[,E" "*JznKWT " "^1}M%{M " } name "xg[a7_Z<"
+reject id fCf3:8e21 parent-hash { "7VK[#h5N" } with-interface 9f:*:* serial "jAdP:Z5g" hash "5&ptC#n;"
+reject id FD06:* with-interface 20:*:* serial none-of { "6PX4K?U2" "+8I+GUde" } parent-hash { "3E$DcA5>" "t+Dj2Qx*" ",Kh39ykT" "%od12 .e" "N;JUVP2{" "vjXMynPJ" "BsXh@WiA" "$!qK`.D<" }  if rule-evaluated
+reject id none-of { Ac4c:531b 322B:Ddaa dBa8:* adB9:b737 94ca:52ee } parent-hash { "ldHR'Z{9" "oUXbhJ:7" "ASlMOo-@" "|<iv^6xl" ">B?=jfBQ" "bBT$CfOm" "L0s[L~xX" "ggfSi_u~" } name "]JA3! ~{"
+reject id none-of { CB8E:5F01 F0F8:7491 756E:* } name { "xH1K%16p" "f8IaYm:7" "qldMQwAy" "yURda{Yz" } serial all-of { "9`=C|qIb" "Z.P^*0fg" ":N=;w!CI" "N,9t//KC" "WEA%^|To" "28'p r'," } via-port { "$aLcV$yi" "};<{St]i" "9B+nCP-8" "nU|pJibH" "$+naTyL8" "g 3XTrU9" } hash "nfHI[N|D"
+reject id one-of { ad8f:2dEe 90D5:4110 3D25:b8DC f2ce:* 116A:* 2EAB:* D7AA:* } name "5=/x6jiG" with-interface 8C:4B:* via-port none-of { "l!y2V>o;" "L`Gm~U5s" "bPtmRur8" "Z W+_x^c" "6a+rBNV%" "AyDpi0g-" } hash "lHDzSn.c" serial { "BmG3_dJ-" "}^hWJ{?v" "w*$DF!FK" "kkQNPA`H" "SMt!`X#V" "9o7at*m=" } parent-hash "X`Xcsvb'"  if true
+reject  if false
+reject  if !false
+reject  if localtime(1:00)
+reject  if !localtime(2:00)
+reject  if random
+reject  if random(0.4)
+reject  if rule-applied
+reject  if rule-evaluated
+reject  if true
+reject  if !true
+reject name { "0.3>p?[#" } id { dA10:* 08c9:7cE2 DA31:* bDA8:* a6A8:* 5aCC:* D55D:91Ff } via-port "w,1NnKf7" with-interface equals { d7:DC:* 81:*:* f1:fE:4e 5E:Ba:* 2C:*:* fa:22:94 30:3a:* 59:B5:6b } serial "YWz@`LrK" hash "NYe2I9QE"
+reject name " 5YsSERs" serial equals { "?knRo&X`" "7LCsKjVO" "rT9>5Afr" "?YNluTiT" }
+reject name { "@@6<:=:C" "}Xg~gi|L" "&KS`*XHb" "DFgIE<E*" } serial "v;~kf!Jk" hash { "%`dNGOQ]" "l7_bE[Q1" "~UC[PrA~" "npCk|A$P" } via-port "nmu82*:%"  if true
+reject name "6u`?ZA+t" id 18E8:4DDE hash "-DiSY!>-" via-port "vZPjD]1O" with-interface 92:cb:d5 serial equals { "wT$g3ei/" } parent-hash { "XfY8@wT0" "b4%O3xI$" "<RTAGfLq" "~F[433_z" "RYLw{;]d" }  if rule-applied
+reject name "!8-k:bVa" serial "X@ylGzAE" with-interface equals { 2D:2E:* b1:fB:* c4:Eb:A9 3E:*:* c2:E3:4D ab:eb:Bf 98:*:* } via-port "rv!Y?zxq"  if localtime(1:00)
+reject name all-of { "xQdp'c0U" "U 5jS1.u" "KhLxxE6;" "DGo42Sum" "&Ov7~{57" "c=r<~;1V" } via-port equals { "f^_vwPH!" } with-interface { Cd:*:* 57:f3:2D 47:*:* dd:64:* } hash none-of { "!Z_K4#Cy" "2>-ZUKNz" "_Fz4u7`L" "2/X@NSO0" "`]]k?|wv" "<%:W<p `" "k<k-dl|:" } parent-hash { "~oS7ErK^" "N<&TccI$" "?oH<pF'^" ":b6Uc^--" "b#qT?7o!" } id 94aD:* serial { "b?*+cNNq" "_w:47!X9" "Kl%8p4r8" "j,-+.^G^" "~'-Y:M97" "fxpb.-=y" }
+reject name "A%t5RW<v" id BAB5:* serial { "tYtJ:_$~" "2]J?&WbY" } with-interface d4:Cd:b7
+reject name equals { "_<kN?<Dx" "D`G9=Vq}" "XclK8oq;" "e3Q79goF" ":1PjA[`P" "US5f5`0=" "RniQsITX" } with-interface { 91:*:* 82:77:* dE:B1:* bE:aD:* E2:b1:2C EC:8B:* } hash all-of { "he'7d1MO" "p}1{z;y7" "$$4U+~Qc" } id CFea:7abD serial all-of { ",93nW{0c" "TMyuuqvv" }
+reject name "E/u[m=}t" hash { "5FQr9ekN" "`JI.3iEs" "wq>Jye[U" "y5x#/sv4" " :/2Lz=P" "HzD8 ~:Y" "A[Tbwb,`" }
+reject name "/@jbkQD_" serial "w&''4D1I" id 1d0a:9c3d with-interface one-of { cE:*:* 8a:02:41 A5:8c:cb 51:*:* Fc:*:* b6:0b:* } parent-hash all-of { "n[BckQO." "2w=0/ %E" "}&/+j_Qx" "C 5/4{}p" "7<8+Z.Nx" }
+reject name "+ k@2AK[" hash "p]XAeB4<" serial { "t`4i#?@j" } id { d1E2:3f0c f9bb:eeF1 } with-interface 4F:24:C9 parent-hash { "rmn2uS`B" "7!>X-#t " "Q/z0$}y!" "n5q-UQSV" } via-port "T]5}gqCr"
+reject name { "K:bJ~pZN" "7/WAM$7U" "5Y@mWwK{" "?;~[$&2T" "_<aHlsJK" }
+reject name { "mDKwmW//" "45R#5JD[" "d$p|zvX{" "-`S%'ct{" "GyZiRdlS" " C$Z|NJQ" } hash { "Y$;3!pjh" "3m13a4kA" "y,o:,A5+" "i78rd8;9" "CGC#Go|-" } parent-hash { "1Ovf8qB^" "o`iS<U~:" } id 02bC:a5bE serial "AY`0wiO;" with-interface { DC:2B:* 95:d3:D2 ff:1b:* DE:*:* BA:A0:* EC:C3:BA 20:*:* a9:0B:* } via-port equals-ordered { "quQGJ]4L" "ZR#A9yTC" "pP$v@eKw" "}q=sId.g" }  if !true
+reject name { "+N%hrpIY" "b7HFf?[L" "=tv'!|X?" "vmeq$2CN" } serial one-of { "[L~T._oy" " '<Ylz}:" } id { a7ac:* E4Bf:* } with-interface AE:Ac:* via-port "dMcFp:#5" parent-hash " 15OZfa=" hash "B;!92Tbb"  if allowed-matches(name " i$ludC ")
+reject name none-of { "*3Rko:0i" "SyaTz;=B" "5do7Jf<M" "L^kq?wIT" "WfsEhx4d" } serial equals { "I|<GXkF_" "A?ZHV8L:" "C~%6Y5L]" } with-interface C9:FB:ec hash "+U.-dNL="
+reject name none-of { "P<&=MG!>" "|2R`x9'L" "C}2lpXN*" "%t vMg^5" "-3,kbJn~" "YqeMJmK " "$utXt`4>" "`ItJ;%v-" } id { 7A72:A624 aebb:* B5E0:f82b af1B:* fbbC:* 6fdc:* }
+reject name "'*'ODy,m"  if random
+reject name one-of { "A_!ageD6" "#dnn!;1C" }
+reject name one-of { "*%jBcE^$" "UQ>z9d`d" "oDjo`d_8" "5.aan,I-" "P|2agjJ]" "qWsJ`{/c" ";=6H[J8&" }  if !localtime(2:00)
+reject name one-of { "MjwwJ2[#" " U+&#=;C" } parent-hash { "y{RP$j$>" "!~rML4GS" "Ll@k**[G" "lCOO]z.'" } serial "h~=Iooa]"  if localtime(1:00)
+reject name one-of { "$nm%oD&`" "NHYqfUSX" "5fak#K,#" "Axm5~6Yd" "/+#>QCn!" "w.Wdv]d}" } parent-hash { "dv=6cauW" "&*zIIRMW" "]Cjp0TM@" "ufp8mYf4" "+b1B`Z6;" } serial none-of { ",s`4!EqI" "UM>7kns9" "!8SWI.9^" "xV4z*>#5" } hash "<8K22oJJ" with-interface Fd:6c:FA via-port { "{Eya!^r}" ":+R{W:4%" "%<znd=/w" } id { dA24:* 35ea:864B Ef15:* 2c0f:5E8F b0BC:* }  if true
+reject name { "/>*pPgWF" "OR48bQGf" "1<}L[-r*" "X8?ntxcn" "u@s}<65M" "jRRI*o&#" } id all-of { eCE0:7baC 1EEd:aEBC } serial "Y=NJg9wI" parent-hash "X:;ybhwQ" hash "|mal.Sx&" via-port equals { "$_si#$^F" "sUaA><F]" "-E:^8R+P" "A?<Cv-$M" "Egd-M03%" "PqE$3_6n" }
+reject name ":P.S0r`8" serial "H,8J[p<?" parent-hash "t}WhP&c`"
+reject name "Qv^`a'Q<" serial "bB3bK_Xp" id one-of { Cb5a:* 116b:* } parent-hash equals { "mW fs-v " } with-interface equals-ordered { bF:ee:* 8b:*:* CC:*:* 44:*:* } via-port "5jZG:uDw" hash " >WLa3[z"  if !false
+reject name "rEsKUes`"  if !true
+reject name "u/VVdX-}"
+reject name "$:VLVUt1" hash "F2=1BmK#" parent-hash equals-ordered { "`0tMM5yI" "M82GhsG8" } with-interface 9D:ae:8b id equals-ordered { EbAf:* 6438:* b7BF:* 817f:f85d } via-port none-of { "*/!PBa&a" "&|BQ?*5x" }  if random
+reject name ", W+>V+[" serial ";TRd,dg5"
+reject name { "X5Rn6eh4" "GC8|#lQr" } with-interface { Ad:9a:* } hash "|G<EEF;3" parent-hash { "HAOC`m/f" "re4hb5uS" } id 41a1:9347 serial equals { "7NRvb&r>" "_PzgYs6*" "STeHy+<n" }  if equals-ordered { true false !true false }
+reject name "[y7.ER,v" with-interface equals { 9C:EB:D2 eb:6B:* 8d:38:* CF:4B:* Dc:ec:* 2C:e1:12 } id equals { 708A:* } via-port one-of { ",Xk!6J3x" "Y&Gv']lk" "F9~]'uq!" " u3_sdG7" "A#p;wBV2" } hash "=!6kH~h3"
+reject name { "YU}GTX+s" "pZ`-U5.;" "bE>rkdJ!" "3Q+qNz5w" "w`aG'GI " "_-mIGw&." "n0;W1OF;" "b^M,y&qH" }
+reject parent-hash "0r_<@7i9" hash "1CV'OF~j" serial "d:ED>o!~"
+reject parent-hash "2wNrRzr6" serial "!>#bDOH}" id 1FEE:* via-port all-of { "ShfwRw0q" "3GG#ehwQ" "B- :G'E." "k_1]w1N^" }  if rule-evaluated
+reject parent-hash "_7ZLxB6G" name "7WCR'X3y" hash equals { "@!=xWS7;" "`@{plKR|" "TVmxF59U" "*G359Ie*" "?s>qMjR{" "W|}.YuFC" "fVHHkcVn" }
+reject parent-hash "8t_CM>e^" with-interface fd:a3:7a serial { "Y;g+x~Mv" "4ZR6l?%4" "Lm4HGQNF" "{K[@b]SI" "QZp[3dMc" "Vu:m32:," "%<R6z`cX" } id 1ecc:* hash "j [Cp&KD"
+reject parent-hash all-of { "F0xvv?[t" "P=%m-N!t" "[c#6C!:D" "2>*z5}OX" }
+reject parent-hash all-of { "P7]c0nNX" "3_&^#yEJ" } id f95f:50B3 name { "!LhZc2*;" "}T6nb%,[" } hash one-of { "lT^&hCCJ" "xrQ|d<x0" "{g[W3T~z" "QqihqB$E" "~cGAjAeN" } via-port one-of { "PF#&m:4`" "f[wjDZva" ",}r0!_PS" "@yU:`ukO" }
+reject parent-hash "alO:nfzn" id afFF:cF41 via-port "ot,!E q;"  if allowed-matches(name "OG0<m|c&")
+reject parent-hash { "aV m<2+m" } via-port "p1~&ppj7"  if false
+reject parent-hash "&bv`q?^I" hash "$/j6$?h~"
+reject parent-hash "CMtkHkSf" name equals { ";]|it2ki" "A'8t0Q6f" "rs7GClNw" "6^~VJX`u" "gVqKG+Qs" "*a@uy_l/" "7+ RtqUe" } serial "c~qB8g9O" with-interface fb:*:*
+reject parent-hash "e9EyQfR." via-port "4{,szJN%" serial ">VvY1deR" id EA9f:*
+reject parent-hash equals { "=9b|uzS&" } hash "; G~.kY>" id { 27EA:88a8 b64B:* 7cD2:* 1F8f:67a5 } via-port { "PLh*QJxq" "Ie Lx3Bl" "pE}F,+&:" "M=7Ybu[}" "o/2j4D[1" "]Nxs]%/=" "Y4wX:AJG" } name "Kvvv/@aZ" serial "OTo[nEQG"  if true
+reject parent-hash equals-ordered { "bOV/%R Y" "A4e6 Aw-" } id { e037:29cC fD17:9676 }  if localtime(1:00)
+reject parent-hash equals { "oSq:n=w>" "f4r1=muK" "!K~XvSkO" "G^BHQRy " "Jg}IBh,g" "YLEJQAx5" } serial "3bLc{.ws" with-interface ba:8A:3d hash "+>YsE`n$" name "m>1hCH;*" via-port "Zu[~8Dp_"  if !true
+reject parent-hash { "GOz5^lET" "^ D;G9;o" "i^b_jYaK" } id 2d0B:* name { "AO#w:4+@" "XqQ-a>Tb" "16j||Q@f" }  if !false
+reject parent-hash { "H`HFW+Bq" "ld@SlY?7" } name equals { "&D9h-rx]" "I|w]WM!c" "D67/_fad" "ltD`@Z<Y" "^uZF^;?&" } id equals { F0c9:F364 6792:* BB13:* 7082:7b5d d97c:* 7E1d:* cE7f:5AdD }  if rule-evaluated
+reject parent-hash "i|hyc=9!" serial one-of { "?Kky`0&/" "`Yoj9L|m" "m$e&r19?" "kE7tH{}R" }
+reject parent-hash "_?~;}{<&" name "0om'h8J=" serial "7>_EPLEx" id e776:b4de via-port "X=Z$q9QL" hash "d'K6!i9k" with-interface equals-ordered { B5:8a:* }
+reject parent-hash "~N%%gcbm" via-port "sO3#EYB-" serial all-of { "@B#>.>i_" "I+=9jDe2" } name "QV,I&YBX" id 8fD6:bB51  if random(0.4)
+reject parent-hash none-of { "=Gi[ M/H" } name { "<=%@z<8V" "SQ|DTt3Q" } serial none-of { "L cRz#a;" "+m`@ 1mE" "J.x0CTY6" "|w+9T]cW" "0e%t27<~" "W1TH{=>d" "1AuYe@#T" } id equals-ordered { bfAb:* a4Fc:DEDD 26b0:9B0B }  if none-of { true false !true false }
+reject parent-hash "N|ZSy3;C" with-interface { 2D:eB:aC 69:*:* Da:*:* e1:*:* 8A:6d:* 37:Ca:1f 58:D4:D1 a6:*:* } via-port "$;E_qiz~" name "CCAi7r,%"
+reject parent-hash one-of { "J<$/a@lJ" "A2!r,IcW" "iyueSV0-" "P[MnB.!C" } hash "uUf0 z!k" serial all-of { "aA_A 7Y;" "1I*^KP'2" "1}yHe*@C" "v,Q|Du!v" "4|:$N$Pk" "Wj.W>4R," "}Jm5-dyo" } via-port none-of { "iZt@2Hu4" "XD4RoDKv" "VC&?CMr_" "e]deW#?c" "pyrMs&Tj" "+Gr{LmeV" "=VO,.SD1" } id all-of { CB9E:aa15 dAFd:* 3D0f:da06 8a84:a0AC 702E:0e84 }
+reject parent-hash ",OW@B=j+" with-interface 6c:6C:e4 hash "GWjH-J~~" serial "6T;9}=:3" name { "bS8ZZF$c" } via-port "QD_,gF5K" id Ced9:80A9
+reject parent-hash { "P3c+rNLA" "%R176MB/" "M8b${|e~" "[[,mRM.s" "k|=QPF8'" "[[t?Vs}N" "}iEf8Y`A" "ezL~@?TT" } hash { "*b@P!A,8" "42?I^aRJ" }  if !false
+reject parent-hash "Qt 6lmKA" hash "*<{Bo}+@" serial "O#BcnMLa" with-interface 04:c8:*  if localtime(1:00)
+reject parent-hash "?@sIZG]s" serial "9j$ed:J^"  if all-of { true false !true false }
+reject parent-hash { "s&wl/vew" "ti:p;+U<" "]+<_5~O*" "GCsP9^-a" "iN@5d]S2" } hash one-of { "[,PrhA<J" } id 579e:* serial "URI6k~#5" with-interface AE:28:* name equals { "A@=|2^KH" "N@^7<r-u" "Q$Xg'!uW" "J'^F .3M" } via-port { "d`NszK}y" "PIzp&HKA" "iM?TyMu6" }
+reject parent-hash ">#Tfe>Kn"
+reject parent-hash "tU/{gC,%" with-interface 50:*:* via-port "ZwF!e#Vv" hash all-of { "w1uq;#&e" "{Go-91~N" "XgqIqSt<" "Ob2Ja#Pw" "mpt8^~YW" "2|w}^!I," " WmzvZK3" "e''=/>,e" }  if equals { true false !true false }
+reject parent-hash { "XPQ&H?/i" "4$0A}vu@" "-*'+,D`L" "UXt:R^PY" "nBZE_w!j" } name one-of { "J{TnYcN$" } serial none-of { "R'B]U?N_" } via-port all-of { "j!m}'mlg" "@Q[199]*" ".^&m|fFL" ";k`UMvqo" "5|m.2>S%" } with-interface bB:*:*  if !true
+reject parent-hash { "xpt85li4" "5MbYU}#<" "fc'Lt|<t" "A[q.bB,l" "s,}Ch]7{" "S%T2?;1w" "%od:W|id" }
+reject parent-hash "~y;HBE0p" with-interface one-of { 54:8e:* 7B:*:* 1d:*:* 2d:*:* 5a:98:* } hash { ",iunOjPv" "Vk6GN;LO" "$_ D/QR " "CAZifb32" } via-port { "^R[E,tG&" "RsE4r-ue" } serial "Jh'.g-.l" name all-of { "*mVA`Ibr" "01$zE>X:" "~#|7%brx" "9dubX5me" "7k|=2Udt" }
+reject serial "3*!TVEF." name { "=1tabA0C" "7]GQXA+G" "GOU$@B>?" "&&UpmWWP" "*mwY!8T2" "!xV1|PH=" "uma={s<l" } with-interface equals { 46:*:* 42:dA:* 7d:fb:fa } parent-hash "c>!9I2S_" id one-of { 4cBE:0AeA 8A63:4f7b 4204:1f52 CcB4:2bc0 56f3:* fa3b:65dA } via-port { "H,EGcl=1" ".}2_5+ru" "Mp7ZYx}'" "cD0{q*1O" "<Ayhu6sP" "<*O`N7=b" } hash "#DS>eaGU"
+reject serial "&4WC`L,g" name { "/u*lF3x+" "F'*6ZwZ~" "v`CLYgAq" "69}NC][]" ">US,9#n_" } parent-hash { "aPaU$#JJ" } with-interface { 1d:*:* 5F:3c:5b B6:d0:27 FF:eC:* C4:01:* CA:03:* 9e:d5:* f9:b4:* } hash { "Dj!q$aWH" "_Z^*&PkM" "Q68'a-PF" "h2y&o5.R" "f%Q7uFmY" } via-port { ">eqF'4zV" } id none-of { 3C9f:* }  if none-of { true false !true false }
+reject serial { "4wu05cpJ" "&_w*2  =" "XcoX}[6S" "?v$E?48'" "kt[C*+G?" "]*/IY62," }
+reject serial { "7xIHQ&6k" "dkp95tZ>" } name "vxgJF1`8" with-interface { Cd:*:* } parent-hash "+K'Pc;v0" via-port { "$0=*6 1B" "a5GZ[]m!" "g?+vIX1T" "a3EEY'RX" ",$Wd<{g'" "$fP.:VqR" "z/;VL0Oy" "S|5qpw|E" }  if true
+reject serial "7*z'Z'&G" via-port { "ab_6Y['}" "`8DE#Sni" "{eGE-8,o" "]umndJTy" "T_m!{eu~" } hash "dv01sV`4" name equals-ordered { "D=Kb&V8E" "3qbhv7:D" "qsKb3Q=v" "v3I,4_Bb" } id all-of { 85C3:Af6c c0ac:B772 6CAB:* } with-interface all-of { 20:*:* Dd:02:fF A1:ec:Fc d3:43:2d }
+reject serial "8NBn[Z5X" via-port "A[mPm{T?" with-interface { df:*:* 8E:46:* } hash "XaG2$9dw" name "O-~qONma"  if !false
+reject serial "}9X:0,AO" hash equals { "?Rkyb7Gj" "`rdVxIPH" "!psLZYri" ",O'Dt]A2" "{x13ogap" } name none-of { "z.K9x_5t" }
+reject serial all-of { "6wUEMpXb" "jg]qSe*C" }
+reject serial equals { "8q*wl_7;" "#?Cz25l>" ",xX2#<Ue" "+8H7v/hV" } via-port "C7+>>^7|" name "C!&FSf[[" id one-of { 21E2:* 49fF:5365 ff8B:3B40 bF63:c127 F4b2:* } hash { "h.JdhBxY" "@Ao/K1WI" "0ZeybeL+" "`C6:E>k^" } parent-hash "~lhRb8yO"
+reject serial equals-ordered { "QyXLGQ[F" "G,5>pfG7" "-abZ?fQ&" "d5]{bX|!" } via-port one-of { ".SZx$,lo" "9ULx%gd/" } with-interface 39:*:* hash "e<CE#oK0" parent-hash "]3G.`F<p"
+reject serial equals { "v:G}Hf<@" ">^1EyKo-" } hash none-of { "!>U%:4vW" "OrTvY# #" "-siS+*AY" "PHUKiMtB" "tQ~pe{8}" "W|*vBwhf" "TJP?D9LH" } name equals { "Q%xmbV44" "nD%v>O`&" "BM$RWJtk" "d?K~f'GX" "jiA6lJ&Y" }  if !true
+reject serial equals { "YBM#3e+Y" "LW&++&`]" "6S0iF7d}" "Bn+QD_p>" "8GrJ'TDw" } id { dcb6:9e73 dEca:9a81 fbEe:* 3F7c:89fD eE3F:93b7 } parent-hash all-of { "qM^t^MMI" }  if localtime(1:00)
+reject serial equals { "zYPQUS,t" ",8s@iV[+" "zv=|Ibee" "]wy @V@>" "ABe5y;Ne" } hash "&2S4+h7x" name "zg'o? l`" with-interface none-of { 11:*:* De:63:* bF:2C:88 bE:*:* e0:16:E6 67:F0:eC } parent-hash { "mLui`B66" }
+reject serial { "gXw/X>[Y" "j9NZiw 8" "bUuO>jOj" "%iY-U`j." "9:MoaC@T" "yM;^e&8e" "cB31QIrY" "B8@K<U8>" } hash equals { "9KbK7 n9" "7^Y}y[zC" "$~b2VKV6" "p5?:2;6^" "-E%Y/xS<" "gn& OydI" } id 0218:5aD0 with-interface equals-ordered { A1:FC:A7 b2:*:* } parent-hash { "{0d /DeV" "^M0h8rW+" } via-port "4|l<l^aE"
+reject serial "Hc2zFcLW" hash "5e&x$8gH" parent-hash "Dh=LH+2>" id Cc6C:* name ";F<wf_bA" via-port { "T|ZYH4mz" "`y9@&s!6" "}_`BU+Ju" "tgsyoE!i" "t[Cp: UM" "-RX`~TXV" "Qqb[N<2c" } with-interface equals { 0A:*:* fF:f4:eE 6B:80:c2 }
+reject serial { "I+3]bGBH" }  if !localtime(2:00)
+reject serial "j1d3<11B" name equals { "`DO.#SS4" } via-port equals { "U#G%Nu;8" "UpgH;2tB" "iNO5LHo3" "=MVhB=t'" } with-interface c2:*:* hash "'~Rkuiil"
+reject serial "/kFwqVu'" parent-hash "V]97f?zJ"  if localtime(1:00)
+reject serial "LUKS.m|9" name none-of { "2eYwBZd+" "n`t*_T s" "z[iHnr`6" "h/m.LQ-O" "+y_0zfi3" } via-port { "?BfF8qVb" } id 5A6f:62Fa hash none-of { "7fYhtjR/" "R~ecBwHy" "5p:LnN'#" "u7!,-0i3" }
+reject serial "n-MlFhMR"
+reject serial none-of { "%c{u/lS{" "3N.@fuBq" "G1%s`BZ-" "KoN=!*!O" ";hceFrgl" "*N{Z1l+K" "`iWiE}iu" } parent-hash { "j}gDF c>" "u&YS8Kp{" "eiqI#P{}" "ckmD~,eL" "b@BoOd16" "w`xS]Shd" } name { "]$6n&V}'" "e0ZX%H%n" "?w.GsXnD" "+@'hG y]" } via-port { "ooyc-XxV" "Ijg& $qk" "4yy K%Dd" } id d6Ed:E850  if !false
+reject serial "NU/;XmN<" hash "kcA,v-`r" name "L?Mjqz5*"  if true
+reject serial one-of { "q%A%e6}A" "8j1jmnsY" "h_']MvKa" "Bj:D]^Z " } with-interface equals-ordered { b7:d2:dF } hash "Xte%iyb3" id one-of { bB8e:* d6cE:* a3B1:4aeB e3Dc:caBe A40D:* c828:* }  if rule-evaluated
+reject serial "qm4,tfTk" name equals { "{cidNdy#" "^{W:5f$j" "zDs<v|Y[" } parent-hash { "yb5oE^YK" "8@e4x^w@" "yzP'[yT*" " O5W3A`q" "qt'8#X<O" } hash "f3Ag8n04"  if false
+reject serial "R70?]v,7" parent-hash "K~^@ftRv" with-interface equals-ordered { 8A:7f:c0 b9:*:* Bf:Fc:* 2f:*:* }
+reject serial { "rwE=g-6~" "h&ISenjx" "'F:AUEpM" "AnM?Pk?q" "w]/.-QRT" } name "!{],-B1V" via-port { "A=+;Z~xq" "N+1!e :D" "wbT2E]?[" } parent-hash "6R`/r p!" id 33b7:* hash equals { "+l~;*vjV" "Qbx;K>d@" "<y1'`AfH" "^:?T=oA0" "kdk28:hJ" "o7f1u[gg" "23g{sOhy" } with-interface ef:Cc:*  if localtime(1:00)
+reject serial " s3bgW<}" hash { "[<]a|}bH" } id { 3bbE:* D4d7:* Cf03:eD94 2F9A:Bcdf C8bD:Ca42 F9f2:* a1AA:9118 } with-interface { b5:44:* } parent-hash ".Zs@ ;p@" via-port { "?a6MF}ZY" "cZy'Xf%E" "|mAoD!8O" "O!U|**-i" "Z%TQe+if" }
+reject serial "S</`S~G*" id { f3DD:Ad62 A9ef:D5E7 7474:* 4FaD:0bd4 3426:* } hash "LW1wqk1f" via-port "d`l;PLB{" name "5>s#qz,9" parent-hash "qix@~0oi"
+reject serial "T7,F{/K/" name { "$V.[Az2C" ":2#a14H5" } hash { "f` >1Q/t" "+KS4`]@k" "[Q0VLrbo" "=GiN1}@N" "}-ZQIC8W" "q4xXjc$T" "}L_Lm_v6" "p=ETrlQ6" } via-port none-of { "&2k,G}2d" "I].&A+rN" } id 6AA2:* parent-hash { "OYDuGi8^" } with-interface 50:*:*  if true
+reject serial "'Te}9S.5"  if localtime(1:00)
+reject serial { "ULk+s2#t" ">H*AHgXC" "J]?wS*F_" "D`vhu%Uh" } parent-hash { "9KJ8-A*r" "01,=@zx^" "R$_Y}'e3" "{*^-a7hv" "xV,g2RF2" "830f-Hdp" } hash "mJSqiT#;"  if !localtime(2:00)
+reject serial "UTk+Sla]" id DDF9:* via-port one-of { "M; ^=6Yc" " S|~g'1|" "0AKvgTcS" "fMzh8C#`" "uulT'}rx" "&Er<C`}." "rgyc`-u;" "L<W<X~_j" } with-interface eF:a5:*
+reject serial "xb|F&&tY" parent-hash { "&Fl{L%hU" } name equals { "!Abfu2~n" "-IU'pZLc" "Zz26M~eA" } with-interface { e5:*:* 6A:59:* dd:cc:* 4b:66:65 dA:29:a9 D2:3A:* }  if rule-applied
+reject serial { "Y-uQ<MR-" "E+Oeg4_'" "at^!*CHj" "GRNzm |&" } with-interface all-of { C0:*:* 03:0a:* b2:*:* 12:1B:8f 8F:8F:be B5:52:6B b4:*:* 54:6A:* } name equals { ":Q,{[E^A" "5w'nXTUP" "mlB9+1*H" "X*gO 6mZ" "=y!FUJpe" "p=tELt&i" } via-port { "/}r`ZlEh" "gWK6JYHq" "b :v:vD," "FtR8EBpA" } hash "b}y3=^s-"  if false
+reject via-port "+0QZsuGA" hash one-of { "VovT d+N" "VbR^RoO>" "n:w/i.N8" } name "|NzS@zhj" id aE53:91ca serial { "u4qBeA%N" "@}WuVN-E" "=8w.|e?g" "$];{w#1d" "&m:dk0OJ" "{[=b}%2h" }
+reject via-port "&6;Lp3Jr" hash { "19ue7ppW" "jPm_E9u[" "XHXbAQfh" } id 74Af:* name "#w%^nM29" serial "GGc-*I#H"  if !false
+reject via-port "?7c*ChM~" hash { "#mcn/L%|" "#+R}c0_2" "BDDM6n|;" "@^|+S T1" "wF4#0qg/" "3]m?w!@4" }  if false
+reject via-port all-of { "K0VqF+Gb" "3pC` uiR" "J9oQv@xj" "@a~]k`Bs" "L4p=hK,W" "v<^_@9pj" "0Qf!kw>O" "XL,e|w29" } serial "c@Mv@072" name equals { "QtCJ@G1X" "v%Zz];Nk" "OgDAzb;f" "QCD20FZf" "3Kc$hF`v" "V5eASmy`" "7[@?=n'1" "`8pM6g=2" } parent-hash "Y<./hNbL" hash { "0oAp/FC," "^B {c<9S" "QCZmbegC" "6V4Yqg;p" } id 29F2:* with-interface BC:*:*  if random
+reject via-port all-of { "$xiRRuA0" "ucED~8D~" "5!3@6d/;" "A1G?#D%x" "_><84;Od" "L~|hS{ie" "Sbr{v=!h" } name { "PQ+BpVq3" "U+EGir[X" "tQqCvPJZ" "-@Wl6^2t" "e#EQ;%;V" "{6:06@~?" } serial "&IRo@|4y" id 73fA:* with-interface fC:02:Ba
+reject via-port "bD8Rd4h3" id FbB6:CFC2 with-interface { Df:F2:* c1:ca:* C9:dd:* F0:*:* aE:D8:* 3f:F2:cc } name { "BD]@?>Pe" "y06|$chx" "j5bwMTxB" "QxyDi6}7" "XOhlCYXh" }
+reject via-port "bGnHdw]w" hash "k$'d~z6n"
+reject via-port equals-ordered { "&=xQv@>T" } name "G:OIHDL%"
+reject via-port equals { "RcN0%qdv" "wL/s -2j" "m|pNyWw/" } serial " UhO;hcr" name "'a}h{Bq|" parent-hash one-of { "UMR~^Q%8" "{43&ERq@" "_v>]YJ>^" "RL$N9DPe" "ln;dlnX " "L~<]0Pt$" "5[d_kiJ0" "N8^t'%$J" } hash all-of { "y]8T!ZjI" "v/_QaO9g" "BmEU$o6g" "8luhi=k{" }  if !true
+reject via-port { "%G]q99,m" "pS QkiA/" "Pw#,[*Jl" "t]/CPH.7" } hash { "K@Xx7_.6" }  if !false
+reject via-port "HXN<Xzc%" id none-of { 7aad:8fC8 c6Cd:* dAa6:* D749:* } parent-hash { "C+ShbDaj" "krvU6N*I" "Gk>Ge!~r" } name { "X[O61%i*" "}m?t*CL," } serial "&pwE EB3" hash "&VndDS!C"
+reject via-port { ":i0cIL'M" "*@I 6*m~" "yzmdhl,~" "~b!M|JFN" "l}k>O#<9" "Ir,692JX" } id all-of { 82C4:* } with-interface 12:2a:* parent-hash one-of { "rX_x8`=H" } name { "7WWdHd@." "*+BkA*_G" "[Qjw3%ke" "RBF;Ct9y" } hash "}Jss8/:["  if false
+reject via-port "I;9@<u,u" name "i umMG;i"  if false
+reject via-port { "kmFWg+@l" "ixb^9#!V" } id BDeA:*
+reject via-port "K~'}NO?2" hash one-of { "42g7Uio%" "0*,+[=.>" "RI=H7cEL" }
+reject via-port { "Kz#>Y7h&" "1H;f+x0J" "9yfE/aP?" "SVO/1vE'" "Dp>`bvY^" "HdZ=b8AR" } with-interface { df:59:* cb:C6:* fd:*:* bd:ee:15 F2:1b:77 5a:Ab:* d1:DD:69 00:dF:* } id equals { 9F95:979d } serial { "W,#1v9^L" "dK=I5w2~" "Xh51tX#Z" "W|SO^7p+" "q/$9M`&3" "L0egqhkc" "Q;ZhaO L" "1VT@_3+-" } name equals { "sLC_IeZ0" "uyDl3!'%" "Sj@8b~$X" "EXW*!-Kd" "_u8tM{0<" } parent-hash "W]_P!+7-" hash { "@2[K+BQL" " @/-L'=@" "A61T0=U4" "=_lLts/{" "XNSHKWn'" "|a{tACCh" }
+reject via-port { "lGGya;4 " "&O}+H*?3" "<Bod7=Aw" "J|77&Xbh" "@Y*S3@MT" } hash "'~,<F' D"  if !localtime(2:00)
+reject via-port "mH:qV_{u" id equals-ordered { 67A0:6eeC 7eBa:78D2 } name { "J1B&$l!e" "EpL@dE G" "SXPZW8_{" }  if random(0.4)
+reject via-port "M>;zFFN-" hash "N{:t^rC~" id { bE28:* A1aa:* Cbc1:6130 5EB9:* }
+reject via-port none-of { "5Z|q{oD " "TIp&-R+I" "*j0:mqm{" "n[PSiWbK" "mh=#eyiR" "+rg&18WP" "}!oMK,tm" } hash "Yt]2`N1~" parent-hash "atg,JQY-" serial "uBEk@%#+" name "O*9.A-AW" with-interface equals { fC:D4:* 75:ee:05 93:*:* Ca:AA:BF 55:F8:7f 89:B3:* C4:0E:* }
+reject via-port none-of { "6$%l,XTW" "=9|vn?v<" "|G|z!gN," } hash { "PU$$Ze3@" "C!:Bp,Vy" "''@1lTHi" "1fdP-c<6" } id equals-ordered { 67b6:* aCfA:* edD3:* eB7c:f594 E08c:* 9B0F:* 667F:Fe05 } parent-hash { "bcLD0MZC" "wI><Kd~a" }
+reject via-port none-of { "s`@KyHl]" } parent-hash one-of { "yLZuiB[p" "Rt/&>f;$" "eEZGDHwf" "4Q3sUS++" "wY,SpD,k" "Z}-o#?8r" "L0k}},Q`" } serial equals { "WeyWk$wd" "k3qK9#tf" "f.PzwCh1" } name none-of { "6/R~QS1A" "TC3J&| g" "BAXF!1H:" "ETwE?L4K" "a,XQ@mS5" "*M40BIUR" "]EU19Gp6" } with-interface equals-ordered { f0:6d:* EC:56:bC fF:90:* Bf:80:* 1F:e5:bb ce:*:* b7:72:* }  if !false
+reject via-port "[nV2,'_]" name equals { "Giz|X=bX" "N`*<rALN" "[ELD`4=|" "I>1%<6c>" "4_Eo@!%4" } parent-hash one-of { "jx>bd$fq" "v'Mgl~j#" }
+reject via-port { "<P4^<rVp" "x{`QZ'3=" "JYez,.vg" "D[MqEBdB" } id { c067:* CAcF:* bD4D:* } hash one-of { "R0sM>Xb," "A4v9y81 " "kL!93cbP" "ZEft4UJ>" }
+reject via-port "^q- .QhX" with-interface 9c:d3:52 name ">HR2>{#>" id { 524D:E4DA 9235:* 342d:* dFf8:dC1C b0a5:a3F6 52c2:* bDB6:* } parent-hash "VCxji7#0" serial ".-O35PI~" hash { "H/:8rNSr" "b=J@*vm%" }
+reject via-port "Q$<Z/y'b" with-interface Ee:0F:5F hash none-of { "m0y`r[TL" "$QW0?$S6" "~d80Zd&-" "qqlo-&g " "9M04&V7c" "+?/6=X2~" "hM$nAm~u" }
+reject via-port "*rGYLrLZ" hash { "*h',K.JJ" "@.F|?R`Q" "%KkaM=mE" "rl^RG>q*" } name "fRz5|x=$"
+reject via-port "vh <n!D|" parent-hash "`_F]ubWV" with-interface { 2d:*:* 41:Ab:66 } name "=7IEI5va"  if rule-evaluated
+reject via-port "Y5o'}s:5" hash equals-ordered { "gi/t*Kxb" "OcapxAUG" ":QV# XD2" ">BXA=^`7" "ps4dan9w" "dH>d%U9K" } parent-hash none-of { "tJqRQ3bn" "dlw=m3u|" "n6$r?u]e" "bV9Q?EH]" "<QmrsRA1" } with-interface B0:*:* id equals { 0dEE:* FeCf:* 9EFF:01Cd EB8a:* } serial { "oB% #PFx" "k;BfYTGN" ";<Fz2a,S" "]]nRF`|^" "oNOqtn0|" "c_ZAfI'a" }
+reject via-port "zGr$7%9R" with-interface 3b:c3:Cd id eBDe:C0ab hash "n,/lD&~w" parent-hash "D@g2SQR4" name "Qy!TP4,l"  if true
+reject with-interface 0f:08:* serial none-of { "_6yKoT6k" ":djGj@ ," "E[*QW3gY" "9yK[vUM$" "Jw!?&5gy" "rJzD`k N" } name "UucTj@lz" hash "H+SA7MnI" parent-hash { "PhFk%]k_" "9]?g;o0/" "{ 2roz3o" "2Y.~>>FA" "s6+S2%l5" "E3pv/;BY" } via-port "*5:v~5i9" id one-of { 2C15:8aca E1d0:* 8e8f:eBAf }  if false
+reject with-interface 11:*:* via-port "F>dN9k8u" id dd04:* serial equals-ordered { "8ceTmi`L" "U@?w]Bp&" } name equals { ">,7DlJUZ" "xg:B;try" "QnHe$K>[" "tq@1&:ZQ" "2bd6T5$R" "$hPfMM]-" } hash all-of { "bc&kA?os" "|ZYtEw{u" } parent-hash one-of { "2U=YXA{:" "c:Tm_#2S" "}z!w'1B/" "4ul%Cwk-" "O3>fc]{}" "v[m1e-Jh" " $|!r<:0" }
+reject with-interface 26:9E:*
+reject with-interface { 2a:08:04 f3:Da:* 75:*:* a5:99:Eb BF:62:5D } parent-hash "J-Okz#D8" name "[hEk%Lx@" serial { "&4Q_y:/T" "*4!n.F}n" "7he9Ds7-" "X-Q.5$Ex" "3G@Y~qU?" "MnB<Dk5k" "-+A=Y5`'" } id { 6A0d:* 7153:* c7c3:EED9 dc90:Abc5 2Df1:* CAEF:* 59bb:* F8Bc:* } via-port { "ycGG04oE" "?Eg0`HD4" "PJ0xG_&M" "UxFip0,[" } hash "w!wiVdc_"
+reject with-interface { 2B:Ad:Fb E3:F2:F7 2A:d9:cb } hash equals { "YEWE-%F7" "p'6[cc'A" "iSm]v{E2" }  if equals-ordered { true false !true false }
+reject with-interface { 2d:*:* F4:Ae:* 14:Be:* 6b:b2:* C7:7A:BE a1:*:* 5C:*:* 4A:Ab:* } parent-hash "$zS4_-}A" via-port "Dwz_Ejsc" id A73F:* hash none-of { "!u%H4f?U" "C_TxV.e;" "F@7e^l^2" "NZx]12|{" "mX&`-PzK" "|g7WA]kP" } serial equals { ":_lROWFf" "B6}R@o5_" "0p'Jm,^v" "m{lUFzG$" "0^qI?U-Y" "[T*I={pz" "IHNP!,Z*" "? :~n$~d" } name "{xy#j_IF"
+reject with-interface 2e:7E:* parent-hash "?Ug71aN5" id { f821:* AB51:* dEb0:* df6d:* 12Ff:dB7E } via-port "zMnMpiC|" serial "W3YF}1X[" name { "xJ46KKU[" } hash { "f0T:H'*Q" "W7:Nx;GW" "Id4u`9yy" "n+=@Q`_R" "hFpUeBqS" "KbeX#dkH" ":kmWSb|_" }
+reject with-interface 3e:*:* name "Zea/i21@"
+reject with-interface 5d:8D:ed id 2865:* hash "f;n0$3>e" serial ".qUztFD?"
+reject with-interface 5d:*:* via-port "~E5V%!;e"  if rule-applied
+reject with-interface { 61:*:* 05:*:* } hash equals-ordered { "pqA>L{h/" "waG&}3`T" "y?>'tXXX" ".8 R}D4V" } parent-hash one-of { "zse-_#V7" "@J5SFAYW" "LD$|4E h" "xO :4mfF" "9O7SIM@'" } id { 9ACC:* 5A63:* } via-port all-of { "V7U8B7{>" "wVJhb+ w" } name { "cGx&|$|E" "fn?$,61e" } serial "U|~BC`7z"
+reject with-interface { a1:*:* 03:3E:* d5:4C:* A0:1A:dD } id D0FF:E036 hash ",ILd,|,2" parent-hash "IdwSC*:W" via-port equals { "EQz-_|Vs" } serial { ",$m4~]*8" "LQ,IDL~3" "H/=1CmFZ" "DGnkBUU1" "@}mYr2O#" } name "Cyd!Va`b"  if rule-evaluated
+reject with-interface aB:eF:c3 name "-w,Mcb$^" serial none-of { "X@%WOcGi" "UOz'%$kH" "4&4R.P`N" "N:Eq gX&" "O$^a$L<K" } via-port "u:_dJsq*" id bfDd:B4cf parent-hash { "0|vI@`Bw" " U^+<?js" "RPw;mlYq" ">eWOnXgR" } hash "0URbo;UI"  if false
+reject with-interface c0:*:* id { 20Bc:* ddD2:0221 b26F:8AcF 5E66:* aEa2:FEe2 } serial { "`xT6]S2'" "f$v;>cT8" "fPhC>4vl" "a.Me#7j^" } via-port "UUj@H.3r" hash { " ?n6!6k/" "Z>{_S%GH" } parent-hash "*CKflJ>`" name none-of { "^$~7=7Lw" }
+reject with-interface CA:FF:*
+reject with-interface cC:e7:BE hash "qRY/7Nrk" id equals-ordered { BcdA:2171 898c:735D c70A:6aC8 aC5A:* } name { "UmIo`9:u" "PqvByT+l" "Q~s-+B6&" "|QY3b4ba" ",w&!Pk&-" } parent-hash "m&yOwhm+" serial all-of { "!7+ql}$F" "aU>u uoT" "dW9fQg&<" "!sZ.wN0L" ",bxT.~h<" "8I~,f q=" "iZ2^XbSk" }
+reject with-interface { CD:fE:* d5:6f:* } id { bCbF:* c04C:* DF52:Feeb Ec12:45De } serial equals-ordered { "U$@AJ5T^" "]CEwaZm1" "_#>'L8@3" } hash one-of { "obCl_1h*" "e|~iGd5I" "UkIf]O<@" "Uc;vK3W&" "XkVv'Kx!" "M'9Xp:kk" } parent-hash { "PmRYV5yf" "b1ae]ZLS" "<*#65Evo" "TJr#Z@&q" "K*uZHI,E" "^^6pBx3+" "cB~uUU>~" "L^U4+mV8" }
+reject with-interface { cE:6E:4D 8D:27:* 48:a5:* 4A:22:18 } hash "QO*BIH-E" via-port "YO[Rxo1n"
+reject with-interface d6:75:* serial "K6qOwgW0" name one-of { "nqK$62cR" }
+reject with-interface d6:*:* id 4320:* name "+@r<OM@Q" serial { "^JP&fo_u" "-zCV+S.;" "oFk}t?l!" } parent-hash "BC. Kc_p"  if rule-applied
+reject with-interface E4:5B:Ff hash { "9oG=A[Q," "R`C6?co5" "k.'MgnZy" "@K'BYFZ;" "Y -_w7dt" "MBp.4CF`" "Xb6!V$/y" }  if all-of { true false !true false }
+reject with-interface equals { 15:C8:c7 Ad:05:2c Ad:f8:fF 48:*:* Ce:*:* E0:aa:* dC:Ab:02 }  if localtime(1:00)
+reject with-interface equals { 6F:dD:1b 83:dB:96 b4:*:* } parent-hash equals { "P!~b0^[p" } serial "S@YZ]&1G" name { "2AvVA^%@" "9hT${,cu" "e!8}+mVP" "h$9I@lO_" "Ic$Ix#b;" "!ylft&=V" } hash { "s51WD}A4" "32Ods&Hw" ":>SM,?:," "rwM*Ex|j" } id one-of { 028c:7202 B82E:* }  if rule-evaluated
+reject with-interface equals { E6:4c:* 4F:8F:24 A8:c1:C8 5e:eB:Fb ED:*:* A1:3d:* fA:*:* } hash "rJjT-`yo" id 26a5:0e6F
+reject with-interface none-of { C8:3C:* 4b:*:* 5c:2e:4c 7f:*:* BA:F7:* d3:4D:cb } parent-hash none-of { ":m_H'h`:" } id all-of { ADc6:* 332d:* } via-port equals-ordered { "vHE?ZN;x" "Ga:kiC`N" "PlOjBwj0" } name "GQu<K$g:"  if !true
+reject with-interface one-of { e5:*:* 2A:*:* AC:c7:* 4B:*:* f2:*:* }  if equals-ordered { true false !true false }
