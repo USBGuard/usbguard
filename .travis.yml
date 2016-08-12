@@ -52,7 +52,7 @@ matrix:
     - os: linux
       compiler: gcc
       env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
-     - os: linux
+    - os: linux
       compiler: gcc
       addons:
         apt:
