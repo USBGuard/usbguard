@@ -126,7 +126,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %files
 %defattr(-,root,root,-)
-%doc README.md
+%doc README.md CHANGELOG.md
 %license LICENSE
 %{_libdir}/*.so.*
 %{_sbindir}/usbguard-daemon
