@@ -2,7 +2,7 @@
 
 Name:           usbguard
 Version:        0.5.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -176,6 +176,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Sat Aug 13 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.11-1
+* Sat Aug 13 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.11-2
 - Update to 0.5.11
 
