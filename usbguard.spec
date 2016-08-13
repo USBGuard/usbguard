@@ -1,7 +1,7 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.5.10
+Version:        0.5.11
 Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
@@ -176,28 +176,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Fri Jul 08 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.10-1
-- Distribute the .tito subdir (dnk1618@gmail.com)
-- Parse the version for AC_INIT from .tito/package/usbguard (dnk1618@gmail.com)
-- Don't use the same version scheme for upstream and (rpm) downstream
-  (dnk1618@gmail.com)
-
-* Fri Jul 08 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-9
-- Updated the spec file to print out test-suite.log after a failed check
-  (dnk1618@gmail.com)
-- Added nlohmann/json locale regression test (dnk1618@gmail.com)
-- Updated submodules (dnk1618@gmail.com)
-
-* Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-8
-- Require also automake and libtool (dnk1618@gmail.com)
-
-* Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-7
-- Add BuildRequires for autoconf (dnk1618@gmail.com)
-- Use tito.tagger.ReleaseTagger (dnk1618@gmail.com)
-
-* Thu Jul 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5-6
-- release 0.5-6
-
-* Wed Jul  6 2016 Daniel Kopecek <dkopecek@redhat.com> 0.5-6
-- Update to version 0.5
+* Sat Aug 13 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.11-1
+- Update to 0.5.11
 
