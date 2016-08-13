@@ -222,6 +222,12 @@ namespace usbguard {
     return true;
   }
 
+  template<>
+  bool Predicates::isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target)
+  {
+    return source.appliesTo(target);
+  }
+
   const String USBInterfaceType::typeString() const
   {
     return USBInterfaceType::typeString(_bClass, _bSubClass, _bProtocol, _mask);

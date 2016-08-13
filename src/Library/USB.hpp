@@ -186,6 +186,12 @@ namespace usbguard {
     uint8_t _mask;
   };
 
+  namespace Predicates DLL_PUBLIC
+  {
+    template<>
+    bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
+  }
+
   class DLL_PUBLIC USBDescriptorParser
   {
   public:

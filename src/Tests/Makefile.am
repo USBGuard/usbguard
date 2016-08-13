@@ -65,7 +65,8 @@ test_unit_LDADD=\
 test_regression_SOURCES=\
 	main.cpp \
 	Regression/test_Rule_ghi37.cpp \
-	Regression/test_json_locale.cpp
+	Regression/test_json_locale.cpp \
+	Regression/test_Rule_ghi113.cpp
 
 test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la
