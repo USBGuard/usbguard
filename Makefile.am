@@ -23,7 +23,8 @@ EXTRA_DIST =\
 	LICENSE \
 	usbguard-daemon.conf.in \
 	usbguard.service.in \
-	VERSION
+	VERSION \
+	CHANGELOG.md
 
 BUILT_SOURCES=
 DISTCLEANFILES=
