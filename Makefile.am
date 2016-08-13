@@ -497,7 +497,10 @@ usbguard_applet_qt_CPPFLAGS=\
 
 endif
 
-rpmbuild: dist
+$(DIST_ARCHIVES):
+	test -f "$@" || $(MAKE) dist
+
+rpmbuild: $(DIST_ARCHIVES)
 	test -n "$(RPMBUILD_FLAGS)"
 	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t usbguard-srpm.XXXXXX))
 	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
@@ -506,7 +509,7 @@ rpmbuild: dist
 	mkdir -p $(RPMBUILD_SOURCES)
 	mkdir -p $(RPMBUILD_SPECS)
 	cp $(top_srcdir)/usbguard.spec $(RPMBUILD_SPECS)
-	cp $(top_builddir)/usbguard-*.tar.gz $(RPMBUILD_SOURCES)
+	cp $(top_builddir)/$(DIST_ARCHIVES) $(RPMBUILD_SOURCES)
 	rpmbuild $(RPMBUILD_FLAGS) \
 		--define "_sourcedir $(RPMBUILD_SOURCES)" \
 		--define "_srcrpmdir $(top_builddir)" \
@@ -520,6 +523,15 @@ rpmbuild-bs:
 
 rpmbuild-ba:
 	$(MAKE) rpmbuild RPMBUILD_FLAGS=-ba
+
+release-files: rpmbuild-bs
+	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
+	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
+	mkdir -p $(RELEASE_DIR)
+	cp $(DIST_ARCHIVES) $(RELEASE_DIR)
+	cp $(PACKAGE)-$(VERSION)-*.src.rpm $(RELEASE_DIR)
+	cd $(RELEASE_DIR) && $(GPG) -b -a $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig
+	cd $(RELEASE_DIR) && openssl sha -sha256 $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sum
 
 analyze-clang:
 	$(eval ANALYSIS_ROOT:=$(shell mktemp -d -t usbguard-analyze-clang.XXXXXX))
