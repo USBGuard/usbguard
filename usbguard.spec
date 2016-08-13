@@ -61,7 +61,7 @@ Requires:       %{name} = %{version}-%{release}
 The %{name}-tools package contains optional tools from the USBGuard
 software framework.
 
-%package        applet-qt 
+%package        applet-qt
 Summary:        USBGuard Qt 5.x Applet
 Group:          Applications/System
 Requires:       %{name} = %{version}-%{release}
@@ -85,7 +85,7 @@ a D-Bus interface to the USBGuard daemon component.
 %prep
 %setup -q
 # Remove bundled library sources before build
-rm -rf src/ThirdParty/{json,spdlog}
+rm -rf src/ThirdParty/{json,spdlog,Catch}
 
 %build
 mkdir -p ./m4
