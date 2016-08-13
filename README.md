@@ -132,7 +132,9 @@ For Gentoo you can use the [stuge overlay](http://git.stuge.se/?p=stuge-overlay.
 
 ### Arch Linux
 
-For Arch Linux there's a package in AUR: [usbguard-git](https://aur.archlinux.org/packages/usbguard-git/)
+For Arch Linux there are two packages in AUR:
+- regular releases: [usbguard](https://aur.archlinux.org/packages/usbguard/)
+- latest commit: [usbguard-git](https://aur.archlinux.org/packages/usbguard-git/)
 
 ### Usage
 
