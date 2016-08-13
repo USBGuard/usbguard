@@ -23,6 +23,7 @@
 #include "Common/Utility.hpp"
 #include "IPCPrivate.hpp"
 #include "RulePrivate.hpp"
+#include "RuleParser.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -113,8 +114,13 @@ namespace usbguard
       const String& rule_file = _config.getSettingValue("RuleFile");
       try {
 	loadRules(rule_file);
-      } catch(const std::exception& ex) {
-	logger->warn("The configured rule file doesn't yet exists. Starting with an empty rule set.");
+      }
+      catch(const RuleParserError& ex) {
+        logger->error("Syntax error in the rule file on line {}: {}", ex.line(), ex.hint());
+        throw ex;
+      }
+      catch(const std::exception& ex) {
+        logger->warn("The configured rule file doesn't yet exists. Starting with an empty rule set.");
       }
     } else {
       logger->debug("No rules file path specified.");

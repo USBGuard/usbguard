@@ -19,6 +19,7 @@
 #include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
 #include "RulePrivate.hpp"
+#include "RuleParser.hpp"
 #include <stdexcept>
 #include <fstream>
 
@@ -76,7 +77,7 @@ namespace usbguard {
     do {
       ++line_number;
       std::getline(stream, line_string);
-      const Rule rule = Rule::fromString(line_string);
+      const Rule rule = parseRuleFromString(line_string, "", line_number);
       if (rule) {
 	appendRule(rule);
       }

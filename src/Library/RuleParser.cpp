@@ -69,7 +69,7 @@ namespace usbguard
       error.setOffset(ex.positions[0].byte_in_line);
 #endif
 
-      if (!file.empty()) {
+      if (!file.empty() || line != 0) {
         error.setFileInfo(file, line);
       }
 
