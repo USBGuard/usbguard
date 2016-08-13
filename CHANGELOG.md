@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## 0.5.11 - 2016-09-13
 ### Added
 - Maintainer script for spellchecking source archive files
 - Rule::Attribute class for representing the rule attributes
