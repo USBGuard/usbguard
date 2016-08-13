@@ -1,6 +1,7 @@
 [Unit]
 Description=USBGuard D-Bus Service
 Requires=usbguard.service
+Documentation=man:usbguard-dbus(8)
 
 [Service]
 Type=dbus
