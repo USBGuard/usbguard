@@ -9,7 +9,7 @@ License:        GPLv2+
 ## Not installed
 # src/ThirdParty/Catch: Boost Software License - Version 1.0
 URL:            https://dkopecek.github.io/usbguard
-Source0:        https://dkopecek.github.io/usbguard/dist/%{name}-%{version}.tar.gz
+Source0:        https://github.com/dkopecek/usbguard/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 
 Requires: systemd
 Requires(post): systemd
@@ -19,7 +19,7 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
 BuildRequires: libqb-devel
-BuildRequires: libsodium-devel
+BuildRequires: libgcrypt-devel
 BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: json-static
@@ -99,12 +99,13 @@ autoreconf -i -v --no-recursive ./
     --enable-systemd \
     --with-gui-qt5 \
     --with-dbus \
-    --with-polkit
+    --with-polkit \
+    --with-crypto-library=gcrypt
 
 make %{?_smp_mflags}
 
 %check
-make check || (cat src/Tests/test-suite.log && exit 1)
+make check
 
 %install
 make install INSTALL='install -p' DESTDIR=%{buildroot}
