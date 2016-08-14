@@ -1,8 +1,8 @@
 %global _hardened_build 1
 
 Name:           usbguard
-Version:        0.5.11
-Release:        2%{?dist}
+Version:        0.5.12
+Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -176,6 +176,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Sat Aug 13 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.11-2
-- Update to 0.5.11
+* Sun Aug 14 2016 Daniel Kopeček <dnk1618@gmail.com> 0.5.12-1
+- Update to 0.5.12
 

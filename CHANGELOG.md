@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.5.12 - 2016-09-14
+### Changed
+- Fixed a bug in matching USB interface types with wildcards
+- usbguard-daemon will now abort at startup if the rule file contains
+  syntax error instead of continuing with an empty rule set
+
 ## 0.5.11 - 2016-09-13
 ### Added
 - Maintainer script for spellchecking source archive files
