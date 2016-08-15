@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->device_view->setModel(&_device_model);
   ui->device_view->setItemDelegateForColumn(2, &_target_delegate);
   ui->device_view->resizeColumnToContents(1);
+  ui->device_view->setItemsExpandable(false);
 
   QObject::connect(ui->device_view->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
                    this, SLOT(editDeviceListRow(QModelIndex)));
@@ -437,11 +438,13 @@ void MainWindow::handleDeviceInsert(quint32 id)
 void MainWindow::handleDeviceAllow(quint32 id)
 {
   _device_model.updateDeviceTarget(id, usbguard::Rule::Target::Allow);
+  ui->device_view->expandAll();
 }
 
 void MainWindow::handleDeviceBlock(quint32 id)
 {
   _device_model.updateDeviceTarget(id, usbguard::Rule::Target::Block);
+  ui->device_view->expandAll();
 }
 
 void MainWindow::handleDeviceRemove(quint32 id)
@@ -449,6 +452,7 @@ void MainWindow::handleDeviceRemove(quint32 id)
   ui->device_view->selectionModel()->clearSelection();
   ui->device_view->reset();
   _device_model.removeDevice(id);
+  ui->device_view->expandAll();
 }
 
 void MainWindow::loadSettings()
@@ -505,7 +509,7 @@ void MainWindow::loadDeviceList()
         _device_model.insertDevice(device_rule);
       }
     }
-    ui->device_view->expandToDepth(2);
+    ui->device_view->expandAll();
   }
   catch(const usbguard::IPCException& ex) {
     showMessage(QString("IPC call failed: %1: %2: %3")
@@ -567,6 +571,7 @@ void MainWindow::resetDeviceList()
 {
   clearDeviceList();
   loadDeviceList();
+  ui->device_view->expandAll();
 }
 
 void MainWindow::changeEvent(QEvent* e)
