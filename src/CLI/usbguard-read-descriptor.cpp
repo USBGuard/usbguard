@@ -46,6 +46,7 @@ namespace usbguard
   static void printConfigurationDescriptor(USBDescriptorParser*, const USBDescriptor*);
   static void printInterfaceDescriptor(USBDescriptorParser*, const USBDescriptor*);
   static void printEndpointDescriptor(USBDescriptorParser*, const USBDescriptor*);
+  static void printAudioEndpointDescriptor(USBDescriptorParser*, const USBDescriptor*);
 
   static void parseUnknownDescriptor(USBDescriptorParser*, const USBDescriptor*, USBDescriptor*);
   static void printUnknownDescriptor(USBDescriptorParser*, const USBDescriptor*);
@@ -90,6 +91,8 @@ namespace usbguard
                         USBParseInterfaceDescriptor, printInterfaceDescriptor);
       parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof(USBEndpointDescriptor),
                         USBParseEndpointDescriptor, printEndpointDescriptor);
+      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof(USBAudioEndpointDescriptor),
+                        USBParseAudioEndpointDescriptor, printAudioEndpointDescriptor);
       parser.setHandler(USB_DESCRIPTOR_TYPE_UNKNOWN, 0,
                         parseUnknownDescriptor, printUnknownDescriptor);
 
@@ -176,6 +179,20 @@ namespace usbguard
     PRINTF_MEMBER(descriptor, bmAttributes, "0x%02" PRIx8, 0);
     PRINTF_MEMBER(descriptor, wMaxPacketSize, "%" PRIu16, 0);
     PRINTF_MEMBER(descriptor, bInterval, "%" PRIu8, 0);
+    printf("\n");
+  }
+
+  void printAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  {
+    const USBAudioEndpointDescriptor* descriptor = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_base);
+
+    PRINTF_HEADER(descriptor, "Endpoint Descriptor (Audio)", 0);
+    PRINTF_MEMBER(descriptor, bEndpointAddress, "%" PRIu8, 0);
+    PRINTF_MEMBER(descriptor, bmAttributes, "0x%02" PRIx8, 0);
+    PRINTF_MEMBER(descriptor, wMaxPacketSize, "%" PRIu16, 0);
+    PRINTF_MEMBER(descriptor, bInterval, "%" PRIu8, 0);
+    PRINTF_MEMBER(descriptor, bRefresh, "%" PRIu8, 0);
+    PRINTF_MEMBER(descriptor, bSynchAddress, "%" PRIu8, 0);
     printf("\n");
   }
 

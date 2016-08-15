@@ -129,6 +129,17 @@ namespace usbguard {
     uint8_t bInterval;
   } __attribute__((packed));
 
+  struct USBAudioEndpointDescriptor
+  {
+    struct USBDescriptorHeader bHeader;
+    uint8_t bEndpointAddress;
+    uint8_t bmAttributes;
+    uint16_t wMaxPacketSize;
+    uint8_t bInterval;
+    uint8_t bRefresh;
+    uint8_t bSynchAddress;
+  } __attribute__((packed));
+
   class DLL_PUBLIC USBDeviceID
   {
   public:
@@ -222,7 +233,7 @@ namespace usbguard {
      * is stored in the USB descriptor state. If there's no such descriptor,
      * then nullptr is returned.
      */
-    const USBDescriptor* getDescriptor(uint8_t bDescriptorType) const;
+    const std::vector<USBDescriptor>* getDescriptor(uint8_t bDescriptorType) const;
 
     /**
      * Set the active instance of an USB descriptor of bDescriptorType type.
@@ -252,10 +263,11 @@ namespace usbguard {
       uint8_t bLengthExpected;
     };
 
-    const Handler* getDescriptorTypeHandler(uint8_t bDescriptorType) const;
+    const std::vector<Handler>* getDescriptorTypeHandler(uint8_t bDescriptorType) const;
+    bool getDescriptorTypeHandler(const USBDescriptorHeader& header, const Handler*& handler) const;
 
-    std::unordered_map<uint8_t, USBDescriptor> _dstate_map; /**< Descriptor State Map */
-    std::unordered_map<uint8_t, Handler> _handler_map;
+    std::unordered_map<uint8_t, std::vector<USBDescriptor>> _dstate_map; /**< Descriptor State Map */
+    std::unordered_map<uint8_t, std::vector<Handler>> _handler_map;
     std::unordered_map<uint8_t, size_t> _count_map;
  };
 
@@ -263,5 +275,6 @@ namespace usbguard {
  void DLL_PUBLIC USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
  void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
  void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+ void DLL_PUBLIC USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */

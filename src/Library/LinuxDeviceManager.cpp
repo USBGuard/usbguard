@@ -156,6 +156,8 @@ namespace usbguard {
                         USBParseInterfaceDescriptor, load_interface_descriptor);
       parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBEndpointDescriptor),
                         USBParseEndpointDescriptor, load_endpoint_descriptor);
+      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBAudioEndpointDescriptor),
+                        USBParseAudioEndpointDescriptor, load_endpoint_descriptor);
 
       if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
         throw std::runtime_error("Descriptor data parsing failed: parser processed less data than the size of a USB device descriptor");

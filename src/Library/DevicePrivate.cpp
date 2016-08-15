@@ -275,6 +275,9 @@ namespace usbguard {
 
   void DevicePrivate::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
+    /*
+     * WARNING: This method can receive USB descriptors of two sizes! (endpoint, audio endpoint)
+     */
     if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_INTERFACE)) {
       throw std::runtime_error("Invalid descriptor data: missing parent interface descriptor while loading endpoint");
     }

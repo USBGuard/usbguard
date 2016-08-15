@@ -319,19 +319,56 @@ namespace usbguard {
     return;
   }
 
-  /*
-  USBDescriptorParser::USBDescriptorParser()
+  void USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-  }
-  */
+    const USBAudioEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_raw);
+    USBAudioEndpointDescriptor* endpoint_out = reinterpret_cast<USBAudioEndpointDescriptor*>(descriptor_out);
 
-  const USBDescriptorParser::Handler* USBDescriptorParser::getDescriptorTypeHandler(uint8_t bDescriptorType) const
+    *endpoint_out = *endpoint_raw;
+    endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
+
+    return;
+  }
+
+  const std::vector<USBDescriptorParser::Handler>* USBDescriptorParser::getDescriptorTypeHandler(uint8_t bDescriptorType) const
   {
     const auto it = _handler_map.find(bDescriptorType);
     if (it == _handler_map.end()) {
       return nullptr;
     }
     return &it->second;
+  }
+
+  bool USBDescriptorParser::getDescriptorTypeHandler(const USBDescriptorHeader& header, const USBDescriptorParser::Handler*& handler) const
+  {
+    const auto handlers = getDescriptorTypeHandler(header.bDescriptorType);
+
+    if (handlers == nullptr) {
+      return false;
+    }
+
+    handler = nullptr;
+
+    for (auto& candidate_handler : *handlers) {
+      /*
+       * Fixed size descriptor handler. Save pointer to the handler
+       * and short circuit the loop
+       */
+      if (candidate_handler.bLengthExpected == header.bLength) {
+        handler = &candidate_handler;
+        break;
+      }
+      /*
+       * Variable size descriptor handler. Save pointer to the handler
+       * and continue searching as there might be a matching fixed size
+       * handler.
+       */
+      if (candidate_handler.bLengthExpected == 0) {
+        handler = &candidate_handler;
+      }
+    }
+
+    return true;
   }
 
   size_t USBDescriptorParser::parse(std::istream& stream)
@@ -389,38 +426,48 @@ namespace usbguard {
       }
 
       /*
-       * Find the descriptor type handler.
+       * Find handler for the descriptor type & length.
        */
-      const Handler* h = getDescriptorTypeHandler(header.bDescriptorType);
-      if (!h) {
-        h = getDescriptorTypeHandler(USB_DESCRIPTOR_TYPE_UNKNOWN);
-        /*
-         * If there's no handler for this type of descriptor, skip to the next one.
-         */
-        if (!h) {
-          size_processed += header.bLength;
-          continue;
+      const Handler *handler = nullptr;
+
+      if (getDescriptorTypeHandler(header, handler)) {
+        if (handler == nullptr) {
+          throw std::runtime_error("Invalid descriptor data: invalid combination of bDescriptorType and bLength values");
+        }
+      }
+      else {
+        const USBDescriptorHeader header_unknown = {
+          .bLength = header.bLength,
+          .bDescriptorType = USB_DESCRIPTOR_TYPE_UNKNOWN
+        };
+
+        if (getDescriptorTypeHandler(header_unknown, handler)) {
+          /*
+           * If there's not even an unknown descriptor type handler, just
+           * ignore it and count in the length. Until we implement
+           * support for all descriptor types as defined by all used USB
+           * specifications, we cannot do anything else here...
+           */
+          if (handler == nullptr) {
+            size_processed += header.bLength;
+            continue;
+          }
         }
       }
 
-      /*
-       * Check whether the descriptor is of expected length.
-       */
-      if (h->bLengthExpected > 0) {
-        if (header.bLength != h->bLengthExpected) {
-          throw std::runtime_error("Invalid descriptor data: bLength doesn't match expected bLenght for this descriptor type");
-        }
+      if (handler == nullptr) {
+        throw std::runtime_error("BUG: No descriptor type handler selected in USBDescriptorParser::parse");
       }
 
       USBDescriptor descriptor_parsed;
       descriptor_parsed.bHeader = header;
       memset(&descriptor_parsed.bDescriptorData, 0, sizeof descriptor_parsed.bDescriptorData);
 
-      if (h->parser) {
-        h->parser(this, &descriptor, &descriptor_parsed); 
+      if (handler->parser) {
+        handler->parser(this, &descriptor, &descriptor_parsed);
       }
-      if (h->callback) {
-        h->callback(this, &descriptor_parsed);
+      if (handler->callback) {
+        handler->callback(this, &descriptor_parsed);
       }
 
       setDescriptor(header.bDescriptorType, descriptor_parsed);
@@ -432,14 +479,17 @@ namespace usbguard {
 
   void USBDescriptorParser::setHandler(uint8_t bDescriptorType, uint8_t bLengthExpected, ParserFunction parser, CallbackFunction callback)
   {
-    auto& handler = _handler_map[bDescriptorType];
+    auto& handlers = _handler_map[bDescriptorType];
+
+    Handler handler;
     handler.parser = parser;
     handler.callback = callback;
     handler.bLengthExpected = bLengthExpected;
-    return;
+
+    handlers.push_back(handler);
   }
 
-  const USBDescriptor* USBDescriptorParser::getDescriptor(uint8_t bDescriptorType) const
+  const std::vector<USBDescriptor>* USBDescriptorParser::getDescriptor(uint8_t bDescriptorType) const
   {
     auto const& it = _dstate_map.find(bDescriptorType);
     if (it == _dstate_map.end()) {
@@ -450,7 +500,21 @@ namespace usbguard {
 
   void USBDescriptorParser::setDescriptor(uint8_t bDescriptorType, const USBDescriptor& descriptor)
   {
-    _dstate_map[bDescriptorType] = descriptor;
+    auto& descriptors = _dstate_map[bDescriptorType];
+    bool set = false;
+    for (auto& stored_descriptor : descriptors) {
+      if (stored_descriptor.bHeader.bLength == descriptor.bHeader.bLength) {
+        stored_descriptor = descriptor;
+        set = true;
+      }
+    }
+    if (!set) {
+      descriptors.push_back(descriptor);
+    }
+    /*
+     * Count in the descriptor no matter if we overwrote one or not.
+     * We are counting all occurences of a descriptor type.
+     */
     ++_count_map[bDescriptorType];
   }
 
@@ -461,7 +525,7 @@ namespace usbguard {
 
   bool USBDescriptorParser::haveDescriptor(uint8_t bDescriptorType) const
   {
-    return _dstate_map.count(bDescriptorType) == 1;
+    return _dstate_map.count(bDescriptorType) > 0;
   }
 
   const std::vector<std::pair<uint8_t,size_t>> USBDescriptorParser::getDescriptorCounts() const
