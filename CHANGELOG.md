@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.5.13 - 2016-09-16
+### Changed
+- refactored USB parser to support multiple handlers per USB descriptor type
+- Qt Applet: device list should be always expanded
+
+### Added
+- added support for an audio device related endpoint descriptor
+
 ## 0.5.12 - 2016-09-14
 ### Changed
 - Fixed a bug in matching USB interface types with wildcards
