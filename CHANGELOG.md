@@ -1,5 +1,12 @@
 # Change Log
 
+## [unreleased]
+### Changed
+
+### Added
+
+### Removed
+
 ## 0.5.13 - 2016-09-16
 ### Changed
 - refactored USB parser to support multiple handlers per USB descriptor type
