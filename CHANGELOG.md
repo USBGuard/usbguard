@@ -1,6 +1,13 @@
 # Change Log
 
-## 0.5.14 - 2016-09-16
+## 0.6.0 - [unreleased]
+### Changed
+
+### Added
+
+### Removed
+
+## 0.5.14 - 2016-09-18
 ### Changed
 - Fixed unknown descriptor type handling
 
