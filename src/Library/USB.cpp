@@ -441,17 +441,16 @@ namespace usbguard {
           .bDescriptorType = USB_DESCRIPTOR_TYPE_UNKNOWN
         };
 
-        if (getDescriptorTypeHandler(header_unknown, handler)) {
-          /*
-           * If there's not even an unknown descriptor type handler, just
-           * ignore it and count in the length. Until we implement
-           * support for all descriptor types as defined by all used USB
-           * specifications, we cannot do anything else here...
-           */
-          if (handler == nullptr) {
-            size_processed += header.bLength;
-            continue;
-          }
+        (void)getDescriptorTypeHandler(header_unknown, handler);
+        /*
+         * If there's not even an unknown descriptor type handler, just
+         * ignore it and count in the length. Until we implement
+         * support for all descriptor types as defined by all used USB
+         * specifications, we cannot do anything else here...
+         */
+        if (handler == nullptr) {
+          size_processed += header.bLength;
+          continue;
         }
       }
 
