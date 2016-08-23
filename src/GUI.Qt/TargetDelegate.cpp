@@ -42,7 +42,10 @@ void TargetDelegate::setEditorData(QWidget *editor, const QModelIndex &index) co
   DeviceModelItem* item = static_cast<DeviceModelItem*>(index.internalPointer());
   QString value = QString::fromStdString(usbguard::Rule::targetToString(item->getRequestedTarget()));
 
-  combobox->setCurrentText(value);
+  const int value_index = combobox->findText(value);
+  if (value_index != -1) {
+    combobox->setCurrentIndex(value_index);
+  }
 }
 
 void TargetDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const

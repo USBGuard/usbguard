@@ -16,8 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include <build-config.h>
 #include "DeviceModel.h"
 #include <iostream>
+#include <QVector>
 
 DeviceModelItem::DeviceModelItem()
 {
@@ -356,8 +358,12 @@ void DeviceModel::updateDeviceTarget(quint32 device_id, usbguard::Rule::Target t
   if (item->getDeviceTarget() != target) {
     item->setDeviceTarget(target);
     emit dataChanged(createIndex(item->row(), 0, item),
-                     createIndex(item->row(), item->columnCount() - 1, item),
-                     QVector<int>() << Qt::DisplayRole);
+                     createIndex(item->row(), item->columnCount() - 1, item)
+#if defined(HAVE_QT5)
+                     ,QVector<int>() << Qt::DisplayRole);
+#else
+                     );
+#endif
   }
 }
 
@@ -366,8 +372,12 @@ void DeviceModel::updateRequestedTarget(DeviceModelItem *item, usbguard::Rule::T
   if (item->getRequestedTarget() != target) {
     item->setRequestedTarget(target);
     emit dataChanged(createIndex(item->row(), 0, item),
-                     createIndex(item->row(), item->columnCount() - 1, item),
-                     QVector<int>() << Qt::DisplayRole);
+                     createIndex(item->row(), item->columnCount() - 1, item)
+#if defined(HAVE_QT5)
+                     ,QVector<int>() << Qt::DisplayRole);
+#else
+                     );
+#endif
   }
 }
 

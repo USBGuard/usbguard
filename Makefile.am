@@ -408,82 +408,87 @@ uninstall-data-dbus:
 endif #DBUS_ENABLED
 
 #
-# Qt 5.x GUI
+# Qt GUI
 #
-if GUI_QT5_ENABLED
+usbguard_applet_qt_UIHEADERS=\
+	src/GUI.Qt/DeviceDialog.ui.h \
+	src/GUI.Qt/MainWindow.ui.h
+
+usbguard_applet_qt_RESOURCES=\
+	src/GUI.Qt/resources/usbguard-icon.svg \
+	src/GUI.Qt/resources/usbguard-icon-warning.svg \
+	src/GUI.Qt/resources/usbguard-icon-inactive.svg
+
+usbguard_applet_qt_SOURCES_BASE=\
+	src/GUI.Qt/main.cpp \
+	src/GUI.Qt/DeviceDialog.cpp \
+	src/GUI.Qt/DeviceDialog.h \
+	src/GUI.Qt/MainWindow.cpp \
+	src/GUI.Qt/MainWindow.h \
+	src/GUI.Qt/DeviceModel.cpp \
+	src/GUI.Qt/DeviceModel.h \
+	src/GUI.Qt/TargetDelegate.cpp \
+	src/GUI.Qt/TargetDelegate.h
+
+EXTRA_DIST+=\
+	src/GUI.Qt/DeviceDialog.ui \
+	src/GUI.Qt/MainWindow.ui \
+	src/GUI.Qt/usbguard-applet-qt.desktop.in \
+	$(usbguard_applet_qt_RESOURCES) \
+	$(usbguard_applet_qt_SOURCES_BASE)
+
+if GUI_QT_ENABLED
 bin_PROGRAMS+= usbguard-applet-qt
 
 desktopdir = $(datadir)/applications
-desktop_DATA = $(top_builddir)/src/GUI.Qt5/usbguard-applet-qt.desktop
+desktop_DATA = $(top_builddir)/src/GUI.Qt/usbguard-applet-qt.desktop
 
 appicondir = $(datadir)/icons/hicolor/scalable/apps
-appicon_DATA = src/GUI.Qt5/resources/usbguard-icon.svg
+appicon_DATA = src/GUI.Qt/resources/usbguard-icon.svg
 
 man1_MANS +=\
 	$(top_builddir)/doc/usbguard-applet-qt.1
 
-usbguard_applet_qt_UIHEADERS=\
-	src/GUI.Qt5/DeviceDialog.ui.h \
-	src/GUI.Qt5/MainWindow.ui.h
-
-usbguard_applet_qt_RESOURCES=\
-	src/GUI.Qt5/resources/usbguard-icon.svg \
-	src/GUI.Qt5/resources/usbguard-icon-warning.svg \
-	src/GUI.Qt5/resources/usbguard-icon-inactive.svg
-
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \
-	src/GUI.Qt5/usbguard.qrc
-
-EXTRA_DIST+=\
-	src/GUI.Qt5/DeviceDialog.ui \
-	src/GUI.Qt5/MainWindow.ui \
-	src/GUI.Qt5/usbguard-applet-qt.desktop.in \
-	$(usbguard_applet_qt_RESOURCES)
+	src/GUI.Qt/usbguard.qrc
 
 CLEANFILES +=\
 	$(usbguard_applet_qt_UIHEADERS) \
-	$(top_builddir)/src/GUI.Qt5/DeviceDialog.moc.cpp \
-	$(top_builddir)/src/GUI.Qt5/MainWindow.moc.cpp \
-	$(top_builddir)/src/GUI.Qt5/usbguard.qrc.cpp \
-	$(top_builddir)/src/GUI.Qt5/usbguard.qrc \
-	$(top_builddir)/src/GUI.Qt5/DeviceTableWidget.moc.cpp
+	$(top_builddir)/src/GUI.Qt/DeviceDialog.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/MainWindow.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/usbguard.qrc.cpp \
+	$(top_builddir)/src/GUI.Qt/usbguard.qrc \
+	$(top_builddir)/src/GUI.Qt/DeviceModel.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/TargetDelegate.moc.cpp
 
-usbguard_applet_qt_SOURCES=\
-	src/GUI.Qt5/main.cpp \
-	src/GUI.Qt5/DeviceDialog.cpp \
-	src/GUI.Qt5/DeviceDialog.h \
-	src/GUI.Qt5/DeviceDialog.moc.cpp \
-	src/GUI.Qt5/MainWindow.cpp \
-	src/GUI.Qt5/MainWindow.h \
-	src/GUI.Qt5/MainWindow.moc.cpp \
-	src/GUI.Qt5/usbguard.qrc.cpp \
-	src/GUI.Qt5/DeviceModel.cpp \
-	src/GUI.Qt5/DeviceModel.moc.cpp \
-	src/GUI.Qt5/DeviceModel.h \
-	src/GUI.Qt5/TargetDelegate.cpp \
-	src/GUI.Qt5/TargetDelegate.moc.cpp \
-	src/GUI.Qt5/TargetDelegate.h
+nodist_usbguard_applet_qt_SOURCES=\
+	$(usbguard_applet_qt_SOURCES_BASE) \
+	src/GUI.Qt/DeviceDialog.moc.cpp \
+	src/GUI.Qt/MainWindow.moc.cpp \
+	src/GUI.Qt/usbguard.qrc.cpp \
+	src/GUI.Qt/DeviceModel.moc.cpp \
+	src/GUI.Qt/TargetDelegate.moc.cpp
 
 usbguard_applet_qt_LDADD=\
 	$(top_builddir)/libusbguard.la \
-	@qt5_LIBS@
+	@qt_LIBS@
 
 usbguard_applet_qt_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
-	-I$(top_srcdir)/src/GUI.Qt5 \
-	-I$(top_builddir)/src/GUI.Qt5 \
+	-I$(top_srcdir)/src/GUI.Qt \
+	-I$(top_builddir)/src/GUI.Qt \
 	@spdlog_CFLAGS@ \
-	-fPIC @qt5_CFLAGS@
+	-fPIC @qt_CFLAGS@
 
 %.moc.cpp: %.h
-	@MOCQT5@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt5 -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(MOC_CPPFLAGS) $<
+	@QTMOC@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(MOC_CPPFLAGS) $<
 
 %.ui.h: %.ui
-	@UICQT5@ -g cpp -o $(top_builddir)/$@ $<
+	@QTUIC@ -g cpp -o $(top_builddir)/$@ $<
 
 %.qrc.cpp: %.qrc
-	@RCCQT5@ -o $(top_builddir)/$@ $<
+	@QTRCC@ -o $(top_builddir)/$@ $<
 
 %.qrc: $(usbguard_applet_qt_RESOURCES)
 	echo '<RCC>' > "$@.tmp"

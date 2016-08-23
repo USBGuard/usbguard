@@ -468,13 +468,25 @@ void MainWindow::loadSettings()
   _settings.endGroup();
 
   _settings.beginGroup("DeviceDialog");
-  ui->default_decision_combobox->setCurrentText(_settings.value("DefaultDecision", QString("block")).toString());
+
+  const int default_decision_index = \
+    ui->default_decision_combobox->findText(_settings.value("DefaultDecision", QString("block")).toString());
+  if (default_decision_index != -1) {
+    ui->default_decision_combobox->setCurrentIndex(default_decision_index);
+  }
+
+  const int decision_method_index = \
+    ui->decision_method_combobox->findText(_settings.value("DecisionMethod", QString("Buttons")).toString());
+  if (decision_method_index != -1) {
+    ui->decision_method_combobox->setCurrentIndex(decision_method_index);
+  }
+
   ui->decision_timeout->setValue(_settings.value("DefaultDecisionTimeout", 23).toInt());
-  ui->decision_method_combobox->setCurrentText(_settings.value("DecisionMethod", QString("Buttons")).toString());
   ui->decision_permanent_checkbox->setChecked(_settings.value("DecisionIsPermanent", false).toBool());
   ui->show_reject_button_checkbox->setChecked(_settings.value("ShowRejectButton", false).toBool());
   ui->randomize_position_checkbox->setChecked(_settings.value("RandomizeWindowPosition", true).toBool());
   ui->mask_serial_checkbox->setChecked(_settings.value("MaskSerialNumber", true).toBool());
+
   _settings.endGroup();
 }
 
