@@ -1,0 +1,52 @@
+package usbguard.IPC;
+
+import "Message.proto";
+import "Rule.proto";
+
+
+message listDevicesRequest {
+  required string query = 1;
+}
+
+message listDevicesResponse {
+  repeated Rule devices = 1;
+}
+
+message listDevices {
+  required MessageHeader header = 1;
+  required listDevicesRequest request = 2;
+  optional listDevicesResponse response = 3;
+}
+
+
+message applyDevicePolicyRequest {
+  required uint32 id = 1;
+  required uint32 target = 2;
+  required bool permanent = 3;
+}
+
+message applyDevicePolicyResponse {
+  required uint32 rule_id = 2;
+}
+
+message applyDevicePolicy {
+  required MessageHeader header = 1;
+  required applyDevicePolicyRequest request = 2;
+  optional applyDevicePolicyResponse response = 3;
+}
+
+
+message DevicePresenceChangedSignal {
+  required uint32 id = 1;
+  required uint32 event = 2;
+  required uint32 target = 3;
+  required string device_rule = 4;
+}
+
+message DevicePolicyChangedSignal {
+  required uint32 id = 1;
+  required uint32 target_old = 2;
+  required uint32 target_new = 3;
+  required string device_rule = 4;
+  required uint32 rule_id = 5;
+}

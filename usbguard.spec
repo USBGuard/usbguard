@@ -1,8 +1,8 @@
 %global _hardened_build 1
-
+%define builddate %(date +%s)
 Name:           usbguard
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        0.1.%{builddate}%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -22,7 +22,7 @@ BuildRequires: libqb-devel
 BuildRequires: libgcrypt-devel
 BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
-BuildRequires: json-static
+BuildRequires: protobuf-devel protobuf-compiler
 BuildRequires: spdlog-static
 BuildRequires: PEGTL-static
 BuildRequires: qt5-qtbase-devel qt5-qtsvg-devel
@@ -85,7 +85,7 @@ a D-Bus interface to the USBGuard daemon component.
 %prep
 %setup -q
 # Remove bundled library sources before build
-rm -rf src/ThirdParty/{json,spdlog,Catch}
+rm -rf src/ThirdParty/{spdlog,Catch}
 
 %build
 mkdir -p ./m4
@@ -93,7 +93,6 @@ autoreconf -i -v --no-recursive ./
 %configure \
     --disable-silent-rules \
     --disable-static \
-    --without-bundled-json \
     --without-bundled-spdlog \
     --without-bundled-catch \
     --enable-systemd \

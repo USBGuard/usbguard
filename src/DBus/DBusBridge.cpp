@@ -54,7 +54,10 @@ namespace usbguard
   void DBusBridge::handlePolicyMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation)
   {
     if (method_name == "listRules") {
-      auto rule_set = listRules();
+      const char *query_cstr = nullptr;
+      g_variant_get(parameters, "(&s)", &query_cstr);
+      std::string query(query_cstr);
+      auto rule_set = listRules(query);
       auto rules = rule_set.getRules();
 
       if (rules.size() > 0) {
@@ -83,12 +86,11 @@ namespace usbguard
     if (method_name == "appendRule") {
       const char *rule_spec_cstr = nullptr;
       uint32_t parent_id = 0;
-      uint32_t timeout_sec = 0;
 
       g_variant_get(parameters, "(&su)", &rule_spec_cstr, &parent_id);
       std::string rule_spec(rule_spec_cstr);
 
-      const uint32_t rule_id = appendRule(rule_spec, parent_id, timeout_sec);
+      const uint32_t rule_id = appendRule(rule_spec, parent_id);
       g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));
       return;
     }
@@ -137,32 +139,22 @@ namespace usbguard
       return;
     }
 
-    if (method_name == "allowDevice" ||
-        method_name == "blockDevice" ||
-        method_name == "rejectDevice") {
+    if (method_name == "applyDevicePolicy") {
       uint32_t device_id = 0;
+      uint32_t target_integer = 0;
       gboolean permanent = false;
-      uint32_t timeout_sec = 0;
 
-      g_variant_get(parameters, "(ub)", &device_id, &permanent);
+      g_variant_get(parameters, "(uub)", &device_id, &target_integer, &permanent);
 
-      if (method_name == "allowDevice") {
-        allowDevice(device_id, permanent, timeout_sec);
-      }
-      else if (method_name == "blockDevice") {
-        blockDevice(device_id, permanent, timeout_sec);
-      }
-      else {
-        rejectDevice(device_id, permanent, timeout_sec);
-      }
+      const Rule::Target target = Rule::targetFromInteger(target_integer);
+      const uint32_t rule_id = applyDevicePolicy(device_id, target, permanent);
 
-      g_dbus_method_invocation_return_value(invocation, nullptr);
+      g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));
       return;
     }
 
     g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
         G_DBUS_ERROR_UNKNOWN_METHOD, "Unknown method ");
-    return;
   }
 
   void DBusBridge::IPCConnected()
@@ -179,156 +171,108 @@ namespace usbguard
     }
   }
 
-  void DBusBridge::DevicePresent(uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      const std::vector<usbguard::USBInterfaceType>& interfaces,
-      usbguard::Rule::Target target)
+  void DBusBridge::DevicePresenceChanged(uint32_t id,
+                                         DeviceManager::EventType event,
+                                         Rule::Target target,
+                                         const std::string& device_rule)
   {
-    GVariantBuilder *gv_builder_attributes = nullptr;
-    if (!attributes.empty()) {
-      gv_builder_attributes = g_variant_builder_new(G_VARIANT_TYPE_DICTIONARY);
-
-      for (auto kv_pair : attributes) {
-        g_variant_builder_add(gv_builder_attributes, "{ss}", kv_pair.first.c_str(), kv_pair.second.c_str());
-      }
-    }
-
-    GVariantBuilder *gv_builder_interfaces = nullptr;
-    if (!interfaces.empty()) {
-      gv_builder_interfaces = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
-      for (auto interface : interfaces) {
-        g_variant_builder_add(gv_builder_interfaces, "s", interface.typeString().c_str());
-      }
-    }
+    GVariantBuilder *gv_builder_attributes = deviceRuleToAttributes(device_rule);
 
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-        "/org/usbguard/Devices", "org.usbguard.Devices", "DevicePresent",
-        g_variant_new("(ua{ss}ass)",
-          id, gv_builder_attributes, gv_builder_interfaces, usbguard::Rule::targetToString(target).c_str()),
-        nullptr);
-
-    if (gv_builder_interfaces != nullptr) {
-      g_variant_builder_unref(gv_builder_interfaces);
-    }
-    if (gv_builder_attributes != nullptr) {
-      g_variant_builder_unref(gv_builder_attributes);
-    }
-    return;
-  }
-
-  void DBusBridge::DeviceInserted(uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      const std::vector<USBInterfaceType>& interfaces,
-      bool rule_match,
-      uint32_t rule_id)
-  {
-    GVariantBuilder *gv_builder_attributes = nullptr;
-    if (!attributes.empty()) {
-      gv_builder_attributes = g_variant_builder_new(G_VARIANT_TYPE_DICTIONARY);
-
-      for (auto kv_pair : attributes) {
-        g_variant_builder_add(gv_builder_attributes, "{ss}", kv_pair.first.c_str(), kv_pair.second.c_str());
-      }
-    }
-
-    GVariantBuilder *gv_builder_interfaces = nullptr;
-    if (!interfaces.empty()) {
-      gv_builder_interfaces = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
-      for (auto interface : interfaces) {
-        g_variant_builder_add(gv_builder_interfaces, "s", interface.typeString().c_str());
-      }
-    }
-
-    g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-        "/org/usbguard/Devices", "org.usbguard.Devices", "DeviceInserted",
-        g_variant_new("(ua{ss}asbu)",
-          id, gv_builder_attributes, gv_builder_interfaces, rule_match, rule_id),
-        nullptr);
-
-    if (gv_builder_interfaces != nullptr) {
-      g_variant_builder_unref(gv_builder_interfaces);
-    }
-    if (gv_builder_attributes != nullptr) {
-      g_variant_builder_unref(gv_builder_attributes);
-    }
-    return;
-  }
-
-  void DBusBridge::DeviceRemoved(uint32_t id,
-      const std::map<std::string,std::string>& attributes)
-  {
-    GVariantBuilder *gv_builder_attributes = nullptr;
-    if (!attributes.empty()) {
-      gv_builder_attributes = g_variant_builder_new(G_VARIANT_TYPE_DICTIONARY);
-
-      for (auto kv_pair : attributes) {
-        g_variant_builder_add(gv_builder_attributes, "{ss}", kv_pair.first.c_str(), kv_pair.second.c_str());
-      }
-    }
-
-    g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-        "/org/usbguard/Devices", "org.usbguard.Devices", "DeviceRemoved",
-        g_variant_new("(ua{ss})",
-          id, gv_builder_attributes),
+        "/org/usbguard/Devices", "org.usbguard.Devices", "DevicePresenceChanged",
+        g_variant_new("(uuusa{ss})",
+          id,
+          DeviceManager::eventTypeToInteger(event),
+          Rule::targetToInteger(target),
+          device_rule.c_str(),
+          gv_builder_attributes),
         nullptr);
 
     if (gv_builder_attributes != nullptr) {
       g_variant_builder_unref(gv_builder_attributes);
     }
-    return;
   }
 
-  void DBusBridge::DeviceAllowed(uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      bool rule_match,
-      uint32_t rule_id)
+  void DBusBridge::DevicePolicyChanged(uint32_t id,
+                                       Rule::Target target_old,
+                                       Rule::Target target_new,
+                                       const std::string& device_rule,
+                                       uint32_t rule_id)
   {
-    emitDevicePolicyDecision("DeviceAllowed", id, attributes, rule_match, rule_id);
-  }
-
-
-  void DBusBridge::DeviceBlocked(uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      bool rule_match,
-      uint32_t rule_id)
-  {
-    emitDevicePolicyDecision("DeviceBlocked", id, attributes, rule_match, rule_id);
-  }
-
-  void DBusBridge::DeviceRejected(uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      bool rule_match,
-      uint32_t rule_id)
-  {
-    emitDevicePolicyDecision("DeviceRejected", id, attributes, rule_match, rule_id);
-  }
-
-  void DBusBridge::emitDevicePolicyDecision(const char *policy_signal,
-      uint32_t id,
-      const std::map<std::string,std::string>& attributes,
-      bool rule_match,
-      uint32_t rule_id)
-  {
-    GVariantBuilder *gv_builder_attributes = nullptr;
-    if (!attributes.empty()) {
-      gv_builder_attributes = g_variant_builder_new(G_VARIANT_TYPE_DICTIONARY);
-
-      for (auto kv_pair : attributes) {
-        g_variant_builder_add(gv_builder_attributes, "{ss}", kv_pair.first.c_str(), kv_pair.second.c_str());
-      }
-    }
+    GVariantBuilder *gv_builder_attributes = deviceRuleToAttributes(device_rule);
 
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-        "/org/usbguard/Devices", "org.usbguard.Devices", policy_signal,
-        g_variant_new("(ua{ss}bu)",
-          id, gv_builder_attributes, rule_match, rule_id),
+        "/org/usbguard/Devices", "org.usbguard.Devices", "DevicePolicyChanged",
+        g_variant_new("(uuusua{ss})",
+          id,
+          Rule::targetToInteger(target_old),
+          Rule::targetToInteger(target_new),
+          device_rule.c_str(),
+          rule_id,
+          gv_builder_attributes),
         nullptr);
 
     if (gv_builder_attributes != nullptr) {
       g_variant_builder_unref(gv_builder_attributes);
     }
-    return;
   }
 
+  void DBusBridge::ExceptionMessage(const std::string& context,
+                                    const std::string& object,
+                                    const std::string& reason)
+  {
+    g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
+        "/org/usbguard", "org.usbguard", "ExceptionMessage",
+        g_variant_new("(sss)",
+          context.c_str(),
+          object.c_str(),
+          reason.c_str()),
+        nullptr);
+  }
+
+  GVariantBuilder* DBusBridge::deviceRuleToAttributes(const std::string& device_spec)
+  {
+    Rule device_rule = Rule::fromString(device_spec);
+    GVariantBuilder* builder = g_variant_builder_new(G_VARIANT_TYPE_DICTIONARY);
+
+    if (builder == nullptr) {
+      return nullptr;
+    }
+
+    g_variant_builder_add(builder, "{ss}",
+                          "hash",
+                          device_rule.getHash().c_str());
+    g_variant_builder_add(builder, "{ss}",
+                          "id",
+                          device_rule.getDeviceID().toString().c_str());
+    g_variant_builder_add(builder, "{ss}",
+                          "name",
+                          device_rule.getName().c_str());
+    g_variant_builder_add(builder, "{ss}",
+                          "parent-hash",
+                          device_rule.getParentHash().c_str());
+    g_variant_builder_add(builder, "{ss}",
+                          "serial",
+                          device_rule.getSerial().c_str());
+    g_variant_builder_add(builder, "{ss}",
+                          "via-port",
+                          device_rule.getViaPort().c_str());
+
+    std::string with_interface_string;
+    auto const& with_interface_vector = device_rule.attributeWithInterface().values();
+
+    for (size_t i = 0; i < with_interface_vector.size(); ++i) {
+      with_interface_string.append(with_interface_vector[i].toRuleString());
+      if (i < (with_interface_vector.size() - 1)) {
+        with_interface_string.append(" ");
+      }
+    }
+
+    g_variant_builder_add(builder, "{ss}",
+                          "with-interface",
+                          with_interface_string.c_str());
+
+    return builder;
+  }
 } /* namespace usbguard */
 

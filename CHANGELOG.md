@@ -2,10 +2,26 @@
 
 ## 0.6.0 - [unreleased]
 ### Changed
+- Switched to protobuf based IPC
+- Simplified the IPC and D-Bus interfaces
+- Refactored custom exceptions
 
 ### Added
+- Added DevicePresenceChanged signal for notifying about device
+  insertions, updates and removals
+- Added DevicePolicyChanged signal for notifying about device
+  policy changes.
+- Added ExceptionMessage signal for sending asynchronous exceptions
+  to the IPC/D-Bus clients.
 
 ### Removed
+- Removed nlohmann/json submodule
+- Removed allowDevice, blockDevice and rejectDevice methods from
+  the IPC and D-Bus interface.
+- Removed DeviceAllowed, DeviceBlocked and DeviceRejected signals
+  from the IPC and D-Bus interface (replaced by single signal)
+- Removed DeviceInserted, DevicePresent and DeviceRemoved signals
+  from the IPC and D-Bus interface (replaced by single signal)
 
 ## 0.5.14 - 2016-09-18
 ### Changed

@@ -1,0 +1,51 @@
+package usbguard.IPC;
+
+import "Message.proto";
+import "Rule.proto";
+
+
+message listRulesRequest {
+  required string query = 1;
+}
+
+message listRulesResponse {
+  required uint32 default_target = 1;
+  repeated Rule rules = 2;
+}
+
+message listRules {
+  required MessageHeader header = 1;
+  required listRulesRequest request = 2;
+  optional listRulesResponse response = 3;
+}
+
+
+message appendRuleRequest {
+  required string rule = 1;
+  required uint32 parent_id = 2;
+}
+
+message appendRuleResponse {
+  required uint32 id = 1;
+}
+
+message appendRule {
+  required MessageHeader header = 1;
+  required appendRuleRequest request = 2;
+  optional appendRuleResponse response = 3;
+}
+
+
+message removeRuleRequest {
+  required uint32 id = 1;
+}
+
+message removeRuleResponse {
+  required uint32 id = 1;  
+}
+
+message removeRule {
+  required MessageHeader header = 1;
+  required removeRuleRequest request = 2;
+  optional removeRuleResponse response = 3;
+}

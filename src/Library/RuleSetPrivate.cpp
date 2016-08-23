@@ -20,7 +20,7 @@
 #include "RuleSetPrivate.hpp"
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
-#include <stdexcept>
+#include "Exception.hpp"
 #include <fstream>
 
 namespace usbguard {
@@ -33,7 +33,6 @@ namespace usbguard {
     _default_target = Rule::Target::Block;
     _default_action = String();
     _id_next = Rule::RootID + 1;
-    return;
   }
 
   RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance, const RuleSetPrivate& rhs)
@@ -41,7 +40,6 @@ namespace usbguard {
       _interface_ptr(rhs._interface_ptr)
   {
     *this = rhs;
-    return;
   }
 
   const RuleSetPrivate& RuleSetPrivate::operator=(const RuleSetPrivate& rhs)
@@ -62,10 +60,9 @@ namespace usbguard {
   {
     std::ifstream stream(path);
     if (!stream.is_open()) {
-      throw std::runtime_error("Cannot load ruleset file");
+      throw ErrnoException("RuleSet loading", path, errno);
     }
     load(stream);
-    return;
   }
   
   void RuleSetPrivate::load(std::istream& stream)
@@ -82,18 +79,15 @@ namespace usbguard {
 	appendRule(rule);
       }
     } while(stream.good());
-
-    return;
   }
   
   void RuleSetPrivate::save(const String& path) const
   {
     std::ofstream stream(path, std::fstream::trunc);
     if (!stream.is_open()) {
-      throw std::runtime_error("Cannot store ruleset to file");
+      throw ErrnoException("RuleSet saving", path, errno);
     }
     save(stream);
-    return;
   }
   
   void RuleSetPrivate::save(std::ostream& stream) const
@@ -105,21 +99,24 @@ namespace usbguard {
       const std::string rule_string = rule->toString();
       stream << rule_string << std::endl;
     }
-    return;
   }
   
   void RuleSetPrivate::setDefaultTarget(Rule::Target target)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     _default_target = target;
-    return;
+  }
+
+  Rule::Target RuleSetPrivate::getDefaultTarget() const
+  {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    return _default_target;
   }
 
   void RuleSetPrivate::setDefaultAction(const String& action)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     _default_action = action;
-    return;
   }
 
   uint32_t RuleSetPrivate::appendRule(const Rule& rule, uint32_t parent_id, bool lock)
@@ -166,7 +163,7 @@ namespace usbguard {
 	}
       }
       if (!parent_found) {
-	throw std::runtime_error("Invalid parent_id");
+        throw Exception("Rule set append", "rule", "Invalid parent ID");
       }
     }
 
@@ -189,7 +186,7 @@ namespace usbguard {
           matching_rule = rule_ptr;
         }
         else {
-          throw std::runtime_error("Upsert failed: multiple matching rules");
+          throw Exception("Rule set upsert", "rule", "Cannot upsert; multiple matching rules");
         }
       }
     }
@@ -205,7 +202,7 @@ namespace usbguard {
     }
   }
 
-  Pointer<const Rule> RuleSetPrivate::getRule(uint32_t id)
+  Pointer<Rule> RuleSetPrivate::getRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     for (auto const& rule : _rules) {
@@ -213,7 +210,7 @@ namespace usbguard {
 	return rule;
       }
     }
-    throw std::out_of_range("Rule not found");
+    throw Exception("Rule set lookup", "rule id", "id doesn't exist");
   }
 
   bool RuleSetPrivate::removeRule(uint32_t id)
@@ -227,7 +224,7 @@ namespace usbguard {
       }
     }
     /* FIXME: Remove the rule from the priority queue too */
-    throw std::out_of_range("Rule not found");
+    throw Exception("Rule set remove", "rule id", "id doesn't exist");
   }
 
   Pointer<Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
@@ -242,7 +239,7 @@ namespace usbguard {
 
     Pointer<Rule> default_rule = makePointer<Rule>();
 
-    default_rule->setRuleID(Rule::DefaultID);
+    default_rule->setRuleID(Rule::ImplicitID);
     default_rule->setTarget(_default_target);
 
     return default_rule;
@@ -291,5 +288,4 @@ namespace usbguard {
   {
     return _id_next++;
   }
-
 } /* namespace usbguard */

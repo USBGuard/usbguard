@@ -22,6 +22,8 @@
 #include <USB.hpp>
 #include <Rule.hpp>
 #include <RuleSet.hpp>
+#include <DeviceManager.hpp>
+
 #include <string>
 #include <map>
 #include <vector>
@@ -34,55 +36,32 @@ namespace usbguard
   public:
     /* Methods */
     virtual uint32_t appendRule(const std::string& rule_spec,
-				uint32_t parent_id,
-				uint32_t timeout_sec) = 0;
+				uint32_t parent_id) = 0;
 
     virtual void removeRule(uint32_t id) = 0;
 
-    virtual const RuleSet listRules() = 0;
+    virtual const RuleSet listRules(const std::string& query) = 0;
 
-    virtual void allowDevice(uint32_t id,
-			     bool permanent,
-			     uint32_t timeout_sec) = 0;
-
-    virtual void blockDevice(uint32_t id,
-			     bool permanent,
-			     uint32_t timeout_sec) = 0;
-
-    virtual void rejectDevice(uint32_t id,
-			      bool permanent,
-			      uint32_t timeout_sec) = 0;
+    virtual uint32_t applyDevicePolicy(uint32_t id,
+                                   Rule::Target target,
+                                   bool permanent) = 0;
 
     virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
 
     /* Signals */
-    virtual void DeviceInserted(uint32_t id,
-				const std::map<std::string,std::string>& attributes,
-				const std::vector<USBInterfaceType>& interfaces,
-				bool rule_match,
-				uint32_t rule_id) = 0;
+    virtual void DevicePresenceChanged(uint32_t id,
+                                       DeviceManager::EventType event,
+                                       Rule::Target target,
+                                       const std::string& device_rule) = 0;
 
-    virtual void DevicePresent(uint32_t id,
-			       const std::map<std::string,std::string>& attributes,
-			       const std::vector<USBInterfaceType>& interfaces,
-			       Rule::Target target) = 0;
+    virtual void DevicePolicyChanged(uint32_t id,
+                                     Rule::Target target_old,
+                                     Rule::Target target_new,
+                                     const std::string& device_rule,
+                                     uint32_t rule_id) = 0;
 
-    virtual void DeviceRemoved(uint32_t id,
-			       const std::map<std::string,std::string>& attributes) = 0;
-
-    virtual void DeviceAllowed(uint32_t id,
-			       const std::map<std::string,std::string>& attributes,
-			       bool rule_match,
-			       uint32_t rule_id) = 0;
-
-    virtual void DeviceBlocked(uint32_t id,
-			       const std::map<std::string,std::string>& attributes,
-			       bool rule_match,
-			       uint32_t rule_id) = 0;
-
-    virtual void DeviceRejected(uint32_t id,
-				const std::map<std::string,std::string>& attributes,
-				bool rule_match,
-				uint32_t rule_id) = 0;
+    virtual void ExceptionMessage(const std::string& context,
+                                  const std::string& object,
+                                  const std::string& reason) = 0;
   };
 } /* namespace usbguard */

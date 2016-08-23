@@ -70,6 +70,11 @@ namespace usbguard {
     void setDefaultTarget(Rule::Target target);
 
     /**
+     * Get the implicit target value.
+     */
+    Rule::Target getDefaultTarget() const;
+
+    /**
      * Set an implicit default action which will be used if there's no match for a device
      * rule.
      */
@@ -95,7 +100,7 @@ namespace usbguard {
      * Get a rule pointer to a rule with the specified sequence number.
      * Returns nullptr if no such rule exists.
      */
-    Pointer<const Rule> getRule(uint32_t id);
+    Pointer<Rule> getRule(uint32_t id);
     
     /**
      * Remove a rule from the ruleset.

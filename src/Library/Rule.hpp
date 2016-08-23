@@ -50,17 +50,20 @@ namespace usbguard {
      * Rule target enumeration.
      */
     enum class Target {
-      Allow, /**< Devices matching this rule will be authorized */
-      Block, /**< Devices matching this rule will not be authorized */
-      Reject, /**< Devices matching this rule will not be authorized and will be detached */
-      Match, /**< Special target which can be used to trigger actions. The rule wont affect the final decision. */
-      Unknown, /**< Unknown target. Used for default constructed rules. */
-      Device, /**< Special target which can only be used for a rule that represents a single device */
-      Invalid
+      Allow = 0, /**< Devices matching this rule will be authorized */
+      Block = 1, /**< Devices matching this rule will not be authorized */
+      Reject = 2, /**< Devices matching this rule will not be authorized and will be detached */
+      Match = 3, /**< Special target which can be used to trigger actions. The rule wont affect the final decision. */
+      Unknown = 4, /**< Unknown target. Used for default constructed rules. */
+      Device = 5, /**< Special target which can only be used for a rule that represents a single device */
+      Invalid = 6
     };
 
-    static const String targetToString(const Target& target);
+    static const String targetToString(Target target);
     static Target targetFromString(const String& target_string);
+
+    static uint32_t targetToInteger(Target target);
+    static Target targetFromInteger(uint32_t target_integer);
 
     enum class SetOperator
     {
@@ -81,6 +84,8 @@ namespace usbguard {
     static const uint32_t DefaultID;
     /**< Sequence number for specifying that the last rule in the ruleset should be used in context of the operation */
     static const uint32_t LastID;
+    /**< Sequence number of the implicit target rule */
+    static const uint32_t ImplicitID;
 
     template<class ValueType>
     class Attribute

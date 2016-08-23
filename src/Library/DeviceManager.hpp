@@ -28,6 +28,17 @@ namespace usbguard {
   class DLL_PUBLIC DeviceManager
   {
   public:
+    enum class EventType {
+      Present = 0,
+      Insert = 1,
+      Update = 2, /* use case: writable attribute changed externally */
+      Remove = 3,
+    };
+
+    static uint32_t eventTypeToInteger(EventType event);
+    static EventType eventTypeFromInteger(uint32_t event_integer);
+    static std::string eventTypeToString(EventType event);
+
     DeviceManager(DeviceManagerHooks& hooks);
     DeviceManager(const DeviceManager& rhs);
     const DeviceManager& operator=(const DeviceManager& rhs);
@@ -38,9 +49,8 @@ namespace usbguard {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
-    virtual Pointer<Device> allowDevice(uint32_t id) = 0;
-    virtual Pointer<Device> blockDevice(uint32_t id) = 0;
-    virtual Pointer<Device> rejectDevice(uint32_t id) = 0;
+
+    virtual Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target) = 0;
 
     virtual void insertDevice(Pointer<Device> device);
     Pointer<Device> removeDevice(uint32_t id);
@@ -53,12 +63,7 @@ namespace usbguard {
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */
-    void DeviceInserted(Pointer<Device> device);
-    void DevicePresent(Pointer<Device> device);
-    void DeviceRemoved(Pointer<Device> device);
-    void DeviceAllowed(Pointer<Device> device);
-    void DeviceBlocked(Pointer<Device> device);
-    void DeviceRejected(Pointer<Device> device);
+    void DeviceEvent(EventType event, Pointer<Device> device);
 
     static Pointer<DeviceManager> create(DeviceManagerHooks& hooks);
 

@@ -1,0 +1,6 @@
+package usbguard.IPC;
+
+message Rule {
+  required uint32 id = 1;
+  required string rule = 2;
+}

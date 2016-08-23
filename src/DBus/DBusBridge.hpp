@@ -33,41 +33,29 @@ namespace usbguard
     void handleMethodCall(const std::string interface, const std::string method_name,
         GVariant * parameters, GDBusMethodInvocation * invocation);
 
-  protected:
+  private:
     void IPCConnected() override;
     void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
+    void DevicePresenceChanged(uint32_t id,
+                               DeviceManager::EventType event,
+                               Rule::Target target,
+                               const std::string& device_rule) override;
+
+    void DevicePolicyChanged(uint32_t id,
+                             Rule::Target target_old,
+                             Rule::Target target_new,
+                             const std::string& device_rule,
+                             uint32_t rule_id) override;
+
+    void ExceptionMessage(const std::string& context,
+                          const std::string& object,
+                          const std::string& reason) override;
+
+    static GVariantBuilder* deviceRuleToAttributes(const std::string& device_spec);
+
     void handlePolicyMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
     void handleDevicesMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
-
-    void DevicePresent(uint32_t id,
-        const std::map<std::string,std::string>& attributes,
-        const std::vector<usbguard::USBInterfaceType>& interfaces,
-        usbguard::Rule::Target target) override;
-
-    void DeviceInserted(uint32_t id,
-        const std::map<std::string,std::string>& attributes,
-        const std::vector<USBInterfaceType>& interfaces,
-        bool rule_match,
-        uint32_t rule_id) override;
-
-    void DeviceRemoved(uint32_t id,
-        const std::map<std::string,std::string>& attributes) override;
-
-    void DeviceAllowed(uint32_t id,
-        const std::map<std::string,std::string>& attributes,
-        bool rule_match,
-        uint32_t rule_id) override;
-
-    void DeviceBlocked(uint32_t id,
-        const std::map<std::string,std::string>& attributes,
-        bool rule_match,
-        uint32_t rule_id) override;
-
-    void DeviceRejected(uint32_t id,
-        const std::map<std::string,std::string>& attributes,
-        bool rule_match,
-        uint32_t rule_id) override;
 
     void emitDevicePolicyDecision(const char *policy_signal,
         uint32_t id,
@@ -75,7 +63,7 @@ namespace usbguard
         bool rule_match,
         uint32_t rule_id);
 
-  private:
+
     GDBusConnection * const p_gdbus_connection;
     void(*p_ipc_callback)(bool);
   };

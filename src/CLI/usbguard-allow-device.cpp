@@ -75,7 +75,7 @@ namespace usbguard
     id = std::stoul(argv[0]);
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    ipc.allowDevice(id, permanent, 0);
+    ipc.applyDevicePolicy(id, Rule::Target::Allow, permanent);
 
     return EXIT_SUCCESS;
   }

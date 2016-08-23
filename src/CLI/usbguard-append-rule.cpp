@@ -74,7 +74,7 @@ namespace usbguard
     usbguard::IPCClient ipc(/*connected=*/true);
 
     const std::string rule_spec = argv[0];
-    const uint32_t id = ipc.appendRule(rule_spec, parent_id, 0);
+    const uint32_t id = ipc.appendRule(rule_spec, parent_id);
 
     std::cout << id << std::endl;
 

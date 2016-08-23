@@ -41,12 +41,7 @@ namespace usbguard {
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */
-    void DeviceInserted(Pointer<Device> device);
-    void DevicePresent(Pointer<Device> device);
-    void DeviceRemoved(Pointer<Device> device);
-    void DeviceAllowed(Pointer<Device> device);
-    void DeviceBlocked(Pointer<Device> device);
-    void DeviceRejected(Pointer<Device> device);
+    void DeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
 
   private:
     DeviceManager& _p_instance;

@@ -1,0 +1,8 @@
+package usbguard.IPC;
+
+message Exception {
+  required string context = 1;
+  required string object = 2;
+  required string reason = 3;
+  optional uint32 request_id = 4;
+}
