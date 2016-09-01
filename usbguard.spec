@@ -121,7 +121,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart usbguard.service 
+%systemd_postun usbguard.service
 
 %files
 %defattr(-,root,root,-)
