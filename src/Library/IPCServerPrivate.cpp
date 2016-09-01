@@ -263,6 +263,10 @@ namespace usbguard
 
   int32_t IPCServerPrivate::qbIPCMessageProcessFn(qb_ipcs_connection_t *conn, void *data, size_t size)
   {
+    if (conn == nullptr) {
+      logger->error("BUG: NULL client connection pointer");
+      return 0;
+    }
     if (size <= sizeof (struct qb_ipc_request_header)) {
       logger->error("Received invalid IPC data. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
@@ -288,6 +292,8 @@ namespace usbguard
       return 0;
     }
 
+    bool client_disconnect = false;
+
     try {
       IPCServerPrivate * const server = \
         reinterpret_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
@@ -304,18 +310,29 @@ namespace usbguard
       }
     }
     catch(const IPCException& ex) {
-      logger->warn("IPCException: request_id={}: {}", ex.messageID(), ex.message());
+      logger->warn("IPC Exception: request_id={}: {}", ex.messageID(), ex.message());
       qbIPCSendMessage(conn, IPC::IPCExceptionToMessage(ex));
       /* FALLTHROUGH */
     }
+    catch(const Exception& ex) {
+      logger->error("Internal exception: {}", ex.message());
+      client_disconnect = true;
+      /* FALLTHROUGH */
+    }
     catch(const std::exception& ex) {
-      logger->error("Exception: {}", ex.what());
-      logger->error("Invalid message received. Disconnecting from the client.");
+      logger->error("BUG: Unhandled exception caught while processing IPC payload.");
+      client_disconnect = true;
       /* FALLTHROUGH */
     }
     catch(...) {
-      logger->error("BUG: Unknown exception caught while handling IPC payload");
+      logger->error("BUG: Unknown exception caught while processing IPC payload.");
+      client_disconnect = true;
       /* FALLTHROUGH */
+    }
+
+    if (client_disconnect) {
+      logger->error("Disconnecting from the client.");
+      qb_ipcs_disconnect(conn);
     }
 
     return 0;
@@ -438,7 +455,7 @@ namespace usbguard
     const auto& handler_it = _handlers.find(payload_type);
 
     if (handler_it == _handlers.end()) {
-      throw IPCException("IPC connection", "IPC payload data", "Unknown payload type");
+      throw Exception("IPC connection", "IPC payload data", "Unknown payload type");
     }
 
     auto& handler = handler_it->second;
@@ -456,7 +473,7 @@ namespace usbguard
       request_id = IPC::getMessageHeaderID(*message_in);
     }
     catch(...) {
-      throw IPCException("IPC connection", "IPC payload data", "Payload data parsing failed");
+      throw Exception("IPC connection", "IPC payload data", "Payload data parsing failed");
     }
 
     /*
