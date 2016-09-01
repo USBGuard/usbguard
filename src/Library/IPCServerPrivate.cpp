@@ -265,17 +265,20 @@ namespace usbguard
   {
     if (conn == nullptr) {
       logger->error("BUG: NULL client connection pointer");
-      return 0;
+      return -1;
     }
+
+    qb_ipcs_connection_ref(conn);
+
     if (size <= sizeof (struct qb_ipc_request_header)) {
       logger->error("Received invalid IPC data. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
-      return 0;
+      return -1;
     }
     if (size > 1<<20) {
       logger->error("Message too large. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
-      return 0;
+      return -1;
     }
 
     const struct qb_ipc_request_header * const hdr = \
@@ -284,12 +287,12 @@ namespace usbguard
     if (size != (size_t)hdr->size) {
       logger->error("Invalid size in IPC header. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
-      return 0;
+      return -1;
     }
     if (hdr->id < QB_IPC_MSG_USER_START) {
       logger->error("Invalid type in IPC header. Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
-      return 0;
+      return -1;
     }
 
     bool client_disconnect = false;
@@ -333,6 +336,10 @@ namespace usbguard
     if (client_disconnect) {
       logger->error("Disconnecting from the client.");
       qb_ipcs_disconnect(conn);
+      return -1;
+    }
+    else {
+      qb_ipcs_connection_unref(conn);
     }
 
     return 0;
