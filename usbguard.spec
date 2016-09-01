@@ -96,7 +96,7 @@ autoreconf -i -v --no-recursive ./
     --without-bundled-spdlog \
     --without-bundled-catch \
     --enable-systemd \
-    --with-gui-qt5 \
+    --with-gui-qt=qt5 \
     --with-dbus \
     --with-polkit \
     --with-crypto-library=gcrypt
