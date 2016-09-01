@@ -25,245 +25,15 @@
 
 namespace usbguard
 {
-  static int32_t qbPollEventFn(int32_t fd, int32_t revents, void *data)
+  int32_t IPCClientPrivate::qbPollWakeupFn(int32_t fd, int32_t revents, void *data)
   {
     return 0;
   }
 
-  void IPCClientPrivate::processEvent()
-  {
-    try {
-      const json j = receiveOne();
-      processOne(j);
-    }
-    catch(const IPCException& ex) {
-      logger->error("IPC: Disconnecting because of an IPC exception: event_id={}, code={}", ex.requestID(), ex.codeAsString());
-      disconnect(/*exception_initiated=*/true, ex);
-    }
-    catch(const std::exception& ex) {
-      const IPCException ipc_exception(IPCException::ReasonCode::InternalError, ex.what());
-      logger->error("IPC: Disconnecting because of an exception: {}", ex.what());
-      disconnect(/*exception_initiated=*/true, ipc_exception);
-    }
-    catch(...) {
-      const IPCException ipc_exception(IPCException::ReasonCode::InternalError, "BUG: Unknown exception in IPCPrivate::processEvent");
-      logger->error("BUG: IPC: Disconnecting because of an unknown exception.");
-      disconnect(/*exception_initiated=*/true, ipc_exception);
-    }
-  }
-
-  const json IPCClientPrivate::receiveOne()
-  {
-    char *data = new char[1<<20];
-    ssize_t recv_size;
-
-    if ((recv_size = qb_ipcc_event_recv(_qb_conn, data, 1<<20, 500)) < 0) {
-      disconnect();
-      throw IPCException(IPCException::ProtocolError, "Receive error");
-    }
-
-    if (recv_size < (ssize_t)sizeof(struct qb_ipc_response_header)) {
-      disconnect();
-      throw IPCException(IPCException::ProtocolError, "Message too small");
-    }
-
-    const struct qb_ipc_response_header *hdr = \
-      (const struct qb_ipc_response_header *)data;
-
-    if (hdr->size != recv_size) {
-      disconnect();
-      throw IPCException(IPCException::ProtocolError, "Invalid size in header");
-    }
-
-    const char *jdata = data + sizeof(struct qb_ipc_response_header);
-    const size_t jsize = recv_size - sizeof(struct qb_ipc_response_header);
-    const std::string json_string(jdata, jsize);
-    const json jobj = json::parse(json_string);
-    delete [] data;
-    return jobj;
-  }
-
-  void IPCClientPrivate::processOne(const json& jobj)
-  {
-    if (jobj.count("_e")) {
-      processExceptionJSON(jobj);
-    }
-    else if (jobj.count("_s")) {
-      processSignalJSON(jobj);
-    }
-    else if (jobj.count("_r")) {
-      processMethodReturnJSON(jobj);
-    }
-    else if (jobj.count("_m")) {
-      processMethodCallJSON(jobj);
-    }
-    else {
-      disconnect();
-      throw IPCException(IPCException::ProtocolError, "Unknown message");
-    }
-  }
-
-  void IPCClientPrivate::processReturnValue(const json& jobj)
-  {
-    std::unique_lock<std::mutex> lock(_rv_map_mutex);
-    const uint64_t id = jobj["_i"];
-    auto const& it = _rv_map.find(id);
-
-    if (it == _rv_map.end()) {
-      return;
-    }
-
-    auto& promise = it->second;
-    promise.set_value(jobj);
-
-    return;
-  }
-
-  void IPCClientPrivate::processExceptionJSON(const json& jobj)
-  {
-    if (jobj.count("_i")) {
-      processReturnValue(jobj);
-    }
-    else {
-    }
-    return;
-  }
-
-  void IPCClientPrivate::processSignalJSON(const json& jobj)
-  {
-    try {
-      const std::string name = jobj["_s"];
-      if (name == "DeviceInserted") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	std::vector<USBInterfaceType> interfaces;
-	for (auto const& jitem : jobj["interfaces"]) {
-	  const std::string type_string = jitem;
-	  interfaces.push_back(USBInterfaceType(type_string));
-	}
-
-	_p_instance.DeviceInserted(jobj["id"],
-				   attributes,
-				   interfaces,
-				   jobj["rule_match"],
-				   jobj["rule_id"]);
-      }
-      else if (name == "DevicePresent") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	std::vector<USBInterfaceType> interfaces;
-	for (auto const& jitem : jobj["interfaces"]) {
-	  const std::string type_string = jitem;
-	  interfaces.push_back(USBInterfaceType(type_string));
-	}
-
-	_p_instance.DevicePresent(jobj["id"],
-				  attributes,
-				  interfaces,
-                                  Rule::targetFromString(jobj["target"]));
-      }
-      else if (name == "DeviceRemoved") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	_p_instance.DeviceRemoved(jobj["id"],
-				  attributes);
-      }
-      else if (name == "DeviceAllowed") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	_p_instance.DeviceAllowed(jobj["id"],
-				  attributes,
-				  jobj["rule_match"],
-				  jobj["rule_id"]);
-      }
-      else if (name == "DeviceBlocked") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	_p_instance.DeviceBlocked(jobj["id"],
-				  attributes,
-				  jobj["rule_match"],
-				  jobj["rule_id"]);
-      }
-      else if (name == "DeviceRejected") {
-	const json attributes_json = jobj.at("attributes");
-	std::map<std::string,std::string> attributes;
-
-	for (auto it = attributes_json.begin(); it != attributes_json.end(); ++it) {
-	  const std::string key = it.key();
-	  const std::string value = it.value();
-	  attributes[key] = value;
-	}
-
-	_p_instance.DeviceRejected(jobj["id"],
-				   attributes,
-				   jobj["rule_match"],
-				   jobj["rule_id"]);
-      }
-      else {
-	throw 0;
-      }
-    } catch(...) {
-      disconnect();
-      throw IPCException(IPCException::ProtocolError, "Invalid IPC signal data");
-    }
-    return;
-  }
-
-  void IPCClientPrivate::processMethodReturnJSON(const json& jobj)
-  {
-    if (jobj.count("_i")) {
-      processReturnValue(jobj);
-    }
-    else {
-      logger->warn("Missing return value id in the response");
-    }
-    return;
-  }
-
-  void IPCClientPrivate::processMethodCallJSON(const json& jobj)
-  {
-    return;
-  }
-
-  static int32_t qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data)
+  int32_t IPCClientPrivate::qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data)
   {
     IPCClientPrivate *client = static_cast<IPCClientPrivate*>(data);
-    client->processEvent();
+    client->processReceiveEvent();
     return 0;
   }
 
@@ -272,10 +42,20 @@ namespace usbguard
       _thread(this, &IPCClientPrivate::thread)
   {
     _qb_conn = nullptr;
-    _qb_conn_fd = -1;
-    _eventfd = eventfd(0, 0);
+    _qb_fd = -1;
+    _wakeup_fd = eventfd(0, 0);
     _qb_loop = qb_loop_create();
-    qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _eventfd, POLLIN, NULL, qbPollEventFn);
+    qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _wakeup_fd, POLLIN, NULL, qbPollWakeupFn);
+
+    registerHandler<IPC::listRules>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::appendRule>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::removeRule>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::applyDevicePolicy>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::listDevices>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::Exception>(&IPCClientPrivate::handleException);
+    registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
+    registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
+
     _thread.start();
 
     if (connected) {
@@ -287,14 +67,13 @@ namespace usbguard
         throw;
       }
     }
-    return;
   }
 
   void IPCClientPrivate::destruct()
   {
     stop();
-    qb_loop_poll_del(_qb_loop, _eventfd);
-    close(_eventfd);
+    qb_loop_poll_del(_qb_loop, _wakeup_fd);
+    close(_wakeup_fd);
     qb_loop_destroy(_qb_loop);
   }
 
@@ -302,7 +81,6 @@ namespace usbguard
   {
     disconnect();
     destruct();
-    return;
   }
 
   void IPCClientPrivate::connect()
@@ -310,30 +88,29 @@ namespace usbguard
     _qb_conn = qb_ipcc_connect("usbguard", 1<<20);
 
     if (_qb_conn == nullptr) {
-      throw IPCException(IPCException::ConnectionError, "IPC Connection not established");
+      throw ErrnoException("IPC connect", "service=usbguard", errno);
     }
 
-    qb_ipcc_fd_get(_qb_conn, &_qb_conn_fd);
+    qb_ipcc_fd_get(_qb_conn, &_qb_fd);
 
-    if (_qb_conn_fd < 0) {
+    if (_qb_fd < 0) {
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
-      _qb_conn_fd = -1;
-      throw IPCException(IPCException::ConnectionError, "Bad file descriptor");
+      _qb_fd = -1;
+      throw Exception("IPC connect", "qb connection", "Bad file descriptor");
     }
 
-    qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _qb_conn_fd, POLLIN, this, qbIPCMessageProcessFn);
+    qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _qb_fd, POLLIN, this, qbIPCMessageProcessFn);
     _p_instance.IPCConnected();
-    return;
   }
 
   void IPCClientPrivate::disconnect(bool exception_initiated, const IPCException& exception)
   {
-    if (_qb_conn != nullptr && _qb_conn_fd != -1) {
-      qb_loop_poll_del(_qb_loop, _qb_conn_fd);
+    if (_qb_conn != nullptr && _qb_fd != -1) {
+      qb_loop_poll_del(_qb_loop, _qb_fd);
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
-      _qb_conn_fd = -1;
+      _qb_fd = -1;
       _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
     }
   }
@@ -346,7 +123,7 @@ namespace usbguard
 
   bool IPCClientPrivate::isConnected() const
   {
-    return _qb_conn_fd != -1;
+    return _qb_fd != -1;
   }
 
   void IPCClientPrivate::wait()
@@ -354,175 +131,55 @@ namespace usbguard
     _thread.wait();
   }
 
-  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec)
-  {
-    const json jreq = {
-      {          "_m", "appendRule" },
-      {   "rule_spec", rule_spec },
-      { "parent_id", parent_id },
-      { "timeout_sec", timeout_sec },
-      {          "_i", IPC::uniqueID() }
-    };
-
-    const json jrep = qbIPCSendRecvJSON(jreq);
-
-    try {
-      const uint32_t retval = jrep["retval"];
-      return retval;
-    } catch(...) {
-      throw IPCException(IPCException::ProtocolError,
-			 "Invalid or missing return value after calling appendRule");
-    }
-  }
-
-  void IPCClientPrivate::removeRule(uint32_t id)
-  {
-    const json jreq = {
-      {   "_m", "removeRule" },
-      { "id", id },
-      {   "_i", IPC::uniqueID() }
-    };
-
-    qbIPCSendRecvJSON(jreq);
-    return;
-  }
-
-  const RuleSet IPCClientPrivate::listRules()
-  {
-    const json jreq = {
-      { "_m", "listRules" },
-      { "_i", IPC::uniqueID() }
-    };
-
-    const json jrep = qbIPCSendRecvJSON(jreq);
-
-    try {
-      RuleSet ruleset(&_p_instance);
-
-      for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-        const json rule_json = it.value(); 
-        const uint32_t rule_id = rule_json["id"];
-        const std::string rule_string = rule_json["rule"];
-        Rule rule = Rule::fromString(rule_string);
-        rule.setRuleID(rule_id);
-        ruleset.appendRule(rule);
-      }
-
-      return ruleset;
-    } catch(...) {
-      throw IPCException(IPCException::ProtocolError,
-                         "Invalid or missing return value after calling listRules");
-    }
-  }
-
-  void IPCClientPrivate::allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
-  {
-    const json jreq = {
-      {          "_m", "allowDevice" },
-      {        "id", id },
-      {      "permanent", permanent },
-      { "timeout_sec", timeout_sec },
-      {          "_i", IPC::uniqueID() }
-    };
-
-    qbIPCSendRecvJSON(jreq);
-    return;
-  }
-
-  void IPCClientPrivate::blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
-  {
-    const json jreq = {
-      {          "_m", "blockDevice" },
-      {        "id", id },
-      {      "permanent", permanent },
-      { "timeout_sec", timeout_sec },
-      {          "_i", IPC::uniqueID() }
-    };
-
-    qbIPCSendRecvJSON(jreq);
-    return;
-  }
-
-  void IPCClientPrivate::rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
-  {
-    const json jreq = {
-      {          "_m", "rejectDevice" },
-      {        "id", id },
-      {      "permanent", permanent },
-      { "timeout_sec", timeout_sec },
-      {          "_i", IPC::uniqueID() }
-    };
-
-    qbIPCSendRecvJSON(jreq);
-    return;
-  }
-
-  const std::vector<Rule> IPCClientPrivate::listDevices(const std::string& query)
-  {
-    const json jreq = {
-      { "_m", "listDevices" },
-      { "query", query },
-      { "_i", IPC::uniqueID() }
-    };
-
-    const json jrep = qbIPCSendRecvJSON(jreq);
-
-    try {
-      std::vector<Rule> devices;
-
-      for (auto it = jrep["retval"].begin(); it != jrep["retval"].end(); ++it) {
-        const json device_json = it.value();
-        const uint32_t device_id = device_json["id"];
-        const std::string device_string = device_json["device"];
-        Rule device_rule = Rule::fromString(device_string);
-        device_rule.setRuleID(device_id);
-        devices.push_back(device_rule);
-      }
-
-      return devices;
-    } catch(...) {
-      throw IPCException(IPCException::ProtocolError,
-                         "Invalid or missing return value after calling listDevices");
-    }
-  }
-
   void IPCClientPrivate::thread()
   {
     qb_loop_run(_qb_loop);
+  }
+
+  void IPCClientPrivate::wakeup()
+  {
+    const uint64_t one = 1;
+    (void)write(_wakeup_fd, &one, sizeof one);
   }
 
   void IPCClientPrivate::stop()
   {
     _thread.stop(/*do_wait=*/false);
     qb_loop_stop(_qb_loop);
-    const uint64_t one = 1;
-    write(_eventfd, &one, sizeof one);
+    wakeup();
     _thread.wait();
-    return;
   }
 
-  json IPCClientPrivate::qbIPCSendRecvJSON(const json& jval)
+  uint64_t IPCClientPrivate::generateMessageID()
+  {
+    static std::atomic<uint64_t> id(1);
+    return id++;
+  }
+
+  IPC::MessagePointer IPCClientPrivate::qbIPCSendRecvMessage(IPC::MessageType& message)
   {
     if (!isConnected()) {
-      throw IPCException(IPCException::ConnectionError, "Not connected");
+      throw Exception("IPC send/recv", "connection", "Not connected");
     }
 
-    const std::string json_string = jval.dump();
+    const uint64_t id = generateMessageID();
+    IPC::setMessageHeaderID(message, id);
+
+    std::string payload;
+    message.SerializeToString(&payload);
 
     struct qb_ipc_request_header hdr;
-    hdr.id = 0;
-    hdr.size = sizeof hdr + json_string.size();
+    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message.GetTypeName());
+    hdr.size = sizeof hdr + payload.size();
 
     struct iovec iov[2];
     iov[0].iov_base = &hdr;
     iov[0].iov_len = sizeof hdr;
-    iov[1].iov_base = (void *)json_string.c_str();
-    iov[1].iov_len = json_string.size();
-
-    const uint64_t id = jval["_i"];
+    iov[1].iov_base = (void *)payload.data();
+    iov[1].iov_len = payload.size();
 
     /* Lock the return value slot map */
-    std::unique_lock<std::mutex> rv_map_lock(_rv_map_mutex);
+    std::unique_lock<std::mutex> return_map_lock(_return_mutex);
 
     /*
      * Create the promise and future objects.
@@ -530,7 +187,7 @@ namespace usbguard
      * processing handlers after they process
      * a reply from the server.
      */
-    auto& promise = _rv_map[id];
+    auto& promise = _return_map[id];
     auto future = promise.get_future();
 
     qb_ipcc_sendv(_qb_conn, iov, 2);
@@ -539,44 +196,255 @@ namespace usbguard
      * Unlock the return value map so that the message
      * processing handler aren't blocked.
      */
-    rv_map_lock.unlock();
+    return_map_lock.unlock();
 
     /* Wait for some time for the reply to be received */
-    const std::chrono::milliseconds timeout_ms(5*1000);
+    const std::chrono::milliseconds timeout_ms(5*1000); /* TODO: make this configurable */
     const bool timed_out = \
       future.wait_for(timeout_ms) == std::future_status::timeout;
 
-    json retval;
+    IPC::MessagePointer response;
 
     if (!timed_out) {
-      retval = future.get();
+      response = future.get();
     }
 
     /* Remove the slot from the return value slot map */
-    rv_map_lock.lock();
-    _rv_map.erase(id);
-    rv_map_lock.unlock();
+    return_map_lock.lock();
+    _return_map.erase(id);
+    return_map_lock.unlock();
 
     if (timed_out) {
-      throw IPCException(IPCException::TransientError, "Timed out while waiting for IPC reply");
+      throw Exception("IPC send/recv", "connection", "Timed out while waiting for IPC reply");
     }
-    else {
-      /*
-       * We might have caused an exception. Check whether
-       * that's the case and if true, throw it here.
-       */
-      if (IPCPrivate::isExceptionJSON(retval)) {
-        throw IPCPrivate::jsonToIPCException(retval);
-      }
-      else {
-        return retval;
-      }
+
+    /*
+     * We might have caused an exception. Check whether
+     * that's the case and if true, throw it here.
+     */
+    if (IPC::isExceptionMessage(response)) {
+      throw IPC::IPCExceptionFromMessage(response);
     }
-    return json();
+
+    return response;
   }
 
-  bool IPCClientPrivate::isExceptionJSON(const json& jval) const
+  void IPCClientPrivate::processReceiveEvent()
   {
-    return (jval.count("_e") == 1);
+    try {
+      const std::string buffer = receive();
+      process(buffer);
+    }
+    catch(const IPCException& exception) {
+      logger->error("IPC: Disconnecting because of an IPC exception: request_id={}: {}",
+                    exception.messageID(), exception.message());
+      disconnect(/*exception_initiated=*/true, exception);
+    }
+    catch(const Exception& exception) {
+      const IPCException ipc_exception(exception);
+      logger->error("IPC: Disconnecting because of an exception: {}", exception.what());
+      disconnect(/*exception_initiated=*/true, ipc_exception);
+    }
+    catch(const std::exception& exception) {
+      const IPCException ipc_exception("IPC receive event", "", exception.what());
+      disconnect(/*exception_initiated=*/true, ipc_exception);
+    }
+    catch(...) {
+      const IPCException ipc_exception("IPC receive event", "BUG", "Unknown exception");
+      logger->error("BUG: IPC: Disconnecting because of an unknown exception.");
+      disconnect(/*exception_initiated=*/true, ipc_exception);
+    }
+  }
+
+  std::string IPCClientPrivate::receive()
+  {
+    const size_t buffer_size_max = 1<<20;
+    std::string buffer(buffer_size_max, 0);
+
+    const ssize_t recv_size = \
+      qb_ipcc_event_recv(_qb_conn, &buffer[0], /*msg_len=*/buffer_size_max, /*ms_timeout=*/500);
+
+    if (recv_size < 0) {
+      disconnect();
+      throw Exception("IPC receive", "connection", "Receive error");
+    }
+    if (recv_size < (ssize_t)sizeof(struct qb_ipc_response_header)) {
+      disconnect();
+      throw Exception("IPC receive", "message", "Message too small");
+    }
+
+    buffer.resize((size_t)recv_size);
+
+    return buffer;
+  }
+
+  void IPCClientPrivate::process(const std::string& buffer)
+  {
+    const struct qb_ipc_response_header *hdr = \
+      (const struct qb_ipc_response_header *)buffer.data();
+
+    if ((size_t)hdr->size != buffer.size()) {
+      disconnect();
+      throw Exception("IPC receive", "message header", "Invalid size value");
+    }
+    if (hdr->id < QB_IPC_MSG_USER_START) {
+      disconnect();
+      throw Exception("IPC receive", "message header", "Invalid payload type value");
+    }
+
+    const uint32_t payload_type = hdr->id - QB_IPC_MSG_USER_START;
+    const std::string payload = buffer.substr(sizeof(struct qb_ipc_response_header));
+
+    handleIPCPayload(payload_type, payload);
+  }
+
+  void IPCClientPrivate::handleIPCPayload(const uint32_t payload_type, const std::string& payload)
+  {
+    try {
+      auto& handler = _handlers.at(payload_type);
+      auto message = handler.payloadToMessage(payload);
+      handler.run(message);
+    }
+    catch(const IPCException& exception) {
+      throw;
+    }
+    catch(...) {
+      throw Exception("IPC connection", "message", "Unknown payload type");
+    }
+  }
+
+  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id)
+  {
+    IPC::appendRule message_out;
+    message_out.mutable_request()->set_rule(rule_spec);
+    message_out.mutable_request()->set_parent_id(parent_id);
+    
+    auto message_in = qbIPCSendRecvMessage(message_out);
+
+    return message_in->response().id();
+  }
+
+  void IPCClientPrivate::removeRule(uint32_t id)
+  {
+    IPC::removeRule message_out;
+    message_out.mutable_request()->set_id(id);
+
+    auto message_in = qbIPCSendRecvMessage(message_out);
+  }
+
+  const RuleSet IPCClientPrivate::listRules(const std::string& query)
+  {
+    IPC::listRules message_out;
+    message_out.mutable_request()->set_query(query);
+
+    auto message_in = qbIPCSendRecvMessage(message_out);
+
+    const Rule::Target default_target = \
+      Rule::targetFromInteger(message_in->response().default_target());
+
+    RuleSet rule_set(&_p_instance);
+    rule_set.setDefaultTarget(default_target);
+
+    for (auto rule_message : message_in->response().rules()) {
+      Rule rule = Rule::fromString(rule_message.rule());
+      rule.setRuleID(rule_message.id());
+      rule_set.appendRule(rule);
+    }
+
+    return rule_set;
+  }
+
+  uint32_t IPCClientPrivate::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
+  {
+    IPC::applyDevicePolicy message_out;
+    message_out.mutable_request()->set_id(id);
+    message_out.mutable_request()->set_target(Rule::targetToInteger(target));
+    message_out.mutable_request()->set_permanent(permanent);
+
+    auto message_in = qbIPCSendRecvMessage(message_out);
+
+    return message_in->response().rule_id();
+  }
+
+  const std::vector<Rule> IPCClientPrivate::listDevices(const std::string& query)
+  {
+    IPC::listDevices message_out;
+    message_out.mutable_request()->set_query(query);
+
+    auto message_in = qbIPCSendRecvMessage(message_out);
+    std::vector<Rule> devices;
+
+    for (auto rule_message : message_in->response().devices()) {
+      Rule device_rule = Rule::fromString(rule_message.rule());
+      device_rule.setRuleID(rule_message.id());
+      devices.push_back(device_rule);
+    }
+
+    return devices;
+  }
+
+  void IPCClientPrivate::handleMethodResponse(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    const auto response_field = message_in->GetDescriptor()->FindFieldByName("response");
+    const auto reflection = message_in->GetReflection();
+    const bool has_response = reflection->HasField(*message_in, response_field);
+    const uint64_t id = IPC::getMessageHeaderID(*message_in);
+
+    if (!has_response) {
+      throw IPCException("IPC method response", "message", "Missing response field", id);
+    }
+
+    try {
+      auto& return_promise = _return_map.at(id);
+      return_promise.set_value(std::move(message_in));
+    }
+    catch(...) {
+      throw IPCException("IPC method response", "message", "Unexpected method call response", id);
+    }
+  }
+
+  void IPCClientPrivate::handleException(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    const IPC::Exception * const exception = \
+      reinterpret_cast<const IPC::Exception*>(message_in.get());
+
+    if (exception->has_request_id()) {
+      const uint64_t id = exception->request_id();
+      try {
+        auto& return_promise = _return_map.at(id);
+        return_promise.set_value(std::move(message_in));
+      }
+      catch(...) {
+        throw IPCException("IPC exception response", "message", "Unexpected method response exception", id);
+      }
+    }
+    else {
+      _p_instance.ExceptionMessage(exception->context(),
+                                   exception->object(),
+                                   exception->reason());
+    }
+  }
+
+  void IPCClientPrivate::handleDevicePresenceChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    const IPC::DevicePresenceChangedSignal * const signal =\
+      reinterpret_cast<const IPC::DevicePresenceChangedSignal*>(message_in.get());
+
+    _p_instance.DevicePresenceChanged(signal->id(),
+                                      DeviceManager::eventTypeFromInteger(signal->event()),
+                                      Rule::targetFromInteger(signal->target()),
+                                      signal->device_rule());
+  }
+
+  void IPCClientPrivate::handleDevicePolicyChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    const IPC::DevicePolicyChangedSignal * const signal = \
+      reinterpret_cast<const IPC::DevicePolicyChangedSignal*>(message_in.get());
+
+    _p_instance.DevicePolicyChanged(signal->id(),
+                                    Rule::targetFromInteger(signal->target_old()),
+                                    Rule::targetFromInteger(signal->target_new()),
+                                    signal->device_rule(),
+                                    signal->rule_id());
   }
 } /* namespace usbguard */

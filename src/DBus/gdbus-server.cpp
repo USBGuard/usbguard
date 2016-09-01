@@ -30,7 +30,7 @@ static GDBusNodeInfo *introspection_data = NULL;
 static const gchar introspection_xml[] =
 #include "DBusInterface.xml.cstr"
 ;
-static const unsigned int expected_interface_count = 2;
+static const unsigned int expected_interface_count = 3;
 
 static int global_ret = EXIT_SUCCESS;
 
@@ -109,6 +109,13 @@ static const GDBusInterfaceVTable policy_interface_vtable =
   nullptr
 };
 
+static const GDBusInterfaceVTable usbguard_interface_vtable =
+{
+  handle_method_call,
+  nullptr,
+  nullptr
+};
+
 static void
 on_bus_acquired (GDBusConnection *connection,
                  const gchar     *name,
@@ -128,7 +135,15 @@ on_bus_acquired (GDBusConnection *connection,
                                                       /*user_data=*/dbus_bridge,
                                                       /*user_data_free_func=*/nullptr,
                                                       /*GError=*/nullptr);
-  if (policy_rid <= 0 || devices_rid <= 0) {
+  auto usbguard_rid = g_dbus_connection_register_object(connection,
+                                                      "/org/usbguard",
+                                                      introspection_data->interfaces[2],
+                                                      &usbguard_interface_vtable,
+                                                      /*user_data=*/dbus_bridge,
+                                                      /*user_data_free_func=*/nullptr,
+                                                      /*GError=*/nullptr);
+
+  if (policy_rid <= 0 || devices_rid <= 0 || usbguard_rid <= 0) {
     std::cerr << "Unable to register required objects on the bus." << std::endl;
     g_main_loop_quit(main_loop);
     global_ret = EXIT_FAILURE;

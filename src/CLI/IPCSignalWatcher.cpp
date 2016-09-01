@@ -30,82 +30,32 @@ namespace usbguard
   {
     std::cout << "[IPC] Disconnected: exception_initiated=" << exception_initiated;
     if (exception_initiated) {
-      std::cout << " reason=" << exception.codeAsString();
       std::cout << " message=" << exception.message();
     }
     std::cout << std::endl;
   }
 
-  void IPCSignalWatcher::DeviceInserted(uint32_t id, const std::map< std::string, std::string >& attributes, const std::vector< USBInterfaceType >& interfaces, bool rule_match, uint32_t rule_id)
+  void IPCSignalWatcher::DevicePresenceChanged(uint32_t id,
+                                               DeviceManager::EventType event,
+                                               Rule::Target target,
+                                               const std::string& device_rule)
   {
-    std::cout << "[device] Inserted: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-
-    std::cout << " interface={";
-    for (auto interface : interfaces) {
-      std::cout << " " << interface.typeString();
-    }
-    std::cout << "}";
-    std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_id=" << rule_id << std::endl;
-  }
-
-  void IPCSignalWatcher::DevicePresent(uint32_t id, const std::map< std::string, std::string >& attributes, const std::vector< USBInterfaceType >& interfaces, Rule::Target target)
-  {
-    std::cout << "[device] Present: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-
-    std::cout << " if={";
-    for (auto interface : interfaces) {
-      std::cout << " " << interface.typeString();
-    }
-    std::cout << "}";
+    std::cout << "[device] PresenceChanged: id=" << id << std::endl;
+    std::cout << " event=" << DeviceManager::eventTypeToString(event) << std::endl;
     std::cout << " target=" << Rule::targetToString(target) << std::endl;
+    std::cout << " device_rule=" << device_rule << std::endl;
   }
 
-  void IPCSignalWatcher::DeviceRemoved(uint32_t id, const std::map< std::string, std::string >& attributes)
+  void IPCSignalWatcher::DevicePolicyChanged(uint32_t id,
+                                             Rule::Target target_old,
+                                             Rule::Target target_new,
+                                             const std::string& device_rule,
+                                             uint32_t rule_id)
   {
-    std::cout << "[device] Removed: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-    std::cout << std::endl;
-  }
-
-  void IPCSignalWatcher::DeviceAllowed(uint32_t id, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_id)
-  {
-    std::cout << "[device] Allowed: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-
-    std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_id=" << rule_id << std::endl;
-  }
-
-  void IPCSignalWatcher::DeviceBlocked(uint32_t id, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_id)
-  {
-    std::cout << "[device] Blocked: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-
-    std::cout << " rule_match=" << rule_match;
-    std::cout << " rule_id=" << rule_id << std::endl;
-  }
-
-  void IPCSignalWatcher::DeviceRejected(uint32_t id, const std::map< std::string, std::string >& attributes, bool rule_match, uint32_t rule_id)
-  {
-    std::cout << "[device] Rejected: id=" << id;
-    for (auto attribute : attributes) {
-      std::cout << " " << attribute.first << "=" << attribute.second;
-    }
-
-    std::cout << " rule_match=" << rule_match;
+    std::cout << "[device] PolicyChanged: id=" << id << std::endl;
+    std::cout << " target_old=" << Rule::targetToString(target_old) << std::endl;
+    std::cout << " target_new=" << Rule::targetToString(target_new) << std::endl;
+    std::cout << " device_rule=" << device_rule << std::endl;
     std::cout << " rule_id=" << rule_id << std::endl;
   }
 } /* namespace usbguard */

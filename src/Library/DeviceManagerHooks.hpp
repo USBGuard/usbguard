@@ -20,6 +20,7 @@
 
 #include <Typedefs.hpp>
 #include <Device.hpp>
+#include <DeviceManager.hpp>
 #include <cstdint>
 
 namespace usbguard
@@ -27,12 +28,7 @@ namespace usbguard
   class DLL_PUBLIC DeviceManagerHooks
   {
   public:
-    virtual void dmHookDeviceInserted(Pointer<Device> device);
-    virtual void dmHookDevicePresent(Pointer<Device> device);
-    virtual void dmHookDeviceRemoved(Pointer<Device> device);
-    virtual void dmHookDeviceAllowed(Pointer<Device> device);
-    virtual void dmHookDeviceBlocked(Pointer<Device> device);
-    virtual void dmHookDeviceRejected(Pointer<Device> device);
+    virtual void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
     virtual uint32_t dmHookAssignID() = 0;
   };
 } /* namespace usbguard */

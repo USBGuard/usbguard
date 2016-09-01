@@ -21,6 +21,39 @@
 #include "DeviceManagerPrivate.hpp"
 
 namespace usbguard {
+  uint32_t DeviceManager::eventTypeToInteger(DeviceManager::EventType event)
+  {
+    return static_cast<uint32_t>(event);
+  }
+
+  DeviceManager::EventType DeviceManager::eventTypeFromInteger(uint32_t event_integer)
+  {
+    switch(event_integer) {
+      case static_cast<uint32_t>(EventType::Insert):
+      case static_cast<uint32_t>(EventType::Update):
+      case static_cast<uint32_t>(EventType::Remove):
+        break;
+      default:
+        throw std::runtime_error("Invalid event type integer value");
+    }
+    return static_cast<EventType>(event_integer);
+  }
+
+  std::string DeviceManager::eventTypeToString(DeviceManager::EventType event)
+  {
+    switch(event) {
+      case DeviceManager::EventType::Present:
+        return "Present";
+      case DeviceManager::EventType::Insert:
+        return "Insert";
+      case DeviceManager::EventType::Remove:
+        return "Remove";
+      case DeviceManager::EventType::Update:
+        return "Update";
+    }
+    throw std::runtime_error("BUG: Unknown event type");
+  }
+
   DeviceManager::DeviceManager(DeviceManagerHooks& hooks)
   {
     d_pointer = new DeviceManagerPrivate(*this, hooks);
@@ -95,40 +128,9 @@ namespace usbguard {
     return d_pointer->getDevice(id);
   }
 
-  void DeviceManager::DeviceInserted(Pointer<Device> device)
+  void DeviceManager::DeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
-    d_pointer->DeviceInserted(device);
-    return;
-  }
-
-  void DeviceManager::DevicePresent(Pointer<Device> device)
-  {
-    d_pointer->DevicePresent(device);
-    return;
-  }
-
-  void DeviceManager::DeviceRemoved(Pointer<Device> device)
-  {
-    d_pointer->DeviceRemoved(device);
-    return;
-  }
-
-  void DeviceManager::DeviceAllowed(Pointer<Device> device)
-  {
-    d_pointer->DeviceAllowed(device);
-    return;
-  }
-
-  void DeviceManager::DeviceBlocked(Pointer<Device> device)
-  {
-    d_pointer->DeviceBlocked(device);
-    return;
-  }
-
-  void DeviceManager::DeviceRejected(Pointer<Device> device)
-  {
-    d_pointer->DeviceRejected(device);
-    return;
+    d_pointer->DeviceEvent(event, device);
   }
 } /* namespace usbguard */
 

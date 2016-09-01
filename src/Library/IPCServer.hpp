@@ -17,15 +17,29 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#include <IPCClient.hpp>
+#include <Typedefs.hpp>
+#include <Interface.hpp>
+#include <Rule.hpp>
+#include <DeviceManager.hpp>
 
 namespace usbguard
 {
-  class IPCSignalWatcher : public IPCClient
+  class IPCServerPrivate;
+  class DLL_PUBLIC IPCServer : public Interface
   {
   public:
-    void IPCConnected() override;
-    void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
+    IPCServer();
+    virtual ~IPCServer();
+
+    void start();
+    void stop();
+
+    virtual uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) = 0;
+    virtual void removeRule(uint32_t id) = 0;
+    virtual const RuleSet listRules(const std::string& query) = 0;
+
+    virtual uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) = 0;
+    virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
 
     void DevicePresenceChanged(uint32_t id,
                                DeviceManager::EventType event,
@@ -37,5 +51,15 @@ namespace usbguard
                              Rule::Target target_new,
                              const std::string& device_rule,
                              uint32_t rule_id);
+
+    void ExceptionMessage(const std::string& context,
+                          const std::string& object,
+                          const std::string& reason);
+
+    void addAllowedUID(uid_t uid);
+    void addAllowedGID(gid_t gid);
+
+  private:
+    IPCServerPrivate* d_pointer;
   };
 } /* namespace usbguard */

@@ -18,12 +18,14 @@
 //
 #pragma once
 #include <Typedefs.hpp>
-#include <IPC.hpp>
+#include <Interface.hpp>
+#include <DeviceManager.hpp>
+#include <Exception.hpp>
 
 namespace usbguard
 {
   class IPCClientPrivate;
-  class DLL_PUBLIC IPCClient : public IPC
+  class DLL_PUBLIC IPCClient : public Interface
   {
   public:
     IPCClient(bool connected = false);
@@ -34,12 +36,15 @@ namespace usbguard
     bool isConnected() const;
     void wait();
 
-    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec);
+    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
     void removeRule(uint32_t id);
-    const RuleSet listRules();
-    void allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
-    void blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
-    void rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec);
+    const RuleSet listRules(const std::string& query);
+    const RuleSet listRules()
+    {
+      return listRules("match");
+    }
+
+    uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
     const std::vector<Rule> listDevices(const std::string& query);
     const std::vector<Rule> listDevices() /* NOTE: left for compatibility */
     {
@@ -49,34 +54,20 @@ namespace usbguard
     virtual void IPCConnected() {}
     virtual void IPCDisconnected(bool exception_initiated, const IPCException& exception) {}
 
-    virtual void DeviceInserted(uint32_t id,
-                const std::map<std::string,std::string>& attributes,
-                const std::vector<USBInterfaceType>& interfaces,
-                bool rule_match,
-                uint32_t rule_id) {}
+    virtual void DevicePresenceChanged(uint32_t id,
+                                       DeviceManager::EventType event,
+                                       Rule::Target target,
+                                       const std::string& device_rule) {}
 
-    virtual void DevicePresent(uint32_t id,
-                   const std::map<std::string,std::string>& attributes,
-                   const std::vector<USBInterfaceType>& interfaces,
-                   Rule::Target target) {}
+    virtual void DevicePolicyChanged(uint32_t id,
+                                     Rule::Target target_old,
+                                     Rule::Target target_new,
+                                     const std::string& device_rule,
+                                     uint32_t rule_id) {}
 
-    virtual void DeviceRemoved(uint32_t id,
-                   const std::map<std::string,std::string>& attributes) {}
-
-    virtual void DeviceAllowed(uint32_t id,
-                   const std::map<std::string,std::string>& attributes,
-                   bool rule_match,
-                   uint32_t rule_id) {}
-
-    virtual void DeviceBlocked(uint32_t id,
-                   const std::map<std::string,std::string>& attributes,
-                   bool rule_match,
-                   uint32_t rule_id) {}
-
-    virtual void DeviceRejected(uint32_t id,
-                const std::map<std::string,std::string>& attributes,
-                bool rule_match,
-                uint32_t rule_id) {}
+    virtual void ExceptionMessage(const std::string& context,
+                                  const std::string& object,
+                                  const std::string& reason) {}
 
   private:
     IPCClientPrivate* d_pointer;

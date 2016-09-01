@@ -33,10 +33,6 @@ class MainWindow;
 
 class MainWindow : public QMainWindow, public usbguard::IPCClient
 {
-  using IPCClient::allowDevice;
-  using IPCClient::blockDevice;
-  using IPCClient::rejectDevice;
-
   Q_OBJECT
 
 public:
@@ -44,12 +40,17 @@ public:
   ~MainWindow();
 
 signals:
-  void uiDeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
-  void uiDevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void uiDeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
-  void uiDeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes);
-  void uiDeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes);
-  void uiDeviceRejected(quint32 id, const std::map<std::string, std::string>& attributes);
+  void uiDevicePresenceChanged(quint32 id,
+                               usbguard::DeviceManager::EventType event,
+                               usbguard::Rule::Target target,
+                               const std::string& device_rule);
+
+  void uiDevicePolicyChanged(quint32 id,
+                             usbguard::Rule::Target target_old,
+                             usbguard::Rule::Target target_new,
+                             const std::string& device_rule,
+                             quint32 rule_id);
+
   void uiConnected();
   void uiDisconnected();
 
@@ -58,19 +59,26 @@ protected slots:
   void flashStep();
   void ipcTryConnect();
 
-  void showDeviceDialog(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match);
-  void showMessage(const QString &message, bool alert = false);
+  void showDeviceDialog(quint32 id, const usbguard::Rule& device_rule);
+  void showMessage(const QString &message, bool alert = false, bool statusbar = false);
+  void showNotification(QSystemTrayIcon::MessageIcon icon, const QString& title, const QString& message);
 
-  void notifyInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_matched);
-  void notifyPresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target);
-  void notifyRemoved(quint32 id, const std::map<std::string, std::string>& attributes);
-    
-  void notifyAllowed(quint32 id, const std::map<std::string, std::string>& attributes);
-  void notifyBlocked(quint32 id, const std::map<std::string, std::string>& attributes);
-  void notifyRejected(quint32 id, const std::map<std::string, std::string>& attributes);
+  void handleDevicePresenceChange(quint32 id,
+                                  usbguard::DeviceManager::EventType event,
+                                  usbguard::Rule::Target target,
+                                  const std::string& device_rule);
+
+  void handleDevicePolicyChange(quint32 id,
+                                usbguard::Rule::Target target_old,
+                                usbguard::Rule::Target target_new,
+                                const std::string& device_rule,
+                                quint32 rule_id);
 
   void notifyIPCConnected();
   void notifyIPCDisconnected();
+  void notifyDevicePresenceChanged(usbguard::DeviceManager::EventType event, const usbguard::Rule& device_rule);
+  void notifyDevicePolicyChanged(const usbguard::Rule& device_rule, quint32 rule_id);
+  void notify(const QString& title, QSystemTrayIcon::MessageIcon icon, const usbguard::Rule& device_rule, bool show_notification);
 
   void allowDevice(quint32 id, bool permanent);
   void blockDevice(quint32 id, bool permanent);
@@ -79,10 +87,8 @@ protected slots:
   void handleIPCConnect();
   void handleIPCDisconnect();
 
-  void handleDeviceInsert(quint32 id);
-  void handleDeviceAllow(quint32 id);
-  void handleDeviceBlock(quint32 id);
-  void handleDeviceRemove(quint32 id);
+  void handleDeviceInsert(quint32 id, const usbguard::Rule& device_rule);
+  void handleDeviceRemove(quint32 id, const usbguard::Rule& device_rule);
 
   void loadSettings();
   void saveSettings();
@@ -93,20 +99,22 @@ protected slots:
   void clearDeviceList();
   void resetDeviceList();
 
-protected:
   void changeEvent(QEvent *e) override;
   void setupSystemTray();
   void setupSettingsWatcher();
   void startFlashing();
   void stopFlashing();
 
-  void DeviceInserted(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, bool rule_match, quint32 rule_id) override;
-  void DevicePresent(quint32 id, const std::map<std::string, std::string>& attributes, const std::vector<usbguard::USBInterfaceType>& interfaces, usbguard::Rule::Target target) override;
-  void DeviceRemoved(quint32 id, const std::map<std::string, std::string>& attributes) override;
+  void DevicePresenceChanged(quint32 id,
+                             usbguard::DeviceManager::EventType event,
+                             usbguard::Rule::Target target,
+                             const std::string& device_rule) override;
 
-  void DeviceAllowed(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id) override;
-  void DeviceBlocked(quint32 id, const std::map<std::string, std::string>& attributes, bool rule_match, quint32 rule_id) override;
-  void DeviceRejected(quint32 id, const std::map<std::string ,std::string>& attributes, bool rule_match, quint32 rule_id) override;
+  void DevicePolicyChanged(quint32 id,
+                           usbguard::Rule::Target target_old,
+                           usbguard::Rule::Target target_new,
+                           const std::string& device_rule,
+                           quint32 rule_id) override;
 
   void IPCConnected() override;
   void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception) override;

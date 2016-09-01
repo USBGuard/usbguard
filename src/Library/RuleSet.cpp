@@ -47,37 +47,36 @@ namespace usbguard {
   void RuleSet::load(const String& path)
   {
     d_pointer->load(path);
-    return;
   }
   
   void RuleSet::load(std::istream& stream)
   {
     d_pointer->load(stream);
-    return;
   }
   
   void RuleSet::save(const String& path) const
   {
     d_pointer->save(path);
-    return;
   }
   
   void RuleSet::save(std::ostream& stream) const
   {
     d_pointer->save(stream);
-    return;
   }
   
   void RuleSet::setDefaultTarget(Rule::Target target)
   {
     d_pointer->setDefaultTarget(target);
-    return;
+  }
+
+  Rule::Target RuleSet::getDefaultTarget() const
+  {
+    return d_pointer->getDefaultTarget();
   }
 
   void RuleSet::setDefaultAction(const String& action)
   {
     d_pointer->setDefaultAction(action);
-    return;
   }
 
   uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id)
@@ -90,7 +89,7 @@ namespace usbguard {
     return d_pointer->upsertRule(match_rule, new_rule, parent_insensitive);
   }
 
-  Pointer<const Rule> RuleSet::getRule(uint32_t id)
+  Pointer<Rule> RuleSet::getRule(uint32_t id)
   {
     return d_pointer->getRule(id);
   }

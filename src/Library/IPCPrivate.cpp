@@ -17,34 +17,105 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "IPCPrivate.hpp"
+#include "LoggerPrivate.hpp"
+
+#include <Devices.pb.h>
+#include <Exception.pb.h>
+#include <Policy.pb.h>
+
+#include <vector>
+#include <utility>
 
 namespace usbguard
 {
-  json IPCPrivate::IPCExceptionToJSON(const IPCException& ex)
+  static const std::vector<std::pair<uint32_t, std::string>> type_numbers = {
+    { 0x01, "usbguard.IPC.listDevices" },
+    { 0x02, "usbguard.IPC.applyDevicePolicy" },
+    { 0x03, "usbguard.IPC.DevicePresenceChangedSignal" },
+    { 0x04, "usbguard.IPC.DevicePolicyChangedSignal" },
+    { 0x05, "usbguard.IPC.listRules" },
+    { 0x06, "usbguard.IPC.appendRule" },
+    { 0x07, "usbguard.IPC.removeRule" },
+    { 0x08, "usbguard.IPC.Exception" }
+  };
+
+  uint32_t IPC::messageTypeNameToNumber(const std::string& name)
   {
-    json object = {
-      { "_e", ex.codeAsString() },
-      { "_i", ex.requestID() },
-      { "message", ex.what() }
-    };
-    return object;
+    logger->debug("Looking up type number for type {}", name);
+
+    for (auto const& type_number : type_numbers) {
+      if (type_number.second == name) {
+        return type_number.first;
+      }
+    }
+    throw std::runtime_error("Unknown IPC message type name");
   }
 
-  bool IPCPrivate::isExceptionJSON(const json& object)
+  const std::string& IPC::messageTypeNameFromNumber(const uint32_t number)
   {
-    return (object.count("_e") == 1);
+    for (auto const& type_number : type_numbers) {
+      if (type_number.first == number) {
+        return type_number.second;
+      }
+    }
+    throw std::runtime_error("Unknown IPC message type number");
   }
 
-  IPCException IPCPrivate::jsonToIPCException(const json& object)
+  IPC::MessagePointer IPC::IPCExceptionToMessage(const IPCException& exception)
   {
-    const std::string code_string = object["_e"];
-    const IPCException::ReasonCode code = IPCException::codeFromString(code_string);
+    IPC::Exception * const message = new IPC::Exception();
+    IPC::MessagePointer pointer(message);
 
-    if (object.find("message") != object.end()) {
-      return IPCException(code, object["message"], object["_i"]);
+    message->set_context(exception.context());
+    message->set_object(exception.object());
+    message->set_reason(exception.reason());
+    message->set_request_id(exception.messageID());
+
+    return pointer;
+  }
+
+  IPCException IPC::IPCExceptionFromMessage(const MessagePointer& message)
+  {
+    const IPC::Exception* const exception_message = \
+      reinterpret_cast<const IPC::Exception*>(message.get());
+
+    return IPCException(exception_message->context(),
+                        exception_message->object(),
+                        exception_message->reason(),
+                        exception_message->request_id());
+  }
+
+  bool IPC::isExceptionMessage(const MessagePointer& message)
+  {
+    return message->GetTypeName() == IPC::Exception::default_instance().GetTypeName();
+  }
+
+  uint64_t IPC::getMessageHeaderID(const MessageType& message)
+  {
+    const auto header_field = message.GetDescriptor()->FindFieldByName("header");
+    const auto reflection = message.GetReflection();
+    const auto& header_message = reflection->GetMessage(message, header_field);
+
+    if (header_message.GetTypeName() != IPC::MessageHeader::default_instance().GetTypeName()) {
+      throw std::runtime_error("unknown message header type");
     }
-    else {
-      return IPCException(code, "", object["_i"]);
+
+    const auto header = reinterpret_cast<const IPC::MessageHeader&>(header_message);
+
+    return header.id();
+  }
+
+  void IPC::setMessageHeaderID(MessageType& message, const uint64_t id)
+  {
+    const auto header_field = message.GetDescriptor()->FindFieldByName("header");
+    auto reflection = message.GetReflection();
+    auto header_message = reflection->MutableMessage(&message, header_field);
+
+    if (header_message->GetTypeName() != IPC::MessageHeader::default_instance().GetTypeName()) {
+      throw std::runtime_error("unknown message header type");
     }
+
+    auto header = reinterpret_cast<IPC::MessageHeader*>(header_message);
+    header->set_id(id);
   }
 } /* namespace usbguard */

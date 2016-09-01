@@ -23,7 +23,6 @@ namespace usbguard
   IPCClient::IPCClient(bool connected)
   {
     d_pointer = new IPCClientPrivate(*this, connected);
-    return;
   }
 
   IPCClient::~IPCClient()
@@ -34,13 +33,11 @@ namespace usbguard
   void IPCClient::connect()
   {
     d_pointer->connect();
-    return;
   }
 
   void IPCClient::disconnect()
   {
     d_pointer->disconnect();
-    return;
   }
 
   bool IPCClient::isConnected() const
@@ -51,41 +48,26 @@ namespace usbguard
   void IPCClient::wait()
   {
     d_pointer->wait();
-    return;
   }
 
-  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id, uint32_t timeout_sec)
+  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id)
   {
-    return d_pointer->appendRule(rule_spec, parent_id, timeout_sec);
+    return d_pointer->appendRule(rule_spec, parent_id);
   }
 
   void IPCClient::removeRule(uint32_t id)
   {
     d_pointer->removeRule(id);
-    return;
   }
 
-  const RuleSet IPCClient::listRules()
+  const RuleSet IPCClient::listRules(const std::string& query)
   {
-    return d_pointer->listRules();
+    return d_pointer->listRules(query);
   }
 
-  void IPCClient::allowDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
+  uint32_t IPCClient::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
   {
-    d_pointer->allowDevice(id, permanent, timeout_sec);
-    return;
-  }
-
-  void IPCClient::blockDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
-  {
-    d_pointer->blockDevice(id, permanent, timeout_sec);
-    return;
-  }
-
-  void IPCClient::rejectDevice(uint32_t id, bool permanent, uint32_t timeout_sec)
-  {
-    d_pointer->rejectDevice(id, permanent, timeout_sec);
-    return;
+    return d_pointer->applyDevicePolicy(id, target, permanent);
   }
 
   const std::vector<Rule> IPCClient::listDevices(const std::string& query)

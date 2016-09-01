@@ -165,28 +165,15 @@ libcap_ng_summary="system-wide; $libcapng_LIBS"],
 libcap_ng_summary="not found"]
 )
 
-#
-# json C++ library
-#
-AC_ARG_WITH([bundled-json], AS_HELP_STRING([--with-bundled-json], [Build using the bundled json library]), [with_bundled_json=$withval], [with_bundled_json=no])
-if test "x$with_bundled_json" = xyes; then
-	json_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/json/src"
-	json_LIBS=""
-	AC_MSG_NOTICE([Using bundled json library])
-	json_summary="bundled; $json_CFLAGS $json_LIBS"
-else
-	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++11 $CPPFLAGS"
-	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([json.hpp], [], [AC_MSG_FAILURE(json.hpp not found or not usable. Re-run with --with-bundled-json to use the bundled library.)])
-	AC_LANG_POP
-	json_CFLAGS=""
-	json_LIBS=""
-	CPPFLAGS=$SAVE_CPPFLAGS
-	json_summary="system-wide; $json_CFLAGS $json_LIBS"
+PKG_CHECK_MODULES([protobuf], [protobuf >= 2.5.0],
+[protobuf_summary="system-wide; $protobuf_CFLAGS $protobuf_LIBS"],
+[AC_MSG_ERROR([Required protobuf development files not found!])]
+)
+
+AC_CHECK_PROGS(PROTOC, [protoc])
+if test -z "$PROTOC"; then
+  AC_MSG_ERROR(["Required protobuf compiler not found!"])
 fi
-AC_SUBST([json_CFLAGS])
-AC_SUBST([json_LIBS])
 
 #
 # spdlog C++ library
@@ -658,7 +645,7 @@ echo "      libqb: $libqb_summary"
 echo "     crypto: $crypto_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
-echo "       json: $json_summary"
+echo "   protobuf: $protobuf_summary"
 echo "     spdlog: $spdlog_summary"
 echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 1.3.1: $have_pegtl_lte_131"

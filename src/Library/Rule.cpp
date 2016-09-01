@@ -28,7 +28,8 @@ namespace usbguard {
 
   const uint32_t Rule::RootID = std::numeric_limits<uint32_t>::min();
   const uint32_t Rule::DefaultID = std::numeric_limits<uint32_t>::max();
-  const uint32_t Rule::LastID = std::numeric_limits<uint32_t>::max() - 1;
+  const uint32_t Rule::LastID = std::numeric_limits<uint32_t>::max() - 2;
+  const uint32_t Rule::ImplicitID = std::numeric_limits<uint32_t>::max() - 1;
 
   Rule::Rule()
   {
@@ -284,7 +285,7 @@ namespace usbguard {
     { "device", Rule::Target::Device }
   };
 
-  const String Rule::targetToString(const Rule::Target& target)
+  const String Rule::targetToString(const Rule::Target target)
   {
     for (auto ttable_entry : target_ttable) {
       if (ttable_entry.second == target) {
@@ -302,6 +303,26 @@ namespace usbguard {
       }
     }
     throw std::runtime_error("Invalid rule target string");
+  }
+
+  uint32_t Rule::targetToInteger(const Rule::Target target)
+  {
+    return static_cast<uint32_t>(target);
+  }
+
+  Rule::Target Rule::targetFromInteger(const uint32_t target_integer)
+  {
+    switch(target_integer) {
+      case static_cast<uint32_t>(Rule::Target::Allow):
+      case static_cast<uint32_t>(Rule::Target::Block):
+      case static_cast<uint32_t>(Rule::Target::Reject):
+      case static_cast<uint32_t>(Rule::Target::Match):
+      case static_cast<uint32_t>(Rule::Target::Device):
+        break;
+      default:
+        throw std::runtime_error("Invalid rule target integer value");
+    }
+    return static_cast<Rule::Target>(target_integer);
   }
 
   static const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {

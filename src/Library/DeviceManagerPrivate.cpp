@@ -18,6 +18,7 @@
 //
 #include "DeviceManagerPrivate.hpp"
 #include <DeviceManagerHooks.hpp>
+#include "Exception.hpp"
 
 namespace usbguard {
   DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks)
@@ -31,7 +32,6 @@ namespace usbguard {
       _hooks(rhs._hooks)
   {
     *this = rhs;
-    return;
   }
   
   const DeviceManagerPrivate& DeviceManagerPrivate::operator=(const DeviceManagerPrivate& rhs)
@@ -48,7 +48,6 @@ namespace usbguard {
     const uint32_t id = _hooks.dmHookAssignID();
     device->setID(id);
     _device_map[id] = device;
-    return;
   }
 
   Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t id)
@@ -56,7 +55,7 @@ namespace usbguard {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     auto it = _device_map.find(id);
     if (it == _device_map.end()) {
-      throw std::runtime_error("Unknown device, cannot remove from device map");
+      throw Exception("Device remove", "device id", "id doesn't exist");
     }
     Pointer<Device> device = it->second;
     _device_map.erase(it);
@@ -78,42 +77,16 @@ namespace usbguard {
   Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t id)
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    return _device_map.at(id);
+    try {
+      return _device_map.at(id);
+    }
+    catch(...) {
+      throw Exception("Device lookup", "device id", "id doesn't exist");
+    }
   }
 
-  void DeviceManagerPrivate::DeviceInserted(Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
-    _hooks.dmHookDeviceInserted(device);
-    return;
-  }
-
-  void DeviceManagerPrivate::DevicePresent(Pointer<Device> device)
-  {
-    _hooks.dmHookDevicePresent(device);
-    return;
-  }
-
-  void DeviceManagerPrivate::DeviceRemoved(Pointer<Device> device)
-  {
-    _hooks.dmHookDeviceRemoved(device);
-    return;
-  }
-
-  void DeviceManagerPrivate::DeviceAllowed(Pointer<Device> device)
-  {
-    _hooks.dmHookDeviceAllowed(device);
-    return;
-  }
-
-  void DeviceManagerPrivate::DeviceBlocked(Pointer<Device> device)
-  {
-    _hooks.dmHookDeviceBlocked(device);
-    return;
-  }
-
-  void DeviceManagerPrivate::DeviceRejected(Pointer<Device> device)
-  {
-    _hooks.dmHookDeviceRejected(device);
-    return;
+    _hooks.dmHookDeviceEvent(event, device);
   }
 } /* namespace usbguard */

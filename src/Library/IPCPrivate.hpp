@@ -18,17 +18,81 @@
 //
 #pragma once
 
-#include "IPC.hpp"
+#include "Exception.hpp"
 #include "Typedefs.hpp"
-#include "Common/JSON.hpp"
+
+#include <memory>
+#include <google/protobuf/message.h>
 
 namespace usbguard
 {
-  class DLL_PUBLIC IPCPrivate
+  namespace IPC
   {
-  public:
-    static bool isExceptionJSON(const json& object);
-    static IPCException jsonToIPCException(const json& object);
-    static json IPCExceptionToJSON(const IPCException& ex);
-  };
+    uint32_t messageTypeNameToNumber(const std::string& name);
+    const std::string& messageTypeNameFromNumber(uint32_t number);
+
+    using MessageType = google::protobuf::Message;
+    using MessagePointer = std::unique_ptr<MessageType>;
+
+    MessagePointer IPCExceptionToMessage(const IPCException& exception);
+    IPCException IPCExceptionFromMessage(const MessagePointer& message);
+
+    bool isExceptionMessage(const MessagePointer& message);
+
+    uint64_t getMessageHeaderID(const MessageType& message);
+    void setMessageHeaderID(MessageType& message, uint64_t id);
+ 
+    template<class C>
+    class MessageHandler
+    {
+      public:
+        using HandlerType = void(C::*)(MessagePointer&, MessagePointer&);
+
+        MessageHandler(C& c, HandlerType method, const MessageType& factory)
+          : _instance(c),
+            _method(method),
+            _message_factory(factory)
+        {
+        }
+
+        MessageHandler(const MessageHandler& rhs)
+          : _instance(rhs._instance),
+            _method(rhs._method),
+            _message_factory(rhs._message_factory)
+        {
+        }
+
+        MessagePointer payloadToMessage(const std::string& payload)
+        {
+          MessagePointer message(_message_factory.New());
+          message->ParseFromString(payload);
+          return message;
+        }
+
+        void run(MessagePointer& message)
+        {
+          MessagePointer response;
+          run(message, response);
+        }
+ 
+        void run(MessagePointer& message, MessagePointer& response)
+        {
+          if (message->GetTypeName() != _message_factory.GetTypeName()) {
+            throw std::runtime_error("Incompatible message type passed to handler");
+          }
+          (_instance.*_method)(message, response);
+        }
+
+        template<class ProtobufType>
+        static MessageHandler create(C& c, HandlerType method)
+        {
+          return MessageHandler(c, method, ProtobufType::default_instance());
+        }
+
+      private:
+        C& _instance;
+        HandlerType _method;
+        const MessageType& _message_factory;
+   };
+  }
 } /* namespace usbguard */

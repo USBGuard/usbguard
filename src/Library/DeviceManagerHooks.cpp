@@ -20,39 +20,8 @@
 
 namespace usbguard
 {
-  void DeviceManagerHooks::dmHookDeviceInserted(Pointer<Device> device)
+  void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
     /* NOOP */
-    return;
-  }
-  
-  void DeviceManagerHooks::dmHookDevicePresent(Pointer<Device> device)
-  {
-    /* NOOP */
-    return;
-  }
-  
-  void DeviceManagerHooks::dmHookDeviceRemoved(Pointer<Device> device)
-  {
-    /* NOOP */
-    return;
-  }
-  
-  void DeviceManagerHooks::dmHookDeviceAllowed(Pointer<Device> device)
-  {
-    /* NOOP */
-    return;
-  }
-  
-  void DeviceManagerHooks::dmHookDeviceBlocked(Pointer<Device> device)
-  {
-    /* NOOP */
-    return;
-  }
-  
-  void DeviceManagerHooks::dmHookDeviceRejected(Pointer<Device> device)
-  {
-    /* NOOP */
-    return;
   }
 } /* namespace usbguard */
