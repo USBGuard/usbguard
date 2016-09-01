@@ -161,9 +161,13 @@ int main(int argc, char *argv[])
       daemon.loadConfiguration(conf_file);
     }
     daemon.run();
-  } catch(const std::exception& ex) {
+  }
+  catch(const std::exception& ex) {
     logger->critical("Exception: {}", ex.what());
     ret = EXIT_FAILURE;
+  }
+  catch(...) {
+    logger->critical("BUG: Unknown exception caught from daemon main lopp");
   }
 
   return ret;

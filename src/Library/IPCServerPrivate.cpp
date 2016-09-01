@@ -111,6 +111,7 @@ namespace usbguard
 
   IPCServerPrivate::~IPCServerPrivate()
   {
+    destruct();
   }
 
   void IPCServerPrivate::thread()
@@ -121,8 +122,8 @@ namespace usbguard
   void IPCServerPrivate::wakeup()
   {
     const uint64_t one = 1;
-    USBGUARD_SYSCALL("IPC server",
-                     write(_wakeup_fd, &one, sizeof one));
+    USBGUARD_SYSCALL_THROW("IPC server",
+                           write(_wakeup_fd, &one, sizeof one) != sizeof one);
   }
 
   void IPCServerPrivate::start()
@@ -142,10 +143,13 @@ namespace usbguard
 
   void IPCServerPrivate::destruct()
   {
-    stop();
+    if (_thread.running()) {
+      stop();
+    }
+    finiIPC();
     qb_loop_poll_del(_qb_loop, _wakeup_fd);
     qb_loop_destroy(_qb_loop);
-    USBGUARD_SYSCALL("IPC server", close(_wakeup_fd));
+    USBGUARD_SYSCALL_THROW("IPC server", close(_wakeup_fd) != 0);
   }
 
   int32_t IPCServerPrivate::qbPollWakeupFn(int32_t fd, int32_t revents, void * data)
@@ -193,19 +197,25 @@ namespace usbguard
 
   int32_t IPCServerPrivate::qbIPCConnectionAcceptFn(qb_ipcs_connection_t *conn, uid_t uid, gid_t gid)
   {
-    IPCServerPrivate* server = \
-      static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
+    try {
+      IPCServerPrivate* server = \
+        static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
 
-    const bool auth = server->qbIPCConnectionAllowed(uid, gid);
+      const bool auth = server->qbIPCConnectionAllowed(uid, gid);
 
-    if (auth) {
-      logger->debug("IPC Connection accepted. "
-		    "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
-      qb_ipcs_connection_auth_set(conn, uid, 0, 0660);
-      return 0;
+      if (auth) {
+        logger->debug("IPC Connection accepted. "
+                      "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
+        qb_ipcs_connection_auth_set(conn, uid, 0, 0660);
+        return 0;
+      }
+      else {
+        logger->debug("IPC Connection rejected");
+        return -1;
+      }
     }
-    else {
-      logger->debug("IPC Connection rejected");
+    catch(...) {
+      logger->error("Exception caught during IPC connection authentication.");
       return -1;
     }
   }

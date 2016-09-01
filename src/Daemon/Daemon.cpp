@@ -518,10 +518,10 @@ namespace usbguard
     char string_buffer[4096];
     struct passwd pw, *pwptr = nullptr;
 
-    USBGUARD_SYSCALL("IPC ACL",
-                     getpwnam_r(username.c_str(), &pw,
-                                string_buffer, sizeof string_buffer,
-                                &pwptr));
+    USBGUARD_SYSCALL_THROW("IPC ACL",
+                           getpwnam_r(username.c_str(), &pw,
+                                      string_buffer, sizeof string_buffer,
+                                      &pwptr) != 0);
 
     addIPCAllowedUID(pw.pw_uid);
   }
@@ -531,10 +531,10 @@ namespace usbguard
     char string_buffer[4096];
     struct group gr, *grptr = nullptr;
 
-    USBGUARD_SYSCALL("IPC ACL",
-                     getgrnam_r(groupname.c_str(), &gr,
-		                string_buffer, sizeof string_buffer,
-                                &grptr));
+    USBGUARD_SYSCALL_THROW("IPC ACL",
+                           getgrnam_r(groupname.c_str(), &gr,
+		                      string_buffer, sizeof string_buffer,
+                                      &grptr) != 0);
     
     addIPCAllowedGID(gr.gr_gid);
   }

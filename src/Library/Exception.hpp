@@ -117,10 +117,10 @@ namespace usbguard
       }
   };
 
-#define USBGUARD_SYSCALL(context, syscall) \
+#define USBGUARD_SYSCALL_THROW(context, syscall_bool_expression) \
   do { \
-    if ((syscall) != 0) { \
-      throw usbguard::ErrnoException(context, #syscall, errno); \
+    if (syscall_bool_expression) { \
+      throw usbguard::ErrnoException(context, #syscall_bool_expression, errno); \
     } \
   } while(0)
 
