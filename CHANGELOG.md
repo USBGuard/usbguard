@@ -13,6 +13,9 @@
   policy changes.
 - Added ExceptionMessage signal for sending asynchronous exceptions
   to the IPC/D-Bus clients.
+- Extended the usbguard CLI watch subcommand with the ability to
+  wait for the IPC connection to become available. See the new `-w`
+  and `-o` options for details.
 
 ### Removed
 - Removed nlohmann/json submodule

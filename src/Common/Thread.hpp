@@ -58,6 +58,7 @@ namespace usbguard
 
     void start()
     {
+      _stop_request = false;
       _thread = std::thread(_method, _method_class_ptr);
     }
 

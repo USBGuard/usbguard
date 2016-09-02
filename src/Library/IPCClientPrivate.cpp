@@ -56,7 +56,6 @@ namespace usbguard
     registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
     registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
 
-    _thread.start();
 
     if (connected) {
       try {
@@ -101,6 +100,7 @@ namespace usbguard
     }
 
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _qb_fd, POLLIN, this, qbIPCMessageProcessFn);
+    _thread.start();
     _p_instance.IPCConnected();
   }
 
@@ -112,6 +112,7 @@ namespace usbguard
       _qb_conn = nullptr;
       _qb_fd = -1;
       _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
+      stop();
     }
   }
 
@@ -139,15 +140,18 @@ namespace usbguard
   void IPCClientPrivate::wakeup()
   {
     const uint64_t one = 1;
-    (void)write(_wakeup_fd, &one, sizeof one);
+    USBGUARD_SYSCALL_THROW("IPC client",
+                           write(_wakeup_fd, &one, sizeof one) != sizeof one);
   }
 
-  void IPCClientPrivate::stop()
+  void IPCClientPrivate::stop(bool do_wait)
   {
     _thread.stop(/*do_wait=*/false);
     qb_loop_stop(_qb_loop);
     wakeup();
-    _thread.wait();
+    if (do_wait) {
+      wait();
+    }
   }
 
   uint64_t IPCClientPrivate::generateMessageID()

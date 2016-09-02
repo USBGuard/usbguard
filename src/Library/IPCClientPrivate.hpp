@@ -65,7 +65,7 @@ namespace usbguard {
     void destruct();
     void thread();
     void wakeup();
-    void stop();
+    void stop(bool do_wait = false);
 
     static uint64_t generateMessageID(void);
 

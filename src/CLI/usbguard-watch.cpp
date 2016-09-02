@@ -21,12 +21,15 @@
 
 #include <IPCSignalWatcher.hpp>
 #include <iostream>
+#include <unistd.h>
 
 namespace usbguard
 {
-  static const char *options_short = "h";
+  static const char *options_short = "woh";
 
   static const struct ::option options_long[] = {
+    { "wait", no_argument, nullptr, 'w' },
+    { "once", no_argument, nullptr, 'o' },
     { "help", no_argument, nullptr, 'h' },
     { nullptr, 0, nullptr, 0 }
   };
@@ -36,6 +39,8 @@ namespace usbguard
     stream << " Usage: " << usbguard_arg0 << " watch [OPTIONS]" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
+    stream << "  -w, --wait  Wait for IPC connection to become available." << std::endl;
+    stream << "  -o, --once  Wait only when starting, if needed. Exit when the connection is lost." << std::endl;
     stream << "  -h, --help  Show this help." << std::endl;
     stream << std::endl;
   }
@@ -43,9 +48,17 @@ namespace usbguard
   int usbguard_watch(int argc, char *argv[])
   {
     int opt = 0;
+    bool do_wait = false;
+    bool wait_once = false;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
       switch(opt) {
+        case 'w':
+          do_wait = true;
+          break;
+        case 'o':
+          wait_once = do_wait = true;
+          break;
         case 'h':
           showHelp(std::cout);
           return EXIT_SUCCESS;
@@ -58,8 +71,49 @@ namespace usbguard
 
     IPCSignalWatcher watcher;
 
-    watcher.connect();
-    watcher.wait();
+    bool connect_waiting = false;
+    std::string connect_last_exception;
+
+    while (true) {
+      try {
+        watcher.connect();
+        connect_waiting = false;
+        if (wait_once) {
+          do_wait = false;
+        }
+        watcher.wait();
+      }
+      catch(const Exception& ex) {
+        /*
+         * Re-throw if we won't be waiting for the connection
+         * to become available.
+         */
+        if (!do_wait) {
+          throw;
+        }
+
+        /*
+         * Save the exception message. If the message changes, we'll
+         * write an updated waiting message to the output.
+         */
+        const std::string connect_exception = ex.message();
+
+        /*
+         * When transitioning to waiting state or on exception message
+         * updates, write a waiting status message to the output.
+         */
+        if (!connect_waiting || connect_last_exception != connect_exception) {
+          std::cerr << "Waiting. IPC not available: " << connect_exception << std::endl;
+          connect_waiting = true;
+          connect_last_exception = connect_exception;
+        }
+
+        /*
+         * Wait for some time...
+         */
+        sleep(1);
+      }
+    }
 
     return EXIT_SUCCESS;
   }
