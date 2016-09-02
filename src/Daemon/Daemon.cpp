@@ -386,7 +386,8 @@ namespace usbguard
   {
     Pointer<const Rule> device_rule = \
       device->getDeviceRule(/*with_port=*/true,
-                            /*with_parent_hash=*/true);
+                            /*with_parent_hash=*/true,
+                            /*match_rule=*/true);
 
     return _ruleset.getFirstMatchingRule(device_rule);
   }
@@ -395,7 +396,8 @@ namespace usbguard
   {
     Pointer<const Rule> device_rule = \
       device->getDeviceRule(/*with_port=*/true,
-                            /*with_parent_hash=*/true);
+                            /*with_parent_hash=*/true,
+                            /*match_rule=*/true);
 
     const PresentDevicePolicy policy = \
       device->isController() ? _present_controller_policy : _present_device_policy;
@@ -488,8 +490,7 @@ namespace usbguard
     }
 
     /* Generate a match rule for upsert */
-    Pointer<Rule> match_rule = device->getDeviceRule(false, false);
-    match_rule->setTarget(Rule::Target::Match);
+    Pointer<Rule> match_rule = device->getDeviceRule(false, false, /*match_rule=*/true);
     const String match_spec = match_rule->toString();
 
     /* Generate new device rule */

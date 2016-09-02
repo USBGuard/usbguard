@@ -64,7 +64,7 @@ namespace usbguard {
     return _mutex;
   }
 
-  Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash)
+  Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
@@ -73,7 +73,12 @@ namespace usbguard {
 		  _device_id.toString(), _port, _name, with_port, with_parent_hash);
 
     device_rule->setRuleID(_id);
-    device_rule->setTarget(_target);
+    if (match_rule) {
+      device_rule->setTarget(Rule::Target::Match);
+    }
+    else {
+      device_rule->setTarget(_target);
+    }
     device_rule->setDeviceID(_device_id);
     device_rule->setSerial(_serial_number);
 
