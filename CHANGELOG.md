@@ -1,7 +1,9 @@
 # Change Log
 
-## 0.6.0 - [unreleased]
+## 0.6.0 - 2016-09-04
 ### Changed
+- Fixed the daemon to use the match target when matching device rules.
+  This fixes matching devices against the rules in the policy.
 - Switched to protobuf based IPC
 - Simplified the IPC and D-Bus interfaces
 - Refactored custom exceptions
