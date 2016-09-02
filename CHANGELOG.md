@@ -26,11 +26,11 @@
 - Removed DeviceInserted, DevicePresent and DeviceRemoved signals
   from the IPC and D-Bus interface (replaced by single signal)
 
-## 0.5.14 - 2016-09-18
+## 0.5.14 - 2016-08-18
 ### Changed
 - Fixed unknown descriptor type handling
 
-## 0.5.13 - 2016-09-16
+## 0.5.13 - 2016-08-16
 ### Changed
 - refactored USB parser to support multiple handlers per USB descriptor type
 - Qt Applet: device list should be always expanded
@@ -38,13 +38,13 @@
 ### Added
 - added support for an audio device related endpoint descriptor
 
-## 0.5.12 - 2016-09-14
+## 0.5.12 - 2016-08-14
 ### Changed
 - Fixed a bug in matching USB interface types with wildcards
 - usbguard-daemon will now abort at startup if the rule file contains
   syntax error instead of continuing with an empty rule set
 
-## 0.5.11 - 2016-09-13
+## 0.5.11 - 2016-08-13
 ### Added
 - Maintainer script for spellchecking source archive files
 - Rule::Attribute class for representing the rule attributes
