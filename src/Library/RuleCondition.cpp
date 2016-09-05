@@ -18,7 +18,7 @@
 //
 #include "RuleCondition.hpp"
 #include "Rule.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 
 #include <unordered_map>
 #include <functional>
@@ -87,13 +87,13 @@ namespace usbguard
   const String RuleCondition::toString() const
   {
     String condition_string;
-    
+
     if (isNegated()) {
       condition_string.append("!");
     }
-    
+
     condition_string.append(identifier());
-   
+
     if (hasParameter()) {
       condition_string.append("(");
       condition_string.append(parameter()); /* TODO: Escape parameter string */

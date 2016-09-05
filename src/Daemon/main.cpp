@@ -20,8 +20,9 @@
 
 #include <Typedefs.hpp>
 
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include "Daemon.hpp"
+#include "Exception.hpp"
 #include "Common/Utility.hpp"
 
 #include <iostream>
@@ -124,21 +125,20 @@ int main(int argc, char *argv[])
   }
 
   /* Initialize logging */
-  Logger::setSyslogOutput(log_syslog, "usbguard-daemon");
-  Logger::setConsoleOutput(log_console);
-  Logger::setFileOutput(log_file, log_file_path);
+  USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
+                                    LogStream::Level::Trace
+                                    :
+                                    LogStream::Level::Warning));
 
-  if (debug_mode) {
-    Logger::setVerbosityLevel(Logger::Level::Trace);
-  }
+  USBGUARD_LOGGER.setOutputConsole(log_console);
+  USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
+  USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);
 
   /* Setup seccomp whitelist & drop capabilities */
   if (use_seccomp_whitelist) {
 #if defined(HAVE_SECCOMP)
     setupSeccompWhitelist();
 #else
-    logger->error("Cannot setup seccomp whitelist, compiled without seccomp support!"
-		  " Re-run with the -W option to run the daemon anyway.");
     return EXIT_FAILURE;
 #endif
   }
@@ -147,27 +147,28 @@ int main(int argc, char *argv[])
 #if defined(HAVE_LIBCAPNG)
     setupCapabilities();
 #else
-    logger->error("Cannot drop capabilities, compiled without libcap-ng support!"
-		  " Re-run with the -C option to run the daemon anyway.");
     return EXIT_FAILURE;
 #endif
   }
 
   /* Start the daemon */
-  int ret = EXIT_SUCCESS;
+  int ret = EXIT_FAILURE;
   try {
     usbguard::Daemon daemon;
     if (!conf_file.empty()) {
       daemon.loadConfiguration(conf_file);
     }
     daemon.run();
+    ret = EXIT_SUCCESS;
+  }
+  catch(const usbguard::Exception& ex) {
+    USBGUARD_LOG(Error) << "ERROR: " << ex.message();
   }
   catch(const std::exception& ex) {
-    logger->critical("Exception: {}", ex.what());
-    ret = EXIT_FAILURE;
+    USBGUARD_LOG(Error) << "EXCEPTION: " << ex.what();
   }
   catch(...) {
-    logger->critical("BUG: Unknown exception caught from daemon main lopp");
+    USBGUARD_LOG(Error) << "EXCEPTION: Unknown excepton caught while starting the process";
   }
 
   return ret;
@@ -176,12 +177,12 @@ int main(int argc, char *argv[])
 #if defined(HAVE_SECCOMP)
  static void setupSeccompWhitelist(void)
  {
-   logger->debug("Applying seccomp whitelist");
+
    /* TODO: Use SCMP_ACT_TRAP. Switch to EACCES for 1.x releases */
    scmp_filter_ctx ctx = seccomp_init(/*SCMP_ACT_ERRNO(EACCES)*/SCMP_ACT_TRAP);
 
    if (!ctx) {
-     logger->error("Cannot initialize seccomp filter context");
+
      throw std::runtime_error("Cannot initialize seccomp filter context");
    }
 
@@ -294,12 +295,12 @@ int main(int argc, char *argv[])
    //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0);
 
    if (ret != 0) {
-     logger->error("Cannot initialize seccomp whitelist");
+
      throw std::runtime_error("Cannot initialize seccomp whitelist");
    }
 
    if (seccomp_load(ctx) != 0) {
-     logger->error("Cannot load seccomp whitelist into the kernel");
+
      throw std::runtime_error("Cannot load seccomp whitelist into the kernel");
    }
 
@@ -311,7 +312,7 @@ int main(int argc, char *argv[])
 #if defined(HAVE_LIBCAPNG)
  static void setupCapabilities(void)
  {
-   logger->debug("Dropping capabilities");
+
    capng_clear(CAPNG_SELECT_BOTH);
    capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE|CAPNG_PERMITTED),
 		 CAP_CHOWN, CAP_FOWNER,-1);

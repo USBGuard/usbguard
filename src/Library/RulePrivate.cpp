@@ -18,7 +18,7 @@
 //
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include "Common/Utility.hpp"
 
 namespace usbguard {
@@ -52,7 +52,7 @@ namespace usbguard {
   {
     *this = rhs;
   }
-  
+
   const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
   {
     _meta = rhs._meta;
@@ -102,8 +102,11 @@ namespace usbguard {
      * This method checks whether the rule referenced by rhs belongs to
      * a set defined by this rule.
      */
-    logger->trace("Checking applicability of rule [{}] to rule [{}]",
-        this->toString(/*invalid=*/true), rhs.toString(/*invalid=*/true));
+    USBGUARD_LOG(Trace) << "entry:"
+                        << " rhs=" << rhs.toString()
+                        << " parent_insensitive=" << parent_insensitive;
+
+    bool applies = false;
 
     if (!_device_id.appliesTo(rhs.internal()->_device_id) ||
         !_serial.appliesTo(rhs.internal()->_serial) ||
@@ -112,49 +115,74 @@ namespace usbguard {
         !(parent_insensitive || _parent_hash.appliesTo(rhs.internal()->_parent_hash)) ||
         !(parent_insensitive || _via_port.appliesTo(rhs.internal()->_via_port)) ||
         !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
-      return false;
+      applies = false;
+    }
+    else {
+      applies = true;
     }
 
-    logger->debug("Rule applies.");
-    return true;
+    USBGUARD_LOG(Trace) << "return:"
+                        << " applies=" << applies;
+
+    return applies;
   }
 
   bool RulePrivate::appliesToWithConditions(const Rule& rhs, bool with_update)
   {
-    if (!appliesTo(rhs)) {
-      return false;
+    USBGUARD_LOG(Trace) << "entry:"
+                        << " rhs=" << rhs.toString()
+                        << " with_updates=" << with_update;
+
+    bool applies = false;
+
+    if (appliesTo(rhs)) {
+      applies = meetsConditions(rhs, with_update);
     }
-    logger->debug("Evaluating whether rule {} meets conditions of rule {}", getRuleID(), rhs.getRuleID());
-    if (!meetsConditions(rhs, with_update)) {
-      logger->debug("Rule {} DOES NOT meet conditions of rule {}", rhs.getRuleID(), getRuleID());
-      return false;
+    else {
+      applies = false;
     }
-    logger->debug("Rule {} meets conditions of rule {}", rhs.getRuleID(), getRuleID());
-    return true;
+
+    USBGUARD_LOG(Trace) << "return:"
+                        << " applies=" << applies;
+
+    return applies;
   }
 
   bool RulePrivate::meetsConditions(const Rule& rhs, bool with_update)
   {
+    USBGUARD_LOG(Trace) << "entry:"
+                        << " rhs=" << rhs.toString()
+                        << " with_update=" << with_update;
+
     if (with_update) {
       (void)updateConditionsState(rhs);
     }
+
+    USBGUARD_LOG(Debug) << "set_operator=" << Rule::setOperatorToString(_conditions.setOperator());
+
+    bool meets_conditions = false;
+
     switch(_conditions.setOperator()) {
       case Rule::SetOperator::OneOf:
-	logger->debug("meetsCondition: OneOf: {}", conditionsState() > 0 ? "true" : "false");
-        return conditionsState() > 0;
+        meets_conditions = conditionsState() > 0;
+        break;
       case Rule::SetOperator::NoneOf:
-	logger->debug("meetsCondition: NoneOf: {}", conditionsState() == 0 ? "true" : "false");
-        return conditionsState() == 0;
+        meets_conditions = conditionsState() == 0;
+        break;
       case Rule::SetOperator::AllOf:
       case Rule::SetOperator::Equals:
       case Rule::SetOperator::EqualsOrdered:
-	logger->debug("meetsCondition: AllOf, Equals, ...: {}",
-                      conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1) ? "true" : "false");
-        return conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1);
+        meets_conditions = \
+          (conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1));
+        break;
       case Rule::SetOperator::Match:
         throw std::runtime_error("BUG: meetsConditions: invalid conditions set operator");
     }
-    return false;
+
+    USBGUARD_LOG(Trace) << "return:"
+                        << " meets_conditions=" << meets_conditions;
+
+    return meets_conditions;
   }
 
   void RulePrivate::initConditions(Interface * const interface)
@@ -185,15 +213,23 @@ namespace usbguard {
       ++i;
     }
 
-    logger->debug("Condition state of rule {}: current={} updated={}",
-                  rhs.getRuleID(), conditionsState(), updated_state);
+    USBGUARD_LOG(Debug) << "current=" << conditionsState()
+                        << " updated=" << updated_state;
+
+    bool retval = false;
 
     if (updated_state != conditionsState()) {
       setConditionsState(updated_state);
-      return true;
+      retval = true;
+    }
+    else {
+      retval = false;
     }
 
-    return false;
+    USBGUARD_LOG(Trace) << "return:"
+                        << " retval=" << retval;
+
+    return retval;
   }
 
   uint64_t RulePrivate::conditionsState() const

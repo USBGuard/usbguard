@@ -84,6 +84,7 @@ namespace usbguard {
     static int32_t qbIPCDispatchAdd(enum qb_loop_priority p, int32_t fd, int32_t evts, void *data, qb_ipcs_dispatch_fn_t fn);
     static int32_t qbIPCDispatchMod(enum qb_loop_priority p, int32_t fd, int32_t evts, void *data, qb_ipcs_dispatch_fn_t fn);
     static int32_t qbIPCDispatchDel(int32_t fd);
+    static int32_t qbIPCConnectionClientPID(qb_ipcs_connection_t *connection);
 
     bool qbIPCConnectionAllowed(uid_t uid, gid_t gid);
     bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid);

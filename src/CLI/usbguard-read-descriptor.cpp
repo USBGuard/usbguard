@@ -82,7 +82,7 @@ namespace usbguard
     }
     else {
       USBDescriptorParser parser;
-      
+
       parser.setHandler(USB_DESCRIPTOR_TYPE_DEVICE, sizeof(USBDeviceDescriptor),
                         USBParseDeviceDescriptor, printDeviceDescriptor);
       parser.setHandler(USB_DESCRIPTOR_TYPE_CONFIGURATION, sizeof(USBConfigurationDescriptor),

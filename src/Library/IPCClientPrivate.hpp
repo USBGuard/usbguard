@@ -44,8 +44,8 @@ namespace usbguard {
     ~IPCClientPrivate();
 
     void connect();
-    void disconnect(bool exception_initiated, const IPCException& exception);
-    void disconnect();
+    void disconnect(bool exception_initiated, const IPCException& exception, bool do_wait = true);
+    void disconnect(bool do_wait = true);
     bool isConnected() const;
     void wait();
 

@@ -19,6 +19,7 @@
 #include "DeviceManagerPrivate.hpp"
 #include <DeviceManagerHooks.hpp>
 #include "Exception.hpp"
+#include "Logger.hpp"
 
 namespace usbguard {
   DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks)
@@ -33,7 +34,7 @@ namespace usbguard {
   {
     *this = rhs;
   }
-  
+
   const DeviceManagerPrivate& DeviceManagerPrivate::operator=(const DeviceManagerPrivate& rhs)
   {
     std::unique_lock<std::mutex> local_device_map_lock(_device_map_mutex);
@@ -44,14 +45,17 @@ namespace usbguard {
 
   void DeviceManagerPrivate::insertDevice(Pointer<Device> device)
   {
+    USBGUARD_LOG(Trace) << "device_ptr=" << device.get();
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     const uint32_t id = _hooks.dmHookAssignID();
+    USBGUARD_LOG(Debug) << "id=" << id;
     device->setID(id);
     _device_map[id] = device;
   }
 
   Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t id)
   {
+    USBGUARD_LOG(Trace) << "entry: id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     auto it = _device_map.find(id);
     if (it == _device_map.end()) {
@@ -59,6 +63,7 @@ namespace usbguard {
     }
     Pointer<Device> device = it->second;
     _device_map.erase(it);
+    USBGUARD_LOG(Trace) << "return: device_ptr=" << device.get();
     return device;
   }
 
@@ -76,6 +81,7 @@ namespace usbguard {
 
   Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t id)
   {
+    USBGUARD_LOG(Trace) << "id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     try {
       return _device_map.at(id);
@@ -87,6 +93,8 @@ namespace usbguard {
 
   void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
+    USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
+                        << "device_ptr=" << device.get();
     _hooks.dmHookDeviceEvent(event, device);
   }
 } /* namespace usbguard */

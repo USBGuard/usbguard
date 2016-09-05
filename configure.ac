@@ -176,29 +176,6 @@ if test -z "$PROTOC"; then
 fi
 
 #
-# spdlog C++ library
-#
-AC_ARG_WITH([bundled-spdlog], AS_HELP_STRING([--with-bundled-spdlog], [Build using the bundled spdlog library]), [with_bundled_spdlog=$withval], [with_bundled_spdlog=no])
-if test "x$with_bundled_spdlog" = xyes; then
-	spdlog_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/spdlog/include"
-	spdlog_LIBS=""
-	AC_MSG_NOTICE([Using bundled spdlog library])
-	spdlog_summary="bundled; $spdlog_CFLAGS $spdlog_LIBS"
-else
-	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++11 $CPPFLAGS"
-	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([spdlog/spdlog.h], [], [AC_MSG_FAILURE(spdlog.h not found or not usable. Re-run with --with-bundled-spdlog to use the bundled library.)])
-	AC_LANG_POP
-	spdlog_CFLAGS=""
-	spdlog_LIBS=""
-	CPPFLAGS=$SAVE_CPPFLAGS
-	spdlog_summary="system-wide; $spdlog_CFLAGS $spdlog_LIBS"
-fi
-AC_SUBST([spdlog_CFLAGS])
-AC_SUBST([spdlog_LIBS])
-
-#
 # Catch C++ library
 #
 AC_ARG_WITH([bundled-catch], AS_HELP_STRING([--with-bundled-catch], [Build using the bundled Catch library]), [with_bundled_catch=$withval], [with_bundled_catch=no])
@@ -646,7 +623,6 @@ echo "     crypto: $crypto_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"
-echo "     spdlog: $spdlog_summary"
 echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 1.3.1: $have_pegtl_lte_131"
 echo "         Qt: $qt_summary"

@@ -83,8 +83,8 @@ namespace usbguard
   {
     usbguard_arg0 = ::basename(argv[0]);
 
-    Logger::setVerbosityLevel(Logger::Debug);
-    Logger::setConsoleOutput(true);
+    USBGUARD_LOGGER.setEnabled(true, LogStream::Level::Debug);
+    USBGUARD_LOGGER.setOutputConsole(true);
 
     if (argc == 1) {
       showTopLevelHelp();
@@ -96,12 +96,12 @@ namespace usbguard
 
     /* Not such key in the map, show list of commands */
     if (iterator == cmd_handler_map.cend()) {
-      logger->error("Unknown subcommand: {}", subcommand_key);
+
       showTopLevelHelp();
       return EXIT_FAILURE;
     }
 
-    logger->debug("Executing subcommand \"{}\"", subcommand_key);
+
     auto subcommand = iterator->second;
     return subcommand(argc - 1, argv + 1);
   }

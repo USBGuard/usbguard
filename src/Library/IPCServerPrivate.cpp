@@ -18,7 +18,7 @@
 //
 #include "IPCServerPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include "Exception.hpp"
 
 #include <sys/poll.h>
@@ -159,17 +159,17 @@ namespace usbguard
 
   void IPCServerPrivate::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)
   {
-    logger->debug("Connection created");
+
   }
 
   void IPCServerPrivate::qbIPCConnectionDestroyedFn(qb_ipcs_connection_t *conn)
   {
-    logger->debug("Connection destroyed");
+
   }
 
   int32_t IPCServerPrivate::qbIPCConnectionClosedFn(qb_ipcs_connection_t *conn)
   {
-    logger->debug("Connection closed");
+
     return 0;
   }
 
@@ -195,6 +195,18 @@ namespace usbguard
     return qb_loop_poll_del(G_qb_loop, fd);
   }
 
+  int32_t IPCServerPrivate::qbIPCConnectionClientPID(qb_ipcs_connection_t *connection)
+  {
+    std::unique_ptr<qb_ipcs_connection_stats_2> \
+      stats(qb_ipcs_connection_stats_get_2(connection, /*clear_after_read=*/0));
+
+    if (stats == nullptr) {
+      throw std::runtime_error("Cannot retrieve qb connection statistics");
+    }
+
+    return stats->client_pid;
+  }
+
   int32_t IPCServerPrivate::qbIPCConnectionAcceptFn(qb_ipcs_connection_t *conn, uid_t uid, gid_t gid)
   {
     try {
@@ -204,31 +216,41 @@ namespace usbguard
       const bool auth = server->qbIPCConnectionAllowed(uid, gid);
 
       if (auth) {
-        logger->debug("IPC Connection accepted. "
-                      "Setting SHM permissions to uid={} gid={} mode=0660", uid, 0);
+        USBGUARD_LOG(Info) << "IPC connection accepted: uid=" << uid
+                           << " gid=" << gid
+                           << " pid=" << qbIPCConnectionClientPID(conn);
+        USBGUARD_LOG(Debug) << "Setting SHM permissions to uid=" << uid
+                            << " gid=" << 0
+                            << " mode=0660";
         qb_ipcs_connection_auth_set(conn, uid, 0, 0660);
         return 0;
       }
       else {
-        logger->debug("IPC Connection rejected");
+        USBGUARD_LOG(Warning) << "IPC connection denied: uid=" << uid
+                              << " gid=" << gid
+                              << " pid=" << qbIPCConnectionClientPID(conn);
         return -1;
       }
     }
-    catch(...) {
-      logger->error("Exception caught during IPC connection authentication.");
-      return -1;
+    catch(const std::exception& exception) {
+      USBGUARD_LOG(Error) << "IPC connection denied: Exception: " << exception.what();
     }
+    catch(...) {
+      USBGUARD_LOG(Error) << "IPC connection denied: BUG: unknown exception caught.";
+    }
+
+    return -1;
   }
 
   bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid)
   {
     if (!_allowed_uids.empty() || !_allowed_gids.empty()) {
-      logger->debug("Using DAC IPC ACL");
-      logger->debug("Connection request from uid={} gid={}", uid, gid);
       return authenticateIPCConnectionDAC(uid, gid);
     }
     else {
-      logger->debug("IPC authentication is turned off.");
+      USBGUARD_LOG(Debug) << "IPC ACL is empty."
+                          << " Allowing connection for uid=" << uid
+                          << " gid=" << gid;
       return true;
     }
   }
@@ -257,14 +279,23 @@ namespace usbguard
     const size_t total_size = hdr.size;
     const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, 2);
 
-    if (rc < 0) {
-      /* FIXME: There's no client identification value in the message */
-      logger->warn("Failed to send data: {}", strerror((int)-rc));
-    }
-    else if ((size_t)rc != total_size) {
-      /* FIXME: There's no client identification value in the message */
-      logger->warn("Sent less data than expected. Expected {}, send {}.",
-		   total_size, rc);
+    if (rc < 0 || (size_t)rc != total_size) {
+      std::unique_ptr<qb_ipcs_connection_stats_2> stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+
+      if (stats == nullptr) {
+        throw std::runtime_error("Cannot retrieve qb connection statistics");
+      }
+
+      if (rc < 0) {
+        USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+        /* FALLTHROUGH */
+      }
+      else if ((size_t)rc != total_size) {
+        USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)
+                            << " sent=" << (size_t)rc
+                            << " expected=" << total_size;
+        /* FALLTHROUGH */
+      }
     }
 
     iov[0].iov_base = nullptr;
@@ -274,19 +305,18 @@ namespace usbguard
   int32_t IPCServerPrivate::qbIPCMessageProcessFn(qb_ipcs_connection_t *conn, void *data, size_t size)
   {
     if (conn == nullptr) {
-      logger->error("BUG: NULL client connection pointer");
       return -1;
     }
 
     qb_ipcs_connection_ref(conn);
 
     if (size <= sizeof (struct qb_ipc_request_header)) {
-      logger->error("Received invalid IPC data. Disconnecting from the client.");
+      USBGUARD_LOG(Debug) << "IPC message too short";
       qb_ipcs_disconnect(conn);
       return -1;
     }
     if (size > 1<<20) {
-      logger->error("Message too large. Disconnecting from the client.");
+      USBGUARD_LOG(Debug) << "IPC message too large";
       qb_ipcs_disconnect(conn);
       return -1;
     }
@@ -295,17 +325,27 @@ namespace usbguard
       reinterpret_cast<const struct qb_ipc_request_header *>(data);
 
     if (size != (size_t)hdr->size) {
-      logger->error("Invalid size in IPC header. Disconnecting from the client.");
+      USBGUARD_LOG(Debug) << "Invalid IPC header size";
       qb_ipcs_disconnect(conn);
       return -1;
     }
     if (hdr->id < QB_IPC_MSG_USER_START) {
-      logger->error("Invalid type in IPC header. Disconnecting from the client.");
+      USBGUARD_LOG(Debug) << "Invalid IPC header id";
       qb_ipcs_disconnect(conn);
       return -1;
     }
 
+    int32_t client_pid = -1;
     bool client_disconnect = false;
+ 
+    try {
+      client_pid = qbIPCConnectionClientPID(conn);
+    }
+    catch(...) {
+      USBGUARD_LOG(Error) << "Unable to get client PID. Disconnecting client.";
+      qb_ipcs_disconnect(conn);
+      return -1;
+    }
 
     try {
       IPCServerPrivate * const server = \
@@ -316,35 +356,44 @@ namespace usbguard
       const size_t payload_size = size - sizeof(struct qb_ipc_request_header);
       const std::string payload(payload_data, payload_size);
 
+      USBGUARD_LOG(Debug) << "Handling IPC payload of type=" << payload_type
+                          << " size=" << payload_size;
+
       auto response = server->handleIPCPayload(payload_type, payload);
 
       if (response) {
+        USBGUARD_LOG(Debug) << "Sending response to client_pid=" << client_pid;
         qbIPCSendMessage(conn, response);
       }
     }
     catch(const IPCException& ex) {
-      logger->warn("IPC Exception: request_id={}: {}", ex.messageID(), ex.message());
+      USBGUARD_LOG(Warning) << "IPC: client_pid=" << client_pid
+                            << ": IPC exception: " << ex.message();
       qbIPCSendMessage(conn, IPC::IPCExceptionToMessage(ex));
       /* FALLTHROUGH */
     }
     catch(const Exception& ex) {
-      logger->error("Internal exception: {}", ex.message());
+      USBGUARD_LOG(Warning) << "IPC: client_pid=" << client_pid
+                            << ": Exception: " << ex.message();
       client_disconnect = true;
       /* FALLTHROUGH */
     }
     catch(const std::exception& ex) {
-      logger->error("BUG: Unhandled exception caught while processing IPC payload.");
+      USBGUARD_LOG(Warning) << "IPC: client_pid=" << client_pid
+                            << ": Exception: " << ex.what();
       client_disconnect = true;
       /* FALLTHROUGH */
     }
     catch(...) {
-      logger->error("BUG: Unknown exception caught while processing IPC payload.");
+      USBGUARD_LOG(Warning) << "IPC: client_pid=" << client_pid
+                            << ": Unknown exception.";
       client_disconnect = true;
       /* FALLTHROUGH */
     }
 
     if (client_disconnect) {
-      logger->error("Disconnecting from the client.");
+      USBGUARD_LOG(Warning) << "IPC: client_pid=" << client_pid
+                            << ": Disconnecting client.";
       qb_ipcs_disconnect(conn);
       return -1;
     }
@@ -364,22 +413,27 @@ namespace usbguard
       total_size += iov[i].iov_len;
     }
 
-    logger->debug("Sending data of total size {}.", total_size);
-
     while (qb_conn != nullptr) {
       /* Send the data */
       const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
 
-      if (rc < 0) {
-	/* FIXME: There's no client identification value in the message */
-	logger->warn("Failed to send broadcast data to: {}", strerror((int)-rc));
+      if (rc < 0 || (size_t)rc != total_size) {
+        std::unique_ptr<qb_ipcs_connection_stats_2> stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+
+        if (stats == nullptr) {
+          throw std::runtime_error("Cannot retrieve qb connection statistics");
+        }
+
+        if (rc < 0) {
+          USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+        }
+        else if ((size_t)rc != total_size) {
+          USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)
+            << " sent=" << (size_t)rc
+            << " expected=" << total_size;
+        }
       }
-      else if ((size_t)rc != total_size) {
-	/* FIXME: There's no client identification value in the message */
-	logger->warn("Sent less data than expected to. Expected {}, send {}.",
-		     total_size, rc);
-      }
-      
+
       /* Get the next connection */
       auto qb_conn_next = qb_ipcs_connection_next_get(_qb_service, qb_conn);
       qb_ipcs_connection_unref(qb_conn);
@@ -401,7 +455,7 @@ namespace usbguard
     hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message->GetTypeName());
     hdr.size = sizeof hdr + payload.size();
     hdr.error = 0;
-    
+
     struct iovec iov[2];
     iov[0].iov_base = &hdr;
     iov[0].iov_len = sizeof hdr;
@@ -419,7 +473,7 @@ namespace usbguard
     /* Check for UID match */
     for (auto allowed_uid : _allowed_uids) {
       if (allowed_uid == uid) {
-	logger->debug("uid {} is an allowed uid", uid);
+	
 	return true;
       }
     }
@@ -431,14 +485,15 @@ namespace usbguard
 
     if (getpwuid_r(uid, &pw,
 		   pw_string_buffer, sizeof pw_string_buffer, &pwptr) != 0) {
-      logger->warn("Cannot lookup username for uid {}. Won't check group membership.", uid);
+      USBGUARD_LOG(Warning) << "IPC ACL: Unable to lookup username for uid=" << uid
+                            << ". Disabling group membership check for this uid.";
       check_group_membership = false;
     }
 
     /* Check for GID match or group member match */
     for (auto allowed_gid : _allowed_gids) {
       if (allowed_gid == gid) {
-	logger->debug("gid {} is an allowed gid", gid);
+        USBGUARD_LOG(Debug) << "gid=" << gid << " is an allowed gid.";        
 	return true;
       }
       else if (check_group_membership) {
@@ -448,16 +503,17 @@ namespace usbguard
 	/* Fetch list of current group members of group with a gid == allowed_gid */
 	if (getgrgid_r(allowed_gid, &gr,
 		       gr_string_buffer, sizeof gr_string_buffer, &grptr) != 0) {
-	  logger->warn("Cannot lookup groupname for gid {}. "
-		       "Won't check group membership of uid {}", allowed_gid, uid);
+	  USBGUARD_LOG(Warning) << "IPC ACL: Unable to lookup groupname for gid=" << allowed_gid
+                                << ". Skipping group membership check for uid=" << uid;
 	  continue;
 	}
 
 	/* Check for username match among group members */
 	for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
 	  if (strcmp(pw.pw_name, gr.gr_mem[i]) == 0) {
-	    logger->debug("uid {} ({}) is a member of an allowed group with gid {} ({})",
-			  uid, pw.pw_name, allowed_gid, gr.gr_name);
+            USBGUARD_LOG(Debug) << "uid=" << uid << "(" << pw.pw_name << ")"
+                                << " is a member of an allowed group with"
+                                << " gid=" << allowed_gid << " (" << gr.gr_name << ")";
 	    return true;
 	  }
 	}

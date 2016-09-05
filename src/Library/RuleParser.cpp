@@ -26,7 +26,7 @@
 #include "RulePrivate.hpp"
 #include "USB.hpp"
 #include "Common/Utility.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 
 #include <cstddef>
 #include <stdexcept>
@@ -38,7 +38,7 @@ namespace usbguard
 {
   Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line, bool trace)
   {
-    logger->debug("Trying to parse rule: \"{}\"", rule_spec);
+
 
     try {
       Rule rule;
@@ -61,7 +61,7 @@ namespace usbguard
     }
     catch(const pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
-      
+
       error.setHint(ex.what());
 #if HAVE_PEGTL_LTE_1_3_1
       error.setOffset(ex.positions[0].column);
@@ -76,7 +76,7 @@ namespace usbguard
       throw error;
     }
     catch(const std::exception& ex) {
-      logger->debug("std::exception: {}", ex.what());
+
       throw;
     }
   }

@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include <getopt.h>
 
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 
 namespace usbguard
 {

@@ -1,8 +1,9 @@
 %global _hardened_build 1
+%define buildstamp %(date +%s)
 
 Name:           usbguard
-Version:        0.6.0
-Release:        1%{?dist}
+Version:        0.6.1
+Release:        0.1.%{buildstamp}%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -23,7 +24,6 @@ BuildRequires: libgcrypt-devel
 BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: protobuf-devel protobuf-compiler
-BuildRequires: spdlog-static
 BuildRequires: PEGTL-static
 BuildRequires: qt5-qtbase-devel qt5-qtsvg-devel
 BuildRequires: dbus-glib-devel
@@ -85,7 +85,7 @@ a D-Bus interface to the USBGuard daemon component.
 %prep
 %setup -q
 # Remove bundled library sources before build
-rm -rf src/ThirdParty/{spdlog,Catch}
+rm -rf src/ThirdParty/{Catch,PEGTL}
 
 %build
 mkdir -p ./m4
@@ -93,8 +93,8 @@ autoreconf -i -v --no-recursive ./
 %configure \
     --disable-silent-rules \
     --disable-static \
-    --without-bundled-spdlog \
     --without-bundled-catch \
+    --without-bundled-pegtl \
     --enable-systemd \
     --with-gui-qt=qt5 \
     --with-dbus \
@@ -175,5 +175,5 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
-* Sun Sep 04 2016 Daniel Kopeček <dnk1618@gmail.com> 0.6.0-1
- - Update to 0.6.0
+* Wed Sep 07 2016 Daniel Kopeček <dnk1618@gmail.com> 0.6.1-0.1
+ - Update to 0.6.1

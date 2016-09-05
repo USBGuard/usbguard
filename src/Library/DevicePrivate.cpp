@@ -18,7 +18,7 @@
 //
 #include "DevicePrivate.hpp"
 #include "DeviceManager.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include "Hash.hpp"
 #include <mutex>
 
@@ -66,11 +66,13 @@ namespace usbguard {
 
   Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
+    USBGUARD_LOG(Trace) << "entry: "
+                        << " with_port=" << with_port
+                        << " with_parent_hash=" << with_parent_hash
+                        << " match_rule=" << match_rule;
+
     Pointer<Rule> device_rule = makePointer<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
-
-    logger->trace("Generating rule for device {}@{} (name={}); with_port={} with_parent_hash={}",
-		  _device_id.toString(), _port, _name, with_port, with_parent_hash);
 
     device_rule->setRuleID(_id);
     if (match_rule) {
@@ -104,6 +106,9 @@ namespace usbguard {
         }
       }
     }
+
+    USBGUARD_LOG(Trace) << "return:"
+                        << " device_rule=" << device_rule->toString();
 
     return device_rule;
   }

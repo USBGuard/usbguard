@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.6.1 - [unreleased]
+### Changed
+- Refactored logging subsystem
+
+### Added
+- Implemented a simple internal logger
+- Access to the logger via public API
+
+### Removed
+- Removed spdlog dependency
+
 ## 0.6.0 - 2016-09-04
 ### Changed
 - Fixed the daemon to use the match target when matching device rules.

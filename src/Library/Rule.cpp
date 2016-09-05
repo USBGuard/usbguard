@@ -219,7 +219,7 @@ namespace usbguard {
   {
     d_pointer->setTimeoutSeconds(timeout_seconds);
   }
-  
+
   uint32_t Rule::getTimeoutSeconds() const
   {
     return d_pointer->getTimeoutSeconds();
@@ -229,7 +229,7 @@ namespace usbguard {
   {
     return appliesTo(*rhs);
   }
-  
+
   bool Rule::appliesTo(const Rule& rhs) const
   {
     return d_pointer->appliesTo(rhs);
@@ -245,7 +245,7 @@ namespace usbguard {
   {
     return d_pointer->getRuleID() == Rule::DefaultID;
   }
-    
+
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||

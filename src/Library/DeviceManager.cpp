@@ -73,7 +73,7 @@ namespace usbguard {
     d_pointer = n_pointer;
     return *this;
   }
-  
+
   DeviceManager::~DeviceManager()
   {
     delete d_pointer;

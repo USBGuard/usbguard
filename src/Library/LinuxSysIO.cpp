@@ -17,7 +17,8 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "LinuxSysIO.hpp"
-#include <Logger.hpp>
+#include "Logger.hpp"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -30,31 +31,25 @@ namespace usbguard
   void sysioWrite(const char *path, int value)
   {
     char value_buffer[3];
-    int value_size;
-    int fd = -1;
+    const int value_size = snprintf(value_buffer, sizeof value_buffer, "%d", value);
 
-    value_size = snprintf(value_buffer,
-			  sizeof value_buffer, "%d", value);
-
-    if (value_size < 1) {
-      //log->error("Failed to convert value to it's string representation in sysIOWrite");
+    if (value_size < 1 || (size_t)value_size >= sizeof value_buffer) {
+      USBGUARD_LOG(Error) << "sysioWrite: Failed to convert integer value to string";
       return;
     }
 
-    fd = open(path, O_WRONLY);
-    
+    const int fd = open(path, O_WRONLY);
+
     if (fd < 0) {
-      //log->error("Failed to open {} for writing", path);
+      USBGUARD_LOG(Error) << "sysioWrite: Failed to open " << path << ": errno=" << errno;
       return;
     }
-
     if (write(fd, value_buffer, (size_t)value_size) != (ssize_t)value_size) {
-      //log->error("Failed to write \"{}\" to {}: {}", value_buffer, path, errno);
-      /* fallthrough */
+      USBGUARD_LOG(Error) << "sysioWrite: Unable to write to " << path << ": errno=" << errno;
+      /* FALLTHROUGH */
     }
 
-    close(fd);
-    return;
+    (void)close(fd);
   }
 
   ssize_t sysioWriteFileAt(DIR* dirfp, const std::string& relpath, char *buffer, size_t buflen)
@@ -62,13 +57,12 @@ namespace usbguard
     const int fd = openat(dirfd(dirfp), relpath.c_str(), O_WRONLY);
 
     if (fd < 0) {
-      //log->debug("Cannot open {}: {}", relpath, errno);
+      USBGUARD_LOG(Error) << "sysioWriteFileAt: Cannot open " << relpath << ": errno=" << errno;
       return -1;
     }
 
     errno = 0;
     const ssize_t bytes_written = write(fd, buffer, buflen);
-    //log->debug("Wrote {} bytes out of {}: errno {}", bytes_written, buflen, errno);
     close(fd);
 
     return bytes_written;
@@ -79,13 +73,12 @@ namespace usbguard
     const int fd = openat(dirfd(dirfp), relpath.c_str(), O_RDONLY);
 
     if (fd < 0) {
-      //log->debug("Cannot open {}: {}", relpath, errno);
+      USBGUARD_LOG(Error) << "sysioReadFileAt: Cannot open " << relpath << ": errno=" << errno;
       return -1;
     }
 
     errno = 0;
     const ssize_t bytes_read = read(fd, buffer, buflen);
-    //log->debug("Read {} bytes out of {}: errno: {}", bytes_read, buflen, errno);
     close(fd);
 
     return bytes_read;
@@ -93,11 +86,12 @@ namespace usbguard
 
   void sysioSetAuthorizedDefault(bool state)
   {
-    //log->debug("Setting default authorized flag values on all USB controllers to {}", state);
     const char * const dir = "/sys/bus/usb/devices/";
     DIR *dirfp = opendir(dir);
     struct dirent *dent;
 
+    USBGUARD_LOG(Info) << "Setting default authorized flag values on all USB controllers to " << state;
+ 
     if (!dirfp) {
       throw std::runtime_error("Cannot open USB devices /sys directory");
     }
@@ -106,27 +100,35 @@ namespace usbguard
       char buffer[3] = { 0, 0, 0 };
       const std::string devpath(dent->d_name);
 
+      if (devpath == "." || devpath == "..") {
+        continue;
+      }
       if (devpath.compare(0, 3, "usb") != 0) {
-	//log->debug("Skipping device {}: does not start with 'usb'", devpath);
+        USBGUARD_LOG(Debug) << "Skipping devpath=" << devpath << ":"
+                            << " Does not start with 'usb'";
 	continue;
       }
 
       /* bDeviceClass */
       if (sysioReadFileAt(dirfp, devpath + "/bDeviceClass", buffer, sizeof buffer) < 2) {
-	//log->debug("Skipping device {}: cannot read device class", devpath);
+	USBGUARD_LOG(Warning) << "Cannot set default authorization state for devpath=" << devpath << ":"
+                              << " Unable to read device class";
 	continue;
       }
       if (!(buffer[0] == '0' && buffer[1] == '9')) {
-	//log->debug("Skipping device {}: wrong class value: {}{}", devpath, buffer[0], buffer[1]);
+	USBGUARD_LOG(Debug) << "Skipping devpath=" << devpath << ":"
+                            << " Wrong class value";
 	continue;
       }
       /* bDeviceSubClass */
       if (sysioReadFileAt(dirfp, devpath + "/bDeviceSubClass", buffer, sizeof buffer) < 2) {
-	//log->debug("Skipping device {}: cannot read device subclass", devpath);
+	USBGUARD_LOG(Warning) << "Cannot set default authorization state for devpath=" << devpath << ":"
+                              << " Unable to read device subclass.";
 	continue;
       }
       if (!(buffer[0] == '0' && buffer[1] == '0')) {
-	//log->debug("Skipping device {}: wrong subclass value: {}{}", devpath, buffer[0], buffer[1]);
+	USBGUARD_LOG(Debug) << "Skipping devpath=" << devpath << ":"
+                            << " Wrong subclass value.";
 	continue;
       }
 
@@ -134,13 +136,14 @@ namespace usbguard
 
       if (sysioWriteFileAt(dirfp, devpath + "/authorized_default",
 			   buffer, 1) != 1) {
-	//log->debug("Cannot set default authorized state for device {}", devpath);
+        USBGUARD_LOG(Warning) << "Cannot set default authorization state for devpath=" << devpath << ":"
+                              << " Write operation failed.";
 	continue;
       }
+      USBGUARD_LOG(Info) << "Set default authorization state for devpath=" << devpath << " to " << state;
     }
 
     closedir(dirfp);
-    return;
   }
 
 } /* namespace usbguard */

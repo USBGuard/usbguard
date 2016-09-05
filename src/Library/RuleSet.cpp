@@ -48,22 +48,22 @@ namespace usbguard {
   {
     d_pointer->load(path);
   }
-  
+
   void RuleSet::load(std::istream& stream)
   {
     d_pointer->load(stream);
   }
-  
+
   void RuleSet::save(const String& path) const
   {
     d_pointer->save(path);
   }
-  
+
   void RuleSet::save(std::ostream& stream) const
   {
     d_pointer->save(stream);
   }
-  
+
   void RuleSet::setDefaultTarget(Rule::Target target)
   {
     d_pointer->setDefaultTarget(target);

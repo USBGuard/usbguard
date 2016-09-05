@@ -120,7 +120,6 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_builddir)/src/Library/IPC \
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
-	@spdlog_CFLAGS@ \
 	@udev_CFLAGS@ \
 	@crypto_CFLAGS@ \
 	@pegtl_CFLAGS@
@@ -131,7 +130,6 @@ libusbguard_la_LDFLAGS=\
 
 libusbguard_la_LIBADD=\
 	@qb_LIBS@ \
-	@spdlog_LIBS@ \
 	@protobuf_LIBS@ \
 	@udev_LIBS@ \
 	@crypto_LIBS@ \
@@ -201,8 +199,7 @@ libusbguard_la_SOURCES=\
 	src/Library/LinuxDeviceManager.hpp \
 	src/Library/LinuxSysIO.hpp \
 	src/Library/LinuxSysIO.cpp \
-	src/Library/LoggerPrivate.hpp \
-	src/Library/LoggerPrivate.cpp \
+	src/Library/Logger.cpp \
 	src/Library/Init.cpp \
 	src/Library/RuleCondition.hpp \
 	src/Library/RuleCondition.cpp \
@@ -260,19 +257,16 @@ usbguard_daemon_SOURCES=\
 
 usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
-	@spdlog_CFLAGS@ \
 	@seccomp_CFLAGS@ \
 	@libcapng_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
-	@spdlog_LIBS@ \
 	@seccomp_LIBS@ \
 	@libcapng_LIBS@
 
 EXTRA_DIST +=\
 	README.md \
-	src/ThirdParty/spdlog \
 	src/ThirdParty/Catch \
 	src/ThirdParty/PEGTL
 
@@ -310,8 +304,7 @@ usbguard_SOURCES=\
 
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
-	-I$(top_srcdir)/src/CLI \
-	@spdlog_CFLAGS@
+	-I$(top_srcdir)/src/CLI
 
 usbguard_LDADD=\
 	$(top_builddir)/libusbguard.la
@@ -321,8 +314,7 @@ usbguard_rule_parser_SOURCES=\
 
 usbguard_rule_parser_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
-	-I$(top_srcdir)/src/CLI \
-	@spdlog_CFLAGS@
+	-I$(top_srcdir)/src/CLI
 
 usbguard_rule_parser_LDADD=\
 	$(top_builddir)/libusbguard.la
@@ -358,7 +350,6 @@ usbguard_dbus_SOURCES=\
 usbguard_dbus_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	-I$(top_builddir)/src/DBus \
-	@spdlog_CFLAGS@ \
 	@dbus_CFLAGS@
 
 usbguard_dbus_LDADD=\
@@ -507,7 +498,6 @@ usbguard_applet_qt_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/GUI.Qt \
 	-I$(top_builddir)/src/GUI.Qt \
-	@spdlog_CFLAGS@ \
 	-fPIC @qt_CFLAGS@
 
 %.moc.cpp: %.h

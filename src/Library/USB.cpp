@@ -19,7 +19,7 @@
 #include "USB.hpp"
 #include "Common/ByteOrder.hpp"
 #include "Common/Utility.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
@@ -121,7 +121,6 @@ namespace usbguard {
     _bSubClass = 0;
     _bProtocol = 0;
     _mask = 0;
-    return;
   }
 
   USBInterfaceType::USBInterfaceType(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
@@ -130,8 +129,6 @@ namespace usbguard {
     _bSubClass = bSubClass;
     _bProtocol = bProtocol;
     _mask = mask;
-
-    return;
   }
 
   USBInterfaceType::USBInterfaceType(const USBInterfaceDescriptor& descriptor, uint8_t mask)
@@ -140,7 +137,6 @@ namespace usbguard {
     _bSubClass = descriptor.bInterfaceSubClass;
     _bProtocol = descriptor.bInterfaceProtocol;
     _mask = mask;
-    return;
   }
 
   USBInterfaceType::USBInterfaceType(const std::string& type_string)
@@ -190,8 +186,6 @@ namespace usbguard {
 	  _mask == (MatchClass))) {
       throw std::runtime_error("Invalid type_string");
     }
-
-    return;
   }
 
   bool USBInterfaceType::operator==(const USBInterfaceType& rhs) const
@@ -279,8 +273,6 @@ namespace usbguard {
     device_out->idVendor = busEndianToHost(device_raw->idVendor);
     device_out->idProduct = busEndianToHost(device_raw->idProduct);
     device_out->bcdDevice = busEndianToHost(device_raw->bcdDevice);
-
-    return;
   }
 
   void USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
@@ -293,8 +285,6 @@ namespace usbguard {
 
     /* Convert multibyte field to host endianness */
     configuration_out->wTotalLength = busEndianToHost(configuration_raw->wTotalLength);
-
-    return;
   }
 
   void USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
@@ -304,8 +294,6 @@ namespace usbguard {
 
     /* Copy 1:1 */
     *interface_out = *interface_raw;
-
-    return;
   }
 
   void USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
@@ -315,8 +303,6 @@ namespace usbguard {
 
     *endpoint_out = *endpoint_raw;
     endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
-
-    return;
   }
 
   void USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
@@ -326,8 +312,6 @@ namespace usbguard {
 
     *endpoint_out = *endpoint_raw;
     endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
-
-    return;
   }
 
   const std::vector<USBDescriptorParser::Handler>* USBDescriptorParser::getDescriptorTypeHandler(uint8_t bDescriptorType) const
@@ -539,5 +523,4 @@ namespace usbguard {
 
     return counts;
   }
-
 } /* namespace usbguard */

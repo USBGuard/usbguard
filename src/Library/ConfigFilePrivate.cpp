@@ -19,7 +19,7 @@
 
 #include "ConfigFilePrivate.hpp"
 #include "Common/Utility.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 #include <stdexcept>
 
 namespace usbguard
@@ -30,7 +30,6 @@ namespace usbguard
   {
     (void)_p_instance;
     _dirty = false;
-    return;
   }
 
   ConfigFilePrivate::~ConfigFilePrivate()
@@ -39,7 +38,6 @@ namespace usbguard
       write();
       _dirty = false;
     }
-    return;
   }
 
   void ConfigFilePrivate::open(const String& path)
@@ -50,7 +48,6 @@ namespace usbguard
     }
     _dirty = false;
     parse();
-    return;
   }
 
   void ConfigFilePrivate::write()
@@ -73,7 +70,6 @@ namespace usbguard
     }
     _stream.flush();
     _dirty = false;
-    return;
   }
 
   void ConfigFilePrivate::close()
@@ -83,7 +79,6 @@ namespace usbguard
     }
     _dirty = false;
     _stream.close();
-    return;
   }
 
   const String& ConfigFilePrivate::getSettingValue(const String& name) const
@@ -126,7 +121,6 @@ namespace usbguard
       }
 
       if (!checkNVPair(name, value)) {
-	logger->warn("Unknown setting name: {}", name);
 	continue;
       }
 
@@ -136,8 +130,6 @@ namespace usbguard
       setting.value = value;
       setting.line_number = config_line_number;
     }
-
-    return;
   }
 
   bool ConfigFilePrivate::checkNVPair(const String& name, const String& value) const

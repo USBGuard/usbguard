@@ -18,7 +18,7 @@
 //
 #include "IPCClientPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 
 #include <sys/poll.h>
 #include <sys/eventfd.h>
@@ -56,7 +56,6 @@ namespace usbguard
     registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
     registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
 
-
     if (connected) {
       try {
         connect();
@@ -70,7 +69,6 @@ namespace usbguard
 
   void IPCClientPrivate::destruct()
   {
-    stop();
     qb_loop_poll_del(_qb_loop, _wakeup_fd);
     close(_wakeup_fd);
     qb_loop_destroy(_qb_loop);
@@ -104,22 +102,22 @@ namespace usbguard
     _p_instance.IPCConnected();
   }
 
-  void IPCClientPrivate::disconnect(bool exception_initiated, const IPCException& exception)
+  void IPCClientPrivate::disconnect(bool exception_initiated, const IPCException& exception, bool do_wait)
   {
-    if (_qb_conn != nullptr && _qb_fd != -1) {
+    if (_qb_conn != nullptr && _qb_fd >= 0) {
       qb_loop_poll_del(_qb_loop, _qb_fd);
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
       _qb_fd = -1;
       _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
-      stop();
+      stop(do_wait);
     }
   }
 
-  void IPCClientPrivate::disconnect()
+  void IPCClientPrivate::disconnect(bool do_wait)
   {
     const IPCException empty_exception;
-    disconnect(/*exception_initiated=*/false, empty_exception);
+    disconnect(/*exception_initiated=*/false, empty_exception, do_wait);
   }
 
   bool IPCClientPrivate::isConnected() const
@@ -240,13 +238,10 @@ namespace usbguard
       process(buffer);
     }
     catch(const IPCException& exception) {
-      logger->error("IPC: Disconnecting because of an IPC exception: request_id={}: {}",
-                    exception.messageID(), exception.message());
       disconnect(/*exception_initiated=*/true, exception);
     }
     catch(const Exception& exception) {
       const IPCException ipc_exception(exception);
-      logger->error("IPC: Disconnecting because of an exception: {}", exception.what());
       disconnect(/*exception_initiated=*/true, ipc_exception);
     }
     catch(const std::exception& exception) {
@@ -255,7 +250,6 @@ namespace usbguard
     }
     catch(...) {
       const IPCException ipc_exception("IPC receive event", "BUG", "Unknown exception");
-      logger->error("BUG: IPC: Disconnecting because of an unknown exception.");
       disconnect(/*exception_initiated=*/true, ipc_exception);
     }
   }
@@ -322,7 +316,7 @@ namespace usbguard
     IPC::appendRule message_out;
     message_out.mutable_request()->set_rule(rule_spec);
     message_out.mutable_request()->set_parent_id(parent_id);
-    
+
     auto message_in = qbIPCSendRecvMessage(message_out);
 
     return message_in->response().id();

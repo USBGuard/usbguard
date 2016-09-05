@@ -80,6 +80,7 @@ namespace usbguard
 	try {
 	  _thread.join();
 	} catch(const std::system_error& ex) {
+          USBGUARD_LOG(Error) << ex.what();
 	  throw;
 	}
       }

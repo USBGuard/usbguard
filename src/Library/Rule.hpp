@@ -23,6 +23,8 @@
 #include "Predicates.hpp"
 #include "Utility.hpp"
 #include "RuleCondition.hpp"
+#include "Logger.hpp"
+
 #include <cstdint>
 #include <chrono>
 
@@ -174,42 +176,45 @@ namespace usbguard {
 
         bool appliesTo(const Attribute<ValueType>& target) const
         {
+          USBGUARD_LOG(Trace) << "entry:"
+                              << " source=" << this->toRuleString()
+                              << " target=" << target.toRuleString();
+
+          bool applies = false;
+
           /* Nothing applies to anything */
           if (empty()) {
-            return true;
+            USBGUARD_LOG(Debug) << "empty source value, setting applies=true";
+            applies = true;
+          }
+          else {
+            USBGUARD_LOG(Debug) << "set_operator=" << setOperatorToString(setOperator());
+            switch(setOperator()) {
+              case SetOperator::Match:
+                applies = true;
+                break;
+              case SetOperator::AllOf:
+                applies = setSolveAllOf(_values, target._values);
+                break;
+              case SetOperator::OneOf:
+                applies = setSolveOneOf(_values, target._values);
+                break;
+              case SetOperator::NoneOf:
+                applies = setSolveNoneOf(_values, target._values);
+                break;
+              case SetOperator::Equals:
+                applies = setSolveEquals(_values, target._values);
+                break;
+              case SetOperator::EqualsOrdered:
+                applies = setSolveEqualsOrdered(_values, target._values);
+                break;
+            }
           }
 
-          switch(setOperator()) {
-            case SetOperator::Match:
-              return true;
-            case SetOperator::AllOf:
-              if (!setSolveAllOf(_values, target._values)) {
-                return false;
-              }
-              break;
-            case SetOperator::OneOf:
-              if (!setSolveOneOf(_values, target._values)) {
-                return false;
-              }
-              break;
-            case SetOperator::NoneOf:
-              if (!setSolveNoneOf(_values, target._values)) {
-                return false;
-              }
-              break;
-            case SetOperator::Equals:
-              if (!setSolveEquals(_values, target._values)) {
-                return false;
-              }
-              break;
-            case SetOperator::EqualsOrdered:
-              if (!setSolveEqualsOrdered(_values, target._values)) {
-                return false;
-              }
-              break;
-          }
+          USBGUARD_LOG(Trace) << "return:"
+                              << " applies=" << applies;
 
-          return true;
+          return applies;
         }
 
         String toRuleString() const

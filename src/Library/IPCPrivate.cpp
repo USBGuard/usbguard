@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "IPCPrivate.hpp"
-#include "LoggerPrivate.hpp"
+#include "Logger.hpp"
 
 #include <Devices.pb.h>
 #include <Exception.pb.h>
@@ -41,7 +41,7 @@ namespace usbguard
 
   uint32_t IPC::messageTypeNameToNumber(const std::string& name)
   {
-    logger->debug("Looking up type number for type {}", name);
+
 
     for (auto const& type_number : type_numbers) {
       if (type_number.second == name) {

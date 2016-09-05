@@ -24,7 +24,7 @@
 #include <fstream>
 
 namespace usbguard {
-  
+
   RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr)
     : _p_instance(p_instance),
       _interface_ptr(interface_ptr)
@@ -64,7 +64,7 @@ namespace usbguard {
     }
     load(stream);
   }
-  
+
   void RuleSetPrivate::load(std::istream& stream)
   {
     std::unique_lock<std::mutex> lock(_io_mutex);
@@ -80,7 +80,7 @@ namespace usbguard {
       }
     } while(stream.good());
   }
-  
+
   void RuleSetPrivate::save(const String& path) const
   {
     std::ofstream stream(path, std::fstream::trunc);
@@ -89,7 +89,7 @@ namespace usbguard {
     }
     save(stream);
   }
-  
+
   void RuleSetPrivate::save(std::ostream& stream) const
   {
     std::unique_lock<std::mutex> io_lock(_io_mutex);
@@ -100,7 +100,7 @@ namespace usbguard {
       stream << rule_string << std::endl;
     }
   }
-  
+
   void RuleSetPrivate::setDefaultTarget(Rule::Target target)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);

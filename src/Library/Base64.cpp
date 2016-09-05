@@ -188,7 +188,7 @@ namespace usbguard
     const size_t encoded_size = base64EncodedSize(size);
     const uint8_t remainder = size % 3;
     const size_t enc3_count = (size - remainder) / 3;
-    
+
     String result(encoded_size, 0);
     char * const buffer = &result[0];
     size_t i = 0;
@@ -213,7 +213,7 @@ namespace usbguard
     if (size == 0 || (size % 4) != 0) {
       throw std::runtime_error("base64Decode: invalid input");
     }
-   
+
     const size_t decoded_size = base64DecodedSize(size);
     size_t dec4_count = size / 4;
     uint8_t padding = 0;

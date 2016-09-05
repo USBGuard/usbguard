@@ -46,6 +46,7 @@ namespace usbguard
     };
 
     static PresentDevicePolicy presentDevicePolicyFromString(const String& policy_string);
+    static const std::string presentDevicePolicyToString(PresentDevicePolicy policy);
 
     Daemon();
     ~Daemon();
