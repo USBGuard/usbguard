@@ -60,7 +60,7 @@ Reprogramming  attacks ([BadUSB](https://srlabs.de/badusb/)) which change the ty
 Allowing to attach any USB device to the system exposes it to exploitation of bugs in USB interface drivers in the kernel.
 
 ### Use case #2: USB device blacklisting
-The USB protocol uses a classification system for the various types  of  interfaces a USB device can provide. If an user doesn't want to use a particular class of interfaces, he can block devices that want to communicate with the computer as an interface from that class.
+The USB protocol uses a classification system for the various types  of  interfaces a USB device can provide. If a user doesn't want to use a particular class of interfaces, he can block devices that want to communicate with the computer as an interface from that class.
 
 ### Use case #3: Triggering actions on USB device events
 The project makes possible to easily implement triggering of various actions when a particular USB device or USB device class is inserted, removed, etc. This feature might be used for example for auditing USB usage, screen locking (per-user via applet), etc.
@@ -145,7 +145,7 @@ To actually start the daemon, use:
 
 ## Rule Language
 
-The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules. When an USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either authorizes (**allows**), deauthorizes (**blocks**) or removes (**rejects**) the device, based on the rule target. If no matching rule is found, the decision is based on an implicit default target. This implicit default is to block the device until a decision is made by the user. The rule language grammar, expressed in a BNF-like syntax, is the following:
+The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules. When a USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either authorizes (**allows**), deauthorizes (**blocks**) or removes (**rejects**) the device, based on the rule target. If no matching rule is found, the decision is based on an implicit default target. This implicit default is to block the device until a decision is made by the user. The rule language grammar, expressed in a BNF-like syntax, is the following:
 
 ```
     rule ::= target attributes.
@@ -168,7 +168,7 @@ The target of a rule specifies whether the device will be authorized for use or 
 
 ### Device Specification
 
-Except the target, all the other fields of a rule need not be specified. Such a minimal rule will match any device and allows the policy creator to write an explicit default target. If no rule from the policy is applicable to the device, an implicit target configured in **usbguard-daemon.conf**(5) will be used. However, if one want's to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with device attributes and rule conditions.
+Except the target, all the other fields of a rule need not be specified. Such a minimal rule will match any device and allows the policy creator to write an explicit default target. If no rule from the policy is applicable to the device, an implicit target configured in **usbguard-daemon.conf**(5) will be used. However, if one wants to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with device attributes and rule conditions.
 
 #### Device Attributes
 

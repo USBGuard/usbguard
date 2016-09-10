@@ -13,7 +13,7 @@ which is described in the \f[I]Rule Language\f[] section below.
 .PP
 The USBGuard daemon decides which USB device to authorize based on a
 policy defined by a set of rules.
-When an USB device is inserted into the system, the daemon scans the
+When a USB device is inserted into the system, the daemon scans the
 existing rules sequentially and when a matching rule is found, it either
 authorizes (\f[B]allows\f[]), deauthorizes (\f[B]blocks\f[]) or removes
 (\f[B]rejects\f[]) the device, based on the rule target.
@@ -62,7 +62,7 @@ Such a minimal rule will match any device and allows the policy creator
 to write an explicit default target.
 If no rule from the policy is applicable to the device, an implicit
 target configured in \f[B]usbguard\-daemon.conf\f[](5) will be used.
-However, if one want\[aq]s to narrow the applicability of a rule to a
+However, if one wants to narrow the applicability of a rule to a
 set of devices or one device only, it\[aq]s possible to do so with
 device attributes and rule conditions.
 .SS Device Attributes

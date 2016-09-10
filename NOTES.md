@@ -32,7 +32,7 @@ usbguard auth generate-keypair --name "keyname"
 `--sign` authorize for signing devices
 `--verify` authorize for verification of device signatures
 `--policy` authorize for modification of the policy (ruleset)
-`--device` authorize for changing the runime device policy
+`--device` authorize for changing the runtime device policy
 `--device-implicit` authorize for changing of the runtime implicit device policy
 
 ### Working with device signatures
