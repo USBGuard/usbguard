@@ -133,7 +133,8 @@ libusbguard_la_LIBADD=\
 	@protobuf_LIBS@ \
 	@udev_LIBS@ \
 	@crypto_LIBS@ \
-	@pegtl_LIBS@
+	@pegtl_LIBS@ \
+	@atomic_LIBS@
 
 EXTRA_DIST+=\
 	src/Library/IPC/Devices.proto \

@@ -70,6 +70,22 @@ AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
 AC_PROG_LIBTOOL
 
+# Check if libatomic is available, might be required for emulating
+# atomic intrinsics on some platforms.
+#
+AC_CHECK_LIB([atomic], [__atomic_add_fetch_8], [
+    __saved_LIBS="$LIBS"
+    LIBS="$LIBS -Wl,--push-state,--as-needed,-latomic,--pop-state"
+    AC_LINK_IFELSE([AC_LANG_PROGRAM()],
+      [atomic_LIBS="-Wl,--push-state,--as-needed,-latomic,--pop-state"],
+      [atomic_LIBS="-latomic"]
+    )
+    LIBS="$__saved_LIBS"
+], [atomic_LIBS=""])
+AC_SUBST([atomic_LIBS])
+
+#
+
 #
 # Checks for required libraries.
 #
