@@ -61,9 +61,9 @@
 ### Added
 - Maintainer script for spellchecking source archive files
 - Rule::Attribute class for representing the rule attributes
-- USBDeviceID class for represing the USB device ID
+- USBDeviceID class for representing the USB device ID
 - configure script option to control the bundling of PEGTL source files
-- id attribute to the rule language for specifing the USB device ID
+- id attribute to the rule language for specifying the USB device ID
 - Added a parent device ID field (and methods) to the Device class which
   tracks the ID of the parent device
 - Implemented "parent-hash" attribute for associating a device with its
