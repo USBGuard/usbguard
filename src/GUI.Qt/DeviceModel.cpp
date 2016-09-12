@@ -18,6 +18,7 @@
 //
 #include <build-config.h>
 #include "DeviceModel.h"
+#include <Logger.hpp>
 #include <iostream>
 #include <QVector>
 
@@ -330,6 +331,8 @@ Qt::ItemFlags DeviceModel::flags(const QModelIndex &index) const
 
 void DeviceModel::insertDevice(const usbguard::Rule &device_rule)
 {
+  USBGUARD_LOG(Trace) << "device_rule=" << device_rule.toString();
+
   const uint32_t device_id = device_rule.getRuleID();
   const QString device_hash = QString::fromStdString(device_rule.getHash());
   const QString parent_hash = QString::fromStdString(device_rule.getParentHash());
@@ -349,6 +352,9 @@ void DeviceModel::insertDevice(const usbguard::Rule &device_rule)
 
 void DeviceModel::updateDeviceTarget(quint32 device_id, usbguard::Rule::Target target)
 {
+  USBGUARD_LOG(Trace) << "device_id=" << device_id
+                      << " target=" << usbguard::Rule::targetToString(target);
+
   DeviceModelItem* item = _id_map.value(device_id, nullptr);
 
   if (item == nullptr) {
@@ -369,6 +375,9 @@ void DeviceModel::updateDeviceTarget(quint32 device_id, usbguard::Rule::Target t
 
 void DeviceModel::updateRequestedTarget(DeviceModelItem *item, usbguard::Rule::Target target)
 {
+  USBGUARD_LOG(Trace) << "item=" << item
+                      << " target=" << usbguard::Rule::targetToString(target);
+
   if (item->getRequestedTarget() != target) {
     item->setRequestedTarget(target);
     emit dataChanged(createIndex(item->row(), 0, item),
@@ -383,6 +392,8 @@ void DeviceModel::updateRequestedTarget(DeviceModelItem *item, usbguard::Rule::T
 
 void DeviceModel::removeDevice(quint32 device_id)
 {
+  USBGUARD_LOG(Trace) << "device_id=" << device_id;
+
   DeviceModelItem* item = _id_map.value(device_id, nullptr);
 
   if (item == nullptr) {
@@ -394,6 +405,8 @@ void DeviceModel::removeDevice(quint32 device_id)
 }
 
 void DeviceModel::removeDevice(DeviceModelItem* item, bool notify) {
+  USBGUARD_LOG(Trace) << "item=" << item << " notify=" << notify;
+
   DeviceModelItem* parent_item = item->parent();
 
   if (parent_item == nullptr) {
@@ -446,6 +459,8 @@ QMap<quint32, usbguard::Rule::Target> DeviceModel::getModifiedDevices() const
 
 void DeviceModel::clear()
 {
+  USBGUARD_LOG(Trace);
+
   beginResetModel();
   while (_root_item->childCount() > 0) {
     removeDevice(_root_item->child(0), /*notify=*/false);

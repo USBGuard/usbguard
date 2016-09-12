@@ -19,6 +19,7 @@
 #include "MainWindow.h"
 #include "MainWindow.ui.h"
 #include "DeviceDialog.h"
+#include <Logger.hpp>
 #include <QString>
 #include <QSystemTrayIcon>
 #include <QTimer>
@@ -129,14 +130,17 @@ void MainWindow::setupSettingsWatcher()
 
 void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
 {
+  USBGUARD_LOG(Trace) << "reason=" << reason;
+
   if (reason == QSystemTrayIcon::Context) {
     systray->contextMenu()->show();
-    return;
   } else {
     if (windowState() & Qt::WindowMinimized) {
+      USBGUARD_LOG(Trace) << "Showing main window";
       showNormal();
       stopFlashing();
     } else {
+      USBGUARD_LOG(Trace) << "Minimizing main window";
       showMinimized();
     }
   }
@@ -389,6 +393,8 @@ void MainWindow::flashStep()
 
 void MainWindow::ipcTryConnect()
 {
+  USBGUARD_LOG(Trace);
+
   try {
     IPCClient::connect();
   }
@@ -406,6 +412,8 @@ void MainWindow::ipcTryConnect()
 
 void MainWindow::allowDevice(quint32 id, bool permanent)
 {
+  USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
+
   try {
     IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Allow, permanent);
   }
@@ -425,6 +433,8 @@ void MainWindow::allowDevice(quint32 id, bool permanent)
 
 void MainWindow::blockDevice(quint32 id, bool permanent)
 {
+  USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
+
   try {
     IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Block, permanent);
   }
@@ -444,6 +454,8 @@ void MainWindow::blockDevice(quint32 id, bool permanent)
 
 void MainWindow::rejectDevice(quint32 id, bool permanent)
 {
+  USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
+
   try {
     IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Reject, permanent);
   }
@@ -463,6 +475,8 @@ void MainWindow::rejectDevice(quint32 id, bool permanent)
 
 void MainWindow::handleIPCConnect()
 {
+  USBGUARD_LOG(Trace);
+
   _ipc_timer.stop();
   notifyIPCConnected();
   systray->setIcon(QIcon(":/usbguard-icon.svg"));
@@ -472,6 +486,8 @@ void MainWindow::handleIPCConnect()
 
 void MainWindow::handleIPCDisconnect()
 {
+  USBGUARD_LOG(Trace);
+
   _ipc_timer.start();
   notifyIPCDisconnected();
   systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));
@@ -481,11 +497,14 @@ void MainWindow::handleIPCDisconnect()
 
 void MainWindow::handleDeviceInsert(quint32 id, const usbguard::Rule& device_rule)
 {
+  USBGUARD_LOG(Trace) << "id=" << id << " device_rule=" << device_rule.toString();
   loadDeviceList();
 }
 
 void MainWindow::handleDeviceRemove(quint32 id, const usbguard::Rule& device_rule)
 {
+  USBGUARD_LOG(Trace) << "id=" << id << " device_rule=" << device_rule.toString();
+
   ui->device_view->selectionModel()->clearSelection();
   ui->device_view->reset();
   _device_model.removeDevice(id);
@@ -494,6 +513,8 @@ void MainWindow::handleDeviceRemove(quint32 id, const usbguard::Rule& device_rul
 
 void MainWindow::loadSettings()
 {
+  USBGUARD_LOG(Trace);
+
   _settings.beginGroup("Notifications");
   ui->notify_inserted->setChecked(_settings.value("Inserted", true).toBool());
   ui->notify_removed->setChecked(_settings.value("Removed", false).toBool());
@@ -529,6 +550,8 @@ void MainWindow::loadSettings()
 
 void MainWindow::saveSettings()
 {
+  USBGUARD_LOG(Trace);
+
   _settings.beginGroup("Notifications");
   _settings.setValue("Inserted", ui->notify_inserted->isChecked());
   _settings.setValue("Removed", ui->notify_removed->isChecked());
@@ -552,6 +575,8 @@ void MainWindow::saveSettings()
 
 void MainWindow::loadDeviceList()
 {
+  USBGUARD_LOG(Trace);
+
   try {
     for (auto device_rule : IPCClient::listDevices()) {
       if (!_device_model.containsDevice(device_rule.getRuleID())) {
@@ -624,12 +649,17 @@ void MainWindow::resetDeviceList()
 
 void MainWindow::changeEvent(QEvent* e)
 {
+  USBGUARD_LOG(Trace) << "e->type=" << e->type();
+
   switch (e->type()) {
     case QEvent::LanguageChange:
+      USBGUARD_LOG(Trace) << "QEvent::LanguageChange";
       ui->retranslateUi(this);
       break;
     case QEvent::WindowStateChange:
+      USBGUARD_LOG(Trace) << "QEvent::WindowStateChange";
       if (windowState() & Qt::WindowMinimized) {
+        USBGUARD_LOG(Trace) << "Qt::WindowMinimized";
         QTimer::singleShot(250, this, SLOT(hide()));
       }
       break;
