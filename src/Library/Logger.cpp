@@ -252,6 +252,7 @@ namespace usbguard
   void Logger::setOutputFile(bool state, const std::string& filepath, bool append)
   {
     auto L = lock();
+    /* TODO */
   }
 
   void Logger::setOutputSyslog(bool state, const std::string& ident)

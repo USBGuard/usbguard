@@ -31,31 +31,26 @@ namespace usbguard
     _with_catchall = false;
     _catchall_target = Rule::Target::Block;
     _dm = DeviceManager::create(*this);
-    return;
   }
 
   void PolicyGenerator::setWithHashAttribute(bool state)
   {
     _with_hash = state;
-    return;
   }
 
   void PolicyGenerator::setHashOnly(bool state)
   {
     _hash_only = state;
-    return;
   }
 
   void PolicyGenerator::setPortSpecificRules(bool state)
   {
     _port_specific = state;
-    return;
   }
 
   void PolicyGenerator::setPortSpecificNoSerialRules(bool state)
   {
     _port_specific_noserial = state;
-    return;
   }
 
   void PolicyGenerator::generate()
@@ -67,8 +62,6 @@ namespace usbguard
       catchall_rule.setTarget(_catchall_target);
       _ruleset.appendRule(catchall_rule);
     }
-
-    return;
   }
 
   const RuleSet& PolicyGenerator::refRuleSet() const
@@ -80,7 +73,6 @@ namespace usbguard
   {
     _with_catchall = state;
     _catchall_target = target;
-    return;
   }
 
   void PolicyGenerator::dmHookDevicePresent(Pointer<Device> device)
