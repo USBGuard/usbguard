@@ -202,7 +202,7 @@ namespace usbguard
 
   Logger::Logger()
     : _enabled(true),
-      _level(LogStream::Level::Trace)
+      _level(LogStream::Level::Warning)
   {
     const char * const envval = getenv("USBGUARD_DEBUG");
     /*

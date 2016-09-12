@@ -75,8 +75,15 @@ namespace usbguard
     _catchall_target = target;
   }
 
-  void PolicyGenerator::dmHookDevicePresent(Pointer<Device> device)
+  void PolicyGenerator::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
+    if (event != DeviceManager::EventType::Present) {
+      /*
+       * Ignore run-time device events
+       */
+      return;
+    }
+
     bool port_specific = _port_specific;
     /*
      * If the the global "port specific" flag isn't
@@ -110,33 +117,8 @@ namespace usbguard
 
     rule->setTarget(Rule::Target::Allow);
     _ruleset.appendRule(*rule);
-    return;
   }
 
-  void PolicyGenerator::dmHookDeviceInserted(Pointer<Device> device)
-  {
-    throw std::runtime_error("BUG: DeviceInserted hook should not be called");
-  }
-
-  void PolicyGenerator::dmHookDeviceRemoved(Pointer<Device> device)
-  {
-    throw std::runtime_error("BUG: DeviceRemoved hook should not be called");
-  }
-
-  void PolicyGenerator::dmHookDeviceAllowed(Pointer<Device> device)
-  {
-    throw std::runtime_error("BUG: DeviceAllowed hook should not be called");
-  }
-
-  void PolicyGenerator::dmHookDeviceBlocked(Pointer<Device> device)
-  {
-    throw std::runtime_error("BUG: DeviceBlocked hook should not be called");
-  }
-
-  void PolicyGenerator::dmHookDeviceRejected(Pointer<Device> device)
-  {
-    throw std::runtime_error("BUG: DeviceRejected hook should not be called");
-  }
 
   uint32_t PolicyGenerator::dmHookAssignID()
   {

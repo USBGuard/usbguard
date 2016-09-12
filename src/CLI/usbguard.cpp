@@ -83,9 +83,6 @@ namespace usbguard
   {
     usbguard_arg0 = ::basename(argv[0]);
 
-    USBGUARD_LOGGER.setEnabled(true, LogStream::Level::Debug);
-    USBGUARD_LOGGER.setOutputConsole(true);
-
     if (argc == 1) {
       showTopLevelHelp();
       return EXIT_SUCCESS;

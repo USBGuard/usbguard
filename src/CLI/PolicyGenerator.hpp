@@ -37,13 +37,8 @@ namespace usbguard
     void generate();
     const RuleSet& refRuleSet() const;
 
-    void dmHookDeviceInserted(Pointer<Device> device);
-    void dmHookDevicePresent(Pointer<Device> device);
-    void dmHookDeviceRemoved(Pointer<Device> device);
-    void dmHookDeviceAllowed(Pointer<Device> device);
-    void dmHookDeviceBlocked(Pointer<Device> device);
-    void dmHookDeviceRejected(Pointer<Device> device);
-    uint32_t dmHookAssignID();
+    void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;
+    uint32_t dmHookAssignID() override;
 
   private:
     RuleSet _ruleset;
