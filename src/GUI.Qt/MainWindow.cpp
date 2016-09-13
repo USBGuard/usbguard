@@ -35,6 +35,7 @@
 #include <QCheckBox>
 #include <QTreeView>
 #include <QShortcut>
+#include <QWindowStateChangeEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -651,22 +652,31 @@ void MainWindow::changeEvent(QEvent* e)
 {
   USBGUARD_LOG(Trace) << "e->type=" << e->type();
 
-  switch (e->type()) {
-    case QEvent::LanguageChange:
+  if (e->type() == QEvent::LanguageChange) {
       USBGUARD_LOG(Trace) << "QEvent::LanguageChange";
       ui->retranslateUi(this);
-      break;
-    case QEvent::WindowStateChange:
-      USBGUARD_LOG(Trace) << "QEvent::WindowStateChange";
-      if (windowState() & Qt::WindowMinimized) {
-        USBGUARD_LOG(Trace) << "Qt::WindowMinimized";
-        QTimer::singleShot(250, this, SLOT(hide()));
-      }
-      break;
-    default:
-      break;
   }
+  else if (e->type() == QEvent::WindowStateChange) {
+    USBGUARD_LOG(Trace) << "QEvent::WindowStateChange";
+
+    QWindowStateChangeEvent* event = \
+      static_cast<QWindowStateChangeEvent*>(e);
+
+    if (!(event->oldState() & Qt::WindowMinimized)
+        && (windowState() & Qt::WindowMinimized)) {
+      USBGUARD_LOG(Trace) << "Qt::WindowMinimized";
+      QTimer::singleShot(250, this, SLOT(hide()));
+    }
+  }
+
   QMainWindow::changeEvent(e);
+}
+
+void MainWindow::closeEvent(QCloseEvent* e)
+{
+  USBGUARD_LOG(Trace) << "e=" << e;
+  showMinimized();
+  e->accept();
 }
 
 void MainWindow::DevicePresenceChanged(quint32 id,

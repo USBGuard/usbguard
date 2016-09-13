@@ -99,7 +99,9 @@ protected slots:
   void clearDeviceList();
   void resetDeviceList();
 
-  void changeEvent(QEvent *e) override;
+  void changeEvent(QEvent* e) override;
+  void closeEvent(QCloseEvent* e) override;
+
   void setupSystemTray();
   void setupSettingsWatcher();
   void startFlashing();
