@@ -154,7 +154,19 @@ namespace usbguard
 
   int32_t IPCServerPrivate::qbPollWakeupFn(int32_t fd, int32_t revents, void * data)
   {
-    return 0;
+    USBGUARD_LOG(Trace) << "fd=" << fd
+                        << " revents=" << revents
+                        << " data=" << data;
+    uint64_t one = 0;
+    if (read(fd, &one, sizeof one) != sizeof one) {
+      USBGUARD_LOG(Warning) << "IPC server: "
+                            << "Failed to read wakeup event: "
+                            << "errno=" << errno;
+      return -1;
+    }
+    else {
+      return 0;
+    }
   }
 
   void IPCServerPrivate::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)
