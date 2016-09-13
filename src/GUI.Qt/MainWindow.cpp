@@ -487,7 +487,7 @@ void MainWindow::handleIPCConnect()
 void MainWindow::handleIPCDisconnect()
 {
   USBGUARD_LOG(Trace);
-
+  IPCClient::wait();
   _ipc_timer.start();
   notifyIPCDisconnected();
   systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));

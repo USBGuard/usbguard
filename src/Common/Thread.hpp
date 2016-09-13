@@ -70,7 +70,7 @@ namespace usbguard
     {
       _stop_request = true;
       if (do_wait) {
-	wait();
+        wait();
       }
     }
 

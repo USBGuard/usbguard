@@ -134,8 +134,9 @@ namespace usbguard
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
       _qb_fd = -1;
-      _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
       stop(do_wait);
+      USBGUARD_LOG(Trace) << "Signaling IPCDisconnected";
+      _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
     }
   }
 

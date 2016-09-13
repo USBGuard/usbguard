@@ -37,7 +37,7 @@ namespace usbguard
 
   void IPCClient::disconnect()
   {
-    d_pointer->disconnect();
+    d_pointer->disconnect(/*do_wait*/true);
   }
 
   bool IPCClient::isConnected() const
