@@ -32,6 +32,9 @@ namespace usbguard
 
   int32_t IPCClientPrivate::qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data)
   {
+    USBGUARD_LOG(Trace) << "fd=" << fd
+                        << " revents=" << revents
+                        << " data=" << data;
     IPCClientPrivate *client = static_cast<IPCClientPrivate*>(data);
     client->processReceiveEvent();
     return 0;
@@ -69,6 +72,7 @@ namespace usbguard
 
   void IPCClientPrivate::destruct()
   {
+    USBGUARD_LOG(Trace);
     qb_loop_poll_del(_qb_loop, _wakeup_fd);
     close(_wakeup_fd);
     qb_loop_destroy(_qb_loop);
@@ -82,6 +86,8 @@ namespace usbguard
 
   void IPCClientPrivate::connect()
   {
+    USBGUARD_LOG(Trace);
+
     _qb_conn = qb_ipcc_connect("usbguard", 1<<20);
 
     if (_qb_conn == nullptr) {
@@ -98,12 +104,19 @@ namespace usbguard
     }
 
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _qb_fd, POLLIN, this, qbIPCMessageProcessFn);
+    USBGUARD_LOG(Trace) << "Starting IPC client thread";
     _thread.start();
     _p_instance.IPCConnected();
   }
 
   void IPCClientPrivate::disconnect(bool exception_initiated, const IPCException& exception, bool do_wait)
   {
+    USBGUARD_LOG(Trace) << "exception_initiated=" << exception_initiated
+                        << " exception=" << exception.message()
+                        << " do_wait=" << do_wait;
+    USBGUARD_LOG(Trace) << "_qb_conn=" << _qb_conn
+                        << " _qb_fd=" << _qb_fd;
+
     if (_qb_conn != nullptr && _qb_fd >= 0) {
       qb_loop_poll_del(_qb_loop, _qb_fd);
       qb_ipcc_disconnect(_qb_conn);
@@ -116,6 +129,7 @@ namespace usbguard
 
   void IPCClientPrivate::disconnect(bool do_wait)
   {
+    USBGUARD_LOG(Trace) << "do_wait=" << do_wait;
     const IPCException empty_exception;
     disconnect(/*exception_initiated=*/false, empty_exception, do_wait);
   }
@@ -127,12 +141,15 @@ namespace usbguard
 
   void IPCClientPrivate::wait()
   {
+    USBGUARD_LOG(Trace);
     _thread.wait();
   }
 
   void IPCClientPrivate::thread()
   {
+    USBGUARD_LOG(Trace) << "Entering IPC client main loop";
     qb_loop_run(_qb_loop);
+    USBGUARD_LOG(Trace) << "Leaving IPC client main loop";
   }
 
   void IPCClientPrivate::wakeup()
@@ -144,6 +161,7 @@ namespace usbguard
 
   void IPCClientPrivate::stop(bool do_wait)
   {
+    USBGUARD_LOG(Trace) << "do_wait=" << do_wait;
     _thread.stop(/*do_wait=*/false);
     qb_loop_stop(_qb_loop);
     wakeup();
@@ -160,6 +178,8 @@ namespace usbguard
 
   IPC::MessagePointer IPCClientPrivate::qbIPCSendRecvMessage(IPC::MessageType& message)
   {
+    USBGUARD_LOG(Trace) << "message=" << &message;
+
     if (!isConnected()) {
       throw Exception("IPC send/recv", "connection", "Not connected");
     }
@@ -233,6 +253,7 @@ namespace usbguard
 
   void IPCClientPrivate::processReceiveEvent()
   {
+    USBGUARD_LOG(Trace);
     try {
       const std::string buffer = receive();
       process(buffer);
@@ -256,6 +277,8 @@ namespace usbguard
 
   std::string IPCClientPrivate::receive()
   {
+    USBGUARD_LOG(Trace);
+
     const size_t buffer_size_max = 1<<20;
     std::string buffer(buffer_size_max, 0);
 
@@ -271,13 +294,15 @@ namespace usbguard
       throw Exception("IPC receive", "message", "Message too small");
     }
 
+    USBGUARD_LOG(Debug) << "Received " << recv_size << " bytes";
     buffer.resize((size_t)recv_size);
-
     return buffer;
   }
 
   void IPCClientPrivate::process(const std::string& buffer)
   {
+    USBGUARD_LOG(Trace) << "buffer=" << &buffer;
+
     const struct qb_ipc_response_header *hdr = \
       (const struct qb_ipc_response_header *)buffer.data();
 
@@ -298,6 +323,9 @@ namespace usbguard
 
   void IPCClientPrivate::handleIPCPayload(const uint32_t payload_type, const std::string& payload)
   {
+    USBGUARD_LOG(Trace) << "payload_type=" << payload_type
+                        << " payload=" << &payload;
+
     try {
       auto& handler = _handlers.at(payload_type);
       auto message = handler.payloadToMessage(payload);

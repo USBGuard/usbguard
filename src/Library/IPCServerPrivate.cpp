@@ -159,17 +159,19 @@ namespace usbguard
 
   void IPCServerPrivate::qbIPCConnectionCreatedFn(qb_ipcs_connection_t *conn)
   {
-
+    USBGUARD_LOG(Trace) << "conn=" << conn;
+    USBGUARD_LOG(Info) << "New IPC connection from PID " << qbIPCConnectionClientPID(conn);
   }
 
   void IPCServerPrivate::qbIPCConnectionDestroyedFn(qb_ipcs_connection_t *conn)
   {
-
+    USBGUARD_LOG(Trace) << "conn=" << conn;
   }
 
   int32_t IPCServerPrivate::qbIPCConnectionClosedFn(qb_ipcs_connection_t *conn)
   {
-
+    USBGUARD_LOG(Trace) << "conn=" << conn;
+    USBGUARD_LOG(Info) << "Closed IPC connection to PID " << qbIPCConnectionClientPID(conn);
     return 0;
   }
 
