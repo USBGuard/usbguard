@@ -45,13 +45,6 @@ DeviceDialog::DeviceDialog(quint32 id, QWidget *parent) :
 
   updateDialog();
   timer.start(1000);
-
-#if 1
-  /* Hide things which aren't working yet */
-  ui->timeout_checkbox->hide();
-  ui->timeout_combobox->hide();
-  ui->timeout_lineedit->hide();
-#endif
 }
 
 void DeviceDialog::setName(const QString& name)
@@ -256,18 +249,4 @@ void DeviceDialog::on_reject_button_clicked()
 {
   emit rejected(device_id, ui->permanent_checkbox->isChecked());
   accept();
-}
-
-void DeviceDialog::on_timeout_checkbox_toggled(bool checked)
-{
-  if (checked) {
-    ui->permanent_checkbox->setChecked(false);
-  }
-}
-
-void DeviceDialog::on_permanent_checkbox_toggled(bool checked)
-{
-  if (checked) {
-    ui->timeout_checkbox->setChecked(false);
-  }
 }

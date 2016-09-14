@@ -72,8 +72,6 @@ private slots:
   void on_allow_button_clicked();
   void on_block_button_clicked();
   void on_reject_button_clicked();
-  void on_timeout_checkbox_toggled(bool checked);
-  void on_permanent_checkbox_toggled(bool checked);
 
 private:
   Ui::DeviceDialog *ui;
