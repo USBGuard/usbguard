@@ -136,7 +136,7 @@ void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
   if (reason == QSystemTrayIcon::Context) {
     systray->contextMenu()->show();
   } else {
-    if (windowState() & Qt::WindowMinimized) {
+    if (!isVisible() || (windowState() & Qt::WindowMinimized)) {
       USBGUARD_LOG(Trace) << "Showing main window";
       showNormal();
       stopFlashing();
