@@ -3,10 +3,17 @@
 ## 0.6.1 - [unreleased]
 ### Changed
 - Refactored logging subsystem
+- Fixed handling of IPC disconnect in the IPCClient class
+- Qt Applet: Fixed handling of main window minimization and maximization
+- Fixed building on architectures that don't provide required atomic operations.
+  The libatomic emulation library will be used in such cases.
+- Fixed several typos in the documentation
 
 ### Added
 - Implemented a simple internal logger
 - Access to the logger via public API
+- Improved logging coverage. Logging output can be enabled either via
+  CLI options or by setting the `USBGUARD_DEBUG` environment variable to 1.
 
 ### Removed
 - Removed spdlog dependency
