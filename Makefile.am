@@ -431,6 +431,9 @@ endif #DBUS_ENABLED
 #
 # Qt GUI
 #
+usbguard_applet_qt_TRANSLATIONS=\
+	src/GUI.Qt/translations/cs_CZ.ts
+
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt/DeviceDialog.ui.h \
 	src/GUI.Qt/MainWindow.ui.h
@@ -456,7 +459,8 @@ EXTRA_DIST+=\
 	src/GUI.Qt/MainWindow.ui \
 	src/GUI.Qt/usbguard-applet-qt.desktop.in \
 	$(usbguard_applet_qt_RESOURCES) \
-	$(usbguard_applet_qt_SOURCES_BASE)
+	$(usbguard_applet_qt_SOURCES_BASE) \
+	$(usbguard_applet_qt_TRANSLATIONS)
 
 if GUI_QT_ENABLED
 bin_PROGRAMS+= usbguard-applet-qt
@@ -472,10 +476,12 @@ man1_MANS +=\
 
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \
+	$(usbguard_applet_qt_TRANSLATIONS:.ts=.qm) \
 	src/GUI.Qt/usbguard.qrc
 
 CLEANFILES +=\
 	$(usbguard_applet_qt_UIHEADERS) \
+	$(usbguard_applet_qt_TRANSLATIONS:.ts=.qm) \
 	$(top_builddir)/src/GUI.Qt/DeviceDialog.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/MainWindow.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/usbguard.qrc.cpp \
@@ -501,6 +507,10 @@ usbguard_applet_qt_CPPFLAGS=\
 	-I$(top_builddir)/src/GUI.Qt \
 	-fPIC @qt_CFLAGS@
 
+%.qm: %.ts
+	mkdir -p "$(top_builddir)/$(shell dirname $@)"
+	@QTLRELEASE@ "$<" -qm "$@"
+
 %.moc.cpp: %.h
 	@QTMOC@ -f"$(shell basename $<)" -I$(top_srcdir)/src/GUI.Qt -o$(top_builddir)/$@ $(DEFS) $(DEFAULT_INCLUDES) $(MOC_CPPFLAGS) $<
 
@@ -510,12 +520,18 @@ usbguard_applet_qt_CPPFLAGS=\
 %.qrc.cpp: %.qrc
 	@QTRCC@ -o $(top_builddir)/$@ $<
 
-%.qrc: $(usbguard_applet_qt_RESOURCES)
+%.qrc: $(usbguard_applet_qt_RESOURCES) $(usbguard_applet_qt_TRANSLATIONS:.ts=.qm)
 	echo '<RCC>' > "$@.tmp"
 	echo '<qresource prefix="/">' >> "$@.tmp"
 	for file in $(usbguard_applet_qt_RESOURCES); do \
 	  base=$$(basename $$file); \
 	  echo "<file alias=\"$$base\">$(abs_top_srcdir)/$$file</file>" >> "$@.tmp"; \
+	done
+	echo '</qresource>' >> "$@.tmp"
+	echo '<qresource prefix="/translations">' >> "$@.tmp"
+	for file in $(usbguard_applet_qt_TRANSLATIONS); do \
+	  base=$$(basename -s .ts $$file); \
+	  echo "<file alias=\"$$base.qm\">$(abs_top_builddir)/src/GUI.Qt/translations/$$base.qm</file>" >> "$@.tmp"; \
 	done
 	echo '</qresource>' >> "$@.tmp"
 	echo '</RCC>' >> "$@.tmp"

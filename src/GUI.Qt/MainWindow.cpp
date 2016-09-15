@@ -89,8 +89,12 @@ MainWindow::MainWindow(QWidget *parent) :
   QObject::connect(this, SIGNAL(uiDisconnected()),
                    this, SLOT(handleIPCDisconnect()));
 
-  setupSettingsWatcher();
+  /*
+   * loadSettings has to be called before setupSettingsWatcher! Otherwise it
+   * will trigger the slots connected by the setupSettingsWatcher method.
+   */
   loadSettings();
+  setupSettingsWatcher();
 
   _ipc_timer.setInterval(1000);
   _ipc_timer.start();
@@ -161,6 +165,20 @@ void MainWindow::showDeviceDialog(quint32 id, const usbguard::Rule& device_rule)
   dialog->setDefaultDecisionTimeout(ui->decision_timeout->value());
   dialog->setMaskSerialNumber(ui->mask_serial_checkbox->isChecked());
   dialog->setDecisionIsPermanent(ui->decision_permanent_checkbox->isChecked());
+
+  usbguard::Rule::Target default_target = usbguard::Rule::Target::Block;
+  switch(ui->default_decision_combobox->currentIndex()) {
+    case 0:
+      default_target = usbguard::Rule::Target::Allow;
+      break;
+    case 1:
+      default_target = usbguard::Rule::Target::Block;
+      break;
+    case 2:
+      default_target = usbguard::Rule::Target::Reject;
+      break;
+  }
+  dialog->setDefaultDecision(default_target);
 
   dialog->setName(QString::fromStdString(device_rule.getName()));
   dialog->setSerial(QString::fromStdString(device_rule.getSerial()));
@@ -516,6 +534,7 @@ void MainWindow::loadSettings()
 {
   USBGUARD_LOG(Trace);
 
+  _settings.sync();
   _settings.beginGroup("Notifications");
   ui->notify_inserted->setChecked(_settings.value("Inserted", true).toBool());
   ui->notify_removed->setChecked(_settings.value("Removed", false).toBool());
@@ -528,15 +547,13 @@ void MainWindow::loadSettings()
 
   _settings.beginGroup("DeviceDialog");
 
-  const int default_decision_index = \
-    ui->default_decision_combobox->findText(_settings.value("DefaultDecision", QString("block")).toString());
-  if (default_decision_index != -1) {
+  const int default_decision_index = _settings.value("DefaultDecision", 0).toInt();
+  if (default_decision_index < 0 || default_decision_index >= ui->default_decision_combobox->count()) {
     ui->default_decision_combobox->setCurrentIndex(default_decision_index);
   }
 
-  const int decision_method_index = \
-    ui->decision_method_combobox->findText(_settings.value("DecisionMethod", QString("Buttons")).toString());
-  if (decision_method_index != -1) {
+  const int decision_method_index = _settings.value("DecisionMethod", 0).toInt();
+  if (decision_method_index < 0 || decision_method_index >= ui->decision_method_combobox->count()) {
     ui->decision_method_combobox->setCurrentIndex(decision_method_index);
   }
 
@@ -553,6 +570,7 @@ void MainWindow::saveSettings()
 {
   USBGUARD_LOG(Trace);
 
+  _settings.clear();
   _settings.beginGroup("Notifications");
   _settings.setValue("Inserted", ui->notify_inserted->isChecked());
   _settings.setValue("Removed", ui->notify_removed->isChecked());
@@ -564,14 +582,15 @@ void MainWindow::saveSettings()
   _settings.endGroup();
 
   _settings.beginGroup("DeviceDialog");
-  _settings.setValue("DefaultDecision", ui->default_decision_combobox->currentText());
+  _settings.setValue("DefaultDecision", ui->default_decision_combobox->currentIndex());
   _settings.setValue("DefaultDecisionTimeout", ui->decision_timeout->value());
-  _settings.setValue("DecisionMethod", ui->decision_method_combobox->currentText());
+  _settings.setValue("DecisionMethod", ui->decision_method_combobox->currentIndex());
   _settings.setValue("DecisionIsPermanent", ui->decision_permanent_checkbox->isChecked());
   _settings.setValue("ShowRejectButton", ui->show_reject_button_checkbox->isChecked());
   _settings.setValue("RandomizeWindowPosition", ui->randomize_position_checkbox->isChecked());
   _settings.setValue("MaskSerialNumber", ui->mask_serial_checkbox->isChecked());
   _settings.endGroup();
+  _settings.sync();
 }
 
 void MainWindow::loadDeviceList()

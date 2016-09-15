@@ -65,7 +65,7 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          packages: ['qtbase5-dev', 'qt5-default', 'qtbase5-dev-tools', 'libqt5svg5-dev']
+          packages: ['qtbase5-dev', 'qt5-default', 'qtbase5-dev-tools', 'libqt5svg5-dev', 'qttools5-dev-tools']
       env: CONFIGURE_ARGS=--with-gui-qt=qt5
     - os: linux
       compiler: gcc

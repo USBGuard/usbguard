@@ -284,8 +284,9 @@ PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
     AC_CHECK_PROGS(QT5MOC, [moc-qt5 moc])
     AC_CHECK_PROGS(QT5UIC, [uic-qt5 uic])
     AC_CHECK_PROGS(QT5RCC, [rcc-qt5 rcc])
-    if test -z "$QT5MOC" || test -z "$QT5UIC" || test -z "$QT5RCC"; then
-      qt5_available=yes
+    AC_CHECK_PROGS(QT5LRELEASE, [lrelease-qt5 lrelease])
+    if test -z "$QT5MOC" || test -z "$QT5UIC" || test -z "$QT5RCC" || test -z "$QT5LRELEASE"; then
+      qt5_available=no
     else
       qt5_available=yes
     fi
@@ -301,8 +302,9 @@ PKG_CHECK_MODULES([qt4], [QtGui >= 4.0 QtSvg >= 4.0],
     AC_CHECK_PROGS(QT4MOC, [moc-qt4 moc])
     AC_CHECK_PROGS(QT4UIC, [uic-qt4 uic])
     AC_CHECK_PROGS(QT4RCC, [rcc-qt4 rcc])
-    if test -z "$QT4MOC" || test -z "$QT4UIC" || test -z "$QT4RCC"; then
-      qt4_available=yes
+    AC_CHECK_PROGS(QT4LRELEASE, [lrelease-qt4 lrelease])
+    if test -z "$QT4MOC" || test -z "$QT4UIC" || test -z "$QT4RCC" || test -z "$QT4LRELEASE"; then
+      qt4_available=no
     else
       qt4_available=yes
     fi
@@ -320,6 +322,7 @@ case "$with_gui_qt" in
     AC_SUBST(QTMOC, $QT5MOC)
     AC_SUBST(QTUIC, $QT5UIC)
     AC_SUBST(QTRCC, $QT5RCC)
+    AC_SUBST(QTLRELEASE, $QT5LRELEASE)
     AC_SUBST(qt_CFLAGS, $qt5_CFLAGS)
     AC_SUBST(qt_LIBS, $qt5_LIBS)
     qt_summary="Qt 5.x; system-wide; $qt_CFLAGS $qt_LIBS"
@@ -333,6 +336,7 @@ case "$with_gui_qt" in
     AC_SUBST(QTMOC, $QT4MOC)
     AC_SUBST(QTUIC, $QT4UIC)
     AC_SUBST(QTRCC, $QT4RCC)
+    AC_SUBST(QTLRELEASE, $QT4LRELEASE)
     AC_SUBST(qt_CFLAGS, $qt4_CFLAGS)
     AC_SUBST(qt_LIBS, $qt4_LIBS)
     qt_summary="Qt 4.x; system-wide; $qt_CFLAGS $qt_LIBS"

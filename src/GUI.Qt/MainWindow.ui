@@ -302,17 +302,17 @@
              <widget class="QComboBox" name="default_decision_combobox">
               <item>
                <property name="text">
-                <string notr="true">allow</string>
+                <string>allow</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string notr="true">block</string>
+                <string>block</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string notr="true">reject</string>
+                <string>reject</string>
                </property>
               </item>
              </widget>

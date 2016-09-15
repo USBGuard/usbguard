@@ -21,6 +21,7 @@
 #include <Logger.hpp>
 #include <iostream>
 #include <QVector>
+#include <QCoreApplication>
 
 DeviceModelItem::DeviceModelItem()
 {
@@ -75,12 +76,8 @@ QVariant DeviceModelItem::data(int column)
     case 1:
       return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
     case 2:
-      if (_requested_target != _device_rule.getTarget()) {
-        return QVariant(QString::fromStdString(usbguard::Rule::targetToString(_requested_target)));
-      }
-      else {
-        return QVariant(QString::fromStdString(usbguard::Rule::targetToString(_device_rule.getTarget())));
-      }
+      return QVariant(QCoreApplication::translate("MainWindow",
+                                                  usbguard::Rule::targetToString(_requested_target).c_str()));
     case 3:
       return QVariant(QString::fromStdString(_device_rule.getDeviceID().toString()));
     case 4:
@@ -173,7 +170,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
   {
     case 0:
       if (role == Qt::DisplayRole) {
-        return QString("ID");
+        return tr("ID");
       }
       else {
         return Qt::AlignCenter;
@@ -181,7 +178,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
       break;
     case 1:
       if (role == Qt::DisplayRole) {
-        return QString(" M ");
+        return tr(" M "); /* Modified flag */
       }
       if (role == Qt::TextAlignmentRole) {
         return Qt::AlignCenter;
@@ -189,7 +186,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
       break;
     case 2:
       if (role == Qt::DisplayRole) {
-        return QString("Target");
+        return tr("Target");
       }
       if (role == Qt::TextAlignmentRole) {
         return Qt::AlignCenter;
@@ -197,7 +194,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
       break;
     case 3:
       if (role == Qt::DisplayRole) {
-        return QString("USB ID");
+        return tr("USB ID");
       }
       if (role == Qt::TextAlignmentRole) {
         return Qt::AlignCenter;
@@ -205,22 +202,22 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
       break;
     case 4:
       if (role == Qt::DisplayRole) {
-        return QString("Name");
+        return tr("Name");
       }
       break;
     case 5:
       if (role == Qt::DisplayRole) {
-        return QString("Serial");
+        return tr("Serial");
       }
       break;
     case 6:
       if (role == Qt::DisplayRole) {
-        return QString("Port");
+        return tr("Port");
       }
       break;
     case 7:
       if (role == Qt::DisplayRole) {
-        return QString("Interfaces");
+        return tr("Interfaces");
       }
       break;
     default:

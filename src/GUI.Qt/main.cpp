@@ -17,11 +17,31 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "MainWindow.h"
+#include <Logger.hpp>
 #include <QApplication>
+#include <QLocale>
+#include <QTranslator>
+#include <QString>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QTranslator translator;
+
+    USBGUARD_LOG(Debug) << "Loading translations for locale: "
+                        << QLocale::system().name().toStdString();
+
+    if (translator.load(QLocale::system(),
+                        /*filename=*/QString(),
+                        /*prefix=*/QString(),
+                        /*directory=*/":/translations",
+                        /*suffix=*/".qm")) {
+      a.installTranslator(&translator);
+    }
+    else {
+      USBGUARD_LOG(Debug) << "Translations not available for the current locale.";
+    }
+
     MainWindow w;
     a.setQuitOnLastWindowClosed(false);
     return a.exec();
