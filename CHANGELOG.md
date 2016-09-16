@@ -14,6 +14,8 @@
 - Access to the logger via public API
 - Improved logging coverage. Logging output can be enabled either via
   CLI options or by setting the `USBGUARD_DEBUG` environment variable to 1.
+- Qt Applet: UI translation support.
+- Qt Applet: Czech (cs_CZ) translation
 
 ### Removed
 - Removed spdlog dependency
