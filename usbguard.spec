@@ -25,7 +25,7 @@ BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: protobuf-devel protobuf-compiler
 BuildRequires: PEGTL-static
-BuildRequires: qt5-qtbase-devel qt5-qtsvg-devel
+BuildRequires: qt5-qtbase-devel qt5-qtsvg-devel qt5-linguist
 BuildRequires: dbus-glib-devel
 BuildRequires: dbus-devel
 BuildRequires: glib2-devel
