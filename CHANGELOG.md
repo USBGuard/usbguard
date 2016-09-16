@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.6.1 - [unreleased]
+## 0.6.1 - 2016-09-16
 ### Changed
 - Refactored logging subsystem
 - Fixed handling of IPC disconnect in the IPCClient class
