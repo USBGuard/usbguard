@@ -92,7 +92,7 @@ namespace usbguard
 
   IPCClientPrivate::~IPCClientPrivate()
   {
-    disconnect();
+    disconnect(/*do_wait=*/isConnected());
     destruct();
   }
 
