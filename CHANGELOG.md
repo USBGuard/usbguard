@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.2 - 2016-09-18
+### Changed
+- Wait for disconnect in IPCClient dtor if needed
+- Qt Applet: Fixed loading of decision method and default decision settings
+
 ## 0.6.1 - 2016-09-16
 ### Changed
 - Refactored logging subsystem
