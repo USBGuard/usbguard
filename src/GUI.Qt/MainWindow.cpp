@@ -547,13 +547,13 @@ void MainWindow::loadSettings()
 
   _settings.beginGroup("DeviceDialog");
 
-  const int default_decision_index = _settings.value("DefaultDecision", 0).toInt();
-  if (default_decision_index < 0 || default_decision_index >= ui->default_decision_combobox->count()) {
+  const int default_decision_index = _settings.value("DefaultDecision", 1).toInt();
+  if (default_decision_index >= 0 && default_decision_index < ui->default_decision_combobox->count()) {
     ui->default_decision_combobox->setCurrentIndex(default_decision_index);
   }
 
   const int decision_method_index = _settings.value("DecisionMethod", 0).toInt();
-  if (decision_method_index < 0 || decision_method_index >= ui->decision_method_combobox->count()) {
+  if (decision_method_index >= 0 && decision_method_index < ui->decision_method_combobox->count()) {
     ui->decision_method_combobox->setCurrentIndex(decision_method_index);
   }
 
