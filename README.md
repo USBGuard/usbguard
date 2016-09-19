@@ -125,9 +125,9 @@ You can install the repository by executing the following steps:
 
 ### Gentoo
 
-For Gentoo you can use the [stuge overlay](http://git.stuge.se/?p=stuge-overlay.git;a=summary) via layman:
+For Gentoo you can use the [stuge overlay](https://github.com/das-labor/labor-overlay) via layman:
 
-    $ layman -a stuge-overlay
+    $ layman -f -o https://raw.github.com/das-labor/labor-overlay/master/labor-overlay -a labor-overlay
     $ emerge -av usbguard
 
 ### Arch Linux
