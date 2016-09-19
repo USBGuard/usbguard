@@ -5,7 +5,7 @@
     <name>DeviceDialog</name>
     <message>
         <source>USBGuard Device Dialog</source>
-        <translation>Diaologo con dispositivo de USBGuard</translation>
+        <translation>Dialogo con dispositivo de USBGuard</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Make the decision permanent</source>
-        <translation>Aplicar la decisión permanentenmente</translation>
+        <translation>Aplicar la decisión permanentemente</translation>
     </message>
     <message>
         <source>Block</source>
@@ -155,15 +155,15 @@
     </message>
     <message>
         <source>Decision is permanent by default</source>
-        <translation>La desición es permanente por defecto</translation>
+        <translation>La decisión es permanente por defecto</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reject causes the device to be logically removed from the operating system. The device might still get power from the from the bus, however, it has to be reinserted for it to get visible for the operating system again.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rechazar causa que el dispositivo sea removido logicamente del sistema operativo. El dispositivo seguira recibiendo energia del bus, igualmente, debe ser reinsertado para que vuelva a ser visible por el sistema operativo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rechazar causa que el dispositivo sea removido lógicamente del sistema operativo. El dispositivo seguirá recibiendo energía del bus, igualmente, debe ser reinsertado para que vuelva a ser visible por el sistema operativo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Show the Reject button</source>
-        <translation>Mostrar el boton de Rechazo</translation>
+        <translation>Mostrar el botón de Rechazo</translation>
     </message>
     <message>
         <source>Default decision timeout (seconds)</source>
@@ -171,7 +171,7 @@
     </message>
     <message>
         <source>Decision method</source>
-        <translation>Metodo de  decisión</translation>
+        <translation>Método de  decisión</translation>
     </message>
     <message>
         <source>Default decision</source>
@@ -199,7 +199,7 @@
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Starting from the end, mask every 2nd character in the displayed serial number value with an asterisk symbol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comenzando desde el final, reemplazar cada segundo caracter del número de serie mostrado con un simbolo de asterisco.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comenzando desde el final, reemplazar cada segundo caracter del número de serie mostrado con un símbolo de asterisco.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Mask the serial number value</source>
