@@ -34,6 +34,10 @@ namespace usbguard
   class DLL_PUBLIC Interface
   {
   public:
+    /* Parameters */
+    virtual std::string setParameter(const std::string& name, const std::string& value) = 0;
+    virtual std::string getParameter(const std::string& name) = 0;
+
     /* Methods */
     virtual uint32_t appendRule(const std::string& rule_spec,
 				uint32_t parent_id) = 0;

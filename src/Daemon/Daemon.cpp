@@ -53,35 +53,38 @@ namespace usbguard
     "PresentControllerPolicy",
     "IPCAllowedUsers",
     "IPCAllowedGroups",
-    "DeviceRulesWithPort"
+    "DeviceRulesWithPort",
+    "InsertedDevicePolicy",
+    "RestoreControllerDeviceState",
+    "DeviceManagerBackend"
   };
 
-  static const std::vector<std::pair<String,Daemon::PresentDevicePolicy> > present_device_policy_strings = {
-    { "allow", Daemon::PresentDevicePolicy::Allow },
-    { "block", Daemon::PresentDevicePolicy::Block },
-    { "reject", Daemon::PresentDevicePolicy::Reject },
-    { "keep", Daemon::PresentDevicePolicy::Keep },
-    { "apply-policy", Daemon::PresentDevicePolicy::ApplyPolicy }
+  static const std::vector<std::pair<String,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
+    { "allow", Daemon::DevicePolicyMethod::Allow },
+    { "block", Daemon::DevicePolicyMethod::Block },
+    { "reject", Daemon::DevicePolicyMethod::Reject },
+    { "keep", Daemon::DevicePolicyMethod::Keep },
+    { "apply-policy", Daemon::DevicePolicyMethod::ApplyPolicy }
   };
 
-  Daemon::PresentDevicePolicy Daemon::presentDevicePolicyFromString(const String& policy_string)
+  Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const String& policy_string)
   {
-    for (auto present_device_policy_string : present_device_policy_strings) {
-      if (present_device_policy_string.first == policy_string) {
-	return present_device_policy_string.second;
+    for (auto device_policy_method_string : device_policy_method_strings) {
+      if (device_policy_method_string.first == policy_string) {
+	return device_policy_method_string.second;
       }
     }
-    throw USBGUARD_BUG("Invalid present device policy string");
+    throw Exception("DevicePolicyMethod", policy_string, "invalid policy method string");
   }
 
-  const std::string Daemon::presentDevicePolicyToString(PresentDevicePolicy policy)
+  const std::string Daemon::devicePolicyMethodToString(DevicePolicyMethod policy)
   {
-    for (auto present_device_policy_string : present_device_policy_strings) {
-      if (present_device_policy_string.second == policy) {
-	return present_device_policy_string.first;
+    for (auto device_policy_method_string : device_policy_method_strings) {
+      if (device_policy_method_string.second == policy) {
+	return device_policy_method_string.first;
       }
     }
-    throw USBGUARD_BUG("Invalid present device policy value");
+    throw USBGUARD_BUG("Invalid device policy method value");
   }
 
   Daemon::Daemon()
@@ -90,28 +93,22 @@ namespace usbguard
   {
     sigset_t signal_set;
     sigfillset(&signal_set);
-    sigdelset(&signal_set, SIGSEGV);
-    sigdelset(&signal_set, SIGABRT);
-    sigdelset(&signal_set, SIGKILL);
-    sigdelset(&signal_set, SIGILL);
 
-    sigset_t prev_signal_set;
-    sigemptyset(&prev_signal_set);
-
-    USBGUARD_SYSCALL_THROW("Daemon initialization",
-      (errno = pthread_sigmask(SIG_BLOCK, &signal_set, &prev_signal_set)) != 0);
-
-    try {
-      _dm = DeviceManager::create(*this);
-    } catch(...) {
-      (void)pthread_sigmask(SIG_SETMASK, &prev_signal_set, nullptr);
-      throw;
+    for (int del_signum : { SIGSEGV, SIGABRT, SIGKILL, SIGILL }) {
+      sigdelset(&signal_set, del_signum);
     }
 
+    USBGUARD_SYSCALL_THROW("Daemon initialization",
+      (errno = pthread_sigmask(SIG_BLOCK, &signal_set, nullptr)) != 0);
+
+    _device_manager_backend = "udev";
     _implicit_policy_target = Rule::Target::Block;
-    _present_device_policy = PresentDevicePolicy::Keep;
-    _present_controller_policy = PresentDevicePolicy::Allow;
+    _present_device_policy_method = DevicePolicyMethod::ApplyPolicy;
+    _present_controller_policy_method = DevicePolicyMethod::Keep;
+    _inserted_device_policy_method = DevicePolicyMethod::ApplyPolicy;
+
     _device_rules_with_port = false;
+    _restore_controller_device_state = false;
   }
 
   Daemon::~Daemon()
@@ -150,15 +147,22 @@ namespace usbguard
     /* PresentDevicePolicy */
     if (_config.hasSettingValue("PresentDevicePolicy")) {
       const String& policy_string = _config.getSettingValue("PresentDevicePolicy");
-      PresentDevicePolicy policy = Daemon::presentDevicePolicyFromString(policy_string);
-      setPresentDevicePolicy(policy);
+      DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
+      setPresentDevicePolicyMethod(policy);
     }
 
     /* PresentControllerPolicy */
     if (_config.hasSettingValue("PresentControllerPolicy")) {
       const String& policy_string = _config.getSettingValue("PresentControllerPolicy");
-      PresentDevicePolicy policy = Daemon::presentDevicePolicyFromString(policy_string);
-      setPresentControllerPolicy(policy);
+      DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
+      setPresentControllerPolicyMethod(policy);
+    }
+
+    /* InsertedDevicePolicy */
+    if (_config.hasSettingValue("InsertedDevicePolicy")) {
+      const String& policy_string = _config.getSettingValue("InsertedDevicePolicy");
+      DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
+      setInsertedDevicePolicyMethod(policy);
     }
 
     /* IPCAllowedUsers */
@@ -196,8 +200,32 @@ namespace usbguard
       else {
         throw Exception("Configuration", "DeviceRulesWithPort", "Invalid value");
       }
-
     }
+
+    /* DeviceManagerBackend */
+    if (_config.hasSettingValue("DeviceManagerBackend")) {
+      _device_manager_backend = _config.getSettingValue("DeviceManagerBackend");
+    }
+
+    _dm = DeviceManager::create(*this, _device_manager_backend);
+
+    /* RestoreControllerDeviceState */
+    if (_config.hasSettingValue("RestoreControllerDeviceState")) {
+      const String value = _config.getSettingValue("RestoreControllerDeviceState");
+
+      if (value == "true") {
+        _restore_controller_device_state = true;
+      }
+      else if (value == "false") {
+        _restore_controller_device_state = false;
+      }
+      else {
+        throw Exception("Configuration", "RestoreControllerDeviceState", "Invalid value");
+      }
+
+      _dm->setRestoreControllerDeviceState(_restore_controller_device_state);
+    }
+
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
@@ -214,22 +242,36 @@ namespace usbguard
     _ruleset.setDefaultTarget(target);
   }
 
-  void Daemon::setPresentDevicePolicy(PresentDevicePolicy policy)
+  void Daemon::setPresentDevicePolicyMethod(DevicePolicyMethod policy)
   {
-    USBGUARD_LOG(Debug) << "Setting PresentDevicePolicy to " << presentDevicePolicyToString(policy);
-    _present_device_policy = policy;
+    USBGUARD_LOG(Debug) << "Setting PresentDevicePolicy to " << devicePolicyMethodToString(policy);
+    _present_device_policy_method = policy;
   }
 
-  void Daemon::setPresentControllerPolicy(PresentDevicePolicy policy)
+  void Daemon::setPresentControllerPolicyMethod(DevicePolicyMethod policy)
   {
-    USBGUARD_LOG(Debug) << "Setting PresentControllerPolicy to " << presentDevicePolicyToString(policy);
-    _present_controller_policy = policy;
+    USBGUARD_LOG(Debug) << "Setting PresentControllerPolicy to " << devicePolicyMethodToString(policy);
+    _present_controller_policy_method = policy;
+  }
+
+  void Daemon::setInsertedDevicePolicyMethod(DevicePolicyMethod policy)
+  {
+    USBGUARD_LOG(Debug) << "Setting InsertedDevicePolicy to " << devicePolicyMethodToString(policy);
+    switch(policy) {
+      case DevicePolicyMethod::ApplyPolicy:
+      case DevicePolicyMethod::Block:
+      case DevicePolicyMethod::Reject:
+        _inserted_device_policy_method = policy;
+        break;
+      default:
+        throw Exception("setInsertedDevicePolicyMethod", devicePolicyMethodToString(policy), "invalid policy method");
+    }
   }
 
   void Daemon::run()
   {
     USBGUARD_LOG(Trace) << "Entering main loop";
-    
+   
     _dm->start();
     IPCServer::start();
 
@@ -309,6 +351,24 @@ namespace usbguard
   /*
    * IPC service methods
    */
+  std::string Daemon::setParameter(const std::string& name, const std::string& value)
+  {
+    if (name == "InsertedDevicePolicy") {
+      const auto previous_value = devicePolicyMethodToString(_inserted_device_policy_method);
+      setInsertedDevicePolicyMethod(devicePolicyMethodFromString(value));
+      return previous_value;
+    }
+    throw Exception("setParameter", name, "unknown parameter");
+  }
+
+  std::string Daemon::getParameter(const std::string& name)
+  {
+    if (name == "InsertedDevicePolicy") {
+      return devicePolicyMethodToString(_inserted_device_policy_method);
+    }
+    throw Exception("getParameter", name, "unknown parameter");
+  }
+
   uint32_t Daemon::appendRule(const std::string& rule_spec,
 			      uint32_t parent_id)
   {
@@ -389,7 +449,7 @@ namespace usbguard
         break;
       case DeviceManager::EventType::Insert:
       case DeviceManager::EventType::Update:
-        policy_rule = getDevicePolicyRule(device);
+        policy_rule = getInsertedDevicePolicyRule(device);
         break;
       case DeviceManager::EventType::Remove:
         /* NOOP */
@@ -399,6 +459,11 @@ namespace usbguard
     }
 
     dmApplyDevicePolicy(device, policy_rule);
+  }
+
+  void Daemon::dmHookDeviceException(const String& message)
+  {
+    USBGUARD_LOG(Warning) << message;
   }
 
   void Daemon::dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule)
@@ -437,7 +502,7 @@ namespace usbguard
     matched_rule->updateMetaDataCounters(/*applied=*/true);
   }
 
-  Pointer<Rule> Daemon::getDevicePolicyRule(Pointer<Device> device)
+  Pointer<Rule> Daemon::getInsertedDevicePolicyRule(Pointer<Device> device)
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get();
 
@@ -446,7 +511,31 @@ namespace usbguard
                             /*with_parent_hash=*/true,
                             /*match_rule=*/true);
 
-    return _ruleset.getFirstMatchingRule(device_rule);
+    Rule::Target target = Rule::Target::Invalid;
+    Pointer<Rule> policy_rule;
+    const DevicePolicyMethod policy_method = _inserted_device_policy_method;
+
+    switch (policy_method) {
+      case DevicePolicyMethod::Block:
+        target = Rule::Target::Block;
+        break;
+      case DevicePolicyMethod::Reject:
+        target = Rule::Target::Reject;
+        break;
+      case DevicePolicyMethod::ApplyPolicy:
+        policy_rule = _ruleset.getFirstMatchingRule(device_rule);
+        break;
+      default:
+        throw USBGUARD_BUG("Invalid DevicePolicyMethod value");
+    }
+
+    if (policy_rule == nullptr) {
+      policy_rule = makePointer<Rule>();
+      policy_rule->setTarget(target);
+      policy_rule->setRuleID(Rule::RootID);
+    }
+
+    return policy_rule;
   }
 
   Pointer<Rule> Daemon::getPresentDevicePolicyRule(Pointer<Device> device)
@@ -461,36 +550,35 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "device_rule=" << device_rule->toString();
     USBGUARD_LOG(Debug) << "isController=" << device->isController();
 
-    const PresentDevicePolicy policy = \
-      device->isController() ? _present_controller_policy : _present_device_policy;
+    const DevicePolicyMethod policy_method = \
+      device->isController() ? _present_controller_policy_method : _present_device_policy_method;
 
     Rule::Target target = Rule::Target::Invalid;
     Pointer<Rule> matched_rule = nullptr;
 
-    switch (policy) {
-    case PresentDevicePolicy::Allow:
+    switch (policy_method) {
+    case DevicePolicyMethod::Allow:
       target = Rule::Target::Allow;
       break;
-    case PresentDevicePolicy::Block:
+    case DevicePolicyMethod::Block:
       target = Rule::Target::Block;
       break;
-    case PresentDevicePolicy::Reject:
+    case DevicePolicyMethod::Reject:
       target = Rule::Target::Reject;
       break;
-    case PresentDevicePolicy::Keep:
+    case DevicePolicyMethod::Keep:
       target = device->getTarget();
       break;
-    case PresentDevicePolicy::ApplyPolicy:
+    case DevicePolicyMethod::ApplyPolicy:
       matched_rule = _ruleset.getFirstMatchingRule(device_rule);
       target = matched_rule->getTarget();
       break;
     }
 
     if (matched_rule == nullptr) {
-      auto rule = makePointer<Rule>();
-      rule->setTarget(target);
-      rule->setRuleID(Rule::ImplicitID);
-      matched_rule = rule;
+      matched_rule = makePointer<Rule>();
+      matched_rule->setTarget(target);
+      matched_rule->setRuleID(Rule::ImplicitID);
     }
 
     USBGUARD_LOG(Trace) << "return:"

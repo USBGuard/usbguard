@@ -30,6 +30,7 @@
 #include "Common/Thread.hpp"
 
 #include <mutex>
+#include <atomic>
 #include <signal.h>
 
 namespace usbguard
@@ -37,7 +38,7 @@ namespace usbguard
   class Daemon : public IPCServer, public DeviceManagerHooks
   {
   public:
-    enum PresentDevicePolicy {
+    enum DevicePolicyMethod {
       Allow,
       Block,
       Reject,
@@ -45,8 +46,8 @@ namespace usbguard
       ApplyPolicy
     };
 
-    static PresentDevicePolicy presentDevicePolicyFromString(const String& policy_string);
-    static const std::string presentDevicePolicyToString(PresentDevicePolicy policy);
+    static DevicePolicyMethod devicePolicyMethodFromString(const String& policy_string);
+    static const std::string devicePolicyMethodToString(DevicePolicyMethod policy);
 
     Daemon();
     ~Daemon();
@@ -55,8 +56,9 @@ namespace usbguard
     void loadRules(const String& path);
 
     void setImplicitPolicyTarget(Rule::Target target);
-    void setPresentDevicePolicy(PresentDevicePolicy policy);
-    void setPresentControllerPolicy(PresentDevicePolicy policy);
+    void setPresentDevicePolicyMethod(DevicePolicyMethod policy);
+    void setPresentControllerPolicyMethod(DevicePolicyMethod policy);
+    void setInsertedDevicePolicyMethod(DevicePolicyMethod policy);
 
     /* Start the daemon */
     void run();
@@ -67,6 +69,9 @@ namespace usbguard
     uint32_t upsertRule(const std::string& match_spec, const std::string& rule_spec, bool parent_insensitive = false);
 
     /* IPC methods */
+    std::string setParameter(const std::string& name, const std::string& value) override;
+    std::string getParameter(const std::string& name) override;
+
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
     void removeRule(uint32_t id);
     const RuleSet listRules(const std::string& query);
@@ -76,7 +81,8 @@ namespace usbguard
 
     /* Device manager hooks */
     void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;
-    uint32_t dmHookAssignID();
+    uint32_t dmHookAssignID() override;
+    void dmHookDeviceException(const String& message) override;
 
     void addIPCAllowedUID(uid_t uid);
     void addIPCAllowedGID(gid_t gid);
@@ -85,18 +91,23 @@ namespace usbguard
 
   private:
     void dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule);
-    Pointer<Rule> getDevicePolicyRule(Pointer<Device> device);
+    Pointer<Rule> getInsertedDevicePolicyRule(Pointer<Device> device);
     Pointer<Rule> getPresentDevicePolicyRule(Pointer<Device> device);
 
     Pointer<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
     RuleSet _ruleset;
+
+    String _device_manager_backend;
     Pointer<DeviceManager> _dm;
-    
-    Rule::Target _implicit_policy_target;
-    PresentDevicePolicy _present_device_policy;
-    PresentDevicePolicy _present_controller_policy;
+
+    std::atomic<Rule::Target> _implicit_policy_target;
+    std::atomic<DevicePolicyMethod> _present_device_policy_method;
+    std::atomic<DevicePolicyMethod> _present_controller_policy_method;
+    std::atomic<DevicePolicyMethod> _inserted_device_policy_method;
+
     bool _device_rules_with_port;
+    bool _restore_controller_device_state;
   };
 } /* namespace usbguard */

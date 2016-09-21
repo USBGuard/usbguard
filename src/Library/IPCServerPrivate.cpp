@@ -26,10 +26,16 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <stdlib.h>
 
 namespace usbguard
 {
   static qb_loop *G_qb_loop = nullptr;
+
+  struct free_deleter
+  {
+    void operator()(void *p) { free(p); }
+  };
 
   IPCServerPrivate::IPCServerPrivate(IPCServer& p_instance)
     : _p_instance(p_instance),
@@ -65,6 +71,8 @@ namespace usbguard
     registerHandler<IPC::listRules>(&IPCServerPrivate::handleListRules);
     registerHandler<IPC::applyDevicePolicy>(&IPCServerPrivate::handleApplyDevicePolicy);
     registerHandler<IPC::listDevices>(&IPCServerPrivate::handleListDevices);
+    registerHandler<IPC::setParameter>(&IPCServerPrivate::handleSetParameter);
+    registerHandler<IPC::getParameter>(&IPCServerPrivate::handleGetParameter);
 
     start();
   }
@@ -211,7 +219,7 @@ namespace usbguard
 
   int32_t IPCServerPrivate::qbIPCConnectionClientPID(qb_ipcs_connection_t *connection)
   {
-    std::unique_ptr<qb_ipcs_connection_stats_2> \
+    std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
       stats(qb_ipcs_connection_stats_get_2(connection, /*clear_after_read=*/0));
 
     if (stats == nullptr) {
@@ -294,7 +302,8 @@ namespace usbguard
     const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, 2);
 
     if (rc < 0 || (size_t)rc != total_size) {
-      std::unique_ptr<qb_ipcs_connection_stats_2> stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+      std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
+        stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
 
       if (stats == nullptr) {
         throw std::runtime_error("Cannot retrieve qb connection statistics");
@@ -432,7 +441,8 @@ namespace usbguard
       const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
 
       if (rc < 0 || (size_t)rc != total_size) {
-        std::unique_ptr<qb_ipcs_connection_stats_2> stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+        std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
+          stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
 
         if (stats == nullptr) {
           throw std::runtime_error("Cannot retrieve qb connection statistics");
@@ -715,12 +725,51 @@ namespace usbguard
      */
     IPC::listDevices * const message_out = message_in->New();
     message_out->MergeFrom(*message_in);
+    message_out->mutable_response()->Clear();
 
     for (const auto& device_rule : device_rules) {
       auto message_rule = message_out->mutable_response()->add_devices();
       message_rule->set_id(device_rule.getRuleID());
       message_rule->set_rule(device_rule.toString());
     }
+
+    response.reset(message_out);
+  }
+
+  void IPCServerPrivate::handleSetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response)
+  {
+    /*
+     * Get request field values.
+     */
+    const IPC::setParameter * const message_in = static_cast<const IPC::setParameter*>(request.get());
+    const std::string name = message_in->request().name();
+    const std::string value = message_in->request().value();
+
+    /*
+     * Execute the method.
+     */
+    auto previous_value = _p_instance.setParameter(name, value);
+
+    /*
+     * Construct the response.
+     */
+    IPC::setParameter * const message_out = message_in->New();
+    message_out->MergeFrom(*message_in);
+    message_out->mutable_response()->set_value(previous_value);
+
+    response.reset(message_out);
+  }
+
+  void IPCServerPrivate::handleGetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response)
+  {
+    const IPC::getParameter * const message_in = static_cast<const IPC::getParameter*>(request.get());
+    const std::string name = message_in->request().name();
+
+    auto value = _p_instance.getParameter(name);
+
+    IPC::getParameter * const message_out = message_in->New();
+    message_out->MergeFrom(*message_in);
+    message_out->mutable_response()->set_value(value);
 
     response.reset(message_out);
   }

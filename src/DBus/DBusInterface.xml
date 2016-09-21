@@ -4,6 +4,31 @@
   "https://specifications.freedesktop.org/dbus/1.0/introspect.dtd">
 <node>
   <!--
+    org.usbguard
+    -->
+  <interface name="org.usbguard">
+    <!--
+      getParameter:
+       @name:
+       @value:
+      -->
+    <method name="getParameter">
+      <arg name="name" direction="in" type="s"/>
+      <arg name="value" direction="out" type="s"/>
+    </method>
+    <!--
+      setParameter:
+       @name:
+       @value:
+       @previous_value:
+      -->
+    <method name="setParameter">
+      <arg name="name" direction="in" type="s"/>
+      <arg name="value" direction="in" type="s"/>
+      <arg name="previous_value" direction="out" type="s"/>
+    </method>
+  </interface>
+  <!--
    org.usbguard.Policy:
 
    The Policy interface allows to modify the USBGuard authorization policy.

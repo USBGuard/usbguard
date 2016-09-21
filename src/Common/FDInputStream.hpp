@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2016 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,38 +18,33 @@
 //
 #pragma once
 
-#include "Common/CCBQueue.hpp"
-#include <limits.h>
-#include <dirent.h>
-#include <string>
+#include <build-config.h>
+#include <ext/stdio_filebuf.h>
+#include <fstream>
+#include <memory>
 
 namespace usbguard
 {
-  #ifndef SYSIO_SYSROOT_DEFAULT
-  # define SYSIO_SYSROOT_DEFAULT "/sys"
-  #endif
-
-  #ifndef PATH_MAX
-  # define PATH_MAX 256
-  #endif
-
-  #define SYSIO_REQUEST_READ  0
-  #define SYSIO_REQUEST_WRITE 1
-
-  #define SYSIO_PATH_MAX PATH_MAX
-
-  struct SysIORequest
+#if HAVE_EXT_STDIO_FILEBUF_H
+  class FDInputStream : public std::ifstream
   {
-    int type;
-    int value;
-    char path[SYSIO_PATH_MAX];
+    public:
+      FDInputStream(int fd)
+        : _filebuf_ptr(new __gnu_cxx::stdio_filebuf<char>(fd, std::ios::in))
+      {
+        std::ios::rdbuf(_filebuf_ptr.get());
+      }
+
+      FDInputStream(FDInputStream&& stream)
+        : _filebuf_ptr(std::move(stream._filebuf_ptr))
+      {
+        std::ios::rdbuf(_filebuf_ptr.get());
+      }
+
+    private:
+      std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
   };
-
-  typedef CCBQueue<SysIORequest> SysIOQueue;
-
-  void sysioWrite(const char *path, int value);
-  ssize_t sysioWriteFileAt(DIR* dirfp, const std::string& relpath, char *buffer, size_t buflen);
-  ssize_t sysioReadFileAt(DIR* dirfp, const std::string& relpath, char *buffer, size_t buflen);
-  void sysioSetAuthorizedDefault(bool state);
-
+#else
+#error "Required header file ext/stdio_filebuf.h not available."
+#endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 } /* namespace usbguard */

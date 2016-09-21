@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include <build-config.h>
+#include <Logger.hpp>
 #include "Common/Utility.hpp"
 
 #include <stdio.h>
@@ -236,6 +237,82 @@ namespace usbguard
     return filename.substr(0, substr_to);
   }
 
+  String parentPath(const String& path)
+  {
+    const String directory_separator = "/";
+    String parent_path(path);
+
+    // find first not '/' (from end)
+    // find first '/' (from end)
+    // find first not '/' (from end)
+
+    auto reverse_start_pos = \
+      parent_path.find_last_not_of(directory_separator);
+
+    /*
+     * Whole path consists only of '/'.
+     */
+    if (reverse_start_pos == std::string::npos) {
+      return String();
+    }
+
+    reverse_start_pos = \
+      parent_path.find_last_of(directory_separator, reverse_start_pos);
+
+    /*
+     * No directory separator in the rest of the path.
+     */
+    if (reverse_start_pos == std::string::npos) {
+      return String();
+    }
+
+    reverse_start_pos = \
+      parent_path.find_last_not_of(directory_separator, reverse_start_pos);
+
+    /*
+     *
+     * /foo/bar   => /foo
+     * /foo/bar/  => /foo
+     * /foo/bar// => /foo
+     * /foo       => String()
+     * /foo/      => String()
+     * /          => String()
+     * //foo      => String()
+     *
+     */
+    if (reverse_start_pos == std::string::npos) {
+      return String();
+    }
+
+    return path.substr(0, reverse_start_pos + 1);
+  }
+
+  String trimRight(const String& s, const String& delimiters)
+  {
+    const size_t substr_to = s.find_last_not_of(delimiters);
+    if (substr_to != std::string::npos) {
+      return s.substr(0, substr_to + 1);
+    }
+    else {
+      return String();
+    }
+  }
+
+  String trimLeft(const String& s, const String& delimiters)
+  {
+    const size_t substr_from = s.find_first_not_of(delimiters);
+    if (substr_from == String::npos) {
+      return s;
+    } else {
+      return s.substr(substr_from);
+    }
+  }
+
+  String trim(const String& s, const String& delimiters)
+  {
+    return trimRight(trimLeft(s, delimiters), delimiters);
+  }
+
   /*
    * The ostringstream class used for the implementation of numberToString
    * treats (u)int8_t as a char. We want to treat it as a number, so this
@@ -256,4 +333,105 @@ namespace usbguard
     return (uint8_t)num;
   }
 
+  void loadFiles(const String& directory,
+                 std::function<String(const String&, const struct dirent *)> filter,
+                 std::function<void(const String&)> load)
+  {
+    DIR* dirobj = opendir(directory.c_str());
+
+    if (dirobj == nullptr) {
+      throw ErrnoException("loadFiles", directory, errno);
+    }
+    try {
+      struct dirent *entry_ptr = nullptr;
+      /*
+       * readdir usage note: We rely on the fact that readdir should be thread-safe
+       * when used on a different directory stream. Since we create our own stream,
+       * we should be fine with readdir here. The thread-safe version of readdir,
+       * readdir_r, is deprecated in newer versions of glibc.
+       */
+      while((entry_ptr = readdir(dirobj)) != nullptr) {
+        const String filename(entry_ptr->d_name);
+
+        if (filename == "." || filename == "..") {
+          continue;
+        }
+
+        const String fullpath = directory + "/" + filename;
+        const String loadpath = filter(fullpath, entry_ptr);
+
+        if (!loadpath.empty()) {
+          load(loadpath);
+        }
+      }
+    }
+    catch(...) {
+      closedir(dirobj);
+      throw;
+    }
+
+    closedir(dirobj);
+    return;
+  }
+
+  String removePrefix(const String& prefix, const String& value)
+  {
+    if (value.compare(0, prefix.size(), prefix) == 0) {
+      return value.substr(prefix.size());
+    }
+    else {
+      return value;
+    }
+  }
+
+  String symlinkPath(const String& linkpath, struct stat *st_user)
+  {
+    struct stat st = { 0 };
+    struct stat *st_ptr = nullptr;
+
+    if (st_user == nullptr) {
+      USBGUARD_SYSCALL_THROW("symlinkPath",
+          lstat(linkpath.c_str(), &st) != 0);
+      st_ptr = &st;
+    }
+    else {
+      st_ptr = st_user;
+    }
+
+    if (!S_ISLNK(st_ptr->st_mode)) {
+      throw Exception("symlinkPath", linkpath, "not a symlink");
+    }
+
+    if (st_ptr->st_size < 1) {
+      st_ptr->st_size = 4096;
+    }
+ 
+    /*
+     * Check sanity of st_size. min: 1 byte, max: 1 MiB (because 1 MiB should be enough :)
+     */
+    if (st_ptr->st_size < 1 || st_ptr->st_size > (1024 * 1024)) {
+      USBGUARD_LOG(Debug) << "st_size=" << st_ptr->st_size;
+      throw Exception("symlinkPath", linkpath, "symlink value size out of range");
+    }
+
+    String buffer(st_ptr->st_size, 0);
+    const ssize_t link_size = readlink(linkpath.c_str(), &buffer[0], buffer.capacity());
+
+    if (link_size <= 0 || link_size > st_ptr->st_size) {
+      USBGUARD_LOG(Debug) << "link_size=" << link_size
+                          << " st_size=" << st_ptr->st_size;
+      throw Exception("symlinkPath", linkpath, "symlink value size changed before read");
+    }
+
+    buffer.resize(link_size);
+
+    if (buffer[0] == '/') {
+      /* Absolute path */
+      return buffer;
+    }
+    else {
+      /* Relative path */
+      return parentPath(linkpath) + "/" + buffer;
+    }
+  }
 } /* namespace usbguard */

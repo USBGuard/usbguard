@@ -49,6 +49,9 @@ namespace usbguard {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
+    
+    void setRestoreControllerDeviceState(bool enabled);
+    bool getRestoreControllerDeviceState() const;
 
     virtual Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target) = 0;
 
@@ -64,8 +67,9 @@ namespace usbguard {
 
     /* Call Daemon instance hooks */
     void DeviceEvent(EventType event, Pointer<Device> device);
+    void DeviceException(const String& message);
 
-    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks);
+    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks, const String& backend);
 
   private:
     DeviceManagerPrivate *d_pointer;

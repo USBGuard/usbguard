@@ -30,7 +30,7 @@ namespace usbguard
     _port_specific_noserial = true;
     _with_catchall = false;
     _catchall_target = Rule::Target::Block;
-    _dm = DeviceManager::create(*this);
+    _dm = DeviceManager::create(*this, "uevent");
   }
 
   void PolicyGenerator::setWithHashAttribute(bool state)
@@ -123,5 +123,10 @@ namespace usbguard
   uint32_t PolicyGenerator::dmHookAssignID()
   {
     return _ruleset.assignID();
+  }
+
+  void PolicyGenerator::dmHookDeviceException(const String& message)
+  {
+    USBGUARD_LOG(Error) << message;
   }
 } /* namespace usbguard */

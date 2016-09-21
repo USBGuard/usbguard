@@ -38,8 +38,6 @@ namespace usbguard
 {
   Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line, bool trace)
   {
-
-
     try {
       Rule rule;
 #if HAVE_PEGTL_LTE_1_3_1

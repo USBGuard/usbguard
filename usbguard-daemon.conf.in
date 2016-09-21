@@ -51,6 +51,48 @@ PresentDevicePolicy=keep
 #
 PresentControllerPolicy=keep
 
+#
+# Inserted device policy.
+#
+# How to treat USB devices that are already connected
+# *after* the daemon starts. One of:
+#
+# * block        - deauthorize every present device
+# * reject       - remove every present device
+# * apply-policy - evaluate the ruleset for every present
+#                  device
+#
+InsertedDevicePolicy=apply-policy
+
+#
+# Restore controller device state.
+#
+# The USBGuard daemon modifies some attributes of controller
+# devices like the default authorization state of new child device
+# instances. Using this setting, you can controll whether the
+# daemon will try to restore the attribute values to the state
+# before modificaton on shutdown.
+#
+# SECURITY CONSIDERATIONS: If set to true, the USB authorization
+# policy could be bypassed by performing some sort of attack on the
+# daemon (via a local exploit or via a USB device) to make it shutdown
+# and restore to the operating-system default state (known to be permissive).
+#
+RestoreControllerDeviceState=false
+
+#
+# Device manager backend
+#
+# Which device manager backend implementation to use. One of:
+#
+# * uevent - Netlink based implementation which uses sysfs to scan for present
+#            devices and an uevent netlink socket for receiving USB device
+#            related events.
+# * dummy  - A dummy device manager which simulates several devices and device
+#            events. Useful for testing.
+#
+DeviceManagerBackend=uevent
+
 #!!! WARNING: It's good practice to set at least one of the !!!
 #!!!          two options bellow. If none of them are set,  !!!
 #!!!          the daemon will accept IPC connections from   !!!

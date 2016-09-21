@@ -3,7 +3,6 @@ package usbguard.IPC;
 import "Message.proto";
 import "Rule.proto";
 
-
 message listRulesRequest {
   required string query = 1;
 }

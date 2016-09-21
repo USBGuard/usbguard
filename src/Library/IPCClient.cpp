@@ -50,6 +50,16 @@ namespace usbguard
     d_pointer->wait();
   }
 
+  std::string IPCClient::setParameter(const std::string& name, const std::string& value)
+  {
+    return d_pointer->setParameter(name, value);
+  }
+
+  std::string IPCClient::getParameter(const std::string& name)
+  {
+    return d_pointer->getParameter(name);
+  }
+
   uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id)
   {
     return d_pointer->appendRule(rule_spec, parent_id);

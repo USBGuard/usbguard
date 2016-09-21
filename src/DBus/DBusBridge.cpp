@@ -39,18 +39,62 @@ namespace usbguard
       return;
     }
 
-    if (interface == "org.usbguard.Policy") {
-      handlePolicyMethodCall(method_name, parameters, invocation);
+    try {
+      if (interface == "org.usbguard.Policy") {
+        handlePolicyMethodCall(method_name, parameters, invocation);
+      }
+      else if (interface == "org.usbguard.Devices") {
+        handleDevicesMethodCall(method_name, parameters, invocation);
+      }
+      else if (interface == "org.usbguard") {
+        handleRootMethodCall(method_name, parameters, invocation);
+      }
+      else {
+        g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+            G_DBUS_ERROR_UNKNOWN_METHOD, "Unknown method interface");
+      }
     }
-    else if (interface == "org.usbguard.Devices") {
-      handleDevicesMethodCall(method_name, parameters, invocation);
+    catch(const Exception& ex) {
+      g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+        G_DBUS_ERROR_FAILED, "%s", ex.message().c_str());
     }
-
-    g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
-        G_DBUS_ERROR_UNKNOWN_METHOD, "Unknown method interface");
+    catch(const std::exception& ex) {
+      g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+        G_DBUS_ERROR_FAILED, "%s", ex.what());
+    }
+    catch(...) {
+      g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+        G_DBUS_ERROR_FAILED, "BUG: Unknown exception");
+    }
     return;
   }
 
+  void DBusBridge::handleRootMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation)
+  {
+    if (method_name == "getParameter") {
+      const char *name_cstr = nullptr;
+      g_variant_get(parameters, "(&s)", &name_cstr);
+      std::string name(name_cstr);
+      auto value = getParameter(name);
+      g_dbus_method_invocation_return_value(invocation, g_variant_new("(s)", value.c_str()));
+      return;
+    }
+    if (method_name == "setParameter") {
+      const char *name_cstr = nullptr;
+      const char *value_cstr = nullptr;
+      g_variant_get(parameters, "(&s&s)", &name_cstr, &value_cstr);
+      const std::string name(name_cstr);
+      const std::string value(value_cstr);
+      auto previous_value = setParameter(name, value);
+      g_dbus_method_invocation_return_value(invocation, g_variant_new("(s)", previous_value.c_str()));
+      return;
+    }
+  
+    g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
+      G_DBUS_ERROR_UNKNOWN_METHOD, "Unknown method interface");
+   return;
+ }
+ 
   void DBusBridge::handlePolicyMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation)
   {
     if (method_name == "listRules") {

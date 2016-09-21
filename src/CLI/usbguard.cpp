@@ -28,6 +28,8 @@
 #include <cstring> /* GNU version of basename(3) */
 
 #include "usbguard.hpp"
+#include "usbguard-get-parameter.hpp"
+#include "usbguard-set-parameter.hpp"
 #include "usbguard-list-devices.hpp"
 #include "usbguard-list-rules.hpp"
 #include "usbguard-generate-policy.hpp"
@@ -44,6 +46,8 @@ namespace usbguard
   const char *usbguard_arg0 = nullptr;
 
   static const std::map<const std::string,int(*)(int, char**)> cmd_handler_map = {
+    { "get-parameter", &usbguard_get_parameter },
+    { "set-parameter", &usbguard_set_parameter },
     { "list-devices", &usbguard_list_devices },
     { "allow-device", &usbguard_allow_device },
     { "block-device", &usbguard_block_device },
@@ -64,18 +68,20 @@ namespace usbguard
     stream << " Options:" << std::endl;
     stream << "" << std::endl;
     stream << " Commands:" << std::endl;
-    stream << "  list-devices        List all USB devices recognized by the USBGuard daemon." << std::endl;
-    stream << "  allow-device <id>   Authorize a device to interact with the system." << std::endl;
-    stream << "  block-device <id>   Deauthorize a device." << std::endl;
-    stream << "  reject-device <id>  Deauthorize and remove a device from the system." << std::endl;
+    stream << "  get-parameter <name>           Get the value of a runtime parameter." << std::endl;
+    stream << "  set-parameter <name> <value>   Set the value of a runtime parameter." << std::endl;
+    stream << "  list-devices                   List all USB devices recognized by the USBGuard daemon." << std::endl;
+    stream << "  allow-device <id>              Authorize a device to interact with the system." << std::endl;
+    stream << "  block-device <id>              Deauthorize a device." << std::endl;
+    stream << "  reject-device <id>             Deauthorize and remove a device from the system." << std::endl;
     stream << std::endl;
-    stream << "  list-rules          List the rule set (policy) used by the USBGuard daemon." << std::endl;
-    stream << "  append-rule <rule>  Append a rule to the rule set." << std::endl;
-    stream << "  remove-rule <id>    Remove a rule from the rule set." << std::endl;
+    stream << "  list-rules                     List the rule set (policy) used by the USBGuard daemon." << std::endl;
+    stream << "  append-rule <rule>             Append a rule to the rule set." << std::endl;
+    stream << "  remove-rule <id>               Remove a rule from the rule set." << std::endl;
     stream << std::endl;
-    stream << "  generate-policy     Generate a rule set (policy) based on the connected USB devices." << std::endl;
-    stream << "  watch               Watch for IPC interface events and print them to stdout." << std::endl;
-    stream << "  read-descriptor     Read a USB descriptor from a file and print it in human-readable form." << std::endl;
+    stream << "  generate-policy                Generate a rule set (policy) based on the connected USB devices." << std::endl;
+    stream << "  watch                          Watch for IPC interface events and print them to stdout." << std::endl;
+    stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form." << std::endl;
     stream << std::endl;
   }
 

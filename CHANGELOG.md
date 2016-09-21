@@ -1,5 +1,30 @@
 # Change Log
 
+## 0.6.3 - [unreleased]
+### Changed
+
+### Added
+- Added InsertedDevicePolicy configuration option to control the policy
+  method for inserted devices.
+- Added RestoreControllerDeviceState configuration option.
+- Added DeviceManagerBackend configuration option. This option can be used
+  to select from several device manager backend implementations.
+- Implemented an uevent based device manager backend.
+- Added setParameter, getParameter IPC (incl. D-Bus) methods.
+- Added set-parameter, get-parameter CLI subcommands.
+- Qt Applet: Added Spanish (es_AR) translation.
+
+### Removed
+- Removed UDev based device manager backend and UDev related dependencies.
+
+### Changed
+- Refactored low-level USB device handling into SysFSDevice class which
+  represents a device in the /sys filesystem (sysfs).
+- Removed usage of `readdir_r` because it's obsolete. Replaced with readdir
+  with the assumption that its usage is thread-safe if the directory handle
+  passed to it is not shared between threads.
+- Extended test suite with use case tests
+
 ## 0.6.2 - 2016-09-18
 ### Changed
 - Wait for disconnect in IPCClient dtor if needed

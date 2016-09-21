@@ -36,13 +36,13 @@ namespace usbguard
     { 0x05, "usbguard.IPC.listRules" },
     { 0x06, "usbguard.IPC.appendRule" },
     { 0x07, "usbguard.IPC.removeRule" },
-    { 0x08, "usbguard.IPC.Exception" }
+    { 0x08, "usbguard.IPC.Exception" },
+    { 0x09, "usbguard.IPC.getParameter" },
+    { 0x0a, "usbguard.IPC.setParameter" }
   };
 
   uint32_t IPC::messageTypeNameToNumber(const std::string& name)
   {
-
-
     for (auto const& type_number : type_numbers) {
       if (type_number.second == name) {
         return type_number.first;
