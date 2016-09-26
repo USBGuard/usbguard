@@ -281,6 +281,7 @@ AC_ARG_WITH([gui-qt],
 #
 PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
   [
+    export QT_SELECT=5
     AC_CHECK_PROGS(QT5MOC, [moc-qt5 moc])
     AC_CHECK_PROGS(QT5UIC, [uic-qt5 uic])
     AC_CHECK_PROGS(QT5RCC, [rcc-qt5 rcc])
@@ -299,6 +300,7 @@ PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
 #
 PKG_CHECK_MODULES([qt4], [QtGui >= 4.0 QtSvg >= 4.0],
   [
+    export QT_SELECT=4
     AC_CHECK_PROGS(QT4MOC, [moc-qt4 moc])
     AC_CHECK_PROGS(QT4UIC, [uic-qt4 uic])
     AC_CHECK_PROGS(QT4RCC, [rcc-qt4 rcc])
