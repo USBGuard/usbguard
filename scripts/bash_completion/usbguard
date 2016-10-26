@@ -1,0 +1,62 @@
+# Completion for usbguard
+get_ids()
+{
+    local id_column=4
+    usbguard list-devices 2>/dev/null | cut -d " " -f "${id_column}"
+}
+get_rules()
+{
+    local id_column=1
+    usbguard list-rules 2>/dev/null | cut -d ":" -f "${id_column}"
+}
+_usbguard()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="list-devices allow-device block-device reject-device list-rules append-rule remove-rule generate-policy watch read-descriptor"
+    case "${prev}" in
+        allow-device|block-device|reject-device)
+        local ids
+        ids=$( get_ids)
+	    # Maybe user running this is not allowed to list devices
+	    if [ $? -ne 0 ]; then
+            COMPREPLY=""
+            return 0
+	    fi
+            COMPREPLY=( $(compgen -W "${ids}"  "${cur}") )
+            return 0
+            ;;
+
+        remove-rule)
+        local rules
+        rules=$( get_rules )
+	    # Maybe user running this is not allowed to list rules
+	    if [ $? -ne 0 ]; then
+            COMPREPLY=""
+            return 0
+	    fi
+            COMPREPLY=( $(compgen -W "${rules}"  "${cur}") )
+            return 0
+            ;;
+
+        generate-policy)
+            opts=" --with-ports --no-ports-sn --target --no-hashes --hash-only --help"
+            COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
+            return 0
+            ;;
+
+        list-device)
+            opts=" --allowed --blocked --help"
+            COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+    COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
+    return 0
+}
+complete -F _usbguard usbguard
