@@ -92,7 +92,6 @@ mkdir -p ./m4
 autoreconf -i -v --no-recursive ./
 %configure \
     --disable-silent-rules \
-    --disable-static \
     --without-bundled-catch \
     --without-bundled-pegtl \
     --enable-systemd \
