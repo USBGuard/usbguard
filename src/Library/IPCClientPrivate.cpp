@@ -20,6 +20,8 @@
 #include "IPCPrivate.hpp"
 #include "Logger.hpp"
 
+#include <stdint.h>
+#include <unistd.h>
 #include <sys/poll.h>
 #include <sys/eventfd.h>
 
