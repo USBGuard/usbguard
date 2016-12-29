@@ -120,7 +120,6 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_builddir)/src/Library/IPC \
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
-	@udev_CFLAGS@ \
 	@crypto_CFLAGS@ \
 	@pegtl_CFLAGS@
 
@@ -131,7 +130,6 @@ libusbguard_la_LDFLAGS=\
 libusbguard_la_LIBADD=\
 	@qb_LIBS@ \
 	@protobuf_LIBS@ \
-	@udev_LIBS@ \
 	@crypto_LIBS@ \
 	@pegtl_LIBS@ \
 	@atomic_LIBS@
@@ -141,7 +139,8 @@ EXTRA_DIST+=\
 	src/Library/IPC/Exception.proto \
 	src/Library/IPC/Message.proto \
 	src/Library/IPC/Policy.proto \
-	src/Library/IPC/Rule.proto
+	src/Library/IPC/Rule.proto \
+	src/Library/IPC/Parameter.proto
 
 nodist_libusbguard_la_SOURCES=\
 	src/Library/IPC/Message.pb.cc \
@@ -153,7 +152,9 @@ nodist_libusbguard_la_SOURCES=\
 	src/Library/IPC/Exception.pb.cc \
 	src/Library/IPC/Exception.pb.h \
 	src/Library/IPC/Policy.pb.cc \
-	src/Library/IPC/Policy.pb.h
+	src/Library/IPC/Policy.pb.h \
+	src/Library/IPC/Parameter.pb.cc \
+	src/Library/IPC/Parameter.pb.h
 
 BUILT_SOURCES+=\
 	$(nodist_libusbguard_la_SOURCES)
@@ -166,6 +167,7 @@ libusbguard_la_SOURCES=\
 	src/Common/ByteOrder.hpp \
 	src/Common/Utility.hpp \
 	src/Common/Utility.cpp \
+	src/Common/FDInputStream.hpp \
 	src/Library/ConfigFile.cpp \
 	src/Library/ConfigFilePrivate.cpp \
 	src/Library/ConfigFilePrivate.hpp \
@@ -196,10 +198,6 @@ libusbguard_la_SOURCES=\
 	src/Library/DeviceManager.cpp \
 	src/Library/DeviceManagerPrivate.hpp \
 	src/Library/DeviceManagerPrivate.cpp \
-	src/Library/LinuxDeviceManager.cpp \
-	src/Library/LinuxDeviceManager.hpp \
-	src/Library/LinuxSysIO.hpp \
-	src/Library/LinuxSysIO.cpp \
 	src/Library/Logger.cpp \
 	src/Library/Init.cpp \
 	src/Library/RuleCondition.hpp \
@@ -220,7 +218,15 @@ libusbguard_la_SOURCES=\
 	src/Library/Base64.cpp \
 	src/Library/Base64.hpp \
 	src/Library/Hash.cpp \
-	src/Library/Hash.hpp
+	src/Library/Hash.hpp \
+	src/Library/UEvent.hpp \
+	src/Library/UEvent.cpp \
+	src/Library/UEventParser.hpp \
+	src/Library/UEventParser.cpp \
+	src/Library/UEventDeviceManager.hpp \
+	src/Library/UEventDeviceManager.cpp \
+	src/Library/SysFSDevice.hpp \
+	src/Library/SysFSDevice.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -301,7 +307,11 @@ usbguard_SOURCES=\
 	src/CLI/PolicyGenerator.hpp \
 	src/CLI/PolicyGenerator.cpp \
 	src/CLI/usbguard-read-descriptor.hpp \
-	src/CLI/usbguard-read-descriptor.cpp
+	src/CLI/usbguard-read-descriptor.cpp \
+	src/CLI/usbguard-set-parameter.hpp \
+	src/CLI/usbguard-set-parameter.cpp \
+	src/CLI/usbguard-get-parameter.hpp \
+	src/CLI/usbguard-get-parameter.cpp
 
 usbguard_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
@@ -432,7 +442,8 @@ endif #DBUS_ENABLED
 # Qt GUI
 #
 usbguard_applet_qt_TRANSLATIONS=\
-	src/GUI.Qt/translations/cs_CZ.ts
+	src/GUI.Qt/translations/cs_CZ.ts \
+	src/GUI.Qt/translations/es_AR.ts
 
 usbguard_applet_qt_UIHEADERS=\
 	src/GUI.Qt/DeviceDialog.ui.h \

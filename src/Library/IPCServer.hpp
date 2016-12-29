@@ -34,12 +34,14 @@ namespace usbguard
     void start();
     void stop();
 
+#if 0
     virtual uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) = 0;
     virtual void removeRule(uint32_t id) = 0;
     virtual const RuleSet listRules(const std::string& query) = 0;
 
     virtual uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) = 0;
     virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
+#endif
 
     void DevicePresenceChanged(uint32_t id,
                                DeviceManager::EventType event,

@@ -54,6 +54,7 @@ namespace usbguard
 
     static GVariantBuilder* deviceRuleToAttributes(const std::string& device_spec);
 
+    void handleRootMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
     void handlePolicyMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
     void handleDevicesMethodCall(const std::string& method_name, GVariant * parameters, GDBusMethodInvocation * invocation);
 

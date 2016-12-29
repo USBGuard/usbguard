@@ -10,7 +10,7 @@ AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([subdir-objects foreign tar-pax])
 
 # If automake supports "silent rules", enable them by default
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
 
 #
 # Compiler flags
@@ -59,6 +59,7 @@ AC_ARG_ENABLE([coverage],
 
 if test "x$coverage" = xyes; then
    CXXFLAGS="$CXXFLAGS --coverage"
+   CFLAGS="$CFLAGS --coverage"
 fi
 
 #
@@ -85,14 +86,32 @@ AC_CHECK_LIB([atomic], [__atomic_add_fetch_8], [
 AC_SUBST([atomic_LIBS])
 
 #
-
-#
 # Checks for required libraries.
 #
-PKG_CHECK_MODULES([udev], [libudev >= 200],
-[libudev_summary="system-wide; $udev_CFLAGS $udev_LIBS"],
-[AC_MSG_FAILURE([libudev development files not found!])]
-)
+AC_MSG_CHECKING([for NETLINK_KOBJECT_UEVENT definition])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <linux/netlink.h>
+int main(void)
+{
+  return NETLINK_KOBJECT_UEVENT;
+}
+]])],
+[have_uevent=yes], [have_uevent=no])
+if test "x$have_uevent" = xyes; then
+  AC_MSG_RESULT([yes])
+  AC_DEFINE([HAVE_UEVENT], [1], [UEVENT netlink socket support])
+else
+  AC_MSG_RESULT([no])
+fi
+
+#PKG_CHECK_MODULES([udev], [libudev >= 200],
+#[
+# libudev_summary="system-wide; $udev_CFLAGS $udev_LIBS"
+# AC_DEFINE([HAVE_UDEV], [1], [UDev API development files available])
+#],
+#[
+# AC_MSG_FAILURE([UDev development files not found!])
+#])
 
 #
 # qb library
@@ -545,8 +564,10 @@ AC_ARG_ENABLE([maintainer-mode],
               [maintainer_mode=$enableval], [maintainer_mode=no])
 
 # Checks for header files.
+AC_LANG_PUSH([C++])
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h locale.h netdb.h stdint.h stdlib.h string.h sys/time.h syslog.h unistd.h wchar.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.hi locale.h netdb.h stdint.h stdlib.h])
+AC_CHECK_HEADERS([string.h sys/time.h syslog.h unistd.h wchar.h ext/stdio_filebuf.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -570,6 +591,7 @@ AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([dup2 gettimeofday localtime_r memset mkdir regcomp setlocale strerror strstr])
+AC_LANG_POP
 
 # ./configure script options
 AC_ARG_ENABLE([debug-build],

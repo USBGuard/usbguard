@@ -43,6 +43,16 @@ namespace usbguard {
     return *this;
   }
 
+  void DeviceManagerPrivate::setRestoreControllerDeviceState(bool enabled)
+  {
+    _restore_controller_device_state = enabled;
+  }
+
+  bool DeviceManagerPrivate::getRestoreControllerDeviceState() const
+  {
+    return _restore_controller_device_state;
+  }
+
   void DeviceManagerPrivate::insertDevice(Pointer<Device> device)
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get();
@@ -96,5 +106,11 @@ namespace usbguard {
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
                         << "device_ptr=" << device.get();
     _hooks.dmHookDeviceEvent(event, device);
+  }
+
+  void DeviceManagerPrivate::DeviceException(const String& message)
+  {
+    USBGUARD_LOG(Trace) << "message=" << message;
+    _hooks.dmHookDeviceException(message);
   }
 } /* namespace usbguard */

@@ -16,8 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include <build-config.h>
 #include <DeviceManager.hpp>
 #include <DeviceManagerHooks.hpp>
+#include <Exception.hpp>
 #include "DeviceManagerPrivate.hpp"
 
 namespace usbguard {
@@ -81,6 +83,16 @@ namespace usbguard {
     return;
   }
 
+  void DeviceManager::setRestoreControllerDeviceState(bool enabled)
+  {
+    d_pointer->setRestoreControllerDeviceState(enabled);
+  }
+
+  bool DeviceManager::getRestoreControllerDeviceState() const
+  {
+    return d_pointer->getRestoreControllerDeviceState();
+  }
+
   void DeviceManager::insertDevice(Pointer<Device> device)
   {
     d_pointer->insertDevice(device);
@@ -132,18 +144,34 @@ namespace usbguard {
   {
     d_pointer->DeviceEvent(event, device);
   }
+
+  void DeviceManager::DeviceException(const String& message)
+  {
+    d_pointer->DeviceException(message);
+  }
 } /* namespace usbguard */
 
-#if defined(__linux__)
-# include "LinuxDeviceManager.hpp"
+#if defined(HAVE_UEVENT)
+# include "UEventDeviceManager.hpp"
 #endif
 
-usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks)
+usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const String& backend)
 {
-#if defined(__linux__)
-  auto dm = usbguard::makePointer<usbguard::LinuxDeviceManager>(hooks);
-#else
-# error "No DeviceManager implementation available"
+#if defined(HAVE_UEVENT)
+  if (backend == "udev") {
+    USBGUARD_LOG(Warning) << "udev backend is OBSOLETE. Falling back to new default: uevent";
+  }
+  if (backend == "uevent" || /* transition udev => uevent */backend == "udev") {
+    return usbguard::makePointer<usbguard::UEventDeviceManager>(hooks);
+  }
+  if (backend == "dummy") {
+    const char * const device_root_cstr = getenv("USBGUARD_DUMMY_DEVICE_ROOT");
+    if (device_root_cstr == nullptr) {
+      throw Exception("DeviceManager", "dummy", "USBGUARD_DUMMY_DEVICE_ROOT environment variable not defined");
+    }
+    const String device_root(device_root_cstr);
+    return usbguard::makePointer<usbguard::UEventDeviceManager>(hooks, device_root, /*dummy_mode=*/true);
+  }
 #endif
-  return std::move(dm);
+  throw Exception("DeviceManager", "backend", "requested backend is not available");
 }

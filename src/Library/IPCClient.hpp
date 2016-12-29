@@ -36,9 +36,12 @@ namespace usbguard
     bool isConnected() const;
     void wait();
 
-    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
-    void removeRule(uint32_t id);
-    const RuleSet listRules(const std::string& query);
+    std::string setParameter(const std::string& name, const std::string& value) override;
+    std::string getParameter(const std::string& name) override;
+
+    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) override;
+    void removeRule(uint32_t id) override;
+    const RuleSet listRules(const std::string& query) override;
     const RuleSet listRules()
     {
       return listRules("match");

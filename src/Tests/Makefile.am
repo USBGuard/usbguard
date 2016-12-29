@@ -32,21 +32,35 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Packaging/spell-check.rws \
 	$(top_srcdir)/src/Tests/Rules/test-rules.sh \
 	$(top_srcdir)/src/Tests/Rules/test-rules.good \
-	$(top_srcdir)/src/Tests/Rules/test-rules.bad
+	$(top_srcdir)/src/Tests/Rules/test-rules.bad \
+	$(top_srcdir)/src/Tests/bash-testlib.sh \
+	$(top_srcdir)/src/Tests/UseCase/000_executable.sh \
+	$(top_srcdir)/src/Tests/UseCase/001_cli_policy.sh \
+	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \
+	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_dummy.sh \
+	$(top_srcdir)/src/Tests/UseCase/DummyDevices
 
 LOG_DRIVER=\
 	$(top_srcdir)/src/Tests/test-driver
 
 TESTS_ENVIRONMENT=\
 	builddir=$(top_builddir) \
-	srcdir=$(top_srcdir)
+	srcdir=$(top_srcdir) \
+	USBGUARD_TESTLIB_BASH=$(top_srcdir)/src/Tests/bash-testlib.sh \
+	USBGUARD=$(top_builddir)/usbguard \
+	USBGUARD_DAEMON=$(top_builddir)/usbguard-daemon \
+	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus
 
 TESTS=\
 	test-unit \
 	test-regression \
 	USB/test-descriptor-parser.sh \
 	Packaging/spell-check.sh \
-	Rules/test-rules.sh
+	Rules/test-rules.sh \
+	UseCase/000_executable.sh \
+	UseCase/001_cli_policy.sh \
+	UseCase/002_cli_devices.sh \
+	UseCase/003_cli_devices_dummy.sh
 
 check_PROGRAMS=\
 	test-unit \
@@ -56,10 +70,16 @@ test_unit_SOURCES=\
 	main.cpp \
 	Unit/test_Rule.cpp \
 	Unit/test_RuleParser.cpp \
-	Unit/test_Base64.cpp
+	Unit/test_Base64.cpp \
+	Unit/test_UEvent.cpp \
+	Unit/test_UEventParser.cpp \
+	Unit/test_Utility.cpp
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la
+
+test_unit_LDFLAGS=\
+	-static
 
 test_regression_SOURCES=\
 	main.cpp \

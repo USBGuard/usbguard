@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2016 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,18 +18,29 @@
 //
 #pragma once
 
-#include <Typedefs.hpp>
-#include <Device.hpp>
-#include <DeviceManager.hpp>
-#include <cstdint>
+#include "Typedefs.hpp"
 
 namespace usbguard
 {
-  class DLL_PUBLIC DeviceManagerHooks
+  class UEvent
   {
   public:
-    virtual void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
-    virtual uint32_t dmHookAssignID() = 0;
-    virtual void dmHookDeviceException(const String& message) = 0;
+    UEvent();
+    UEvent(UEvent&& rhs);
+    UEvent& operator=(UEvent&& rhs);
+
+    static UEvent fromString(const String& uevent_string, bool attributes_only = false, bool trace = false);
+
+    void clear();
+    void setAttribute(const String& name, const String& value);
+    String getAttribute(const String& name) const;
+    bool hasAttribute(const String& name) const;
+    bool hasRequiredAttributes() const;
+
+    String getHeaderLine() const;
+    String toString(char separator = '\0') const;
+
+   private:
+    StringKeyMap<String> _attributes;
   };
 } /* namespace usbguard */

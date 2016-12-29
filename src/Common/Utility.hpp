@@ -18,6 +18,7 @@
 //
 #pragma once
 #include "Typedefs.hpp"
+#include "Exception.hpp"
 #include <string>
 #include <vector>
 #include <sstream>
@@ -26,6 +27,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <iostream>
+#include <functional>
+#include <unistd.h>
+#include <sys/stat.h>
 
 namespace usbguard
 {
@@ -155,96 +159,42 @@ namespace usbguard
   String filenameFromPath(const String& filepath, bool include_extension = false);
 
   /**
+   * Return the parent path part of a path.
+   */
+  String parentPath(const String& path);
+
+  /**
    * Remove whitespace characters from the right side of a string.
    */
-  template<class StringType>
-  StringType trimRight(const StringType& s, const StringType& delimiters = " \f\n\r\t\v" )
-  {
-    const size_t substr_to = s.find_last_not_of(delimiters)+1;
-    return s.substr(0, substr_to);
-  }
+  String trimRight(const String& s, const String& delimiters = " \f\n\r\t\v");
 
   /**
    * Remove whitespace characters from the left side of a string.
    */
-  template<class StringType>
-  StringType trimLeft(const StringType& s, const StringType& delimiters = " \f\n\r\t\v" )
-  {
-    const size_t substr_from = s.find_first_not_of(delimiters);
-    if (substr_from == StringType::npos) {
-      return s;
-    } else {
-      return s.substr(substr_from);
-    }
-  }
+  String trimLeft(const String& s, const String& delimiters = " \f\n\r\t\v");
 
   /**
    * Remove whitespace characters from the left & right side of a string.
    */
-  template<class StringType>
-  StringType trim(const StringType& s, const StringType& delimiters = " \f\n\r\t\v" )
-  {
-    return trimRight(trimLeft(s, delimiters), delimiters);
-  }
+  String trim(const String& s, const String& delimiters = " \f\n\r\t\v");
 
   /**
    * Call a void(*)(const String&) compatible method for every file in a directory
    * matching a regular expression. The function does not recursively descent into
    * subdirectories.
    */
-  template<class T>
-  void loadFiles(const String& directory, const std::regex& filename_regex,
-		 void(T::*load_method_ptr)(const String& filepath), T* load_method_obj)
-  {
-    DIR* dirobj;
+  void loadFiles(const String& directory,
+                 std::function<String(const String&, const struct dirent *)> filter,
+                 std::function<void(const String&)> load);
 
-    if ((dirobj = opendir(directory.c_str())) == nullptr) {
-      throw std::runtime_error("Cannot open directory");
-    }
+  /**
+   * Remove prefix from string.
+   */
+  String removePrefix(const String& prefix, const String& value);
 
-    struct dirent entry, *entry_ptr = nullptr;
-    int error;
-
-    while((error = readdir_r(dirobj, &entry, &entry_ptr)) == 0) {
-      if (entry_ptr == nullptr) {
-	// No more directory entries
-	break;
-      } else {
-	const String filename(entry_ptr->d_name);
-	const String fullpath = directory + "/" + filename;
-#if defined(_DIRENT_HAVE_D_TYPE)
-	if (entry_ptr->d_type != DT_UNKNOWN) {
-	  if (entry_ptr->d_type != DT_REG) {
-	    // Not a regular file, skip it.
-	    continue;
-	  }
-	} else {
-#endif
-	  struct stat st;
-	  if (lstat(fullpath.c_str(), &st) != 0) {
-	    // Cannot stat, skip this entry
-	    continue;
-	  }
-	  if (!S_ISREG(st.st_mode)) {
-	    // Not a regular file, skip it.
-	    continue;
-	  }
-#if defined(_DIRENT_HAVE_D_TYPE)
-	}
-#endif
-	if (std::regex_match(filename, filename_regex)) {
-	  (*load_method_obj.*load_method_ptr)(fullpath);
-	}
-      }
-    }
-
-    if (error > 0) {
-      closedir(dirobj);
-      throw std::runtime_error("Error while reading directory entries");
-    }
-
-    closedir(dirobj);
-    return;
-  }
+  /**
+   * Read symlink destination.
+   */
+  String symlinkPath(const String& linkpath, struct stat *st_user = nullptr);
 
 } /* namespace usbguard */

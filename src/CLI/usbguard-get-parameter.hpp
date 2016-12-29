@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2016 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,20 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#pragma once
-
-#include <Typedefs.hpp>
-#include <Device.hpp>
-#include <DeviceManager.hpp>
-#include <cstdint>
-
 namespace usbguard
 {
-  class DLL_PUBLIC DeviceManagerHooks
-  {
-  public:
-    virtual void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
-    virtual uint32_t dmHookAssignID() = 0;
-    virtual void dmHookDeviceException(const String& message) = 0;
-  };
+  int usbguard_get_parameter(int argc, char **argv);
 } /* namespace usbguard */

@@ -31,7 +31,10 @@ namespace usbguard {
     DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks);
     DeviceManagerPrivate(DeviceManager& p_instance, const DeviceManagerPrivate& rhs);
     const DeviceManagerPrivate& operator=(const DeviceManagerPrivate& rhs);
-    
+
+    void setRestoreControllerDeviceState(bool enabled);
+    bool getRestoreControllerDeviceState() const;
+
     void insertDevice(Pointer<Device> device);
     Pointer<Device> removeDevice(uint32_t id);
 
@@ -42,12 +45,14 @@ namespace usbguard {
 
     /* Call Daemon instance hooks */
     void DeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
+    void DeviceException(const String& message);
 
   private:
     DeviceManager& _p_instance;
     DeviceManagerHooks& _hooks;
     mutable std::mutex _device_map_mutex;
     PointerMap<uint32_t, Device> _device_map;
+    bool _restore_controller_device_state;
   };
 
 } /* namespace usbguard */

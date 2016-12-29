@@ -33,6 +33,7 @@
 #include "Devices.pb.h"
 #include "Policy.pb.h"
 #include "Exception.pb.h"
+#include "Parameter.pb.h"
 
 namespace usbguard {
   class IPCServerPrivate
@@ -110,6 +111,8 @@ namespace usbguard {
     void handleApplyDevicePolicy(IPC::MessagePointer& request, IPC::MessagePointer& response);
     void handleListDevices(IPC::MessagePointer& request, IPC::MessagePointer& response);
 
+    void handleSetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response);
+    void handleGetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response);
 
     IPCServer& _p_instance;
 

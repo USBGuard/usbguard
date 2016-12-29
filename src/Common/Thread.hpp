@@ -18,6 +18,8 @@
 //
 #pragma once
 
+#include "Logger.hpp"
+
 #include <thread>
 #include <atomic>
 #include <system_error>

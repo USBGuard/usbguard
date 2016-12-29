@@ -1,0 +1,34 @@
+package usbguard.IPC;
+
+import "Message.proto";
+
+
+message setParameterRequest {
+  required string name = 1;
+  required string value = 2;
+}
+
+message setParameterResponse {
+  required string value = 1;
+}
+
+message setParameter {
+  required MessageHeader header = 1;
+  required setParameterRequest request = 2;
+  optional setParameterResponse response = 3;
+}
+
+
+message getParameterRequest {
+  required string name = 1;
+}
+
+message getParameterResponse {
+  required string value = 1;
+}
+
+message getParameter {
+  required MessageHeader header = 1;
+  required getParameterRequest request = 2;
+  optional getParameterResponse response = 3;
+}

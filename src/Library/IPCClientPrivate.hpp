@@ -26,6 +26,7 @@
 #include "Policy.pb.h"
 #include "Devices.pb.h"
 #include "Exception.pb.h"
+#include "Parameter.pb.h"
 
 #include <map>
 #include <mutex>
@@ -48,6 +49,9 @@ namespace usbguard {
     void disconnect(bool do_wait = false);
     bool isConnected() const;
     void wait();
+
+    std::string setParameter(const std::string& name, const std::string& value);
+    std::string getParameter(const std::string& name);
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
     void removeRule(uint32_t id);

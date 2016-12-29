@@ -62,6 +62,8 @@ namespace usbguard
     _qb_loop = qb_loop_create();
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _wakeup_fd, POLLIN, NULL, qbPollWakeupFn);
 
+    registerHandler<IPC::getParameter>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::setParameter>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::listRules>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::appendRule>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::removeRule>(&IPCClientPrivate::handleMethodResponse);
@@ -350,6 +352,23 @@ namespace usbguard
     catch(...) {
       throw Exception("IPC connection", "message", "Unknown payload type");
     }
+  }
+
+  std::string IPCClientPrivate::setParameter(const std::string& name, const std::string& value)
+  {
+    IPC::setParameter message_out;
+    message_out.mutable_request()->set_name(name);
+    message_out.mutable_request()->set_value(value);
+    auto message_in = qbIPCSendRecvMessage(message_out);
+    return message_in->response().value();
+  }
+
+  std::string IPCClientPrivate::getParameter(const std::string& name)
+  {
+    IPC::getParameter message_out;
+    message_out.mutable_request()->set_name(name);
+    auto message_in = qbIPCSendRecvMessage(message_out);
+    return message_in->response().value();
   }
 
   uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id)
