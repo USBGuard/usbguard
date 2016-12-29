@@ -109,7 +109,7 @@ make check
 make install INSTALL='install -p' DESTDIR=%{buildroot}
 
 # Cleanup
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
+find %{buildroot} -name '*.la' -o -name '*.a' -exec rm -f {} ';'
 
 %preun
 %systemd_preun usbguard.service
