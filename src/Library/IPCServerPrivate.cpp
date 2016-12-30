@@ -27,6 +27,8 @@
 #include <pwd.h>
 #include <grp.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
 
 namespace usbguard
 {
