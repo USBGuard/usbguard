@@ -21,7 +21,6 @@ Requires(postun): /sbin/ldconfig
 
 BuildRequires: libqb-devel
 BuildRequires: libgcrypt-devel
-BuildRequires: systemd systemd-devel
 BuildRequires: libstdc++-devel
 BuildRequires: protobuf-devel protobuf-compiler
 BuildRequires: PEGTL-static
@@ -35,6 +34,8 @@ BuildRequires: libxml2
 BuildRequires: catch-devel
 BuildRequires: pandoc
 BuildRequires: autoconf automake libtool
+# For `pkg-config systemd` only
+BuildRequires: systemd
 
 %description
 The USBGuard software framework helps to protect your computer against rogue USB

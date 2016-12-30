@@ -104,15 +104,6 @@ else
   AC_MSG_RESULT([no])
 fi
 
-#PKG_CHECK_MODULES([udev], [libudev >= 200],
-#[
-# libudev_summary="system-wide; $udev_CFLAGS $udev_LIBS"
-# AC_DEFINE([HAVE_UDEV], [1], [UDev API development files available])
-#],
-#[
-# AC_MSG_FAILURE([UDev development files not found!])
-#])
-
 #
 # qb library
 #
@@ -661,7 +652,6 @@ echo " Maintainer mode: $maintainer_mode"
 echo
 echo "## Libraries"
 echo
-echo "    libudev: $libudev_summary"
 echo "      libqb: $libqb_summary"
 echo "     crypto: $crypto_summary"
 echo " libseccomp: $libseccomp_summary"
