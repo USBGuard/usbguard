@@ -131,7 +131,8 @@ find %{buildroot} \( -name '*.la' -o -name '*.a' \) -exec rm -f {} ';'
 %{_sbindir}/usbguard-daemon
 %{_bindir}/usbguard
 %dir %{_sysconfdir}/usbguard
-%config(noreplace) %{_sysconfdir}/usbguard/usbguard-daemon.conf
+%config(noreplace) %attr(0600,-,-) %{_sysconfdir}/usbguard/usbguard-daemon.conf
+%config(noreplace) %attr(0600,-,-) %{_sysconfdir}/usbguard/rules.conf
 %{_unitdir}/usbguard.service
 %{_datadir}/man/man8/usbguard-daemon.8.gz
 %{_datadir}/man/man5/usbguard-daemon.conf.5.gz

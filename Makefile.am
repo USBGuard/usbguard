@@ -75,7 +75,7 @@ usbguard_confdir= $(sysconfdir)/usbguard
 
 install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	mkdir -p $(DESTDIR)/$(usbguard_confdir)
-	$(INSTALL) -m 644 $(top_builddir)/usbguard-daemon.conf \
+	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
 	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
 	touch $(DESTDIR)/$(usbguard_confdir)/rules.conf
 	chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf
