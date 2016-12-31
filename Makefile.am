@@ -30,15 +30,6 @@ BUILT_SOURCES=
 DISTCLEANFILES=
 CLEANFILES=
 
-CLEANFILES+=\
-	$(top_builddir)/usbguard-daemon.conf
-
-usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
-	$(SED) "s|%sysconfdir%|${sysconfdir}|g" $^ > $@ || rm -f $@
-
-usbguard_confdir= $(sysconfdir)/usbguard
-dist_usbguard_conf_DATA= $(top_builddir)/usbguard-daemon.conf
-
 ROFF_PAGES=\
 	doc/usbguard.1.roff \
 	doc/usbguard-dbus.8.roff \
@@ -71,8 +62,27 @@ $(top_builddir)/%.roff: %.md
 	$(INSTALL) -D -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
 endif
 
-install-data-hook: install-systemd-service install-data-dbus
-uninstall-hook: uninstall-systemd-service uninstall-data-dbus
+install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
+uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus
+
+CLEANFILES+=\
+	$(top_builddir)/usbguard-daemon.conf
+
+usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
+	$(SED) "s|%sysconfdir%|${sysconfdir}|g" $^ > $@ || rm -f $@
+
+usbguard_confdir= $(sysconfdir)/usbguard
+
+install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
+	mkdir -p $(DESTDIR)/$(usbguard_confdir)
+	$(INSTALL) -m 644 $(top_builddir)/usbguard-daemon.conf \
+	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
+	touch $(DESTDIR)/$(usbguard_confdir)/rules.conf
+	chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf
+
+uninstall-daemon-conf:
+	rm -f $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
+	rm -f $(DESTDIR)/$(usbguard_confdir)/rules.conf
 
 if SYSTEMD_SUPPORT_ENABLED
 CLEANFILES+=\
