@@ -61,7 +61,7 @@ namespace usbguard {
     /* 
      * Set name
      */
-    setName(sysfs_device.readAttribute("product", /*strip_last_null=*/true));
+    setName(sysfs_device.readAttribute("product", /*strip_last_null=*/true, /*optional=*/true));
     /*
      * Set USB ID
      */
@@ -72,7 +72,7 @@ namespace usbguard {
     /*
      * Set serial number
      */
-    setSerial(sysfs_device.readAttribute("serial", /*strip_last_null=*/true));
+    setSerial(sysfs_device.readAttribute("serial", /*strip_last_null=*/true, /*optional=*/true));
     /*
      * Set USB port
      */

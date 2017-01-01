@@ -36,7 +36,7 @@ namespace usbguard
       const String& getName() const;
       const UEvent& getUEvent() const;
       const String& getParentPath() const;
-      String readAttribute(const String& name, bool strip_last_null = false) const;
+      String readAttribute(const String& name, bool strip_last_null = false, bool optional = false) const;
       void setAttribute(const String& name, const String& value);
       int openAttribute(const String& name) const;
 

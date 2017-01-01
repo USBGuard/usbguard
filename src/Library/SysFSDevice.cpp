@@ -121,13 +121,18 @@ namespace usbguard
     return fd;
   }
 
-  String SysFSDevice::readAttribute(const String& name, bool strip_last_null) const
+  String SysFSDevice::readAttribute(const String& name, bool strip_last_null, bool optional) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;
 
     const int fd = openat(_sysfs_dirfd, name.c_str(), O_RDONLY);
     if (fd < 0) {
-      throw ErrnoException("SysFSDevice", name, errno);
+      if (optional && errno == ENOENT) {
+        return String();
+      }
+      else {
+        throw ErrnoException("SysFSDevice", name, errno);
+      }
     }
     try {
       String buffer(4096, 0);
