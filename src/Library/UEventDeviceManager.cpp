@@ -663,6 +663,12 @@ namespace usbguard {
     else {
       try {
         Pointer<UEventDevice> device = makePointer<UEventDevice>(*this, sysfs_device);
+
+        if (device->isController()) {
+          USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
+          device->sysfsDevice().setAttribute("authorized_default", _default_blocked_state ? "0" : "1");
+        }
+
         insertDevice(device);
         /*
          * Signal insertions as presence if device enumeration hasn't
