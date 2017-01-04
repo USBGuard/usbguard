@@ -76,12 +76,15 @@ namespace usbguard {
     Pointer<Device> removeDevice(const String& syspath);
 
     uint32_t getIDFromSysPath(const String& syspath) const;
-    bool knownSysPath(const String& syspath) const;
 
   protected:
     int ueventOpen();
     int ueventDummyOpen();
     void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
+
+    bool knownSysPath(const String& syspath, uint32_t * id = nullptr) const;
+    void learnSysPath(const String& syspath, uint32_t id = 0);
+    void forgetSysPath(const String& syspath);
 
     void thread();
     void ueventProcessRead();
@@ -90,10 +93,12 @@ namespace usbguard {
     void ueventEnumerateDummyDevices();
 
     static String ueventEnumerateFilterDevice(const String& filepath, const struct dirent* direntry);
-    static void ueventEnumerateTriggerDevice(const String& filepath);
+    void ueventEnumerateTriggerDevice(const String& filepath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
-    void processDeviceInsertion(SysFSDevice& sysfs_device);
+
+    void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
+    void processDevicePresence(uint32_t id);
     void processDeviceRemoval(const String& sysfs_devpath);
 
   private:

@@ -39,6 +39,8 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <linux/netlink.h>
+#include <limits.h>
+#include <stdlib.h>
 
 namespace usbguard {
   UEventDevice::UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device)
@@ -237,7 +239,19 @@ namespace usbguard {
   void UEventDeviceManager::scan()
   {
     _enumeration_complete = false;
-    ueventEnumerateDevices();
+
+    if (!_dummy_mode) {
+      ueventEnumerateDevices(); /* scan() without thread state check */
+    }
+    else {
+      ueventEnumerateDummyDevices();
+    }
+
+    //
+    // Track known syspaths to prevent race conditions
+    // during start (remove/add during initial scan())
+    //
+
     _enumeration_complete = true;
   }
 
@@ -352,13 +366,6 @@ namespace usbguard {
     try {
       const int max_fd = std::max(_uevent_fd, _wakeup_fd);
       fd_set readset;
-
-      if (!_dummy_mode) {
-      ueventEnumerateDevices(); /* scan() without thread state check */
-      }
-      else {
-        ueventEnumerateDummyDevices();
-      }
 
       while (!_thread.stopRequested()) {
         struct timeval tv_timeout = { 5, 0 };
@@ -507,34 +514,45 @@ namespace usbguard {
 
     try {
       if (action == "add" || action == "change") {
-        SysFSDevice sysfs_device(sysfs_devpath);
+        uint32_t id = 0;
+        const bool known_path = knownSysPath(sysfs_devpath, &id);
 
-        /*
-         * Do some additional sanity checking.
-         */
-        if (sysfs_device.getUEvent().hasAttribute("DEVTYPE")) {
-          const String devtype = sysfs_device.getUEvent().getAttribute("DEVTYPE");
-          if (devtype != "usb_device") {
-            USBGUARD_LOG(Warning) << sysfs_devpath << ": UEvent DEVTYPE mismatch."
-                                  << " Expected \"usb_device\", got \"" << devtype << "\"";
-            return;
-          }
+        if (known_path && id > 0) {
+          processDevicePresence(id);
         }
+        else {
+          SysFSDevice sysfs_device(sysfs_devpath);
+          /*
+           * Do some additional sanity checking.
+           */
+          if (sysfs_device.getUEvent().hasAttribute("DEVTYPE")) {
+            const String devtype = sysfs_device.getUEvent().getAttribute("DEVTYPE");
+            if (devtype != "usb_device") {
+              USBGUARD_LOG(Warning) << sysfs_devpath << ": UEvent DEVTYPE mismatch."
+                << " Expected \"usb_device\", got \"" << devtype << "\"";
+              return;
+            }
+          }
 
-        processDeviceInsertion(sysfs_device);
+          processDeviceInsertion(sysfs_device, /*signal_present=*/known_path);
+        }
       }
       else if (action == "remove") {
         processDeviceRemoval(sysfs_devpath);
       }
       else {
         USBGUARD_LOG(Warning) << "Ignoring unknown UEvent action: sysfs_devpath=" << sysfs_devpath
-                              << " action=" << action;
+          << " action=" << action;
       }
     }
     catch(const Exception& ex) {
       USBGUARD_LOG(Warning) << "USB Device Exception: "
                             << ex.message();
       DeviceException(ex.message());
+    }
+    catch(...) {
+      USBGUARD_LOG(Warning) << "USB Device Exception: unknown exception";
+      DeviceException("unknown exception");
     }
   }
 
@@ -543,7 +561,10 @@ namespace usbguard {
     USBGUARD_LOG(Trace);
     loadFiles(_sysfs_root + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
-      UEventDeviceManager::ueventEnumerateTriggerDevice);
+      [&](const String& filepath)
+      {
+        ueventEnumerateTriggerDevice(filepath);
+      });
   }
 
   void UEventDeviceManager::ueventEnumerateDummyDevices()
@@ -589,7 +610,6 @@ namespace usbguard {
         USBGUARD_LOG(Warning) << "lstat(" << filepath << "): errno=" << errno;
         return String();
       }
-
       if (S_ISLNK(st.st_mode)) {
         return symlinkPath(filepath, &st);
       }
@@ -610,7 +630,10 @@ namespace usbguard {
   {
     USBGUARD_LOG(Trace) << "filepath=" << filepath;
     try {
-      std::ofstream uevent_stream(filepath + "/uevent");
+      std::unique_ptr<char> realpath_cstr(::realpath(filepath.c_str(), nullptr));
+      const std::string syspath(realpath_cstr.get());
+      std::ofstream uevent_stream(syspath + "/uevent");
+      learnSysPath(syspath);
       uevent_stream << "add";
     }
     catch(const Exception& ex) {
@@ -621,13 +644,17 @@ namespace usbguard {
     }
   }
 
-  void UEventDeviceManager::processDevicePresence(SysFSDevice& sysfs_device)
+  void UEventDeviceManager::processDevicePresence(const uint32_t id)
   {
     try {
-      const uint32_t id = getIDFromSysPath(sysfs_device.getPath());
       Pointer<UEventDevice> device = \
         std::static_pointer_cast<UEventDevice>(DeviceManager::getDevice(id));
       device->sysfsDevice().reload();
+
+      /*
+       * TODO: Check attribute state
+       *  - authorized_default (in case of controller)
+       */
       DeviceEvent(DeviceManager::EventType::Present, device);
       return;
     }
@@ -651,66 +678,57 @@ namespace usbguard {
      */
   }
 
-  void UEventDeviceManager::processDeviceInsertion(SysFSDevice& sysfs_device)
+  void UEventDeviceManager::processDeviceInsertion(SysFSDevice& sysfs_device, const bool signal_present)
   {
-   /*
-     * If we already know about a device at the sysfs path, redirect this
-     * to device presence processing.
-     */
-    if (knownSysPath(sysfs_device.getPath())) {
-      processDevicePresence(sysfs_device);
-    }
-    else {
-      try {
-        Pointer<UEventDevice> device = makePointer<UEventDevice>(*this, sysfs_device);
+    try {
+      Pointer<UEventDevice> device = makePointer<UEventDevice>(*this, sysfs_device);
 
-        if (device->isController()) {
-          USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
-          device->sysfsDevice().setAttribute("authorized_default", _default_blocked_state ? "0" : "1");
-        }
+      if (device->isController()) {
+        USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
+        device->sysfsDevice().setAttribute("authorized_default", _default_blocked_state ? "0" : "1");
+      }
 
-        insertDevice(device);
-        /*
-         * Signal insertions as presence if device enumeration hasn't
-         * completed yet.
-         */
-        if (_enumeration_complete) {
-          DeviceEvent(DeviceManager::EventType::Insert, device);
-        }
-        else {
-          DeviceEvent(DeviceManager::EventType::Present, device);
-        }
-        return;
-      }
-      catch(const Exception& ex) {
-        USBGUARD_LOG(Error) << "Device insert exception: " << ex.message();
-        DeviceException(ex.message());
-      }
-      catch(const std::exception& ex) {
-        USBGUARD_LOG(Error) << "Device insert exception: " << ex.what();
-        DeviceException(ex.what());
-      }
-      catch(...) {
-        USBGUARD_LOG(Error) << "BUG: Unknown device insert exception.";
-        DeviceException("BUG: Unknown device insert exception.");
-      }
+      insertDevice(device);
       /*
-       * Something went wrong and an exception was generated.
-       * Either the device is malicious or the system lacks some
-       * resources to successfully process the device. In either
-       * case, we take the safe route and fallback to rejecting
-       * the device.
+       * Signal insertions as presence if device enumeration hasn't
+       * completed yet.
        */
-      USBGUARD_LOG(Warning) << "Rejecting device at syspath=" << sysfs_device.getPath();
-      sysfsApplyTarget(sysfs_device, Rule::Target::Reject);
+      if (signal_present) {
+        DeviceEvent(DeviceManager::EventType::Present, device);
+      }
+      else {
+        DeviceEvent(DeviceManager::EventType::Insert, device);
+      }
+      return;
     }
+    catch(const Exception& ex) {
+      USBGUARD_LOG(Error) << "Device insert exception: " << ex.message();
+      DeviceException(ex.message());
+    }
+    catch(const std::exception& ex) {
+      USBGUARD_LOG(Error) << "Device insert exception: " << ex.what();
+      DeviceException(ex.what());
+    }
+    catch(...) {
+      USBGUARD_LOG(Error) << "BUG: Unknown device insert exception.";
+      DeviceException("BUG: Unknown device insert exception.");
+    }
+    /*
+     * Something went wrong and an exception was generated.
+     * Either the device is malicious or the system lacks some
+     * resources to successfully process the device. In either
+     * case, we take the safe route and fallback to rejecting
+     * the device.
+     */
+    USBGUARD_LOG(Warning) << "Rejecting device at syspath=" << sysfs_device.getPath();
+    sysfsApplyTarget(sysfs_device, Rule::Target::Reject);
   }
 
   void UEventDeviceManager::insertDevice(Pointer<UEventDevice> device)
   {
     DeviceManager::insertDevice(std::static_pointer_cast<Device>(device));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
-    _syspath_map.emplace(device->getSysPath(), device->getID());
+    learnSysPath(device->getSysPath(), device->getID());
   }
 
   void UEventDeviceManager::processDeviceRemoval(const String& sysfs_devpath)
@@ -744,16 +762,44 @@ namespace usbguard {
 
   uint32_t UEventDeviceManager::getIDFromSysPath(const String& syspath) const
   {
-    auto it = _syspath_map.find(syspath);
-    if (it == _syspath_map.end()) {
-      throw Exception("UEventDeviceManager", syspath, "unknown syspath");
+    uint32_t id = 0;
+    const bool known = knownSysPath(syspath, &id);
+
+    if (known && id > 0) {
+      return id;
     }
-    return it->second;
+
+    throw Exception("UEventDeviceManager", syspath, "unknown syspath");
   }
 
-  bool UEventDeviceManager::knownSysPath(const String& syspath) const
+  bool UEventDeviceManager::knownSysPath(const String& syspath, uint32_t * id_ptr) const
   {
-    return _syspath_map.count(syspath) > 0;
+    auto it = _syspath_map.find(syspath);
+
+    uint32_t known_id = 0;
+    bool known = false;
+
+    if (it != _syspath_map.end()) {
+      known = true;
+      known_id = it->second;
+    }
+
+    if (id_ptr != nullptr) {
+      *id_ptr = known_id;
+    }
+
+    return known;
+  }
+
+  void UEventDeviceManager::learnSysPath(const String& syspath, uint32_t id)
+  {
+    USBGUARD_LOG(Trace) << "syspath=" << syspath << " id=" << id;
+    _syspath_map[syspath] = id;
+  }
+
+  void UEventDeviceManager::forgetSysPath(const String& syspath)
+  {
+    _syspath_map.erase(syspath);
   }
 } /* namespace usbguard */
 #endif /* HAVE_UDEV */

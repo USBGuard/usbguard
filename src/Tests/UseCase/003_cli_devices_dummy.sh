@@ -39,17 +39,16 @@ function test_cli_devices()
   ${USBGUARD} list-devices -a
   ${USBGUARD} list-devices -b
 
-#  local id="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*serial "555666111".*$|\1|p')"
-#
-#  if [ -z "$id" ]; then
-#    echo "Test error: Unable to find/parse device ID"
-#    exit 1
-#  fi
+  local id="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "FSgk48/lKiTJWdqOqkHLuMQr155m+ux+ozIb17HHcKs=".*$|\1|p')"
 
- # ${USBGUARD} block-device "$id"
- # ${USBGUARD} allow-device "$id"
- # ${USBGUARD} block-device "$id"
- # ${USBGUARD} reject-device "$id"
+  if [ -z "$id" ]; then
+    echo "Test error: Unable to find/parse device ID"
+    exit 1
+  fi
+
+  ${USBGUARD} block-device "$id"
+  ${USBGUARD} allow-device "$id"
+  ${USBGUARD} block-device "$id"
 
   set +e
   return 0
@@ -57,9 +56,9 @@ function test_cli_devices()
 
 cat > "$config_path" <<EOF
 RuleFile=$policy_path
-ImplicitPolicyTarget=block
-PresentDevicePolicy=keep
-PresentControllerPolicy=keep
+ImplicitPolicyTarget=allow
+PresentDevicePolicy=allow
+PresentControllerPolicy=allow
 InsertedDevicePolicy=apply-policy
 RestoreControllerDeviceState=false
 DeviceManagerBackend=dummy

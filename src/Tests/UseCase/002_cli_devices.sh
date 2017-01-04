@@ -57,9 +57,9 @@ function test_cli_devices()
 
 cat > "$config_path" <<EOF
 RuleFile=$policy_path
-ImplicitPolicyTarget=block
-PresentDevicePolicy=keep
-PresentControllerPolicy=keep
+ImplicitPolicyTarget=allow
+PresentDevicePolicy=allow
+PresentControllerPolicy=allow
 InsertedDevicePolicy=apply-policy
 RestoreControllerDeviceState=false
 DeviceManagerBackend=uevent

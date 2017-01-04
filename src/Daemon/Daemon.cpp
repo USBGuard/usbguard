@@ -273,6 +273,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "Entering main loop";
    
     _dm->start();
+    _dm->scan();
     IPCServer::start();
 
     sigset_t signal_set;
