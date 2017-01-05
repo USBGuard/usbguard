@@ -31,6 +31,7 @@ namespace usbguard
     _with_catchall = false;
     _catchall_target = Rule::Target::Block;
     _dm = DeviceManager::create(*this, "uevent");
+    _dm->start();
   }
 
   void PolicyGenerator::setWithHashAttribute(bool state)

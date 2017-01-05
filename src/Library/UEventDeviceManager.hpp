@@ -29,6 +29,8 @@
 #include "Rule.hpp"
 #include "SysFSDevice.hpp"
 
+#include <condition_variable>
+
 #include <istream>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -89,11 +91,11 @@ namespace usbguard {
     void thread();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
-    void ueventEnumerateDevices();
-    void ueventEnumerateDummyDevices();
+    int ueventEnumerateDevices();
+    int ueventEnumerateDummyDevices();
 
     static String ueventEnumerateFilterDevice(const String& filepath, const struct dirent* direntry);
-    void ueventEnumerateTriggerDevice(const String& filepath);
+    int ueventEnumerateTriggerDevice(const String& filepath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
 
@@ -107,9 +109,11 @@ namespace usbguard {
     int _wakeup_fd;
     StringKeyMap<uint32_t> _syspath_map;
     String _sysfs_root;
-    std::atomic<bool> _enumeration_complete;
     bool _default_blocked_state;
     bool _dummy_mode;
+    std::atomic<bool> _enumeration;
+    std::condition_variable _enumeration_complete;
+    std::mutex _enumeration_mutex;
   };
 } /* namespace usbguard */
 #endif /* HAVE_UEVENT */

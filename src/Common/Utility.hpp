@@ -183,9 +183,9 @@ namespace usbguard
    * matching a regular expression. The function does not recursively descent into
    * subdirectories.
    */
-  void loadFiles(const String& directory,
-                 std::function<String(const String&, const struct dirent *)> filter,
-                 std::function<void(const String&)> load);
+  int loadFiles(const String& directory,
+                std::function<String(const String&, const struct dirent *)> filter,
+                std::function<int(const String&)> load);
 
   /**
    * Remove prefix from string.
@@ -197,4 +197,25 @@ namespace usbguard
    */
   String symlinkPath(const String& linkpath, struct stat *st_user = nullptr);
 
+  /*
+   * Restorer class
+   */
+  template<typename Tvar, typename Tval>
+  class Restorer {
+  public:
+    Restorer(Tvar& var, Tval transient, Tval restored)
+      : _ref(var),
+        _val(restored)
+    {
+      _ref = transient;
+    }
+
+    ~Restorer()
+    {
+      _ref = _val;
+    }
+  private:
+    Tvar& _ref;
+    Tval _val;
+   };
 } /* namespace usbguard */

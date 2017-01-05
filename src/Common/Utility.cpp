@@ -333,11 +333,12 @@ namespace usbguard
     return (uint8_t)num;
   }
 
-  void loadFiles(const String& directory,
-                 std::function<String(const String&, const struct dirent *)> filter,
-                 std::function<void(const String&)> load)
+  int loadFiles(const String& directory,
+                std::function<String(const String&, const struct dirent *)> filter,
+                std::function<int(const String&)> load)
   {
     DIR* dirobj = opendir(directory.c_str());
+    int retval = 0;
 
     if (dirobj == nullptr) {
       throw ErrnoException("loadFiles", directory, errno);
@@ -361,7 +362,7 @@ namespace usbguard
         const String loadpath = filter(fullpath, entry_ptr);
 
         if (!loadpath.empty()) {
-          load(loadpath);
+          retval += load(loadpath);
         }
       }
     }
@@ -371,7 +372,7 @@ namespace usbguard
     }
 
     closedir(dirobj);
-    return;
+    return retval;
   }
 
   String removePrefix(const String& prefix, const String& value)

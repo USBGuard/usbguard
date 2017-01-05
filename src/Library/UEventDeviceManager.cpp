@@ -31,6 +31,7 @@
 
 #include <stdexcept>
 #include <fstream>
+#include <chrono>
 
 #include <unistd.h>
 #include <sys/eventfd.h>
@@ -183,9 +184,9 @@ namespace usbguard {
       _uevent_fd(-1),
       _wakeup_fd(-1),
       _sysfs_root(sysfs_root),
-      _enumeration_complete(false),
       _default_blocked_state(true),
-      _dummy_mode(dummy_mode)
+      _dummy_mode(dummy_mode),
+      _enumeration(false)
   {
     setDefaultBlockedState(/*state=*/true);
 
@@ -238,21 +239,34 @@ namespace usbguard {
 
   void UEventDeviceManager::scan()
   {
-    _enumeration_complete = false;
+    USBGUARD_LOG(Trace);
+
+    std::unique_lock<std::mutex> lock(_enumeration_mutex);
+    int count = 0;
+    Restorer<std::atomic<bool>, bool> \
+      r(_enumeration, /*transient=*/true, /*restored=*/false);
 
     if (!_dummy_mode) {
-      ueventEnumerateDevices(); /* scan() without thread state check */
+      count = ueventEnumerateDevices();
     }
     else {
-      ueventEnumerateDummyDevices();
+      count = ueventEnumerateDummyDevices();
     }
 
-    //
-    // Track known syspaths to prevent race conditions
-    // during start (remove/add during initial scan())
-    //
+    USBGUARD_LOG(Debug) << "count=" << count;
 
-    _enumeration_complete = true;
+    if (count == 0) {
+      return;
+    }
+
+    if (count < 0) {
+      throw Exception("UEventDeviceManager", "present devices", "failed to enumerate");
+    }
+
+    if (!_enumeration_complete.wait_for(lock, count * std::chrono::seconds(2),
+          [&]{ return (--count <= 0); })) {
+      throw Exception("UEventDeviceManager", "present devices", "enumeration timeout");
+    }
   }
 
   Pointer<Device> UEventDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
@@ -535,6 +549,12 @@ namespace usbguard {
           }
 
           processDeviceInsertion(sysfs_device, /*signal_present=*/known_path);
+
+          if (_enumeration && known_path) {
+            USBGUARD_LOG(Debug) << "Enumeration notify: " << sysfs_devpath;
+            std::unique_lock<std::mutex> lock(_enumeration_mutex);
+            _enumeration_complete.notify_one();
+          }
         }
       }
       else if (action == "remove") {
@@ -556,21 +576,21 @@ namespace usbguard {
     }
   }
 
-  void UEventDeviceManager::ueventEnumerateDevices()
+  int UEventDeviceManager::ueventEnumerateDevices()
   {
     USBGUARD_LOG(Trace);
-    loadFiles(_sysfs_root + "/bus/usb/devices",
+    return loadFiles(_sysfs_root + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
       [&](const String& filepath)
       {
-        ueventEnumerateTriggerDevice(filepath);
+        return ueventEnumerateTriggerDevice(filepath);
       });
   }
 
-  void UEventDeviceManager::ueventEnumerateDummyDevices()
+  int UEventDeviceManager::ueventEnumerateDummyDevices()
   {
     USBGUARD_LOG(Trace);
-    loadFiles(_sysfs_root + "/bus/usb/devices",
+    return loadFiles(_sysfs_root + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
       [&](const String& filepath)
       {
@@ -580,6 +600,7 @@ namespace usbguard {
         uevent.setAttribute("ACTION", "add");
         uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, filepath));
         ueventProcessUEvent(uevent);
+        return 1;
       });
   }
 
@@ -626,7 +647,7 @@ namespace usbguard {
     return String();
   }
 
-  void UEventDeviceManager::ueventEnumerateTriggerDevice(const String& filepath)
+  int UEventDeviceManager::ueventEnumerateTriggerDevice(const String& filepath)
   {
     USBGUARD_LOG(Trace) << "filepath=" << filepath;
     try {
@@ -635,6 +656,7 @@ namespace usbguard {
       std::ofstream uevent_stream(syspath + "/uevent");
       learnSysPath(syspath);
       uevent_stream << "add";
+      return 1;
     }
     catch(const Exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << filepath << ": " << ex.message();
@@ -642,6 +664,7 @@ namespace usbguard {
     catch(const std::exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << filepath << ": " << ex.what();
     }
+    return 0;
   }
 
   void UEventDeviceManager::processDevicePresence(const uint32_t id)
