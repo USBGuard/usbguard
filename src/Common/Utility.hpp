@@ -217,5 +217,13 @@ namespace usbguard
   private:
     Tvar& _ref;
     Tval _val;
-   };
+  };
+
+  struct FreeDeleter
+  {
+    void operator()(void *p)
+    {
+      free(p);
+    }
+  };
 } /* namespace usbguard */

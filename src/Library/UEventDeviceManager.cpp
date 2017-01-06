@@ -599,6 +599,11 @@ namespace usbguard {
         uevent.setAttribute("DEVTYPE", "usb_device");
         uevent.setAttribute("ACTION", "add");
         uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, filepath));
+
+        std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(filepath.c_str(), nullptr));
+        const std::string syspath(realpath_cstr.get());
+        learnSysPath(syspath);
+
         ueventProcessUEvent(uevent);
         return 1;
       });
@@ -651,7 +656,7 @@ namespace usbguard {
   {
     USBGUARD_LOG(Trace) << "filepath=" << filepath;
     try {
-      std::unique_ptr<char> realpath_cstr(::realpath(filepath.c_str(), nullptr));
+      std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(filepath.c_str(), nullptr));
       const std::string syspath(realpath_cstr.get());
       std::ofstream uevent_stream(syspath + "/uevent");
       learnSysPath(syspath);

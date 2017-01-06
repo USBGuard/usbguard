@@ -20,6 +20,7 @@
 #include "IPCPrivate.hpp"
 #include "Logger.hpp"
 #include "Exception.hpp"
+#include "Common/Utility.hpp"
 
 #include <sys/poll.h>
 #include <sys/eventfd.h>
@@ -33,11 +34,6 @@
 namespace usbguard
 {
   static qb_loop *G_qb_loop = nullptr;
-
-  struct free_deleter
-  {
-    void operator()(void *p) { free(p); }
-  };
 
   IPCServerPrivate::IPCServerPrivate(IPCServer& p_instance)
     : _p_instance(p_instance),
@@ -221,7 +217,7 @@ namespace usbguard
 
   int32_t IPCServerPrivate::qbIPCConnectionClientPID(qb_ipcs_connection_t *connection)
   {
-    std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
+    std::unique_ptr<qb_ipcs_connection_stats_2, FreeDeleter> \
       stats(qb_ipcs_connection_stats_get_2(connection, /*clear_after_read=*/0));
 
     if (stats == nullptr) {
@@ -304,7 +300,7 @@ namespace usbguard
     const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, 2);
 
     if (rc < 0 || (size_t)rc != total_size) {
-      std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
+      std::unique_ptr<qb_ipcs_connection_stats_2, FreeDeleter> \
         stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
 
       if (stats == nullptr) {
@@ -443,7 +439,7 @@ namespace usbguard
       const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
 
       if (rc < 0 || (size_t)rc != total_size) {
-        std::unique_ptr<qb_ipcs_connection_stats_2, free_deleter> \
+        std::unique_ptr<qb_ipcs_connection_stats_2, FreeDeleter> \
           stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
 
         if (stats == nullptr) {
