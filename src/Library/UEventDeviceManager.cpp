@@ -186,7 +186,8 @@ namespace usbguard {
       _sysfs_root(sysfs_root),
       _default_blocked_state(true),
       _dummy_mode(dummy_mode),
-      _enumeration(false)
+      _enumeration(false),
+      _enumeration_count(0)
   {
     setDefaultBlockedState(/*state=*/true);
 
@@ -242,29 +243,30 @@ namespace usbguard {
     USBGUARD_LOG(Trace);
 
     std::unique_lock<std::mutex> lock(_enumeration_mutex);
-    int count = 0;
     Restorer<std::atomic<bool>, bool> \
       r(_enumeration, /*transient=*/true, /*restored=*/false);
 
     if (!_dummy_mode) {
-      count = ueventEnumerateDevices();
+      _enumeration_count = ueventEnumerateDevices();
     }
     else {
-      count = ueventEnumerateDummyDevices();
+      _enumeration_count = ueventEnumerateDummyDevices();
     }
 
-    USBGUARD_LOG(Debug) << "count=" << count;
+    USBGUARD_LOG(Debug) << "_enumeration_count=" << _enumeration_count;
 
-    if (count == 0) {
+    if (_enumeration_count == 0) {
       return;
     }
 
-    if (count < 0) {
+    if (_enumeration_count < 0) {
       throw Exception("UEventDeviceManager", "present devices", "failed to enumerate");
     }
 
-    if (!_enumeration_complete.wait_for(lock, count * std::chrono::seconds(2),
-          [&]{ return (--count <= 0); })) {
+    const auto timeout = std::chrono::seconds(2 * _enumeration_count);
+
+    if (!_enumeration_complete.wait_for(lock, timeout,
+          [&] { return (_enumeration_count > 0 ? false : true); })) {
       throw Exception("UEventDeviceManager", "present devices", "enumeration timeout");
     }
   }
@@ -527,9 +529,13 @@ namespace usbguard {
     const String sysfs_devpath = _sysfs_root + uevent.getAttribute("DEVPATH");
 
     try {
+      std::unique_lock<std::mutex> lock(_enumeration_mutex);
+
       if (action == "add" || action == "change") {
         uint32_t id = 0;
         const bool known_path = knownSysPath(sysfs_devpath, &id);
+
+        lock.unlock();
 
         if (known_path && id > 0) {
           processDevicePresence(id);
@@ -550,14 +556,18 @@ namespace usbguard {
 
           processDeviceInsertion(sysfs_device, /*signal_present=*/known_path);
 
+          USBGUARD_LOG(Debug) << "Enumeration notify: sysfs_devpath=" << sysfs_devpath
+                              << " _enumeration=" << _enumeration
+                              << " known_path=" << known_path;
+
           if (_enumeration && known_path) {
-            USBGUARD_LOG(Debug) << "Enumeration notify: " << sysfs_devpath;
-            std::unique_lock<std::mutex> lock(_enumeration_mutex);
+            --_enumeration_count;
             _enumeration_complete.notify_one();
           }
         }
       }
       else if (action == "remove") {
+        lock.unlock();
         processDeviceRemoval(sysfs_devpath);
       }
       else {

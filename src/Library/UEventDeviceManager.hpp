@@ -112,6 +112,7 @@ namespace usbguard {
     bool _default_blocked_state;
     bool _dummy_mode;
     std::atomic<bool> _enumeration;
+    std::atomic<int> _enumeration_count;
     std::condition_variable _enumeration_complete;
     std::mutex _enumeration_mutex;
   };
