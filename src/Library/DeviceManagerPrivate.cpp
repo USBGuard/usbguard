@@ -26,6 +26,7 @@ namespace usbguard {
     : _p_instance(p_instance),
       _hooks(hooks)
   {
+    setRestoreControllerDeviceState(false);
   }
 
   DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, const DeviceManagerPrivate& rhs)
