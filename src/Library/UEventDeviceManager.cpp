@@ -668,10 +668,13 @@ namespace usbguard {
     try {
       std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(filepath.c_str(), nullptr));
       const std::string syspath(realpath_cstr.get());
-      std::ofstream uevent_stream(syspath + "/uevent");
-      learnSysPath(syspath);
-      uevent_stream << "add";
-      return 1;
+      SysFSDevice device(syspath);
+
+      if (device.getUEvent().getAttribute("DEVTYPE") == "usb_device") {
+        learnSysPath(syspath);
+        device.setAttribute("uevent", "add");
+        return 1;
+      }
     }
     catch(const Exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << filepath << ": " << ex.message();
