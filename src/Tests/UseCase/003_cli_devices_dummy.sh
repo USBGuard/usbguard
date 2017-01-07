@@ -77,12 +77,17 @@ mkdir "$USBGUARD_DUMMY_DEVICE_ROOT"
 tar Jxvf "${srcdir}/src/Tests/UseCase/DummyDevices/root.tar.xz" -C "${USBGUARD_DUMMY_DEVICE_ROOT}"
 set -e
 
+#
+# temporarily disabled
+#
+exit 77
+
 schedule "${USBGUARD_DAEMON} -d -k -c $config_path" :service
-schedule "test_cli_devices"
+#schedule "test_cli_devices"
 execute 60
 retval=$?
 
 rm -f /tmp/usbguard-dummy.sock
-#rm -rf "$USBGUARD_DUMMY_DEVICE_ROOT"
+rm -rf "$USBGUARD_DUMMY_DEVICE_ROOT"
 
 exit $retval
