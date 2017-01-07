@@ -27,7 +27,7 @@ namespace usbguard
   {
     public:
       SysFSDevice();
-      SysFSDevice(const String& sysfs_path);
+      SysFSDevice(const String& sysfs_path, bool without_parent = false);
       SysFSDevice(SysFSDevice&& device);
       ~SysFSDevice();
       SysFSDevice& operator=(SysFSDevice&& rhs_device);

@@ -37,18 +37,23 @@ namespace usbguard
   {
   }
 
-  SysFSDevice::SysFSDevice(const String& sysfs_path)
+  SysFSDevice::SysFSDevice(const String& sysfs_path, bool without_parent)
     : _sysfs_path(sysfs_path),
       _sysfs_name(filenameFromPath(_sysfs_path, /*include_extension=*/true)),
-      _sysfs_parent_path(parentPath(sysfs_path)),
       _sysfs_dirfd(-1)
   {
-    if (_sysfs_parent_path.empty()) {
-      throw Exception("SysFSDevice", sysfs_path, "Cannot get parent path");
-    }
+    USBGUARD_LOG(Trace) << "sysfs_path=" << sysfs_path
+                        << " without_parent=" << without_parent;
 
-    USBGUARD_LOG(Debug) << "path=" << _sysfs_path;
-    USBGUARD_LOG(Debug) << "parent_path=" << _sysfs_parent_path;
+    if (!without_parent) {
+      _sysfs_parent_path = parentPath(sysfs_path);
+
+      if (_sysfs_parent_path.empty()) {
+        throw Exception("SysFSDevice", sysfs_path, "Cannot get parent path");
+      }
+
+      USBGUARD_LOG(Debug) << "parent_path=" << _sysfs_parent_path;
+    }
 
     USBGUARD_SYSCALL_THROW("SysFSDevice",
       (_sysfs_dirfd = open(_sysfs_path.c_str(), O_PATH|O_DIRECTORY)) < 0);
