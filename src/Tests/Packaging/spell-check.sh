@@ -40,6 +40,7 @@ ${srcdir}/doc/*.md
 ##################
 retval=0
 set -o pipefail
+export LANG="en_US.UTF-8"
 while read path; do
   WORDS="$($PANDOC -t html $path | $ASPELL -l en --add-filter=html $ASPELL_OPTIONS list | sort | uniq -c)"
   if [[ -n "$WORDS" ]]; then
