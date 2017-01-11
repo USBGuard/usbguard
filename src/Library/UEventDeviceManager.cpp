@@ -148,8 +148,48 @@ namespace usbguard {
 
   void UEventDevice::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    USBGUARD_LOG(Trace);
+
     USBDescriptorParserHooks::parseUSBDescriptor(parser, descriptor_raw, descriptor_out);
-    updateHash(descriptor_raw, static_cast<size_t>(descriptor_raw->bHeader.bLength));
+
+    if (isLinuxRootHubDeviceDescriptor(descriptor_out)) {
+      updateHashLinuxRootHubDeviceDescriptor(descriptor_raw);
+    }
+    else {
+      updateHash(descriptor_raw, static_cast<size_t>(descriptor_raw->bHeader.bLength));
+    }
+  }
+
+  bool UEventDevice::isLinuxRootHubDeviceDescriptor(const USBDescriptor* const descriptor)
+  {
+    USBGUARD_LOG(Trace);
+
+    if (descriptor->bHeader.bDescriptorType != USB_DESCRIPTOR_TYPE_DEVICE) {
+      return false;
+    }
+
+    const USBDeviceDescriptor * const device_descriptor = \
+      reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
+
+    if (device_descriptor->idVendor == 0x1d6b /* Linux Foundation */) {
+      switch (device_descriptor->idProduct) {
+        case 0x0001: /* 1.1 root hub */
+        case 0x0002: /* 2.0 root hub */
+        case 0x0003: /* 3.0 root hub */
+          return true;
+      }
+    }
+
+    return false;
+  }
+
+  void UEventDevice::updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* const descriptor)
+  {
+    USBGUARD_LOG(Trace);
+
+    USBDeviceDescriptor descriptor_modified = *reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
+    descriptor_modified.bcdDevice = 0;
+    updateHash(&descriptor_modified, sizeof descriptor_modified);
   }
 
   /*

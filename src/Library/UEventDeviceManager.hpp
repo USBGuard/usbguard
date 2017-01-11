@@ -50,6 +50,8 @@ namespace usbguard {
 
   private:
     void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;
+    bool isLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
+    void updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
 
     SysFSDevice _sysfs_device;
   };
