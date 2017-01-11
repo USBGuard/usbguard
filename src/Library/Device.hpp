@@ -39,7 +39,10 @@ namespace usbguard {
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true, bool match_rule = false);
     String hashString(const String& value) const;
+    void initializeHash();
+    void updateHash(const void * ptr, size_t size);
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
+    String finalizeHash();
     const String& getHash() const;
 
     void setParentHash(const String& hash);
@@ -74,6 +77,7 @@ namespace usbguard {
     void loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+    void loadUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
 
   private:
     DevicePrivate *d_pointer;

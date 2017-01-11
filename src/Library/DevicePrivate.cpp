@@ -20,6 +20,8 @@
 #include "DeviceManager.hpp"
 #include "Logger.hpp"
 #include "Hash.hpp"
+#include "Exception.hpp"
+#include "Common/Utility.hpp"
 #include <mutex>
 
 namespace usbguard {
@@ -120,7 +122,7 @@ namespace usbguard {
     return hash.getBase64();
   }
 
-  void DevicePrivate::updateHash(std::istream& descriptor_stream, const size_t expected_size)
+  void DevicePrivate::initializeHash()
   {
     Hash hash;
 
@@ -128,7 +130,7 @@ namespace usbguard {
     const String product_id = _device_id.getProductID();
 
     if (vendor_id.empty() || product_id.empty()) {
-      throw std::runtime_error("Cannot compute device hash: vendor and/or product id values not available");
+      throw Exception("Device hash initialization", numberToString(getID()), "vendor and/or product id values not available");
     }
 
     /*
@@ -137,19 +139,43 @@ namespace usbguard {
     for (const String& field : { _name, vendor_id, product_id, _serial_number }) {
       hash.update(field);
     }
-    /*
-     * Hash the device descriptor data.
-     */
+
+    _hash = std::move(hash);
+  }
+
+  void DevicePrivate::updateHash(std::istream& descriptor_stream, const size_t expected_size)
+  {
+    Hash hash(_hash);
+
     if (hash.update(descriptor_stream) != expected_size) {
-      throw std::runtime_error("Cannot compute the device hash: descriptor stream returned less data than expected");
+      throw Exception("Device hash update", numberToString(getID()), "descriptor stream returned less data than expected");
     }
 
-    _hash_base64 = hash.getBase64();
-    return;
+    _hash = std::move(hash);
+  }
+
+  void DevicePrivate::updateHash(const void * const ptr, size_t size)
+  {
+    Hash hash(_hash);
+
+    if (hash.update(ptr, size) != size) {
+      throw Exception("Device hash update", numberToString(getID()), "hashed less data than expected");
+    }
+
+    _hash = std::move(hash);
+  }
+
+  String DevicePrivate::finalizeHash()
+  {
+    _hash_base64 = _hash.getBase64();
+    return _hash_base64;
   }
 
   const String& DevicePrivate::getHash() const
   {
+    if (_hash_base64.empty()) {
+      throw USBGUARD_BUG("Accessing unfinalized device hash value");
+    }
     return _hash_base64;
   }
 
@@ -191,7 +217,7 @@ namespace usbguard {
   void DevicePrivate::setName(const String& name)
   {
     if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
-      throw std::runtime_error("device name string size out-of-range");
+      throw Exception("DevicePrivate::setName", numberToString(getID()), "name string size out-of-range");
     }
     _name = name;
   }

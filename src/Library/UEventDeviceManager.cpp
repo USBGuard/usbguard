@@ -107,46 +107,17 @@ namespace usbguard {
     size_t descriptor_expected_size = 0;
 
     if (!descriptor_stream.good()) {
-      throw std::runtime_error("Cannot load USB descriptors: failed to open the descriptor data stream");
+      throw ErrnoException("UEventDevice", sysfs_device.getPath(), errno);
     }
-    else {
-      using namespace std::placeholders;
-      USBDescriptorParser parser;
 
-      auto load_device_descriptor = std::bind(&UEventDevice::loadDeviceDescriptor, this, _1, _2);
-      auto load_configuration_descriptor = std::bind(&UEventDevice::loadConfigurationDescriptor, this, _1, _2);
-      auto load_interface_descriptor = std::bind(&UEventDevice::loadInterfaceDescriptor, this, _1, _2);
-      auto load_endpoint_descriptor = std::bind(&UEventDevice::loadEndpointDescriptor, this, _1, _2);
+    initializeHash();
 
-      parser.setHandler(USB_DESCRIPTOR_TYPE_DEVICE, sizeof (USBDeviceDescriptor),
-                        USBParseDeviceDescriptor, load_device_descriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_CONFIGURATION, sizeof (USBConfigurationDescriptor),
-                        USBParseConfigurationDescriptor, load_configuration_descriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_INTERFACE, sizeof (USBInterfaceDescriptor),
-                        USBParseInterfaceDescriptor, load_interface_descriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBEndpointDescriptor),
-                        USBParseEndpointDescriptor, load_endpoint_descriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof (USBAudioEndpointDescriptor),
-                        USBParseAudioEndpointDescriptor, load_endpoint_descriptor);
-
-      if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
-        throw std::runtime_error("Descriptor data parsing failed: parser processed less data than the size of a USB device descriptor");
-      }
+    USBDescriptorParser parser(*this);
+    if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
+      throw Exception("UEventDevice", sysfs_device.getPath(), "USB descriptor parser processed less data than the size of a USB device descriptor");
     }
-    /*
-     * Reset descriptor stream before before computing
-     * the device hash.
-     *
-     * Because the eofbit is set, clear() has to be called
-     * before seekg().
-     */
-    descriptor_stream.clear();
-    descriptor_stream.seekg(0);
 
-    /*
-     * Compute and set the device hash.
-     */
-    updateHash(descriptor_stream, descriptor_expected_size);
+    finalizeHash();
 
     /*
      * From now own we take ownership of the SysFSDevice instance.
@@ -173,6 +144,12 @@ namespace usbguard {
     const USBInterfaceType hub_interface("09:00:*");
 
     return hub_interface.appliesTo(getInterfaceTypes()[0]);
+  }
+
+  void UEventDevice::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
+  {
+    USBDescriptorParserHooks::parseUSBDescriptor(parser, descriptor_raw, descriptor_out);
+    updateHash(descriptor_raw, static_cast<size_t>(descriptor_raw->bHeader.bLength));
   }
 
   /*

@@ -60,12 +60,13 @@ namespace usbguard {
   const uint8_t USB_DESCRIPTOR_TYPE_ASSOCIATION_INTERFACE = 0x0b;
 
   enum class USBDescriptorType : uint8_t {
-    Device = 0x01,
-    Configuration = 0x02,
-    String = 0x03,
-    Interface = 0x04,
-    Endpoint = 0x05,
-    AssociationInterface = 0x0b
+    Unknown = USB_DESCRIPTOR_TYPE_UNKNOWN,
+    Device = USB_DESCRIPTOR_TYPE_DEVICE,
+    Configuration = USB_DESCRIPTOR_TYPE_CONFIGURATION,
+    String = USB_DESCRIPTOR_TYPE_STRING,
+    Interface = USB_DESCRIPTOR_TYPE_INTERFACE,
+    Endpoint = USB_DESCRIPTOR_TYPE_ENDPOINT,
+    AssociationInterface = USB_DESCRIPTOR_TYPE_ASSOCIATION_INTERFACE
   };
 
   struct DLL_PUBLIC USBDescriptorHeader
@@ -203,13 +204,19 @@ namespace usbguard {
     bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
   }
 
+  class USBDescriptorParser;
+
+  class DLL_PUBLIC USBDescriptorParserHooks
+  {
+    public:
+      virtual void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_in, USBDescriptor* descriptor_out);
+      virtual void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+  };
+
   class DLL_PUBLIC USBDescriptorParser
   {
   public:
-    using ParserFunction = std::function<void(USBDescriptorParser *, const USBDescriptor *, USBDescriptor *)>;
-    using CallbackFunction = std::function<void(USBDescriptorParser *, const USBDescriptor *)>;
-
-    //USBDescriptorParser(); //size_t max_resident_descriptors = 1024*1024/256 /* 1MiB of descriptors */);
+    USBDescriptorParser(USBDescriptorParserHooks& hooks);
 
     /**
      * Initiate parsing of USB descriptors from an input stream.
@@ -218,15 +225,6 @@ namespace usbguard {
      * the stream.
      */
     size_t parse(std::istream& stream);
-
-    /**
-     * Sets handler functions (parser and callback) for specific USB descriptor types
-     *
-     * bDescriptorType: Type of the descriptor.
-     * bLengthExpected: Expected length (in bytes/octets) of the descriptor. Set to 0 for variable length descriptors.
-     *
-     */
-    void setHandler(uint8_t bDescriptorType, uint8_t bLengthExpected, ParserFunction parser, CallbackFunction callback);
 
     /**
      * Return a pointer to a USBDescriptor of type bDescriptorType that
@@ -256,18 +254,9 @@ namespace usbguard {
     const std::vector<std::pair<uint8_t,size_t>> getDescriptorCounts() const;
 
   private:
-    struct Handler
-    {
-      ParserFunction parser;
-      CallbackFunction callback;
-      uint8_t bLengthExpected;
-    };
-
-    const std::vector<Handler>* getDescriptorTypeHandler(uint8_t bDescriptorType) const;
-    bool getDescriptorTypeHandler(const USBDescriptorHeader& header, const Handler*& handler) const;
+    USBDescriptorParserHooks& _hooks;
 
     std::unordered_map<uint8_t, std::vector<USBDescriptor>> _dstate_map; /**< Descriptor State Map */
-    std::unordered_map<uint8_t, std::vector<Handler>> _handler_map;
     std::unordered_map<uint8_t, size_t> _count_map;
  };
 
@@ -276,5 +265,6 @@ namespace usbguard {
  void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
  void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
  void DLL_PUBLIC USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+ void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */

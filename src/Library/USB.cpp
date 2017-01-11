@@ -314,45 +314,69 @@ namespace usbguard {
     endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
   }
 
-  const std::vector<USBDescriptorParser::Handler>* USBDescriptorParser::getDescriptorTypeHandler(uint8_t bDescriptorType) const
+  void USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-    const auto it = _handler_map.find(bDescriptorType);
-    if (it == _handler_map.end()) {
-      return nullptr;
-    }
-    return &it->second;
+    *descriptor_out = *descriptor_raw;
   }
 
-  bool USBDescriptorParser::getDescriptorTypeHandler(const USBDescriptorHeader& header, const USBDescriptorParser::Handler*& handler) const
+  void USBDescriptorParserHooks::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
-    const auto handlers = getDescriptorTypeHandler(header.bDescriptorType);
+    USBGUARD_LOG(Trace);
 
-    if (handlers == nullptr) {
-      return false;
-    }
+    const auto type = static_cast<USBDescriptorType>(descriptor_raw->bHeader.bDescriptorType);
+    const auto size = descriptor_raw->bHeader.bLength;
 
-    handler = nullptr;
-
-    for (auto& candidate_handler : *handlers) {
-      /*
-       * Fixed size descriptor handler. Save pointer to the handler
-       * and short circuit the loop
-       */
-      if (candidate_handler.bLengthExpected == header.bLength) {
-        handler = &candidate_handler;
+    switch(type) {
+     case USBDescriptorType::Device:
+        switch (size) {
+          case sizeof(USBDeviceDescriptor):
+            USBParseDeviceDescriptor(parser, descriptor_raw, descriptor_out);
+            return;
+        }
         break;
-      }
-      /*
-       * Variable size descriptor handler. Save pointer to the handler
-       * and continue searching as there might be a matching fixed size
-       * handler.
-       */
-      if (candidate_handler.bLengthExpected == 0) {
-        handler = &candidate_handler;
-      }
+      case USBDescriptorType::Configuration:
+        switch (size) {
+          case sizeof(USBConfigurationDescriptor):
+            USBParseConfigurationDescriptor(parser, descriptor_raw, descriptor_out);
+            return;
+        }
+        break;
+      case USBDescriptorType::Interface:
+        switch (size) {
+          case sizeof(USBInterfaceDescriptor):
+            USBParseInterfaceDescriptor(parser, descriptor_raw, descriptor_out);
+            return;
+        }
+        break;
+      case USBDescriptorType::Endpoint:
+        switch (size) {
+          case sizeof(USBEndpointDescriptor):
+            USBParseEndpointDescriptor(parser, descriptor_raw, descriptor_out);
+            return;
+          case sizeof(USBAudioEndpointDescriptor):
+            USBParseAudioEndpointDescriptor(parser, descriptor_raw, descriptor_out);
+            return;
+        }
+        break;
+      case USBDescriptorType::String:
+      case USBDescriptorType::AssociationInterface:
+      case USBDescriptorType::Unknown:
+      default:
+        USBParseUnknownDescriptor(parser, descriptor_raw, descriptor_out); 
+        return;
     }
 
-    return true;
+    throw Exception("USB descriptor parser", numberToString((int)type), "invalid descriptor");
+  }
+
+  void USBDescriptorParserHooks::loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
+  {
+    USBGUARD_LOG(Trace);
+  }
+
+  USBDescriptorParser::USBDescriptorParser(USBDescriptorParserHooks& hooks)
+    : _hooks(hooks)
+  {
   }
 
   size_t USBDescriptorParser::parse(std::istream& stream)
@@ -409,67 +433,18 @@ namespace usbguard {
         throw std::runtime_error("Invalid descriptor data: bLength value larger than the amount of available data");
       }
 
-      /*
-       * Find handler for the descriptor type & length.
-       */
-      const Handler *handler = nullptr;
-
-      if (getDescriptorTypeHandler(header, handler)) {
-        if (handler == nullptr) {
-          throw std::runtime_error("Invalid descriptor data: invalid combination of bDescriptorType and bLength values");
-        }
-      }
-      else {
-        const USBDescriptorHeader header_unknown = {
-          .bLength = header.bLength,
-          .bDescriptorType = USB_DESCRIPTOR_TYPE_UNKNOWN
-        };
-
-        (void)getDescriptorTypeHandler(header_unknown, handler);
-        /*
-         * If there's not even an unknown descriptor type handler, just
-         * ignore it and count in the length. Until we implement
-         * support for all descriptor types as defined by all used USB
-         * specifications, we cannot do anything else here...
-         */
-        if (handler == nullptr) {
-          size_processed += header.bLength;
-          continue;
-        }
-      }
-
-      if (handler == nullptr) {
-        throw std::runtime_error("BUG: No descriptor type handler selected in USBDescriptorParser::parse");
-      }
-
       USBDescriptor descriptor_parsed;
       descriptor_parsed.bHeader = header;
       memset(&descriptor_parsed.bDescriptorData, 0, sizeof descriptor_parsed.bDescriptorData);
 
-      if (handler->parser) {
-        handler->parser(this, &descriptor, &descriptor_parsed);
-      }
-      if (handler->callback) {
-        handler->callback(this, &descriptor_parsed);
-      }
+      _hooks.parseUSBDescriptor(this, &descriptor, &descriptor_parsed);
+      _hooks.loadUSBDescriptor(this, &descriptor_parsed);
 
       setDescriptor(header.bDescriptorType, descriptor_parsed);
       size_processed += header.bLength;
     }
 
     return size_processed;
-  }
-
-  void USBDescriptorParser::setHandler(uint8_t bDescriptorType, uint8_t bLengthExpected, ParserFunction parser, CallbackFunction callback)
-  {
-    auto& handlers = _handler_map[bDescriptorType];
-
-    Handler handler;
-    handler.parser = parser;
-    handler.callback = callback;
-    handler.bLengthExpected = bLengthExpected;
-
-    handlers.push_back(handler);
   }
 
   const std::vector<USBDescriptor>* USBDescriptorParser::getDescriptor(uint8_t bDescriptorType) const

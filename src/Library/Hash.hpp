@@ -16,6 +16,8 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#pragma once
+
 #include <build-config.h>
 
 #include "Typedefs.hpp"
@@ -36,7 +38,12 @@ namespace usbguard
   {
     public:
       Hash();
+      Hash(const Hash& rhs);
+      Hash(Hash&& rhs);
+      Hash& operator=(Hash&& rhs);
+      ~Hash();
       size_t update(const String& value);
+      size_t update(const void *ptr, size_t size);
       size_t update(std::istream& stream);
       String getBase64();
     private:

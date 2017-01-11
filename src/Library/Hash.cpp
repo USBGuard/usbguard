@@ -16,8 +16,12 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include <build-config.h>
+
 #include "Hash.hpp"
 #include "Base64.hpp"
+#include "Exception.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
@@ -36,17 +40,67 @@ namespace usbguard
 #endif
   }
 
-  size_t Hash::update(const String& value)
+  Hash::Hash(const Hash& rhs)
   {
 #if defined(USBGUARD_USE_LIBSODIUM)
-    crypto_hash_sha256_update(&_state,
-                              reinterpret_cast<const uint8_t *>(value.c_str()),
-                              value.size());
+    _state = rhs._state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-    gcry_md_write(_state, value.c_str(), value.size());
+    gcry_md_copy(&_state, rhs._state);
 #endif
-    return value.size();
+  }
+
+  Hash::Hash(Hash&& rhs)
+  {
+#if defined(USBGUARD_USE_LIBSODIUM)
+    _state = rhs._state;
+    memset(&rhs._state, 0, sizeof _state);
+#endif
+#if defined(USBGUARD_USE_LIBGCRYPT)
+    _state = rhs._state;
+    rhs._state = nullptr;
+#endif
+  }
+
+  Hash& Hash::operator=(Hash&& rhs)
+  {
+#if defined(USBGUARD_USE_LIBSODIUM)
+    _state = rhs._state;
+    memset(&rhs._state, 0, sizeof _state);
+#endif
+#if defined(USBGUARD_USE_LIBGCRYPT)
+    _state = rhs._state;
+    rhs._state = nullptr;
+#endif
+    return *this;
+  }
+
+  Hash::~Hash()
+  {
+#if defined(USBGUARD_USE_LIBSODIUM)
+    memset(&_state, 0, sizeof _state);
+#endif
+#if defined(USBGUARD_USE_LIBGRCRYPT)
+    if (_state != nullptr) {
+      gcry_md_close(_state);
+    }
+#endif
+  }
+
+  size_t Hash::update(const String& value)
+  {
+    return update(value.c_str(), value.size());
+  }
+
+  size_t Hash::update(const void * const ptr, const size_t size)
+  {
+#if defined(USBGUARD_USE_LIBSODIUM)
+    crypto_hash_sha256_update(&_state, reinterpret_cast<const uint8_t *>(ptr), size);
+#endif
+#if defined(USBGUARD_USE_LIBGCRYPT)
+    gcry_md_write(_state, ptr, size);
+#endif
+    return size;
   }
 
   size_t Hash::update(std::istream& stream)

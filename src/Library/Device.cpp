@@ -64,9 +64,24 @@ namespace usbguard {
     return d_pointer->hashString(value);
   }
 
+  void Device::initializeHash()
+  {
+    d_pointer->initializeHash();
+  }
+
+  void Device::updateHash(const void * const ptr, const size_t size)
+  {
+    d_pointer->updateHash(ptr, size);
+  }
+
   void Device::updateHash(std::istream& descriptor_stream, const size_t expected_size)
   {
     d_pointer->updateHash(descriptor_stream, expected_size);
+  }
+
+  String Device::finalizeHash()
+  {
+    return d_pointer->finalizeHash();
   }
 
   const String& Device::getHash() const

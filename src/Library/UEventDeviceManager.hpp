@@ -28,6 +28,7 @@
 #include "Device.hpp"
 #include "Rule.hpp"
 #include "SysFSDevice.hpp"
+#include "USB.hpp"
 
 #include <condition_variable>
 
@@ -38,7 +39,7 @@
 namespace usbguard {
   class UEventDeviceManager;
 
-  class UEventDevice : public Device
+  class UEventDevice : public Device, public USBDescriptorParserHooks
   {
   public:
     UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device);
@@ -47,13 +48,9 @@ namespace usbguard {
     const String& getSysPath() const;
     bool isController() const;
 
-  protected:
-    void readDescriptors(std::istream& stream);
-    void readConfiguration(int c_num, std::istream& stream);
-    void readInterfaceDescriptor(int c_num, int i_num, std::istream& stream);
-    void readEndpointDescriptor(int c_num, int i_num, int e_num, std::istream& stream);
-
   private:
+    void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;
+
     SysFSDevice _sysfs_device;
   };
 

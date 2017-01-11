@@ -19,6 +19,7 @@
 #include "usbguard.hpp"
 #include "usbguard-read-descriptor.hpp"
 #include <USB.hpp>
+#include <Exception.hpp>
 #include <iostream>
 #include <fstream>
 #include <cstdio>
@@ -42,14 +43,47 @@ namespace usbguard
     stream << std::endl;
   }
 
-  static void printDeviceDescriptor(USBDescriptorParser*, const USBDescriptor*);
-  static void printConfigurationDescriptor(USBDescriptorParser*, const USBDescriptor*);
-  static void printInterfaceDescriptor(USBDescriptorParser*, const USBDescriptor*);
-  static void printEndpointDescriptor(USBDescriptorParser*, const USBDescriptor*);
-  static void printAudioEndpointDescriptor(USBDescriptorParser*, const USBDescriptor*);
+  static void printDeviceDescriptor(const USBDescriptor*);
+  static void printConfigurationDescriptor(const USBDescriptor*);
+  static void printInterfaceDescriptor(const USBDescriptor*);
+  static void printEndpointDescriptor(const USBDescriptor*);
+  static void printAudioEndpointDescriptor(const USBDescriptor*);
+  static void printUnknownDescriptor(const USBDescriptor*);
 
-  static void parseUnknownDescriptor(USBDescriptorParser*, const USBDescriptor*, USBDescriptor*);
-  static void printUnknownDescriptor(USBDescriptorParser*, const USBDescriptor*);
+  class USBDescriptorPrinter : public USBDescriptorParserHooks
+  {
+    public:
+      void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override
+      {
+        switch(static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType)) {
+         case USBDescriptorType::Device:
+            printDeviceDescriptor(descriptor);
+            break;
+          case USBDescriptorType::Configuration:
+            printConfigurationDescriptor(descriptor);
+            break;
+         case USBDescriptorType::Interface:
+            printInterfaceDescriptor(descriptor);
+            break;
+          case USBDescriptorType::Endpoint:
+            switch (descriptor->bHeader.bLength) {
+              case sizeof(USBEndpointDescriptor):
+                printEndpointDescriptor(descriptor);
+                break;
+              case sizeof(USBAudioEndpointDescriptor):
+                printAudioEndpointDescriptor(descriptor);
+                break;
+            }
+            break;
+          case USBDescriptorType::String:
+          case USBDescriptorType::AssociationInterface:
+          case USBDescriptorType::Unknown:
+          default:
+            printUnknownDescriptor(descriptor);
+            break;
+         }
+      }
+  };
 
   int usbguard_read_descriptor(int argc, char *argv[])
   {
@@ -78,24 +112,11 @@ namespace usbguard
     std::ifstream descriptor_stream(argv[0], std::ifstream::binary);
 
     if (!descriptor_stream.good()) {
-      throw std::runtime_error("Can't open file");
+      throw ErrnoException("read-descriptor", argv[0], errno);
     }
     else {
-      USBDescriptorParser parser;
-
-      parser.setHandler(USB_DESCRIPTOR_TYPE_DEVICE, sizeof(USBDeviceDescriptor),
-                        USBParseDeviceDescriptor, printDeviceDescriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_CONFIGURATION, sizeof(USBConfigurationDescriptor),
-                        USBParseConfigurationDescriptor, printConfigurationDescriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_INTERFACE, sizeof(USBInterfaceDescriptor),
-                        USBParseInterfaceDescriptor, printInterfaceDescriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof(USBEndpointDescriptor),
-                        USBParseEndpointDescriptor, printEndpointDescriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_ENDPOINT, sizeof(USBAudioEndpointDescriptor),
-                        USBParseAudioEndpointDescriptor, printAudioEndpointDescriptor);
-      parser.setHandler(USB_DESCRIPTOR_TYPE_UNKNOWN, 0,
-                        parseUnknownDescriptor, printUnknownDescriptor);
-
+      USBDescriptorPrinter printer;
+      USBDescriptorParser parser(printer);
       const size_t size_parsed = parser.parse(descriptor_stream);
 
       printf("Bytes parsed: %zu\n", size_parsed);
@@ -122,7 +143,7 @@ namespace usbguard
     printf("%20s: " fmt "\n", #m, sp->m); \
   } while(0)
 
-  void printDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  void printDeviceDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBDeviceDescriptor* descriptor = reinterpret_cast<const USBDeviceDescriptor*>(descriptor_base);
 
@@ -141,7 +162,7 @@ namespace usbguard
     printf("\n");
   }
 
-  void printConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  void printConfigurationDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBConfigurationDescriptor* descriptor = reinterpret_cast<const USBConfigurationDescriptor*>(descriptor_base);
 
@@ -155,7 +176,7 @@ namespace usbguard
     printf("\n"); 
   }
 
-  void printInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  void printInterfaceDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBInterfaceDescriptor* descriptor = reinterpret_cast<const USBInterfaceDescriptor*>(descriptor_base);
 
@@ -170,7 +191,7 @@ namespace usbguard
     printf("\n"); 
   }
 
-  void printEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  void printEndpointDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBEndpointDescriptor* descriptor = reinterpret_cast<const USBEndpointDescriptor*>(descriptor_base);
 
@@ -182,7 +203,7 @@ namespace usbguard
     printf("\n");
   }
 
-  void printAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_base)
+  void printAudioEndpointDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBAudioEndpointDescriptor* descriptor = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_base);
 
@@ -196,13 +217,7 @@ namespace usbguard
     printf("\n");
   }
 
-  void parseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
-  {
-    *descriptor_out = *descriptor_raw;
-    return;
-  }
-
-  void printUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
+  void printUnknownDescriptor(const USBDescriptor* descriptor)
   {
     PRINTF_HEADER(descriptor, "UNKNOWN Descriptor", 0);
     printf("\n");

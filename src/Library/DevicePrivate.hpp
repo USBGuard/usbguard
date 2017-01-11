@@ -22,6 +22,7 @@
 #include <Typedefs.hpp>
 #include <Rule.hpp>
 #include <USB.hpp>
+#include <Hash.hpp>
 #include <mutex>
 #include <istream>
 
@@ -38,7 +39,11 @@ namespace usbguard {
     std::mutex& refDeviceMutex();
     Pointer<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true, bool match_rule = false);
     String hashString(const String& value) const;
+
+    void initializeHash();
+    void updateHash(const void * const ptr, size_t size);
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
+    String finalizeHash();
     const String& getHash() const;
 
     void setParentHash(const String& hash);
@@ -86,5 +91,6 @@ namespace usbguard {
     String _port;
     std::vector<USBInterfaceType> _interface_types;
     String _hash_base64;
+    Hash _hash;
   };
 } /* namespace usbguard */
