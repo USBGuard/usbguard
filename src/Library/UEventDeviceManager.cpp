@@ -610,8 +610,8 @@ namespace usbguard {
 
   bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<String,String>& a, const std::pair<String,String>& b)
   {
-    const String base_a = filenameFromPath(a.second);
-    const String base_b = filenameFromPath(b.second);
+    const String base_a = filenameFromPath(a.second, /*include_extension=*/true);
+    const String base_b = filenameFromPath(b.second, /*include_extension=*/true);
     const bool a_has_usb_prefix = (0 == base_a.compare(0, 3, "usb"));
     const bool b_has_usb_prefix = (0 == base_b.compare(0, 3, "usb"));
 
