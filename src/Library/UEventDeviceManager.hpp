@@ -90,11 +90,12 @@ namespace usbguard {
     void thread();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
+    static bool ueventEnumerateComparePath(const std::pair<String,String>& a, const std::pair<String,String>& b);
     int ueventEnumerateDevices();
     int ueventEnumerateDummyDevices();
 
     static String ueventEnumerateFilterDevice(const String& filepath, const struct dirent* direntry);
-    int ueventEnumerateTriggerDevice(const String& filepath);
+    int ueventEnumerateTriggerDevice(const String& devpath, const String& buspath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
 

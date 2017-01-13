@@ -603,15 +603,54 @@ namespace usbguard {
     }
   }
 
+  bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<String,String>& a, const std::pair<String,String>& b)
+  {
+    const String base_a = filenameFromPath(a.second);
+    const String base_b = filenameFromPath(b.second);
+    const bool a_has_usb_prefix = (0 == base_a.compare(0, 3, "usb"));
+    const bool b_has_usb_prefix = (0 == base_b.compare(0, 3, "usb"));
+
+    if (a_has_usb_prefix) {
+      if (!b_has_usb_prefix) {
+        return true;
+      }
+      /*
+      else {
+        return base_a < base_b;
+      }
+      */
+    }
+    else {
+      if (b_has_usb_prefix) {
+        return false;
+      }
+      /*
+      else {
+        return base_a < base_b;
+      }
+      */
+    }
+
+    if (base_a.size() < base_b.size()) {
+      return true;
+    }
+    else if (base_a.size() > base_b.size()) {
+      return false;
+    }
+
+    return base_a < base_b;
+  }
+
   int UEventDeviceManager::ueventEnumerateDevices()
   {
     USBGUARD_LOG(Trace);
     return loadFiles(_sysfs_root + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
-      [&](const String& filepath)
+      [this](const String& devpath, const String& buspath)
       {
-        return ueventEnumerateTriggerDevice(filepath);
-      });
+        return ueventEnumerateTriggerDevice(devpath, buspath);
+      },
+      UEventDeviceManager::ueventEnumerateComparePath);
   }
 
   int UEventDeviceManager::ueventEnumerateDummyDevices()
@@ -619,21 +658,22 @@ namespace usbguard {
     USBGUARD_LOG(Trace);
     return loadFiles(_sysfs_root + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
-      [&](const String& filepath)
+      [this](const String& devpath, const String& buspath)
       {
         UEvent uevent;
         uevent.setAttribute("SUBSYSTEM", "usb");
         uevent.setAttribute("DEVTYPE", "usb_device");
         uevent.setAttribute("ACTION", "add");
-        uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, filepath));
+        uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, devpath));
 
-        std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(filepath.c_str(), nullptr));
+        std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(devpath.c_str(), nullptr));
         const std::string syspath(realpath_cstr.get());
         learnSysPath(syspath);
 
         ueventProcessUEvent(uevent);
         return 1;
-      });
+      },
+      UEventDeviceManager::ueventEnumerateComparePath);
   }
 
   String UEventDeviceManager::ueventEnumerateFilterDevice(const String& filepath, const struct dirent* direntry)
@@ -679,11 +719,12 @@ namespace usbguard {
     return String();
   }
 
-  int UEventDeviceManager::ueventEnumerateTriggerDevice(const String& filepath)
+  int UEventDeviceManager::ueventEnumerateTriggerDevice(const String& devpath, const String& buspath)
   {
-    USBGUARD_LOG(Trace) << "filepath=" << filepath;
+    USBGUARD_LOG(Trace) << "devpath=" << devpath << " buspath=" << buspath;
+
     try {
-      std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(filepath.c_str(), nullptr));
+      std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(devpath.c_str(), nullptr));
       const std::string syspath(realpath_cstr.get());
       SysFSDevice device(syspath);
 
@@ -694,10 +735,10 @@ namespace usbguard {
       }
     }
     catch(const Exception& ex) {
-      USBGUARD_LOG(Warning) << "device enumeration exception: " << filepath << ": " << ex.message();
+      USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.message();
     }
     catch(const std::exception& ex) {
-      USBGUARD_LOG(Warning) << "device enumeration exception: " << filepath << ": " << ex.what();
+      USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.what();
     }
     return 0;
   }

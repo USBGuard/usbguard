@@ -30,6 +30,7 @@
 #include <functional>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <utility>
 
 namespace usbguard
 {
@@ -185,7 +186,9 @@ namespace usbguard
    */
   int loadFiles(const String& directory,
                 std::function<String(const String&, const struct dirent *)> filter,
-                std::function<int(const String&)> load);
+                std::function<int(const String&, const String&)> loader,
+                std::function<bool(const std::pair<String, String>&, const std::pair<String, String>&)> sorter = \
+                  [](const std::pair<String, String>& a, const std::pair<String, String>& b) { return a.first < b.first; });
 
   /**
    * Remove prefix from string.

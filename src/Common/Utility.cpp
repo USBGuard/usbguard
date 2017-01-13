@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <alloca.h>
 #include <fstream>
+#include <algorithm>
 
 namespace usbguard
 {
@@ -335,7 +336,8 @@ namespace usbguard
 
   int loadFiles(const String& directory,
                 std::function<String(const String&, const struct dirent *)> filter,
-                std::function<int(const String&)> load)
+                std::function<int(const String&, const String&)> loader,
+                std::function<bool(const std::pair<String, String>&, const std::pair<String, String>&)> sorter)
   {
     DIR* dirobj = opendir(directory.c_str());
     int retval = 0;
@@ -344,6 +346,7 @@ namespace usbguard
       throw ErrnoException("loadFiles", directory, errno);
     }
     try {
+      std::vector<std::pair<String,String>> loadpaths;
       struct dirent *entry_ptr = nullptr;
       /*
        * readdir usage note: We rely on the fact that readdir should be thread-safe
@@ -358,12 +361,22 @@ namespace usbguard
           continue;
         }
 
-        const String fullpath = directory + "/" + filename;
-        const String loadpath = filter(fullpath, entry_ptr);
+        String fullpath = directory + "/" + filename;
+        String loadpath = filter(fullpath, entry_ptr);
 
         if (!loadpath.empty()) {
-          retval += load(loadpath);
+          loadpaths.emplace_back(std::make_pair(std::move(loadpath),std::move(fullpath)));
         }
+      }
+
+      std::stable_sort(loadpaths.begin(), loadpaths.end(), sorter);
+
+      for (const auto& loadpath : loadpaths) {
+        USBGUARD_LOG(Trace) << "L: " << loadpath.first << " : " << loadpath.second;
+      }
+
+      for (const auto& loadpath : loadpaths) {
+        retval += loader(loadpath.first, loadpath.second);
       }
     }
     catch(...) {
