@@ -46,6 +46,7 @@ namespace usbguard {
     virtual ~DeviceManager();
 
     virtual void setDefaultBlockedState(bool state) = 0;
+    virtual void setEnumerationOnlyMode(bool state) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;

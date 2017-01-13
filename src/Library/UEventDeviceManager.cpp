@@ -201,12 +201,12 @@ namespace usbguard {
       _uevent_fd(-1),
       _wakeup_fd(-1),
       _sysfs_root(sysfs_root),
-      _default_blocked_state(true),
       _dummy_mode(dummy_mode),
       _enumeration(false),
       _enumeration_count(0)
   {
     setDefaultBlockedState(/*state=*/true);
+    setEnumerationOnlyMode(/*state=*/false);
 
     USBGUARD_SYSCALL_THROW("UEvent device manager",
        (_wakeup_fd = eventfd(0, 0)) < 0);
@@ -236,6 +236,11 @@ namespace usbguard {
   void UEventDeviceManager::setDefaultBlockedState(bool state)
   {
     _default_blocked_state = state;
+  }
+
+  void UEventDeviceManager::setEnumerationOnlyMode(bool state)
+  {
+    _enumeration_only_mode = state;
   }
 
   void UEventDeviceManager::start()
@@ -614,21 +619,11 @@ namespace usbguard {
       if (!b_has_usb_prefix) {
         return true;
       }
-      /*
-      else {
-        return base_a < base_b;
-      }
-      */
     }
     else {
       if (b_has_usb_prefix) {
         return false;
       }
-      /*
-      else {
-        return base_a < base_b;
-      }
-      */
     }
 
     if (base_a.size() < base_b.size()) {
@@ -782,7 +777,7 @@ namespace usbguard {
     try {
       Pointer<UEventDevice> device = makePointer<UEventDevice>(*this, sysfs_device);
 
-      if (device->isController()) {
+      if (device->isController() && !_enumeration_only_mode) {
         USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
         device->sysfsDevice().setAttribute("authorized_default", _default_blocked_state ? "0" : "1");
       }
@@ -811,6 +806,13 @@ namespace usbguard {
     catch(...) {
       USBGUARD_LOG(Error) << "BUG: Unknown device insert exception.";
       DeviceException("BUG: Unknown device insert exception.");
+    }
+
+    /*
+     * Skip device reject when in enumeration only mode.
+     */
+    if (_enumeration_only_mode) {
+      return;
     }
     /*
      * Something went wrong and an exception was generated.

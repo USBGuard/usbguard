@@ -66,7 +66,8 @@ namespace usbguard {
     UEventDeviceManager(DeviceManagerHooks& hooks, const String& sysfs_root = USBGUARD_SYSFS_ROOT, bool dummy_mode = false);
     ~UEventDeviceManager();
 
-    void setDefaultBlockedState(bool state);
+    void setDefaultBlockedState(bool state) override;
+    void setEnumerationOnlyMode(bool state) override;
 
     void start();
     void stop();
@@ -110,6 +111,7 @@ namespace usbguard {
     StringKeyMap<uint32_t> _syspath_map;
     String _sysfs_root;
     bool _default_blocked_state;
+    bool _enumeration_only_mode;
     bool _dummy_mode;
     std::atomic<bool> _enumeration;
     std::atomic<int> _enumeration_count;
