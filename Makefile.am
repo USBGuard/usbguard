@@ -104,8 +104,7 @@ uninstall-systemd-service:
 endif
 
 man8_MANS=\
-	$(top_builddir)/doc/usbguard-daemon.8 \
-	$(top_builddir)/doc/usbguard-dbus.8
+	$(top_builddir)/doc/usbguard-daemon.8
 
 man5_MANS=\
 	$(top_builddir)/doc/usbguard-daemon.conf.5 \
@@ -345,6 +344,9 @@ usbguard_rule_parser_LDADD=\
 #
 if DBUS_ENABLED
 sbin_PROGRAMS+= usbguard-dbus
+
+man8_MANS+=\
+	$(top_builddir)/doc/usbguard-dbus.8
 
 BUILT_SOURCES+=\
 	src/DBus/DBusInterface.xml.cstr \
