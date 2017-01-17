@@ -78,8 +78,8 @@ install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
 	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
 	if ! test -f "$(DESTDIR)/$(usbguard_confdir)/rules.conf"; then \
-	  touch $(DESTDIR)/$(usbguard_confdir)/rules.conf \
-	  chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf \
+	  touch $(DESTDIR)/$(usbguard_confdir)/rules.conf && \
+	  chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf; \
 	fi
 
 uninstall-daemon-conf:
