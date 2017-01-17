@@ -73,6 +73,8 @@ usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
 
 usbguard_confdir= $(sysconfdir)/usbguard
 
+distuninstallcheck_listfiles= find . -type f ! -name rules.conf -print
+
 install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	mkdir -p $(DESTDIR)/$(usbguard_confdir)
 	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
