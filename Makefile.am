@@ -77,12 +77,13 @@ install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	mkdir -p $(DESTDIR)/$(usbguard_confdir)
 	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
 	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
-	touch $(DESTDIR)/$(usbguard_confdir)/rules.conf
-	chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf
+	if ! test -f "$(DESTDIR)/$(usbguard_confdir)/rules.conf"; then \
+	  touch $(DESTDIR)/$(usbguard_confdir)/rules.conf \
+	  chmod 600 $(DESTDIR)/$(usbguard_confdir)/rules.conf \
+	fi
 
 uninstall-daemon-conf:
 	rm -f $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
-	rm -f $(DESTDIR)/$(usbguard_confdir)/rules.conf
 
 if SYSTEMD_SUPPORT_ENABLED
 CLEANFILES+=\
