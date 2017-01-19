@@ -77,7 +77,6 @@ namespace usbguard {
     void loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
-    void loadUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
 
   private:
     DevicePrivate *d_pointer;

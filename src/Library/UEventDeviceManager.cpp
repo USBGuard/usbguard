@@ -160,6 +160,29 @@ namespace usbguard {
     }
   }
 
+  void UEventDevice::loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
+  {
+    const auto type = static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType);
+
+    switch(type) {
+      case USBDescriptorType::Device:
+        loadDeviceDescriptor(parser, descriptor);
+        break;
+      case USBDescriptorType::Configuration:
+        loadConfigurationDescriptor(parser, descriptor);
+        break;
+      case USBDescriptorType::Interface:
+        loadInterfaceDescriptor(parser, descriptor);
+        break;
+      case USBDescriptorType::Endpoint:
+        loadEndpointDescriptor(parser, descriptor);
+        break;
+      default:
+        USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type
+                            << " size=" << descriptor->bHeader.bLength;
+    }
+  }
+
   bool UEventDevice::isLinuxRootHubDeviceDescriptor(const USBDescriptor* const descriptor)
   {
     USBGUARD_LOG(Trace);
