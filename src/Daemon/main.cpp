@@ -24,36 +24,21 @@
 #include "Daemon.hpp"
 #include "Exception.hpp"
 #include "Common/Utility.hpp"
+#include "Seccomp.h"
 
 #include <iostream>
 #include <getopt.h>
 
-#if defined(HAVE_SECCOMP)
-# include <seccomp.h>
-# include <errno.h>
-# include <sys/resource.h>
-# include <sys/socket.h>
-# include <linux/netlink.h>
-# include <sys/mman.h>
-# if defined(HAVE_LIBCAPNG)
-#  include <sys/prctl.h>
-# endif
-static void setupSeccompWhitelist(void);
-#else
-# warning "seccomp API not available. USBGuard daemon won't be able to setup a syscall whitelist!"
-#endif
 #if defined(HAVE_LIBCAPNG)
 # include <cap-ng.h>
 static void setupCapabilities(void);
-#else
-# warning "libcap-ng API not available. USBGuard daemon won't be able to drop capabilities!"
 #endif
 
 using namespace usbguard;
 
 const char * const G_optstring = "dskl:p:c:hWC";
 
-void printUsage(std::ostream& stream, const char *arg0)
+static void printUsage(std::ostream& stream, const char *arg0)
 {
   stream << std::endl;
   stream << "Usage: " << filenameFromPath(String(arg0), true) << " [OPTIONS]" << std::endl;
@@ -136,11 +121,9 @@ int main(int argc, char *argv[])
 
   /* Setup seccomp whitelist & drop capabilities */
   if (use_seccomp_whitelist) {
-#if defined(HAVE_SECCOMP)
-    setupSeccompWhitelist();
-#else
-    return EXIT_FAILURE;
-#endif
+    if (!setupSeccompWhitelist()) {
+      return EXIT_FAILURE;
+    }
   }
 
   if (drop_capabilities) {
@@ -173,141 +156,6 @@ int main(int argc, char *argv[])
 
   return ret;
 }
-
-#if defined(HAVE_SECCOMP)
- static void setupSeccompWhitelist(void)
- {
-
-   /* TODO: Use SCMP_ACT_TRAP. Switch to EACCES for 1.x releases */
-   scmp_filter_ctx ctx = seccomp_init(/*SCMP_ACT_ERRNO(EACCES)*/SCMP_ACT_TRAP);
-
-   if (!ctx) {
-
-     throw std::runtime_error("Cannot initialize seccomp filter context");
-   }
-
-   int ret = 0;
-
-   /* files, dirs */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lstat), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fcntl), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlink), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ftruncate), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chown), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chmod), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getdents), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(access), 0);
-
-   /* memory */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-			   SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-			   SCMP_A2(SCMP_CMP_EQ, PROT_READ));
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-			   SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-			   SCMP_A2(SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
-
-   /* clock */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_gettime), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_getres), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(gettid), 0);
-
-   /* epoll */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(epoll_create1), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(epoll_wait), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(epoll_ctl), 0);
-
-   /* signals */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigaction), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigreturn), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigprocmask), 0);
-
-   /* process, thread */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futex), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0);
-
-   /* STRACE:
-    *  getrlimit(RLIMIT_NOFILE, {rlim_cur=1024, rlim_max=4*1024}) = 0
-    */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 1,
-			   SCMP_A0(SCMP_CMP_EQ, RLIMIT_NOFILE));
-
-   /* pipes, eventfd */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pipe), 0);
-
-   /* STRACE:
-    *  eventfd2(0, 0)
-    */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(eventfd2), 2,
-			   SCMP_A0(SCMP_CMP_EQ, 0),
-			   SCMP_A1(SCMP_CMP_EQ, 0));
-
-   /* socket */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
-			   SCMP_A0(SCMP_CMP_EQ, PF_LOCAL),
-			   SCMP_A1(SCMP_CMP_MASKED_EQ, SOCK_STREAM, SOCK_STREAM));
-
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
-			   SCMP_A0(SCMP_CMP_EQ, PF_NETLINK),
-			   SCMP_A2(SCMP_CMP_EQ, NETLINK_KOBJECT_UEVENT));
-
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(bind), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(accept), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(listen), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setsockopt), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(shutdown), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(recvmsg), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(recvfrom), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sendto), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(select), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(connect), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockname), 0);
-
-#if defined(HAVE_LIBCAPNG)
-   /* capabilities */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capget), 0);
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capset), 0);
-   /* allow to drop capabilities using prctl */
-   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(prctl), 1,
-			   SCMP_A0(SCMP_CMP_EQ, PR_CAPBSET_DROP));
-#endif /* HAVE_LIBCAPNG */
-
-   /* before main() only */
-   //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(statfs), 0);
-   //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(arch_prctl), 0);
-   //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0);
-   //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0);
-
-   if (ret != 0) {
-
-     throw std::runtime_error("Cannot initialize seccomp whitelist");
-   }
-
-   if (seccomp_load(ctx) != 0) {
-
-     throw std::runtime_error("Cannot load seccomp whitelist into the kernel");
-   }
-
-   seccomp_release(ctx);
-   return;
- }
-#endif
 
 #if defined(HAVE_LIBCAPNG)
  static void setupCapabilities(void)

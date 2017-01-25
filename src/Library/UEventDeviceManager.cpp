@@ -163,7 +163,7 @@ namespace usbguard {
   void UEventDevice::loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
   {
     const auto type = static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType);
-
+ 
     switch(type) {
       case USBDescriptorType::Device:
         loadDeviceDescriptor(parser, descriptor);
@@ -177,6 +177,9 @@ namespace usbguard {
       case USBDescriptorType::Endpoint:
         loadEndpointDescriptor(parser, descriptor);
         break;
+      case USBDescriptorType::AssociationInterface:
+      case USBDescriptorType::Unknown:
+      case USBDescriptorType::String:
       default:
         USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type
                             << " size=" << descriptor->bHeader.bLength;
@@ -200,6 +203,8 @@ namespace usbguard {
         case 0x0002: /* 2.0 root hub */
         case 0x0003: /* 3.0 root hub */
           return true;
+        default:
+          return false;
       }
     }
 
@@ -351,7 +356,7 @@ namespace usbguard {
       USBGUARD_SYSCALL_THROW("UEvent device manager",
         setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_max, sizeof rcvbuf_max) != 0);
 
-      struct sockaddr_nl sa = { 0 };
+      struct sockaddr_nl sa = { };
       sa.nl_family = AF_NETLINK;
       sa.nl_pid = getpid();
       sa.nl_groups = -1;
@@ -380,7 +385,7 @@ namespace usbguard {
       USBGUARD_SYSCALL_THROW("UEvent device manager",
           setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
 
-      struct sockaddr_un sa = { 0 };
+      struct sockaddr_un sa = { };
       sa.sun_family = AF_UNIX;
       strcpy(sa.sun_path, "/tmp/usbguard-dummy.sock");
 
@@ -413,6 +418,10 @@ namespace usbguard {
         name = "remove";
         value = "1";
         break;
+      case Rule::Target::Match:
+      case Rule::Target::Device:
+      case Rule::Target::Unknown:
+      case Rule::Target::Invalid:
       default:
         throw std::runtime_error("Unknown rule target in applyDevicePolicy");
     }
@@ -472,7 +481,7 @@ namespace usbguard {
     iov[0].iov_base = (void *)&buffer[0];
     iov[0].iov_len = buffer.capacity();
 
-    struct sockaddr_nl peer_sockaddr = { 0 };
+    struct sockaddr_nl peer_sockaddr = { };
 
     union {
       struct cmsghdr header;
@@ -483,7 +492,7 @@ namespace usbguard {
     cmsg_un.header.cmsg_level = SOL_SOCKET;
     cmsg_un.header.cmsg_type = SCM_CREDENTIALS;
 
-    struct msghdr msg_header = { 0 };
+    struct msghdr msg_header = { };
     msg_header.msg_control = cmsg_un.ucred;
     msg_header.msg_controllen = sizeof cmsg_un.ucred;
     msg_header.msg_iov = iov;
@@ -528,7 +537,7 @@ namespace usbguard {
     }
 
     const struct ucred * const cmsg_ucred = \
-      (const struct ucred * const)CMSG_DATA(cmsg_header);
+      reinterpret_cast<const struct ucred * const>(CMSG_DATA(cmsg_header));
 
     if (cmsg_ucred == nullptr) {
       /* missing ucred -- ignore */
@@ -678,6 +687,7 @@ namespace usbguard {
       UEventDeviceManager::ueventEnumerateFilterDevice,
       [this](const String& devpath, const String& buspath)
       {
+        (void)buspath;
         UEvent uevent;
         uevent.setAttribute("SUBSYSTEM", "usb");
         uevent.setAttribute("DEVTYPE", "usb_device");
@@ -712,7 +722,7 @@ namespace usbguard {
        * Unknown type. We have to call lstat.
        */
 #endif
-      struct stat st = { 0 };
+      struct stat st = { };
 
       if (lstat(filepath.c_str(), &st) != 0) {
         /*
@@ -763,9 +773,12 @@ namespace usbguard {
 
   void UEventDeviceManager::processDevicePresence(const uint32_t id)
   {
+    USBGUARD_LOG(Trace) << "id=" << id;
+
     try {
       Pointer<UEventDevice> device = \
         std::static_pointer_cast<UEventDevice>(DeviceManager::getDevice(id));
+
       device->sysfsDevice().reload();
 
       /*

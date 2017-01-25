@@ -172,6 +172,7 @@ namespace usbguard
       runCommandExecChild(path, args);
       ::_exit(EXIT_FAILURE);
     case -1:
+    default:
       break;
     }
     // Parent - wait for the child to exit (up to timeout seconds)
@@ -400,7 +401,7 @@ namespace usbguard
 
   String symlinkPath(const String& linkpath, struct stat *st_user)
   {
-    struct stat st = { 0 };
+    struct stat st = { };
     struct stat *st_ptr = nullptr;
 
     if (st_user == nullptr) {

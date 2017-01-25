@@ -57,8 +57,9 @@ namespace usbguard
         return "(D)";
       case LogStream::Level::Trace:
         return "(T)";
+      default:
+        throw std::runtime_error("BUG: unknown LogStream level value");
     }
-    throw std::runtime_error("BUG: unknown LogStream level value");
   }
 
   LogStream::LogStream(Logger& logger, const Source& source, const Level level)
@@ -69,7 +70,9 @@ namespace usbguard
   }
 
   LogStream::LogStream(const LogStream& rhs)
-    : _logger(rhs._logger),
+    : std::basic_ios<std::ostringstream::char_type, std::ostringstream::traits_type>(),
+      std::ostringstream(rhs.str()),
+      _logger(rhs._logger),
       _source(rhs._source),
       _level(rhs._level)
   {
@@ -161,8 +164,9 @@ namespace usbguard
           case LogStream::Level::Debug:
           case LogStream::Level::Trace:
             return LOG_DEBUG;
+          default:
+            throw USBGUARD_BUG("Invalid LogStream::Level value");
         }
-        throw USBGUARD_BUG("Invalid LogStream::Level value");
       }
 
       void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
@@ -221,7 +225,7 @@ namespace usbguard
 
   std::unique_lock<std::mutex> Logger::lock() const
   {
-    return std::move(std::unique_lock<std::mutex>(_mutex));
+    return std::unique_lock<std::mutex>(_mutex);
   }
 
   void Logger::setEnabled(bool state, LogStream::Level level)
@@ -251,6 +255,9 @@ namespace usbguard
 
   void Logger::setOutputFile(bool state, const std::string& filepath, bool append)
   {
+    (void)state;
+    (void)filepath;
+    (void)append;
     auto L = lock();
     /* TODO */
   }

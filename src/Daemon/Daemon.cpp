@@ -263,6 +263,8 @@ namespace usbguard
       case DevicePolicyMethod::Reject:
         _inserted_device_policy_method = policy;
         break;
+      case DevicePolicyMethod::Keep:
+      case DevicePolicyMethod::Allow:
       default:
         throw Exception("setInsertedDevicePolicyMethod", devicePolicyMethodToString(policy), "invalid policy method");
     }
@@ -285,7 +287,7 @@ namespace usbguard
     bool exit_loop = false;
 
     do {
-      siginfo_t signal_info = { 0 };
+      siginfo_t signal_info = { };
       const int signal_num = sigwaitinfo(&signal_set, &signal_info);
 
       if (signal_num <= 0) {
@@ -303,6 +305,8 @@ namespace usbguard
           USBGUARD_LOG(Error) << "Received SIGSYS: Seccomp whitelist violation!";
           exit_loop = false;
           break;
+        default:
+          USBGUARD_LOG(Warning) << "Received signal " << signal_num << ". Ignoring!";
       }
     } while(!exit_loop);
 
@@ -526,6 +530,8 @@ namespace usbguard
       case DevicePolicyMethod::ApplyPolicy:
         policy_rule = _ruleset.getFirstMatchingRule(device_rule);
         break;
+      case DevicePolicyMethod::Allow:
+      case DevicePolicyMethod::Keep:
       default:
         throw USBGUARD_BUG("Invalid DevicePolicyMethod value");
     }
@@ -574,6 +580,8 @@ namespace usbguard
       matched_rule = _ruleset.getFirstMatchingRule(device_rule);
       target = matched_rule->getTarget();
       break;
+    default:
+      throw USBGUARD_BUG("Invalid DevicePolicyMethod value");
     }
 
     if (matched_rule == nullptr) {
@@ -649,6 +657,10 @@ namespace usbguard
         with_port = false;
         with_parent_hash = false;
         break;
+      case Rule::Target::Invalid:
+      case Rule::Target::Unknown:
+      case Rule::Target::Match:
+      case Rule::Target::Device:
       default:
         throw Exception("upsertDeviceRule", "device rule", "Invalid target");
     }

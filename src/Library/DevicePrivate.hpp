@@ -78,7 +78,7 @@ namespace usbguard {
     void loadEndpointDescriptor(USBDescriptorParser*, const USBDescriptor* descriptor);
 
   private:
-    Device& _p_instance;
+    //Device& _p_instance;
     DeviceManager& _manager;
     std::mutex _mutex;
     uint32_t _id;

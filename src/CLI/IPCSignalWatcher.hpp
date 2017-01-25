@@ -30,12 +30,12 @@ namespace usbguard
     void DevicePresenceChanged(uint32_t id,
                                DeviceManager::EventType event,
                                Rule::Target target,
-                               const std::string& device_rule);
+                               const std::string& device_rule) override;
 
     void DevicePolicyChanged(uint32_t id,
                              Rule::Target target_old,
                              Rule::Target target_new,
                              const std::string& device_rule,
-                             uint32_t rule_id);
+                             uint32_t rule_id) override;
   };
 } /* namespace usbguard */

@@ -177,24 +177,20 @@ namespace usbguard {
   void Device::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     d_pointer->loadDeviceDescriptor(parser, descriptor);
-    return;
   }
 
   void Device::loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     d_pointer->loadConfigurationDescriptor(parser, descriptor);
-    return;
   }
 
   void Device::loadInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     d_pointer->loadInterfaceDescriptor(parser, descriptor);
-    return;
   }
 
   void Device::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     d_pointer->loadEndpointDescriptor(parser, descriptor);
-    return;
   }
 } /* namespace usbguard */

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,19 +16,14 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include "Typedefs.hpp"
-#include <cstddef>
+#include <stdbool.h>
 
-namespace usbguard
-{
-  size_t base64EncodedSize(size_t decoded_size);
-  size_t base64DecodedSize(size_t encoded_size);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  String base64Encode(const String& value);
-  String base64Encode(const uint8_t *buffer, size_t buflen);
+bool setupSeccompWhitelist(void);
 
-  String base64Decode(const String& value);
-  size_t base64Decode(const String& value, void *buffer, size_t buflen);
-  String base64Decode(const char * const data, const size_t size);
-} /* namespace usbguard */
-
+#ifdef __cplusplus
+}
+#endif

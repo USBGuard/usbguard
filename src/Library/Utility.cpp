@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "Typedefs.hpp"
+#include "Utility.hpp"
 #include "Common/Utility.hpp"
 #include <locale>
 

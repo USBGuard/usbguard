@@ -229,6 +229,7 @@ namespace usbguard {
 
   Pointer<Rule> RuleSetPrivate::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
   {
+    (void)from_id; /* TODO */
     std::unique_lock<std::mutex> op_lock(_op_mutex);
 
     for (auto& rule_ptr : _rules) {

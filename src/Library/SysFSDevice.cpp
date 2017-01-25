@@ -196,6 +196,6 @@ namespace usbguard
   void SysFSDevice::reloadUEvent()
   {
     const String uevent_string = readAttribute("uevent");
-    _uevent = std::move(UEvent::fromString(uevent_string, /*attributes_only=*/true));
+    _uevent = UEvent::fromString(uevent_string, /*attributes_only=*/true);
   }
 } /* namespace usbguard */ 

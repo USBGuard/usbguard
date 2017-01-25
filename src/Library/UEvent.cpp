@@ -41,7 +41,7 @@ namespace usbguard
   {
     UEvent uevent;
     parseUEventFromString(uevent_string, uevent, attributes_only, trace);
-    return std::move(uevent);
+    return uevent;
   }
 
   void UEvent::clear()

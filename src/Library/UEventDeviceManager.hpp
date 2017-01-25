@@ -46,7 +46,7 @@ namespace usbguard {
 
     SysFSDevice& sysfsDevice();
     const String& getSysPath() const;
-    bool isController() const;
+    bool isController() const override;
 
   private:
     void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;
@@ -63,6 +63,8 @@ namespace usbguard {
 
   class UEventDeviceManager : public DeviceManager
   {
+    using DeviceManager::insertDevice;
+
   public:
     UEventDeviceManager(DeviceManagerHooks& hooks, const String& sysfs_root = USBGUARD_SYSFS_ROOT, bool dummy_mode = false);
     ~UEventDeviceManager();
@@ -70,11 +72,11 @@ namespace usbguard {
     void setDefaultBlockedState(bool state) override;
     void setEnumerationOnlyMode(bool state) override;
 
-    void start();
-    void stop();
-    void scan();
+    void start() override;
+    void stop() override;
+    void scan() override;
 
-    Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target);
+    Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
     void insertDevice(Pointer<UEventDevice> device);
     Pointer<Device> removeDevice(const String& syspath);
 

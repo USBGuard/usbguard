@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "usbguard.hpp"
-#include "usbguard-list-rules.hpp"
+#include "usbguard-watch.hpp"
 
 #include <IPCSignalWatcher.hpp>
 #include <iostream>

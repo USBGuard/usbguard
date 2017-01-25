@@ -134,6 +134,7 @@ namespace usbguard
 
   bool ConfigFilePrivate::checkNVPair(const String& name, const String& value) const
   {
+    (void)value; /* TODO */
     for (auto const& known_name : _known_names) {
       if (name == known_name) {
 	return true;

@@ -262,6 +262,7 @@ namespace usbguard {
 
   void USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     const USBDeviceDescriptor* device_raw = reinterpret_cast<const USBDeviceDescriptor*>(descriptor_raw);
     USBDeviceDescriptor* device_out = reinterpret_cast<USBDeviceDescriptor*>(descriptor_out);
 
@@ -277,6 +278,7 @@ namespace usbguard {
 
   void USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     const USBConfigurationDescriptor* configuration_raw = reinterpret_cast<const USBConfigurationDescriptor*>(descriptor_raw);
     USBConfigurationDescriptor* configuration_out = reinterpret_cast<USBConfigurationDescriptor*>(descriptor_out);
 
@@ -289,6 +291,7 @@ namespace usbguard {
 
   void USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     const USBInterfaceDescriptor* interface_raw = reinterpret_cast<const USBInterfaceDescriptor*>(descriptor_raw);
     USBInterfaceDescriptor* interface_out = reinterpret_cast<USBInterfaceDescriptor*>(descriptor_out);
 
@@ -298,6 +301,7 @@ namespace usbguard {
 
   void USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     const USBEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBEndpointDescriptor*>(descriptor_raw);
     USBEndpointDescriptor* endpoint_out = reinterpret_cast<USBEndpointDescriptor*>(descriptor_out);
 
@@ -307,6 +311,7 @@ namespace usbguard {
 
   void USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     const USBAudioEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_raw);
     USBAudioEndpointDescriptor* endpoint_out = reinterpret_cast<USBAudioEndpointDescriptor*>(descriptor_out);
 
@@ -316,6 +321,7 @@ namespace usbguard {
 
   void USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
+    (void)parser;
     *descriptor_out = *descriptor_raw;
   }
 
@@ -332,6 +338,8 @@ namespace usbguard {
           case sizeof(USBDeviceDescriptor):
             USBParseDeviceDescriptor(parser, descriptor_raw, descriptor_out);
             return;
+          default:
+            throw Exception("USB descriptor parser", "device descriptor", "unexpected descriptor size");
         }
         break;
       case USBDescriptorType::Configuration:
@@ -339,6 +347,8 @@ namespace usbguard {
           case sizeof(USBConfigurationDescriptor):
             USBParseConfigurationDescriptor(parser, descriptor_raw, descriptor_out);
             return;
+          default:
+            throw Exception("USB descriptor parser", "configuration descriptor", "unexpected descriptor size");
         }
         break;
       case USBDescriptorType::Interface:
@@ -346,6 +356,8 @@ namespace usbguard {
           case sizeof(USBInterfaceDescriptor):
             USBParseInterfaceDescriptor(parser, descriptor_raw, descriptor_out);
             return;
+          default:
+            throw Exception("USB descriptor parser", "interface descriptor", "unexpected descriptor size");
         }
         break;
       case USBDescriptorType::Endpoint:
@@ -356,6 +368,8 @@ namespace usbguard {
           case sizeof(USBAudioEndpointDescriptor):
             USBParseAudioEndpointDescriptor(parser, descriptor_raw, descriptor_out);
             return;
+          default:
+            throw Exception("USB descriptor parser", "endpoint descriptor", "unexpected descriptor size");
         }
         break;
       case USBDescriptorType::String:
@@ -365,12 +379,13 @@ namespace usbguard {
         USBParseUnknownDescriptor(parser, descriptor_raw, descriptor_out); 
         return;
     }
-
-    throw Exception("USB descriptor parser", numberToString((int)type), "invalid descriptor");
+    /* UNREACHABLE */
   }
 
   void USBDescriptorParserHooks::loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
   {
+    (void)parser;
+    (void)descriptor;
     USBGUARD_LOG(Trace);
   }
 

@@ -321,7 +321,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "buffer=" << &buffer;
 
     const struct qb_ipc_response_header *hdr = \
-      (const struct qb_ipc_response_header *)buffer.data();
+      reinterpret_cast<const struct qb_ipc_response_header *>(buffer.data());
 
     if ((size_t)hdr->size != buffer.size()) {
       disconnect();
@@ -445,6 +445,7 @@ namespace usbguard
 
   void IPCClientPrivate::handleMethodResponse(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
   {
+    (void)message_out;
     const auto response_field = message_in->GetDescriptor()->FindFieldByName("response");
     const auto reflection = message_in->GetReflection();
     const bool has_response = reflection->HasField(*message_in, response_field);
@@ -465,6 +466,7 @@ namespace usbguard
 
   void IPCClientPrivate::handleException(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
   {
+    (void)message_out;
     const IPC::Exception * const exception = \
       reinterpret_cast<const IPC::Exception*>(message_in.get());
 
@@ -487,6 +489,7 @@ namespace usbguard
 
   void IPCClientPrivate::handleDevicePresenceChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
   {
+    (void)message_out;
     const IPC::DevicePresenceChangedSignal * const signal =\
       reinterpret_cast<const IPC::DevicePresenceChangedSignal*>(message_in.get());
 
@@ -498,6 +501,7 @@ namespace usbguard
 
   void IPCClientPrivate::handleDevicePolicyChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
   {
+    (void)message_out;
     const IPC::DevicePolicyChangedSignal * const signal = \
       reinterpret_cast<const IPC::DevicePolicyChangedSignal*>(message_in.get());
 

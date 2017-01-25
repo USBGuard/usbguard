@@ -47,30 +47,53 @@ namespace usbguard
       return listRules("match");
     }
 
-    uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
-    const std::vector<Rule> listDevices(const std::string& query);
+    uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) override;
+    const std::vector<Rule> listDevices(const std::string& query) override;
     const std::vector<Rule> listDevices() /* NOTE: left for compatibility */
     {
       return listDevices("match");
     }
 
     virtual void IPCConnected() {}
-    virtual void IPCDisconnected(bool exception_initiated, const IPCException& exception) {}
+
+    virtual void IPCDisconnected(bool exception_initiated, const IPCException& exception)
+    {
+      (void)exception_initiated;
+      (void)exception;
+    }
 
     virtual void DevicePresenceChanged(uint32_t id,
                                        DeviceManager::EventType event,
                                        Rule::Target target,
-                                       const std::string& device_rule) {}
+                                       const std::string& device_rule) override
+    {
+      (void)id;
+      (void)event;
+      (void)target;
+      (void)device_rule;
+    }
 
     virtual void DevicePolicyChanged(uint32_t id,
                                      Rule::Target target_old,
                                      Rule::Target target_new,
                                      const std::string& device_rule,
-                                     uint32_t rule_id) {}
+                                     uint32_t rule_id) override
+    {
+      (void)id;
+      (void)target_old;
+      (void)target_new;
+      (void)device_rule;
+      (void)rule_id;
+    }
 
     virtual void ExceptionMessage(const std::string& context,
                                   const std::string& object,
-                                  const std::string& reason) {}
+                                  const std::string& reason) override
+    {
+      (void)context;
+      (void)object;
+      (void)reason;
+    }
 
   private:
     IPCClientPrivate* d_pointer;

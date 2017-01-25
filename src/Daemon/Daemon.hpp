@@ -72,12 +72,12 @@ namespace usbguard
     std::string setParameter(const std::string& name, const std::string& value) override;
     std::string getParameter(const std::string& name) override;
 
-    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
-    void removeRule(uint32_t id);
-    const RuleSet listRules(const std::string& query);
+    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) override;
+    void removeRule(uint32_t id) override;
+    const RuleSet listRules(const std::string& query) override;
 
-    uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
-    const std::vector<Rule> listDevices(const std::string& query);
+    uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) override;
+    const std::vector<Rule> listDevices(const std::string& query) override;
 
     /* Device manager hooks */
     void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;

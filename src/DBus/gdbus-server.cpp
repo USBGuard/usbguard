@@ -16,12 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include <gio/gio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <getopt.h>
 #include "DBusBridge.hpp"
-
 
 static usbguard::DBusBridge * dbus_bridge = nullptr;
 static GMainLoop * main_loop = nullptr;
@@ -44,6 +42,10 @@ handle_method_call (GDBusConnection       *connection,
                     GDBusMethodInvocation *invocation,
                     gpointer               user_data)
 {
+  (void)connection;
+  (void)sender;
+  (void)object_path;
+  (void)user_data;
   try {
     dbus_bridge->handleMethodCall(interface_name, method_name, parameters, invocation);
   }
@@ -99,21 +101,24 @@ static const GDBusInterfaceVTable devices_interface_vtable =
 {
   handle_method_call,
   nullptr,
-  nullptr
+  nullptr,
+  {}
 };
 
 static const GDBusInterfaceVTable policy_interface_vtable =
 {
   handle_method_call,
   nullptr,
-  nullptr
+  nullptr,
+  {}
 };
 
 static const GDBusInterfaceVTable usbguard_interface_vtable =
 {
   handle_method_call,
   nullptr,
-  nullptr
+  nullptr,
+  {}
 };
 
 static void
@@ -121,6 +126,8 @@ on_bus_acquired (GDBusConnection *connection,
                  const gchar     *name,
                  gpointer         user_data)
 {
+  (void)name;
+  (void)user_data;
   auto policy_rid = g_dbus_connection_register_object(connection,
                                                       "/org/usbguard/Policy",
                                                       introspection_data->interfaces[0],
@@ -155,6 +162,8 @@ on_name_acquired (GDBusConnection *connection,
                   const gchar     *name,
                   gpointer         user_data)
 {
+  (void)name;
+  (void)user_data;
   /* We got the name, reset the global return value */
   global_ret = EXIT_SUCCESS;
   try {
@@ -174,6 +183,9 @@ on_name_lost (GDBusConnection *connection,
               const gchar     *name,
               gpointer         user_data)
 {
+  (void)connection;
+  (void)name;
+  (void)user_data;
   g_main_loop_quit(main_loop);
   auto dbus_bridge_local = dbus_bridge;
   dbus_bridge = nullptr;

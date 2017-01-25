@@ -28,6 +28,8 @@ TargetDelegate::TargetDelegate(QObject *parent)
 
 QWidget *TargetDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+  (void)option;
+  (void)index;
   QComboBox* editor = new QComboBox(parent);
   editor->setFrame(false);
   editor->setAutoFillBackground(true);
@@ -64,5 +66,6 @@ void TargetDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, co
 
 void TargetDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+  (void)index;
   editor->setGeometry(option.rect);
 }

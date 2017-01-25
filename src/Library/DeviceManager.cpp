@@ -52,20 +52,19 @@ namespace usbguard {
         return "Remove";
       case DeviceManager::EventType::Update:
         return "Update";
+      default:
+        throw USBGUARD_BUG("unknown event type");
     }
-    throw std::runtime_error("BUG: Unknown event type");
   }
 
   DeviceManager::DeviceManager(DeviceManagerHooks& hooks)
   {
     d_pointer = new DeviceManagerPrivate(*this, hooks);
-    return;
   }
 
   DeviceManager::DeviceManager(const DeviceManager& rhs)
   {
     d_pointer = new DeviceManagerPrivate(*this, *rhs.d_pointer);
-    return;
   }
 
   const DeviceManager& DeviceManager::operator=(const DeviceManager& rhs)
@@ -80,7 +79,6 @@ namespace usbguard {
   {
     delete d_pointer;
     d_pointer = nullptr;
-    return;
   }
 
   void DeviceManager::setRestoreControllerDeviceState(bool enabled)
@@ -96,7 +94,6 @@ namespace usbguard {
   void DeviceManager::insertDevice(Pointer<Device> device)
   {
     d_pointer->insertDevice(device);
-    return;
   }
 
   Pointer<Device> DeviceManager::removeDevice(uint32_t id)
@@ -126,6 +123,9 @@ namespace usbguard {
           case Rule::Target::Match:
             matching_devices.push_back(device);
             break;
+          case Rule::Target::Reject:
+          case Rule::Target::Unknown:
+          case Rule::Target::Invalid:
           default:
             throw std::runtime_error("Invalid device query target");
         }

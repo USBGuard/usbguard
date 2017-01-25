@@ -15,8 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
-//
+
 #include "MainWindow.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-default"
 #include "MainWindow.ui.h"
 #include "DeviceDialog.h"
 #include <Logger.hpp>
@@ -36,6 +38,7 @@
 #include <QTreeView>
 #include <QShortcut>
 #include <QWindowStateChangeEvent>
+#pragma GCC diagnostic pop
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -177,6 +180,8 @@ void MainWindow::showDeviceDialog(quint32 id, const usbguard::Rule& device_rule)
     case 2:
       default_target = usbguard::Rule::Target::Reject;
       break;
+    default:
+      default_target = usbguard::Rule::Target::Block;
   }
   dialog->setDefaultDecision(default_target);
 
@@ -221,6 +226,7 @@ void MainWindow::handleDevicePresenceChange(quint32 id,
                                             usbguard::Rule::Target target,
                                             const std::string& device_rule_string)
 {
+  (void)target;
   auto device_rule = usbguard::Rule::fromString(device_rule_string);
 
   switch(event) {
@@ -230,6 +236,8 @@ void MainWindow::handleDevicePresenceChange(quint32 id,
     case usbguard::DeviceManager::EventType::Remove:
       handleDeviceRemove(id, device_rule);
       break;
+    case usbguard::DeviceManager::EventType::Present:
+    case usbguard::DeviceManager::EventType::Update:
     default:
       /* NOOP */
       break;
@@ -244,6 +252,7 @@ void MainWindow::handleDevicePolicyChange(quint32 id,
                                           const std::string& device_rule_string,
                                           quint32 rule_id)
 {
+  (void)target_old;
   auto device_rule = usbguard::Rule::fromString(device_rule_string);
 
   _device_model.updateDeviceTarget(id, target_new);
@@ -291,6 +300,7 @@ void MainWindow::notifyDevicePresenceChanged(usbguard::DeviceManager::EventType 
 
 void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, quint32 rule_id)
 {
+  (void)rule_id;
   QString title;
   bool show_notification = true;
   QSystemTrayIcon::MessageIcon notification_icon = \
@@ -315,6 +325,10 @@ void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, qu
         startFlashing();
       }
       break;
+    case usbguard::Rule::Target::Invalid:
+    case usbguard::Rule::Target::Match:
+    case usbguard::Rule::Target::Device:
+    case usbguard::Rule::Target::Unknown:
     default:
       /* NOOP */
       return;
@@ -645,6 +659,10 @@ void MainWindow::commitDeviceListChanges()
       case usbguard::Rule::Target::Reject:
         rejectDevice(id, permanent);
         break;
+      case usbguard::Rule::Target::Match:
+      case usbguard::Rule::Target::Invalid:
+      case usbguard::Rule::Target::Unknown:
+      case usbguard::Rule::Target::Device:
       default:
         break;
     }
@@ -722,5 +740,7 @@ void MainWindow::IPCConnected()
 
 void MainWindow::IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception)
 {
+  (void)exception_initiated;
+  (void)exception;
   emit uiDisconnected();
 }

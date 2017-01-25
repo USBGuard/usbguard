@@ -24,6 +24,7 @@
 #include "Utility.hpp"
 #include "RuleCondition.hpp"
 #include "Logger.hpp"
+#include "Exception.hpp"
 
 #include <cstdint>
 #include <chrono>
@@ -208,6 +209,8 @@ namespace usbguard {
               case SetOperator::EqualsOrdered:
                 applies = setSolveEqualsOrdered(_values, target._values);
                 break;
+              default:
+                throw USBGUARD_BUG("Invalid set operator value");
             }
           }
 

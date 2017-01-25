@@ -127,6 +127,7 @@ lib_LTLIBRARIES=\
 	libusbguard.la
 
 libusbguard_la_CPPFLAGS=\
+	-fPIC \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
 	-I$(top_builddir)/src/Library/IPC \
@@ -270,11 +271,14 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.hpp \
 	src/Daemon/Exceptions.hpp \
 	src/Daemon/main.cpp \
+	src/Daemon/Seccomp.c \
+	src/Daemon/Seccomp.h \
 	src/Common/CCBQueue.hpp \
 	src/Common/Utility.hpp \
 	src/Common/Utility.cpp
 
 usbguard_daemon_CPPFLAGS=\
+	-fPIE \
 	$(AM_CPPFLAGS) \
 	@seccomp_CFLAGS@ \
 	@libcapng_CFLAGS@
@@ -326,6 +330,7 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-get-parameter.cpp
 
 usbguard_CPPFLAGS=\
+	-fPIE \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/CLI
 
@@ -336,6 +341,7 @@ usbguard_rule_parser_SOURCES=\
 	src/CLI/usbguard-rule-parser.cpp
 
 usbguard_rule_parser_CPPFLAGS=\
+	-fPIE \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/CLI
 
@@ -374,6 +380,7 @@ usbguard_dbus_SOURCES=\
 	src/DBus/DBusBridge.hpp
 
 usbguard_dbus_CPPFLAGS=\
+	-fPIE \
 	$(AM_CPPFLAGS) \
 	-I$(top_builddir)/src/DBus \
 	@dbus_CFLAGS@
@@ -528,10 +535,11 @@ usbguard_applet_qt_LDADD=\
 	@qt_LIBS@
 
 usbguard_applet_qt_CPPFLAGS=\
+	-fPIE -fPIC \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/GUI.Qt \
 	-I$(top_builddir)/src/GUI.Qt \
-	-fPIC @qt_CFLAGS@
+	@qt_CFLAGS@
 
 %.qm: %.ts
 	mkdir -p "$(top_builddir)/$(shell dirname $@)"
@@ -542,6 +550,15 @@ usbguard_applet_qt_CPPFLAGS=\
 
 %.ui.h: %.ui
 	@QTUIC@ -g cpp -o $(top_builddir)/$@ $<
+
+# Workaround for older Qt generated code addressing:
+#```
+#  src/GUI.Qt/usbguard.qrc.cpp: In function ‘int qInitResources()’:
+#  src/GUI.Qt/usbguard.qrc.cpp:2171:25: error: no previous declaration for
+#    ‘int qInitResources()’ [-Werror=missing-declarations]
+#  int QT_MANGLE_NAMESPACE(qInitResources)()
+#```
+%.qrc.$(OBJEXT) : CXXFLAGS += -Wno-missing-declarations
 
 %.qrc.cpp: %.qrc
 	@QTRCC@ -o $(top_builddir)/$@ $<

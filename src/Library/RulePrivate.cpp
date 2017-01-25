@@ -23,7 +23,7 @@
 
 namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)
-    : _p_instance(p_instance),
+    : //_p_instance(p_instance),
       _device_id("id"),
       _serial("serial"),
       _name("name"),
@@ -33,6 +33,7 @@ namespace usbguard {
       _with_interface("with-interface"),
       _conditions("if")
   {
+    (void)p_instance;
     _rule_id = Rule::DefaultID;
     _target = Rule::Target::Invalid;
     _conditions_state = 0;
@@ -40,7 +41,7 @@ namespace usbguard {
   }
 
   RulePrivate::RulePrivate(Rule& p_instance, const RulePrivate& rhs)
-    : _p_instance(p_instance),
+    : //_p_instance(p_instance),
       _device_id("id"),
       _serial("serial"),
       _name("name"),
@@ -50,6 +51,7 @@ namespace usbguard {
       _with_interface("with-interface"),
       _conditions("if")
   {
+    (void)p_instance;
     *this = rhs;
   }
 
@@ -73,6 +75,7 @@ namespace usbguard {
 
     return *this;
 #if 0
+    /* TODO */
     try {
       for (auto const& condition : rhs._conditions) {
         _conditions.push_back(condition->clone());
@@ -176,6 +179,7 @@ namespace usbguard {
           (conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1));
         break;
       case Rule::SetOperator::Match:
+      default:
         throw std::runtime_error("BUG: meetsConditions: invalid conditions set operator");
     }
 

@@ -22,6 +22,8 @@ namespace usbguard
 {
   void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
   {
+    (void)event;
+    (void)device;
     /* NOOP */
   }
 } /* namespace usbguard */

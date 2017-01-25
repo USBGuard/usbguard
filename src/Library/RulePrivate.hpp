@@ -128,7 +128,7 @@ namespace usbguard {
     static Rule fromString(const String& rule_string);
 
   private:
-    Rule& _p_instance;
+    //Rule& _p_instance;
     MetaData _meta;
     uint32_t _rule_id;
     Rule::Target _target;

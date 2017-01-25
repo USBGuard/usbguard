@@ -15,22 +15,22 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5']
-      env: COMPILER=g++-5
+          packages: ['g++-5', 'gcc-5']
+      env: COMPILER_CXX=g++-5 COMPILER_C=gcc-5
     - os: linux
       compiler: gcc
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-6']
-      env: COMPILER=g++-6
+          packages: ['g++-6', 'gcc-6']
+      env: COMPILER_CXX=g++-6 COMPILER_C=gcc-6
     - os: linux
       compiler: clang
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8']
           packages: ['clang-3.8']
-      env: COMPILER=clang++-3.8
+      env: COMPILER_CXX=clang++-3.8 COMPILER_C=clang-3.8
     - os: linux
       compiler: gcc
       env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared"
@@ -44,8 +44,12 @@ matrix:
           packages: ['clang']
       env: MAKE_ARGS=analyze-clang
     - os: linux
-      compiler: clang
-      env: CONFIGURE_ARGS=--enable-asan
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-6', 'gcc-6']
+      env: COMPILER_CXX=g++-6 COMPILER_C=gcc-6 CONFIGURE_ARGS=--enable-asan
     - os: linux
       compiler: gcc
       env: CONFIGURE_ARGS=--enable-debug-build
@@ -85,7 +89,7 @@ before_install:
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
-- CXX=$COMPILER ../configure --enable-maintainer-mode --disable-silent-rules --with-bundled-catch --with-bundled-pegtl $CONFIGURE_ARGS
+- CXX=${COMPILER_CXX:=$CXX} CC=${COMPILER_C:=$CC} ../configure --enable-maintainer-mode --disable-silent-rules --with-bundled-catch --with-bundled-pegtl $CONFIGURE_ARGS
 script:
 - test $TRAVIS_BRANCH != coverity_scan || exit 0
 - if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; make check; fi

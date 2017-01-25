@@ -59,7 +59,7 @@ namespace usbguard
     private:
       Logger& _logger;
       Source _source;
-      const Level _level;
+      Level _level;
   };
 
   class DLL_PUBLIC LogSink

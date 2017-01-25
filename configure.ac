@@ -15,7 +15,36 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
 #
 # Compiler flags
 #
-CXXFLAGS="-std=c++11 -Wall -Wformat=2 -fvisibility=hidden $CXXFLAGS"
+EXTERNAL_CXXFLAGS="$CXXFLAGS"
+EXTERNAL_CFLAGS="$CFLAGS"
+
+COMMON_WARNING_FLAGS=" -pedantic -Werror"
+COMMON_WARNING_FLAGS+=" -Wno-unknown-pragmas"
+COMMON_WARNING_FLAGS+=" -Wall"
+COMMON_WARNING_FLAGS+=" -Wextra"
+COMMON_WARNING_FLAGS+=" -Wformat=2"
+COMMON_WARNING_FLAGS+=" -Wredundant-decls"
+COMMON_WARNING_FLAGS+=" -Wcast-align"
+COMMON_WARNING_FLAGS+=" -Wmissing-declarations"
+COMMON_WARNING_FLAGS+=" -Wmissing-include-dirs"
+COMMON_WARNING_FLAGS+=" -Wmissing-format-attribute"
+COMMON_WARNING_FLAGS+=" -Wswitch-enum"
+COMMON_WARNING_FLAGS+=" -Wswitch-default"
+COMMON_WARNING_FLAGS+=" -Winvalid-pch"
+COMMON_WARNING_FLAGS+=" -Wformat-nonliteral"
+#COMMON_WARNING_FLAGS+=" -flto -Wodr"
+
+#
+# Workaround for older compilers warning about { }
+# not initializing all struct fields.
+#
+COMMON_WARNING_FLAGS+=" -Wno-missing-field-initializers"
+
+#
+# Final project CXXFLAGS are set after configure checks.
+#
+CXXFLAGS="-std=c++11"
+CFLAGS="-std=c99"
 
 #
 # Additional CXXFLAGS used when --enable-debug-build is used
@@ -66,6 +95,7 @@ fi
 # Checks for programs.
 #
 AC_PROG_CXX
+AC_PROG_CC_C99
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
@@ -419,7 +449,6 @@ if test "x$with_dbus" = xyes; then
       ;;
     esac
     AC_SUBST(DBUS_SERVICES_DIR, $dbus_services_dir)
-    AC_DEFINE([DBUS_SERVICES_DIR], [$dbus_services_dir], [D-Bus system services directory])
   fi
 
   dbus_data_dir=`$PKG_CONFIG dbus-1 --define-variable=datadir='${datadir}' --define-variable=prefix='${prefix}' --variable=datadir`
@@ -428,7 +457,6 @@ if test "x$with_dbus" = xyes; then
   else
     dbus_busconfig_dir="$dbus_data_dir/dbus-1/system.d"
     AC_SUBST(DBUS_BUSCONFIG_DIR, $dbus_busconfig_dir)
-    AC_DEFINE([DBUS_BUSCONFIG_DIR], [$dbus_busconfig_dir], [D-Bus busconfig directory])
   fi
 else
   dbus_summary="None; building without DBus support"
@@ -455,7 +483,6 @@ if test "x$with_polkit" = xyes; then
     AC_MSG_FAILURE([Cannot autodetect the PolicyKit policy directory])
   else
     AC_SUBST(POLKIT_POLICY_DIR, $polkit_policy_dir)
-    AC_DEFINE([POLKIT_POLICY_DIR], [$polkit_policy_dir], [PolicyKit policy directory]) 
   fi
 else
   polkit_summary="None; building without PolicyKit support"
@@ -477,6 +504,7 @@ AC_ARG_ENABLE([asan],
 
 if test "x$enable_asan" = xyes; then
   AC_LANG_PUSH([C++])
+  ASAN_FLAGS="$ASAN_FLAGS -static-libasan"
   AX_CHECK_COMPILE_FLAG([-faddress-sanitizer],
                         [ASAN_FLAGS="$ASAN_FLAGS -faddress-sanitizer"],
                         [enable_asan=no], [])
@@ -603,19 +631,25 @@ AC_ARG_ENABLE([systemd],
 
 if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
+   CFLAGS="$CFLAGS $CFLAGS_DEBUG_ENABLED"
 else
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_DISABLED"
+   CFLAGS="$CFLAGS $CFLAGS_DEBUG_DISABLED"
    AC_DEFINE([NDEBUG], [1], [Debug build disabled])
    AC_DEFINE([QUEX_OPTION_ASSERTS_DISABLED], [1], [Disable asserts in the Quex generated lexer])
 fi
 
 if test "x$enable_asan" = xyes; then
   CXXFLAGS="$CXXFLAGS $ASAN_FLAGS"
+  CFLAGS="$CFLAGS $ASAN_FLAGS"
+  LDFLAGS="$LDFLAGS $ASAN_FLAGS"
   AC_DEFINE([ASAN_ENABLED], [1], [Address Sanitizer is enabled])
 fi
 
 if test "x$enable_tsan" = xyes; then
   CXXFLAGS="$CXXFLAGS $TSAN_FLAGS"
+  CFLAGS="$CFLAGS $TSAN_FLAGS"
+  LDFLAGS="$LDFLAGS $TSAN_FLAGS"
   AC_DEFINE([TSAN_ENABLED], [1], [Thread Sanitizer is enabled])
 fi
 
@@ -637,6 +671,9 @@ AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
+
+CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS $EXTERNAL_CXXFLAGS"
+CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS $EXTERNAL_CFLAGS"
 
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc
@@ -673,6 +710,7 @@ echo "## Compilation Flags"
 echo
 echo " Debug Mode: $debug"
 echo "   CXXFLAGS: $CXXFLAGS"
+echo "     CFLAGS: $CFLAGS"
 echo "   CPPFLAGS: $CPPFLAGS"
 echo "    LDFLAGS: $LDFLAGS"
 echo " ASAN_FLAGS: $ASAN_FLAGS"

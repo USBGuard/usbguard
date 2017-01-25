@@ -62,18 +62,18 @@ TEST_CASE("Target-only rule", "[RuleParser]") {
   SECTION("from/to string: allow") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow"));
     REQUIRE(rule.getTarget() == Rule::Target::Allow);
-    REQUIRE_NOTHROW(rule.toString() == "allow");
+    REQUIRE(rule.toString() == "allow");
   }
 
   SECTION("from/to string: block") {
     REQUIRE_NOTHROW(rule = Rule::fromString("block"));
     REQUIRE(rule.getTarget() == Rule::Target::Block);
-    REQUIRE_NOTHROW(rule.toString() == "block");
+    REQUIRE(rule.toString() == "block");
   }
 
   SECTION("from/to string: reject") {
     REQUIRE_NOTHROW(rule = Rule::fromString("reject"));
     REQUIRE(rule.getTarget() == Rule::Target::Reject);
-    REQUIRE_NOTHROW(rule.toString() == "reject");
+    REQUIRE(rule.toString() == "reject");
   }
 }

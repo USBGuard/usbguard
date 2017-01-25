@@ -65,6 +65,10 @@ int main(int argc, char **argv)
       case 't':
         trace = true;
         break;
+      case '?':
+      default:
+        showHelp(std::cout, usbguard_arg0);
+        return EXIT_FAILURE;
     }
   }
 

@@ -204,6 +204,10 @@ namespace usbguard
       case 1:
         __b64_enc1 (*(data + (i * 3)), buffer + (i * 4));
         break;
+      case 0:
+        break;
+      default:
+        throw std::runtime_error("base64Encode: unexpected remainder value");
     }
 
     return result;
@@ -246,6 +250,9 @@ namespace usbguard
         break;
       case 0:
         result.resize(3 * i);
+        break;
+      default:
+        throw std::runtime_error("base64Device: unexpected padding value");
     }
 
     return result;

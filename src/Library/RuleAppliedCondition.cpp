@@ -64,7 +64,7 @@ namespace usbguard
 
   uint64_t RuleAppliedCondition::stringToSeconds(const String& string)
   {
-    struct ::tm tm = { 0 };
+    struct ::tm tm = { };
 
     if (string.empty() || string == "") {
       return 0;

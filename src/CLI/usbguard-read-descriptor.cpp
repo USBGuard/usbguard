@@ -55,6 +55,7 @@ namespace usbguard
     public:
       void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override
       {
+        (void)parser;
         switch(static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType)) {
          case USBDescriptorType::Device:
             printDeviceDescriptor(descriptor);
@@ -73,6 +74,8 @@ namespace usbguard
               case sizeof(USBAudioEndpointDescriptor):
                 printAudioEndpointDescriptor(descriptor);
                 break;
+              default:
+                printUnknownDescriptor(descriptor);
             }
             break;
           case USBDescriptorType::String:

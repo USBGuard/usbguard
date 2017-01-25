@@ -26,18 +26,20 @@
 
 namespace usbguard {
   DevicePrivate::DevicePrivate(Device& p_instance, DeviceManager& manager)
-    : _p_instance(p_instance),
+    : //_p_instance(p_instance),
       _manager(manager)
   {
+    (void)p_instance;
     _id = Rule::DefaultID;
     _parent_id = Rule::RootID;
     _target = Rule::Target::Unknown;
   }
 
   DevicePrivate::DevicePrivate(Device& p_instance, const DevicePrivate& rhs)
-    : _p_instance(p_instance),
+    : //_p_instance(p_instance),
       _manager(rhs._manager)
   {
+    (void)p_instance;
     *this = rhs;
   }
 
@@ -275,6 +277,7 @@ namespace usbguard {
 
   void DevicePrivate::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
+    (void)descriptor;
     if (parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
       throw std::runtime_error("Invalid descriptor data: multiple device descriptors for one device");
     }
@@ -284,6 +287,7 @@ namespace usbguard {
 
   void DevicePrivate::loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
+    (void)descriptor;
     if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
       throw std::runtime_error("Invalid descriptor data: missing parent device descriptor while loading configuration");
     }
@@ -311,6 +315,7 @@ namespace usbguard {
 
   void DevicePrivate::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
+    (void)descriptor;
     /*
      * WARNING: This method can receive USB descriptors of two sizes! (endpoint, audio endpoint)
      */

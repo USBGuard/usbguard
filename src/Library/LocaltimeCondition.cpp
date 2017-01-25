@@ -71,7 +71,7 @@ namespace usbguard
 
   std::chrono::system_clock::time_point LocaltimeCondition::stringToTimePoint(const String& string)
   {
-    struct ::tm tm = { 0 };
+    struct ::tm tm = { };
 
     if (::strptime(string.c_str(), "%H:%M:%s", &tm) == nullptr) {
       if (::strptime(string.c_str(), "%H:%M", &tm) == nullptr) {

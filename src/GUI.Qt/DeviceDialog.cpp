@@ -93,6 +93,10 @@ void DeviceDialog::setDefaultDecision(usbguard::Rule::Target target)
       ui->block_button->setFocus();
       break;
     case usbguard::Rule::Target::Reject:
+    case usbguard::Rule::Target::Unknown:
+    case usbguard::Rule::Target::Invalid:
+    case usbguard::Rule::Target::Match:
+    case usbguard::Rule::Target::Device:
     default:
       ui->reject_button->setFocus();
   }
@@ -195,6 +199,10 @@ void DeviceDialog::updateDialog()
       label = QString(tr("Block"));
       break;
     case usbguard::Rule::Target::Reject:
+    case usbguard::Rule::Target::Match:
+    case usbguard::Rule::Target::Device:
+    case usbguard::Rule::Target::Invalid:
+    case usbguard::Rule::Target::Unknown:
     default:
       button = ui->reject_button;
       label = QString(tr("Reject"));
@@ -223,6 +231,10 @@ void DeviceDialog::executeDefaultDecision()
       on_block_button_clicked();
       break;
     case usbguard::Rule::Target::Reject:
+    case usbguard::Rule::Target::Unknown:
+    case usbguard::Rule::Target::Invalid:
+    case usbguard::Rule::Target::Device:
+    case usbguard::Rule::Target::Match:
     default:
       on_allow_button_clicked();
     }
