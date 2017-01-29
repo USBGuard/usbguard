@@ -205,12 +205,12 @@ namespace usbguard {
     return d_pointer->attributeWithInterface();
   }
 
-  const Rule::Attribute<RuleCondition*>& Rule::attributeConditions() const
+  const Rule::Attribute<RuleCondition>& Rule::attributeConditions() const
   {
     return d_pointer->attributeConditions();
   }
 
-  Rule::Attribute<RuleCondition*>& Rule::attributeConditions()
+  Rule::Attribute<RuleCondition>& Rule::attributeConditions()
   {
     return d_pointer->attributeConditions();
   }

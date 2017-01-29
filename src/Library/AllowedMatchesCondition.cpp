@@ -24,14 +24,14 @@
 namespace usbguard
 {
   AllowedMatchesCondition::AllowedMatchesCondition(const String& device_spec, bool negated)
-    : RuleCondition("allowed-matches", device_spec, negated)
+    : RuleConditionBase("allowed-matches", device_spec, negated)
   {
     _device_match_rule = parseRuleFromString(std::string("allow ") + device_spec);
     _interface_ptr = nullptr;
   }
 
   AllowedMatchesCondition::AllowedMatchesCondition(const AllowedMatchesCondition& rhs)
-    : RuleCondition(rhs)
+    : RuleConditionBase(rhs)
   {
     _device_match_rule = rhs._device_match_rule;
     _interface_ptr = rhs._interface_ptr;
@@ -55,7 +55,7 @@ namespace usbguard
     return !devices.empty();
   }
 
-  RuleCondition * AllowedMatchesCondition::clone() const
+  RuleConditionBase * AllowedMatchesCondition::clone() const
   {
     return new AllowedMatchesCondition(*this);
   }

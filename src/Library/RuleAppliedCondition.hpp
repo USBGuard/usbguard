@@ -24,13 +24,13 @@
 
 namespace usbguard
 {
-  class RuleAppliedCondition : public RuleCondition
+  class RuleAppliedCondition : public RuleConditionBase
   {
   public:
     RuleAppliedCondition(const String& elapsed_time, bool negated = false);
     RuleAppliedCondition(const RuleAppliedCondition& rhs);
     bool update(const Rule& rule);
-    RuleCondition * clone() const;
+    RuleConditionBase * clone() const;
   protected:
     static uint64_t stringToSeconds(const String& string);
   private:

@@ -24,13 +24,13 @@
 
 namespace usbguard
 {
-  class LocaltimeCondition : public RuleCondition
+  class LocaltimeCondition : public RuleConditionBase
   {
   public:
     LocaltimeCondition(const String& time_range, bool negated = false);
     LocaltimeCondition(const LocaltimeCondition& rhs);
     bool update(const Rule& rule);
-    RuleCondition * clone() const;
+    RuleConditionBase * clone() const;
 
   protected:
     static std::chrono::system_clock::time_point stringToTimePoint(const String& string);

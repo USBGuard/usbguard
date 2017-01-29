@@ -24,18 +24,18 @@ namespace usbguard
 {
   class Interface;
   class Rule;
-  class RuleCondition
+  class RuleConditionBase
   {
   public:
-    RuleCondition(const String& identifier, const String& parameter, bool negated = false);
-    RuleCondition(const String& identifier, bool negated = false);
-    RuleCondition(const RuleCondition& rhs);
-    virtual ~RuleCondition();
+    RuleConditionBase(const String& identifier, const String& parameter, bool negated = false);
+    RuleConditionBase(const String& identifier, bool negated = false);
+    RuleConditionBase(const RuleConditionBase& rhs);
+    virtual ~RuleConditionBase();
 
     virtual void init(Interface * const interface_ptr);
     virtual void fini();
     virtual bool update(const Rule& rule) = 0;
-    virtual RuleCondition* clone() const = 0;
+    virtual RuleConditionBase* clone() const = 0;
 
     bool evaluate(const Rule& rule);
     const String& identifier() const;
@@ -45,13 +45,43 @@ namespace usbguard
     const String toString() const;
     const String toRuleString() const;
 
-    static RuleCondition* getImplementation(const String& condition_string);
-    static RuleCondition* getImplementation(const String& identifier, const String& parameter, bool negated);
+    static RuleConditionBase* getImplementation(const String& condition_string);
+    static RuleConditionBase* getImplementation(const String& identifier, const String& parameter, bool negated);
 
   private:
     const String _identifier;
     const String _parameter;
     const bool _negated;
+  };
+
+  class RuleCondition
+  {
+    public:
+      RuleCondition();
+      RuleCondition(const String& condition_string);
+      RuleCondition(const RuleCondition& rhs);
+      RuleCondition(RuleCondition&& rhs);
+
+      RuleCondition& operator=(const RuleCondition& rhs);
+      RuleCondition& operator=(RuleCondition&& rhs);
+
+      RuleConditionBase* operator->()
+      {
+        return _condition.get();
+      }
+
+      RuleConditionBase& operator*()
+      {
+        return *_condition.get();
+      }
+
+      String toRuleString() const
+      {
+        return _condition->toRuleString();
+      }
+
+    private:
+      UniquePointer<RuleConditionBase> _condition;
   };
 } /*namespace usbguard */
 

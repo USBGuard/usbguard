@@ -191,7 +191,7 @@ namespace usbguard {
 
   void RulePrivate::initConditions(Interface * const interface)
   {
-    for (auto condition : _conditions.values()) {
+    for (auto& condition : _conditions.values()) {
       condition->init(interface);
     }
     /* FIXME: prevent leaks when init() throws an exception */
@@ -199,7 +199,7 @@ namespace usbguard {
 
   void RulePrivate::finiConditions()
   {
-    for (auto condition : _conditions.values()) {
+    for (auto& condition : _conditions.values()) {
       condition->fini();
     }
   }
@@ -209,7 +209,7 @@ namespace usbguard {
     uint64_t updated_state = 0;
     unsigned int i = 0;
 
-    for (auto condition : _conditions.values()) {
+    for (auto& condition : _conditions.values()) {
       if (i >= (sizeof updated_state * 8)) {
         throw std::runtime_error("BUG: updateConditionsState: too many conditions");
       }
@@ -401,12 +401,12 @@ namespace usbguard {
     return _with_interface;
   }
 
-  const Rule::Attribute<RuleCondition*>& RulePrivate::attributeConditions() const
+  const Rule::Attribute<RuleCondition>& RulePrivate::attributeConditions() const
   {
     return _conditions;
   }
 
-  Rule::Attribute<RuleCondition*>& RulePrivate::attributeConditions()
+  Rule::Attribute<RuleCondition>& RulePrivate::attributeConditions()
   {
     return _conditions;
   }

@@ -24,13 +24,13 @@
 
 namespace usbguard
 {
-  class RandomStateCondition : public RuleCondition
+  class RandomStateCondition : public RuleConditionBase
   {
   public:
     RandomStateCondition(const String& true_probability, bool negated = false);
     RandomStateCondition(const RandomStateCondition& rhs);
     bool update(const Rule& rule);
-    RuleCondition * clone() const;
+    RuleConditionBase * clone() const;
   private:
     std::random_device _rng_device;
     std::mt19937 _rng_gen;

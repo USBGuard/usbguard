@@ -117,6 +117,11 @@ namespace usbguard {
           return _set_operator;
         }
 
+        void append(ValueType&& value)
+        {
+          _values.emplace_back(std::move(value));
+        }
+
         void append(const ValueType& value)
         {
           _values.push_back(value);
@@ -154,6 +159,19 @@ namespace usbguard {
         const ValueType& get(size_t index) const
         {
           return _values.at(index);
+        }
+
+        void set(ValueType&& value)
+        {
+          if (count() > 1) {
+            throw std::runtime_error("BUG: Setting single value for a multivalued attribute");
+          }
+          if (count() == 0) {
+            append(value);
+          }
+          else {
+            _values[0] = std::move(value);
+          }
         }
 
         void set(const ValueType& value)
@@ -423,8 +441,8 @@ namespace usbguard {
     const Attribute<USBInterfaceType>& attributeWithInterface() const;
     Attribute<USBInterfaceType>& attributeWithInterface();
 
-    const Attribute<RuleCondition*>& attributeConditions() const;
-    Attribute<RuleCondition*>& attributeConditions();
+    const Attribute<RuleCondition>& attributeConditions() const;
+    Attribute<RuleCondition>& attributeConditions();
 
     void setTimeoutSeconds(uint32_t timeout_seconds);
     uint32_t getTimeoutSeconds() const;

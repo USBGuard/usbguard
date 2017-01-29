@@ -112,8 +112,8 @@ namespace usbguard {
     const Rule::Attribute<USBInterfaceType>& attributeWithInterface() const;
     Rule::Attribute<USBInterfaceType>& attributeWithInterface();
 
-    const Rule::Attribute<RuleCondition*>& attributeConditions() const;
-    Rule::Attribute<RuleCondition*>& attributeConditions();
+    const Rule::Attribute<RuleCondition>& attributeConditions() const;
+    Rule::Attribute<RuleCondition>& attributeConditions();
 
     void setTimeoutSeconds(uint32_t timeout_seconds);
     uint32_t getTimeoutSeconds() const;
@@ -139,7 +139,7 @@ namespace usbguard {
     Rule::Attribute<String> _parent_hash;
     Rule::Attribute<String> _via_port;
     Rule::Attribute<USBInterfaceType> _with_interface;
-    Rule::Attribute<RuleCondition*> _conditions;
+    Rule::Attribute<RuleCondition> _conditions;
     uint64_t _conditions_state;
     uint32_t _timeout_seconds;
   };

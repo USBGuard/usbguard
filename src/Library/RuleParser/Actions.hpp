@@ -423,8 +423,7 @@ namespace usbguard
     static void apply(const Input& in, Rule& rule)
     {
       try {
-        RuleCondition* condition = RuleCondition::getImplementation(in.string());
-        rule.attributeConditions().append(condition);
+        rule.attributeConditions().append(RuleCondition(in.string()));
       }
       catch(const std::exception& ex) {
         throw pegtl::parse_error(ex.what(), in);

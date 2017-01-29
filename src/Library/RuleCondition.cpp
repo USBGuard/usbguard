@@ -25,66 +25,66 @@
 
 namespace usbguard
 {
-  RuleCondition::RuleCondition(const String& identifier, const String& parameter, bool negated)
+  RuleConditionBase::RuleConditionBase(const String& identifier, const String& parameter, bool negated)
     : _identifier(identifier),
       _parameter(parameter),
       _negated(negated)
   {
   }
 
-  RuleCondition::RuleCondition(const String& identifier, bool negated)
+  RuleConditionBase::RuleConditionBase(const String& identifier, bool negated)
     : _identifier(identifier),
       _negated(negated)
   {
   }
 
-  RuleCondition::RuleCondition(const RuleCondition& rhs)
+  RuleConditionBase::RuleConditionBase(const RuleConditionBase& rhs)
     : _identifier(rhs._identifier),
       _parameter(rhs._parameter),
       _negated(rhs._negated)
   {
   }
 
-  RuleCondition::~RuleCondition()
+  RuleConditionBase::~RuleConditionBase()
   {
     fini();
   }
 
-  void RuleCondition::init(Interface * const interface_ptr)
+  void RuleConditionBase::init(Interface * const interface_ptr)
   {
     (void)interface_ptr;
   }
 
-  void RuleCondition::fini()
+  void RuleConditionBase::fini()
   {
   }
 
-  bool RuleCondition::evaluate(const Rule& rule)
+  bool RuleConditionBase::evaluate(const Rule& rule)
   {
     return isNegated() ? !update(rule) : update(rule);
   }
 
-  const String& RuleCondition::identifier() const
+  const String& RuleConditionBase::identifier() const
   {
     return _identifier;
   }
 
-  const String& RuleCondition::parameter() const
+  const String& RuleConditionBase::parameter() const
   {
     return _parameter;
   }
 
-  bool RuleCondition::hasParameter() const
+  bool RuleConditionBase::hasParameter() const
   {
     return !_parameter.empty();
   }
 
-  bool RuleCondition::isNegated() const
+  bool RuleConditionBase::isNegated() const
   {
     return _negated;
   }
 
-  const String RuleCondition::toString() const
+  const String RuleConditionBase::toString() const
   {
     String condition_string;
 
@@ -103,7 +103,7 @@ namespace usbguard
     return condition_string;
   }
 
-  const String RuleCondition::toRuleString() const
+  const String RuleConditionBase::toRuleString() const
   {
     return toString();
   }
@@ -115,15 +115,18 @@ namespace usbguard
 #include "RandomStateCondition.hpp"
 #include "RuleAppliedCondition.hpp"
 #include "RuleEvaluatedCondition.hpp"
+
 #include <iostream>
+#include <memory>
 
 namespace usbguard
 {
-  RuleCondition* RuleCondition::getImplementation(const String& condition_string)
+  RuleConditionBase* RuleConditionBase::getImplementation(const String& condition_string)
   {
     if (condition_string.empty()) {
       throw std::runtime_error("Empty condition");
     }
+
     const bool negated = condition_string[0] == '!';
     const size_t identifier_start = negated ? 1 : 0;
     const size_t p_pos = condition_string.find_first_of('(');
@@ -162,7 +165,7 @@ namespace usbguard
     return getImplementation(identifier, parameter, negated);
   }
 
-  RuleCondition* RuleCondition::getImplementation(const String& identifier, const String& parameter, bool negated)
+  RuleConditionBase* RuleConditionBase::getImplementation(const String& identifier, const String& parameter, bool negated)
   {
     if (identifier == "allowed-matches") {
       return new AllowedMatchesCondition(parameter, negated);
@@ -186,6 +189,37 @@ namespace usbguard
       return new RuleEvaluatedCondition(parameter, negated);
     }
     throw std::runtime_error("Unknown rule condition");
+  }
+
+  RuleCondition::RuleCondition()
+  {
+  }
+
+  RuleCondition::RuleCondition(const String& condition_string)
+    : _condition(RuleConditionBase::getImplementation(condition_string))
+  {
+  }
+
+  RuleCondition::RuleCondition(const RuleCondition& rhs)
+    : _condition(rhs._condition->clone())
+  {
+  }
+
+  RuleCondition::RuleCondition(RuleCondition&& rhs)
+    : _condition(std::move(rhs._condition))
+  { 
+  }
+
+  RuleCondition& RuleCondition::operator=(const RuleCondition& rhs)
+  {
+    _condition.reset(rhs._condition->clone());
+    return *this;
+  }
+
+  RuleCondition& RuleCondition::operator=(RuleCondition&& rhs)
+  {
+    _condition = std::move(rhs._condition);
+    return *this;
   }
 } /* namespace usbguard */
 

@@ -22,13 +22,13 @@
 namespace usbguard
 {
   FixedStateCondition::FixedStateCondition(bool state, bool negated)
-    : RuleCondition(state ? "true" : "false", negated),
+    : RuleConditionBase(state ? "true" : "false", negated),
       _state(state)
   {
   }
 
   FixedStateCondition::FixedStateCondition(const FixedStateCondition& rhs)
-    : RuleCondition(rhs),
+    : RuleConditionBase(rhs),
       _state(rhs._state)
   {
   }
@@ -39,7 +39,7 @@ namespace usbguard
     return _state;
   }
 
-  RuleCondition * FixedStateCondition::clone() const
+  RuleConditionBase * FixedStateCondition::clone() const
   {
     return new FixedStateCondition(*this);
   }

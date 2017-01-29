@@ -26,7 +26,7 @@
 namespace usbguard
 {
   LocaltimeCondition::LocaltimeCondition(const String& time_range, bool negated)
-    : RuleCondition("localtime", time_range, negated)
+    : RuleConditionBase("localtime", time_range, negated)
   {
     String time_begin;
     String time_end;
@@ -51,7 +51,7 @@ namespace usbguard
   }
 
   LocaltimeCondition::LocaltimeCondition(const LocaltimeCondition& rhs)
-    : RuleCondition(rhs)
+    : RuleConditionBase(rhs)
   {
     _tp_begin = rhs._tp_begin;
     _tp_end = rhs._tp_end;
@@ -64,7 +64,7 @@ namespace usbguard
     return (tp_now >= _tp_begin && tp_now <= _tp_end);
   }
 
-  RuleCondition * LocaltimeCondition::clone() const
+  RuleConditionBase * LocaltimeCondition::clone() const
   {
     return new LocaltimeCondition(*this);
   }

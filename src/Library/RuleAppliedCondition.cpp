@@ -28,13 +28,13 @@
 namespace usbguard
 {
   RuleAppliedCondition::RuleAppliedCondition(const String& elapsed_time, bool negated)
-    : RuleCondition("rule-applied", elapsed_time, negated)
+    : RuleConditionBase("rule-applied", elapsed_time, negated)
   {
     _elapsed_time = std::chrono::steady_clock::duration(stringToSeconds(elapsed_time));
   }
 
   RuleAppliedCondition::RuleAppliedCondition(const RuleAppliedCondition& rhs)
-    : RuleCondition(rhs),
+    : RuleConditionBase(rhs),
       _elapsed_time(rhs._elapsed_time)
   {
   }
@@ -57,7 +57,7 @@ namespace usbguard
     return false;
   }
 
-  RuleCondition * RuleAppliedCondition::clone() const
+  RuleConditionBase * RuleAppliedCondition::clone() const
   {
     return new RuleAppliedCondition(*this);
   }

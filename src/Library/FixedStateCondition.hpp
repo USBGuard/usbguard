@@ -23,13 +23,13 @@
 
 namespace usbguard
 {
-  class FixedStateCondition : public RuleCondition
+  class FixedStateCondition : public RuleConditionBase
   {
   public:
     FixedStateCondition(bool state, bool negated = false);
     FixedStateCondition(const FixedStateCondition& rhs);
     bool update(const Rule& rule);
-    RuleCondition * clone() const;
+    RuleConditionBase * clone() const;
   private:
     const bool _state;
   };
