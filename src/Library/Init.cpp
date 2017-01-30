@@ -18,6 +18,9 @@
 //
 #include <build-config.h>
 
+#include "IPCServerPrivate.hpp"
+#include "IPCClientPrivate.hpp"
+
 #if defined(USBGUARD_USE_LIBSODIUM)
 #include <sodium.h>
 #endif
@@ -57,6 +60,11 @@ namespace usbguard
       }
       gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 #endif
+    }
+
+    ~LibraryInit()
+    {
+      google::protobuf::ShutdownProtobufLibrary();
     }
   };
 
