@@ -43,8 +43,8 @@ COMMON_WARNING_FLAGS+=" -Wno-missing-field-initializers"
 #
 # Final project CXXFLAGS are set after configure checks.
 #
-CXXFLAGS="-std=c++11"
-CFLAGS="-std=c99"
+CXXFLAGS="-std=c++11 $EXTERNAL_CXXFLAGS"
+CFLAGS="-std=c99 $EXTERNAL_CFLAGS"
 
 #
 # Additional CXXFLAGS used when --enable-debug-build is used
@@ -672,8 +672,8 @@ AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
 
-CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS $EXTERNAL_CXXFLAGS"
-CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS $EXTERNAL_CFLAGS"
+CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
+CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"
 
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc
