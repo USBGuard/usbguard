@@ -23,6 +23,12 @@
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 
 schedule "${USBGUARD}"
+schedule "${USBGUARD}" :valgrind
+
 schedule "${USBGUARD_DAEMON} -h"
+schedule "${USBGUARD_DAEMON} -h" :valgrind
+
 [ -f "${USBGUARD_DBUS}" ] && schedule "${USBGUARD_DBUS} -h"
+[ -f "${USBGUARD_DBUS}" ] && schedule "${USBGUARD_DBUS} -h" :valgrind
+
 execute 10

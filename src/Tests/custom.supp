@@ -1,0 +1,11 @@
+{
+  <glib-supp-00>
+  Memcheck:Leak
+  match-leak-kinds: possible
+  ...
+  obj:*glib-2.0*
+  obj:*gobject-2.0*
+  ...
+  fun:call_init
+  ...
+}

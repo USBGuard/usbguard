@@ -37,6 +37,7 @@ function schedule()
   COMMAND_STATE[${#COMMAND_STATE[@]}]=0
   COMMAND_SETUP[${#COMMAND_SETUP[@]}]="$setup"
   COMMAND_OFILE[${#COMMAND_OFILE[@]}]="/dev/null"
+  COMMAND_VFILE[${#COMMAND_VFILE[@]}]="/dev/null"
 }
 
 #
@@ -76,6 +77,17 @@ function execute()
   local job_count=${#COMMAND_QUEUE[@]}
   local job_start=$(date +%s)
   local job_rc=0
+  local valgrind=""
+
+  if [ -n "$USBGUARD_TESTS_VALGRIND" ]; then
+    valgrind="$(which valgrind)"
+  fi
+
+  if [ "$USBGUARD_TESTS_VALGRIND" = "off" ]; then
+    valgrind=""
+  else
+    valgrind="$USBGUARD_TESTS_VALGRIND"
+  fi
 
   set +m
   # Setup SIGCHLD trap
@@ -85,17 +97,35 @@ function execute()
   for ((i = 0; i < $job_count; ++i)) {
      local setup="${COMMAND_SETUP[$i]}"
      local sudocmd=""
+     local valgrindcmd=""
+     local valgrindlog=""
+     local valgrindenv=""
 
-     if echo "$setup" | grep ':sudo'; then
-       sudocmd="sudo -n "
+     if echo "$setup" | grep -q ':sudo'; then
+       sudocmd="sudo -n -- "
      fi
 
-     local command="$sudocmd ${COMMAND_QUEUE[$i]}"
+     if test -n "$valgrind"; then
+       if echo "$setup" | grep -q ':valgrind'; then
+         valgrindlog="$(mktemp --tmpdir usbguard-test-${job_start}_job_${i}.XXXXX.vglog)"
+         valgrindenv="env G_SLICE=always-malloc G_DEBUG=gc-friendly"
+         valgrindcmd="$valgrindenv $valgrind --trace-children=yes --leak-check=full --show-leak-kinds=definite,possible --log-file=$valgrindlog"
+         for supp in ${srcdir}/src/Tests/*.supp; do
+           valgrindcmd="$valgrindcmd --suppressions=$supp "
+         done
+         valgrindcmd="$valgrindcmd -- "
+       fi
+     fi
+
+     local command="$sudocmd $valgrindcmd ${COMMAND_QUEUE[$i]}"
      local logfile="$(mktemp --tmpdir usbguard-test-${job_start}_job_${i}.XXXXXX.log)"
+
      $command 2>&1 > "$logfile" &
+
      COMMAND_JOBID[$i]="$!"
      COMMAND_STATE[$i]="1"
      COMMAND_OFILE[$i]="$logfile"
+     COMMAND_VFILE[$i]="$valgrindlog"
   }
 
   # Wait for jobs, check timeout
@@ -141,13 +171,15 @@ function execute()
   # Cleanup jobs, stop service jobs
   #
   for ((i = 0; i < $job_count; ++i)) do
+    local command="${COMMAND_QUEUE[$i]}"
     local jobid="${COMMAND_JOBID[$i]}"
     local setup="${COMMAND_SETUP[$i]}"
     local logfile="${COMMAND_OFILE[$i]}"
+    local valgrindlog="${COMMAND_VFILE[$i]}"
     local sudocmd=""
 
     if echo "$setup" | grep -q ':sudo'; then
-      sudocmd="sudo -n"  
+      sudocmd="sudo -n -- "
     fi
 
     if echo "$setup" | grep -q ":service"; then
@@ -183,9 +215,26 @@ function execute()
         rm -f "$logfile"
       fi
     fi
+
+    if test -n "$valgrind"; then
+      if echo "$setup" | grep -q ":valgrind"; then
+        #
+        # Check valgrind results
+        #
+        if ! grep -q '^==\([0-9]*\)==.*no leaks are possible' "$valgrindlog"; then
+          if [ "$(grep -c '^==\([0-9]*\)==.*lost: 0' "$valgrindlog")" -ne 3 ]; then
+            job_rc=1
+            echo "============ VALGRIND ERROR =============="
+            echo "= Command: $command"
+            echo "= Logfile: $valgrindlog"
+            echo "--- snip ---- snip ---- snip ---- snip ---"
+            cat  "${valgrindlog}"
+            echo "=========================================="
+          fi
+        fi
+      fi
+    fi
   done
 
   return $job_rc
 }
-
-

@@ -33,7 +33,7 @@ matrix:
       env: COMPILER_CXX=clang++-3.8 COMPILER_C=clang-3.8
     - os: linux
       compiler: gcc
-      env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared"
+      env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared" USBGUARD_TESTS_VALGRIND=off
     - os: linux
       compiler: gcc
       env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-pegtl DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-catch"
@@ -49,7 +49,7 @@ matrix:
         apt:
           sources: ['ubuntu-toolchain-r-test']
           packages: ['g++-6', 'gcc-6']
-      env: COMPILER_CXX=g++-6 COMPILER_C=gcc-6 CONFIGURE_ARGS=--enable-asan
+      env: COMPILER_CXX=g++-6 COMPILER_C=gcc-6 CONFIGURE_ARGS=--enable-asan USBGUARD_TESTS_VALGRIND=off
     - os: linux
       compiler: gcc
       env: CONFIGURE_ARGS=--enable-debug-build
@@ -85,6 +85,7 @@ before_install:
 - sudo apt-get install -y lcov
 - sudo apt-get install -y aspell aspell-en
 - sudo apt-get install -y libprotobuf-dev protobuf-compiler
+- sudo apt-get install -y valgrind
 - gem install coveralls-lcov
 before_script:
 - ./autogen.sh

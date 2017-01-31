@@ -22,6 +22,7 @@ AM_CPPFLAGS=\
 	@catch_CFLAGS@ 
 
 EXTRA_DIST=\
+	$(top_srcdir)/src/Tests/custom.supp \
 	$(top_srcdir)/src/Tests/test-driver \
 	$(top_srcdir)/src/ThirdParty/Catch \
 	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh \
