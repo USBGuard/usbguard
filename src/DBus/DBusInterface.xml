@@ -27,6 +27,17 @@
       <arg name="value" direction="in" type="s"/>
       <arg name="previous_value" direction="out" type="s"/>
     </method>
+    <!--
+      ExceptionMessage:
+      @context: Description or identifier of the exception context.
+      @object: Description or identifier of the object which caused the exception.
+      @reason: Reason explaining why the exception was generated.
+      -->
+    <signal name="ExceptionMessage">
+      <arg name="context" direction="out" type="s"/>
+      <arg name="object" direction="out" type="s"/>
+      <arg name="reason" direction="out" type="s"/>
+    </signal>
   </interface>
   <!--
    org.usbguard.Policy:
@@ -197,19 +208,6 @@
       <arg name="device_rule" direction="out" type="u"/>
       <arg name="rule_id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
-    </signal>
-  </interface>
-  <interface name="org.usbguard">
-    <!--
-      ExceptionMessage:
-      @context: Description or identifier of the exception context.
-      @object: Description or identifier of the object which caused the exception.
-      @reason: Reason explaining why the exception was generated.
-      -->
-    <signal name="ExceptionMessage">
-      <arg name="context" direction="out" type="s"/>
-      <arg name="object" direction="out" type="s"/>
-      <arg name="reason" direction="out" type="s"/>
     </signal>
   </interface>
 </node>
