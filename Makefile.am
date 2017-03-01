@@ -258,6 +258,14 @@ pkginclude_HEADERS=\
 	src/Library/Utility.hpp \
 	src/Library/Exception.hpp
 
+# Workaround for generated protobuf code mishaps
+#```
+# error: no previous declaration for 'void usbguard::IPC::protobuf_Message_2eproto::AddDescriptorImpl()' [-Werror=missing-declarations]
+#  void AddDescriptorImpl() {
+#       ^~~~~~~~~~~~~~~~~
+#```
+%.pb.lo : CXXFLAGS += -Wno-missing-declarations
+
 %.pb.cc %.pb.h: %.proto
 	mkdir -p $(top_builddir)/src/Library/IPC
 	@PROTOC@ --cpp_out=$(top_builddir)/src/Library/IPC --proto_path=$(top_srcdir)/src/Library/IPC "$<"
