@@ -41,6 +41,15 @@ COMMON_WARNING_FLAGS+=" -Wformat-nonliteral"
 COMMON_WARNING_FLAGS+=" -Wno-missing-field-initializers"
 
 #
+# Don't warn about implicit fallthrough
+#
+# TODO: Use [[fallthrough]] C++ attribute specifier with
+#       newer compiler versions.
+#
+AX_CHECK_COMPILE_FLAG([-Wno-implicit-fallthrough],
+                      [COMMON_WARNING_FLAGS+=" -Wno-implicit-fallthrough"], [], [])
+
+#
 # Final project CXXFLAGS are set after configure checks.
 #
 CXXFLAGS="-std=c++11 $EXTERNAL_CXXFLAGS"
