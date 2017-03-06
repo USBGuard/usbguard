@@ -33,19 +33,16 @@ namespace usbguard
   void ConfigFile::open(const String& path)
   {
     d_pointer->open(path);
-    return;
   }
 
   void ConfigFile::write()
   {
     d_pointer->write();
-    return;
   }
 
   void ConfigFile::close()
   {
     d_pointer->close();
-    return;
   }
 
   const String& ConfigFile::getSettingValue(const String& name) const
@@ -56,7 +53,6 @@ namespace usbguard
   void ConfigFile::setSettingValue(const String& name, String& value)
   {
     d_pointer->setSettingValue(name, value);
-    return;
   }
 
   bool ConfigFile::hasSettingValue(const String& name) const
