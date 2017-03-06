@@ -133,6 +133,9 @@ namespace usbguard
       catch(const std::exception& ex) {
         throw Exception("Configuration", rule_file, ex.what());
       }
+      catch(...) {
+        throw Exception("Configuration", rule_file, "unknown exception");
+      }
     } else {
       USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
     }
