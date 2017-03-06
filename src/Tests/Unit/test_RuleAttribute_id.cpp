@@ -90,8 +90,8 @@ TEST_CASE("Parse rule with an id attribute", "[Parse]") {
     REQUIRE(rule.getDeviceID().getProductID() == "*");
 
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id one-of { 1234:1234 abcd:effa aaaa:* }"));
-    REQUIRE_THROWS(rule.getDeviceID().getVendorID() == "1234");
-    REQUIRE_THROWS(rule.getDeviceID().getProductID() == "1234");
+    REQUIRE_THROWS(rule.getDeviceID().getVendorID());
+    REQUIRE_THROWS(rule.getDeviceID().getProductID());
     REQUIRE(rule.attributeDeviceID().count() == 3);
     REQUIRE_THROWS(rule.attributeDeviceID().get());
     REQUIRE(rule.attributeDeviceID().get(0).getVendorID() == "1234");
