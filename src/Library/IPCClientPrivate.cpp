@@ -60,7 +60,8 @@ namespace usbguard
   {
     _qb_conn = nullptr;
     _qb_fd = -1;
-    _wakeup_fd = eventfd(0, 0);
+    USBGUARD_SYSCALL_THROW("IPC client initialization",
+        (_wakeup_fd = eventfd(0, 0)) < 0);
     _qb_loop = qb_loop_create();
     qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _wakeup_fd, POLLIN, NULL, qbPollWakeupFn);
 

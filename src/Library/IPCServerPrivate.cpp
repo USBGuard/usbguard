@@ -53,7 +53,8 @@ namespace usbguard
 
     try {
       initIPC();
-      _wakeup_fd = eventfd(0, 0);
+      USBGUARD_SYSCALL_THROW("IPC server initialization",
+          (_wakeup_fd = eventfd(0, 0)) < 0);
       qb_loop_poll_add(_qb_loop, QB_LOOP_HIGH, _wakeup_fd,
                        POLLIN, nullptr,
                        &IPCServerPrivate::qbPollWakeupFn);
