@@ -72,8 +72,6 @@ namespace usbguard
     registerHandler<IPC::listDevices>(&IPCServerPrivate::handleListDevices);
     registerHandler<IPC::setParameter>(&IPCServerPrivate::handleSetParameter);
     registerHandler<IPC::getParameter>(&IPCServerPrivate::handleGetParameter);
-
-    start();
   }
 
   void IPCServerPrivate::initIPC()
