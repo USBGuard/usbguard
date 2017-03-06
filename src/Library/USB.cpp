@@ -92,14 +92,14 @@ namespace usbguard {
 
   bool USBDeviceID::isSubsetOf(const USBDeviceID& rhs) const
   {
-    if (rhs._vendor_id.empty() || rhs._vendor_id == "*") {
+    if (_vendor_id.empty() || _vendor_id == "*") {
       return true;
     }
     else if (_vendor_id != rhs._vendor_id) {
       return false;
     }
 
-    if (rhs._product_id.empty() || rhs._product_id == "*") {
+    if (_product_id.empty() || _product_id == "*") {
       return true;
     }
     else if (_product_id != rhs._product_id) {
@@ -112,7 +112,10 @@ namespace usbguard {
   template<>
   bool Predicates::isSubsetOf(const USBDeviceID& source, const USBDeviceID& target)
   {
-    return source.isSubsetOf(target);
+    USBGUARD_LOG(Trace) << "source=" << source.toString() << " target=" << target.toString();
+    const bool result = source.isSubsetOf(target);
+    USBGUARD_LOG(Trace) << "result=" << result;
+    return result;
   }
 
   USBInterfaceType::USBInterfaceType()

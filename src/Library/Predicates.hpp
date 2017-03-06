@@ -18,6 +18,7 @@
 //
 #pragma once
 #include "Typedefs.hpp"
+#include <Logger.hpp>
 
 namespace usbguard
 {
@@ -30,6 +31,7 @@ namespace usbguard
     template<typename T>
     bool isSubsetOf(const T& source, const T& target)
     {
+      USBGUARD_LOG(Trace) << "generic isSubsetOf";
       return source == target;
     }
   }

@@ -291,6 +291,8 @@ namespace usbguard {
          */
         bool setSolveAllOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
         {
+          USBGUARD_LOG(Trace);
+
           for (auto const& source_item : source_set) {
             bool match = false;
             for (auto const& target_item : target_set) {
@@ -311,6 +313,8 @@ namespace usbguard {
          */
         bool setSolveOneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
         {
+          USBGUARD_LOG(Trace);
+
           for (auto const& source_item : source_set) {
             for (auto const& target_item : target_set) {
               if (Predicates::isSubsetOf(source_item, target_item)) {
@@ -327,6 +331,8 @@ namespace usbguard {
          */
         bool setSolveNoneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
         {
+          USBGUARD_LOG(Trace);
+
           for (auto const& source_item : source_set) {
             for (auto const& target_item : target_set) {
               if (Predicates::isSubsetOf(source_item, target_item)) {
@@ -344,6 +350,8 @@ namespace usbguard {
          */
         bool setSolveEquals(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
         {
+          USBGUARD_LOG(Trace);
+
           if (source_set.size() != target_set.size()) {
             return false;
           }
@@ -370,6 +378,8 @@ namespace usbguard {
          */
         bool setSolveEqualsOrdered(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
         {
+          USBGUARD_LOG(Trace);
+
           if (source_set.size() != target_set.size()) {
             return false;
           }
