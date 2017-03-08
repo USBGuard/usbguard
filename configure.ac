@@ -18,7 +18,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
 EXTERNAL_CXXFLAGS="$CXXFLAGS"
 EXTERNAL_CFLAGS="$CFLAGS"
 
-COMMON_WARNING_FLAGS=" -pedantic -Werror"
+COMMON_WARNING_FLAGS=" -pedantic"
 COMMON_WARNING_FLAGS+=" -Wno-unknown-pragmas"
 COMMON_WARNING_FLAGS+=" -Wall"
 COMMON_WARNING_FLAGS+=" -Wextra"
@@ -98,6 +98,18 @@ AC_ARG_ENABLE([coverage],
 if test "x$coverage" = xyes; then
    CXXFLAGS="$CXXFLAGS --coverage"
    CFLAGS="$CFLAGS --coverage"
+fi
+
+AC_ARG_ENABLE([werror],
+     [AC_HELP_STRING([--enable-werror], [treat compiler warnings as errors (default=no)])],
+     [case "${enableval}" in
+       yes) werror=yes ;;
+       no)  werror=no ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
+     esac], [werror=no])
+
+if test "x$werror" = xyes; then
+  COMMON_WARNING_FLAGS=" -Werror $COMMON_WARNING_FLAGS"
 fi
 
 #

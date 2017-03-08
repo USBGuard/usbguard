@@ -90,7 +90,7 @@ before_install:
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
-- CXX=${COMPILER_CXX:=$CXX} CC=${COMPILER_C:=$CC} ../configure --enable-maintainer-mode --disable-silent-rules --with-bundled-catch --with-bundled-pegtl $CONFIGURE_ARGS
+- CXX=${COMPILER_CXX:=$CXX} CC=${COMPILER_C:=$CC} ../configure --enable-werror --enable-maintainer-mode --disable-silent-rules --with-bundled-catch --with-bundled-pegtl $CONFIGURE_ARGS
 script:
 - test $TRAVIS_BRANCH != coverity_scan || exit 0
 - if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; make check; fi
