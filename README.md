@@ -123,6 +123,48 @@ You can install the repository by executing the following steps:
     $ sudo yum install usbguard
     $ sudo yum install usbguard-applet-qt
 
+#### Installation and usage in Fedora 24
+
+Check if package is available:
+
+    $ sudo dnf search usbguard
+
+Install USBGuard and QT applet:
+
+    $ sudo dnf install usbguard.x86_64
+    $ sudo dnf install usbguard-applet-qt.x86_64
+
+I had to create empty rules.conf file, otherwise daemon would not start (ERROR: Configuration: /etc/usbguard/rules.conf: usbguard::Exception):
+
+    $ sudo touch /etc/usbguard/rules.conf
+
+Start service:
+
+    $ sudo systemctl start usbguard.service
+
+Check service is running:
+
+    $ sudo systemctl status usbguard.service
+
+In case of problems check logs:
+
+    $ sudo journalctl -u usbguard.service -r
+
+Enable service to run on startup:
+
+    $ sudo systemctl enable usbguard.service
+
+Run widget according to connection user/group settings in /etc/usbguard/usbguard-daemon.conf:
+
+    $ sudo usbguard-applet-qt &
+
+By default daemon will accept connection from process owned by root/wheel:
+
+    IPCAllowedUsers=root
+    IPCAllowedGroups=wheel
+
+Find way how to run QT widget as superuser or dedicated user on startup in such a way widget is available to regular GUI user.
+
 ### Gentoo
 
 For Gentoo you can use the [stuge overlay](https://github.com/das-labor/labor-overlay) via layman:
