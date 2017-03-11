@@ -22,26 +22,51 @@
 #include <Rule.hpp>
 #include <DeviceManager.hpp>
 
+#include <unordered_map>
+#include <cstdint>
+
 namespace usbguard
 {
   class IPCServerPrivate;
   class DLL_PUBLIC IPCServer : public Interface
   {
   public:
+    class AccessControl
+    {
+      public:
+        enum class Section : uint8_t {
+          NONE = 0,
+          DEVICES = 1,
+          POLICY = 2,
+          PARAMETERS = 3,
+          EXCEPTIONS = 4,
+          ALL = 255
+        };
+
+        enum class Privilege : uint8_t {
+          NONE = 0x00,
+          LIST = 0x01,
+          MODIFY = 0x02,
+          DROP = 0x04,
+          LISTEN = 0x08,
+          ALL = 0xff
+        };
+
+        AccessControl();
+        AccessControl(Section section, Privilege privilege);
+
+        bool hasPrivilege(Section section, Privilege privilege) const;
+        void setPrivilege(Section section, Privilege privilege);
+
+      private:
+        std::unordered_map<uint8_t,uint8_t> _access_control;
+    };
+
     IPCServer();
     virtual ~IPCServer();
 
     void start();
     void stop();
-
-#if 0
-    virtual uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) = 0;
-    virtual void removeRule(uint32_t id) = 0;
-    virtual const RuleSet listRules(const std::string& query) = 0;
-
-    virtual uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) = 0;
-    virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
-#endif
 
     void DevicePresenceChanged(uint32_t id,
                                DeviceManager::EventType event,
@@ -60,6 +85,8 @@ namespace usbguard
 
     void addAllowedUID(uid_t uid);
     void addAllowedGID(gid_t gid);
+    void addAllowedUsername(const std::string& username);
+    void addAllowedGroupname(const std::string& groupname);
 
   private:
     IPCServerPrivate* d_pointer;

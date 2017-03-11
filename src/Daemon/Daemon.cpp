@@ -170,23 +170,25 @@ namespace usbguard
 
     /* IPCAllowedUsers */
     if (_config.hasSettingValue("IPCAllowedUsers")) {
-      const String usernames_value = _config.getSettingValue("IPCAllowedUsers"); 
-      StringVector usernames;
-      tokenizeString(usernames_value, usernames, " ", /*trim_empty=*/true);
-      USBGUARD_LOG(Debug) << "Setting IPCAllowedUsers to { " << usernames_value << " }";
-      for (auto const& username : usernames) {
-	addIPCAllowedUID(username);
+      const String users_value = _config.getSettingValue("IPCAllowedUsers"); 
+      StringVector users;
+      tokenizeString(users_value, users, " ", /*trim_empty=*/true);
+      USBGUARD_LOG(Debug) << "Setting IPCAllowedUsers to { " << users_value << " }";
+
+      for (auto const& user : users) {
+	addIPCAllowedUser(user);
       }
     }
 
     /* IPCAllowedGroups */
     if (_config.hasSettingValue("IPCAllowedGroups")) {
-      const String groupnames_value =_config.getSettingValue("IPCAllowedGroups"); 
-      StringVector groupnames;
-      tokenizeString(groupnames_value, groupnames, " ", /*trim_empty=*/true);
-      USBGUARD_LOG(Debug) << "Setting IPCAllowedGroups to { " << groupnames_value << " }";
-      for (auto const& groupname : groupnames) {
-	addIPCAllowedGID(groupname);
+      const String groups_value =_config.getSettingValue("IPCAllowedGroups"); 
+      StringVector groups;
+      tokenizeString(groups_value, groups, " ", /*trim_empty=*/true);
+      USBGUARD_LOG(Debug) << "Setting IPCAllowedGroups to { " << groups_value << " }";
+
+      for (auto const& group : groups) {
+	addIPCAllowedGroup(group);
       }
     }
 
@@ -697,37 +699,43 @@ namespace usbguard
     IPCServer::addAllowedUID(uid);
   }
 
+  void Daemon::addIPCAllowedUID(const String& uid_string)
+  {
+    addIPCAllowedUID(stringToNumber<uid_t>(uid_string));
+  }
+
   void Daemon::addIPCAllowedGID(gid_t gid)
   {
     USBGUARD_LOG(Trace) << "gid=" << gid;
     IPCServer::addAllowedGID(gid);
   }
 
-  void Daemon::addIPCAllowedUID(const String& username)
+  void Daemon::addIPCAllowedGID(const String& gid_string)
   {
-    USBGUARD_LOG(Trace) << "username=" << username;
-    char string_buffer[4096];
-    struct passwd pw, *pwptr = nullptr;
-
-    USBGUARD_SYSCALL_THROW("IPC ACL",
-                           getpwnam_r(username.c_str(), &pw,
-                                      string_buffer, sizeof string_buffer,
-                                      &pwptr) != 0);
-
-    addIPCAllowedUID(pw.pw_uid);
+    addIPCAllowedGID(stringToNumber<gid_t>(gid_string));
   }
 
-  void Daemon::addIPCAllowedGID(const String& groupname)
+  void Daemon::addIPCAllowedUser(const String& user)
   {
-    USBGUARD_LOG(Trace) << "groupname=" << groupname;
-    char string_buffer[4096];
-    struct group gr, *grptr = nullptr;
+    USBGUARD_LOG(Trace) << "user=" << user;
 
-    USBGUARD_SYSCALL_THROW("IPC ACL",
-                           getgrnam_r(groupname.c_str(), &gr,
-		                      string_buffer, sizeof string_buffer,
-                                      &grptr) != 0);
+    if (isNumericString(user)) {
+      addIPCAllowedUID(user);
+    }
+    else {
+      IPCServer::addAllowedUsername(user);
+    }
+  }
 
-    addIPCAllowedGID(gr.gr_gid);
+  void Daemon::addIPCAllowedGroup(const String& group)
+  {
+    USBGUARD_LOG(Trace) << "group=" << group;
+
+    if (isNumericString(group)) {
+      addIPCAllowedGID(group);
+    }
+    else {
+      IPCServer::addAllowedGroupname(group);
+    }
   }
 } /* namespace usbguard */

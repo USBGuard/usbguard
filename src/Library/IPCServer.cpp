@@ -20,6 +20,35 @@
 
 namespace usbguard
 {
+  IPCServer::AccessControl::AccessControl()
+  {
+    /* Empty: no privileges */
+  }
+
+  IPCServer::AccessControl::AccessControl(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
+  {
+    setPrivilege(section, privilege);
+  }
+
+  bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege) const
+  {
+    (void)section;
+    (void)privilege;
+    /*
+     * TODO: No fine-grained access control at this moment.
+     */
+    return true;
+  }
+
+  void IPCServer::AccessControl::setPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
+  {
+    /*
+     * TODO: Setting fine-grained access control not implemented yet.
+     */
+    (void)section;
+    (void)privilege;
+  }
+
   IPCServer::IPCServer()
   {
     d_pointer = new IPCServerPrivate(*this);
@@ -72,5 +101,15 @@ namespace usbguard
   void IPCServer::addAllowedGID(gid_t gid)
   {
     d_pointer->addAllowedGID(gid);
+  }
+
+  void IPCServer::addAllowedUsername(const std::string& username)
+  {
+    d_pointer->addAllowedUsername(username);
+  }
+
+  void IPCServer::addAllowedGroupname(const std::string& groupname)
+  {
+    d_pointer->addAllowedGroupname(groupname);
   }
 } /* namespace usbguard */

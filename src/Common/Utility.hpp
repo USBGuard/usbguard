@@ -146,6 +146,8 @@ namespace usbguard
   template<>
   uint8_t stringToNumber(const String& s, const int base);
 
+  bool isNumericString(const String& s);
+
   /**
    * Return the filename part of a path. If include_extension is set to
    * false, then any characters after the last dot character '.' will be

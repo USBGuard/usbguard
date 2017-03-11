@@ -65,6 +65,8 @@ namespace usbguard {
 
     void addAllowedUID(uid_t uid);
     void addAllowedGID(gid_t gid);
+    void addAllowedUsername(const std::string& username);
+    void addAllowedGroupname(const std::string& groupname);
 
   private:
     void initIPC();
@@ -87,8 +89,14 @@ namespace usbguard {
     static int32_t qbIPCDispatchDel(int32_t fd);
     static int32_t qbIPCConnectionClientPID(qb_ipcs_connection_t *connection);
 
-    bool qbIPCConnectionAllowed(uid_t uid, gid_t gid);
-    bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid);
+    bool hasACLEntries() const;
+    bool qbIPCConnectionAllowed(uid_t uid, gid_t gid) const;
+    bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid) const;
+
+    static String getNameFromUID(uid_t uid);
+    static String getNameFromGID(gid_t gid);
+    static std::vector<String> getGroupMemberNames(gid_t gid);
+    static std::vector<String> getGroupMemberNames(const std::string& groupname);
 
     static void qbIPCSendMessage(qb_ipcs_connection_t *qb_conn, const IPC::MessagePointer& message);
     void qbIPCBroadcastData(const struct iovec *iov, size_t iov_len);
@@ -120,8 +128,10 @@ namespace usbguard {
     qb_ipcs_service_t *_qb_service;
     int _wakeup_fd;
 
-    std::vector<uid_t> _allowed_uids;
-    std::vector<gid_t> _allowed_gids;
+    std::unordered_map<uid_t,IPCServer::AccessControl> _allowed_uids;
+    std::unordered_map<gid_t,IPCServer::AccessControl> _allowed_gids;
+    std::unordered_map<std::string,IPCServer::AccessControl> _allowed_usernames;
+    std::unordered_map<std::string,IPCServer::AccessControl> _allowed_groupnames;
 
     Thread<IPCServerPrivate> _thread;
 

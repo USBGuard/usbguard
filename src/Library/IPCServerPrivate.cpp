@@ -261,9 +261,17 @@ namespace usbguard
     return -1;
   }
 
-  bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid)
+  bool IPCServerPrivate::hasACLEntries() const
   {
-    if (!_allowed_uids.empty() || !_allowed_gids.empty()) {
+    return (!_allowed_uids.empty() \
+            || !_allowed_gids.empty() \
+            || !_allowed_usernames.empty() \
+            || !_allowed_groupnames.empty());
+  }
+
+  bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid) const
+  {
+    if (hasACLEntries()) {
       return authenticateIPCConnectionDAC(uid, gid);
     }
     else {
@@ -489,59 +497,161 @@ namespace usbguard
     iov[1].iov_base = nullptr;
   }
 
-  bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid)
+  bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid) const
   {
+    /*
+     * Fast path
+     */
+
     /* Check for UID match */
-    for (auto allowed_uid : _allowed_uids) {
-      if (allowed_uid == uid) {
-	
-	return true;
+    if (_allowed_uids.count(uid) > 0) {
+      return true;
+    }
+    /* Check for GID match */
+    if (_allowed_gids.count(gid) > 0) {
+      return true;
+    }
+
+    /*
+     * Slow path
+     */
+    bool check_uid_group_membership = true;
+    const String uid_name = getNameFromUID(uid);
+
+    if (_allowed_usernames.count(uid_name) > 0) {
+      return true;
+    }
+
+    const String gid_name = getNameFromGID(gid);
+
+    if (_allowed_groupnames.count(gid_name) > 0) {
+      return true;
+    }
+
+    if (check_uid_group_membership) {
+      /*
+       * Check against allowed GIDs
+       */
+      for (auto const& allowed_gid_entry : _allowed_gids) {
+        const auto& allowed_gid = allowed_gid_entry.first;
+        const std::vector<String> group_members = getGroupMemberNames(allowed_gid);
+
+        for (const auto& group_member : group_members) {
+          if (group_member == uid_name) {
+            return true;
+          }
+        }
+      }
+
+      /*
+       * Check against allowed groupnames
+       */
+      for (auto const& allowed_groupnames_entry : _allowed_groupnames) {
+        const auto& allowed_groupname = allowed_groupnames_entry.first;
+        const std::vector<String> group_members = getGroupMemberNames(allowed_groupname);
+
+        for (const auto& group_member : group_members) {
+          if (group_member == uid_name) {
+            return true;
+          }
+        }
       }
     }
 
-    /* Translate uid to username for group member matching */
-    char pw_string_buffer[1024]; /* TODO: adjust size to max user/group name length */
-    struct passwd pw, *pwptr = nullptr;
-    bool check_group_membership = true;
-
-    if (getpwuid_r(uid, &pw,
-		   pw_string_buffer, sizeof pw_string_buffer, &pwptr) != 0) {
-      USBGUARD_LOG(Warning) << "IPC ACL: Unable to lookup username for uid=" << uid
-                            << ". Disabling group membership check for this uid.";
-      check_group_membership = false;
-    }
-
-    /* Check for GID match or group member match */
-    for (auto allowed_gid : _allowed_gids) {
-      if (allowed_gid == gid) {
-        USBGUARD_LOG(Debug) << "gid=" << gid << " is an allowed gid.";        
-	return true;
-      }
-      else if (check_group_membership) {
-	char gr_string_buffer[3072];
-	struct group gr, *grptr = nullptr;
-
-	/* Fetch list of current group members of group with a gid == allowed_gid */
-	if (getgrgid_r(allowed_gid, &gr,
-		       gr_string_buffer, sizeof gr_string_buffer, &grptr) != 0) {
-	  USBGUARD_LOG(Warning) << "IPC ACL: Unable to lookup groupname for gid=" << allowed_gid
-                                << ". Skipping group membership check for uid=" << uid;
-	  continue;
-	}
-
-	/* Check for username match among group members */
-	for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
-	  if (strcmp(pw.pw_name, gr.gr_mem[i]) == 0) {
-            USBGUARD_LOG(Debug) << "uid=" << uid << "(" << pw.pw_name << ")"
-                                << " is a member of an allowed group with"
-                                << " gid=" << allowed_gid << " (" << gr.gr_name << ")";
-	    return true;
-	  }
-	}
-      }
-    } /* allowed gid loop */
+    /* TODO:
+     *  Cache final result for some time to prevent DoS.
+     *  IPC ACL doesn't change during runtime. Implement
+     *  cache use limit/expiration to prevent cache time
+     *  stretching.
+     */
 
     return false;
+  }
+
+  String IPCServerPrivate::getNameFromUID(uid_t uid)
+  {
+    String buffer(1024, 0);
+    struct passwd pw = { };
+    struct passwd *pwptr = nullptr;
+
+    if (getpwuid_r(uid, &pw, &buffer[0], buffer.capacity(), &pwptr) != 0) {
+      USBGUARD_LOG(Warning) << "Unable to lookup username for uid=" << uid << ": errno=" << errno;
+      return String();
+    }
+
+    if (pwptr == nullptr || pw.pw_name == nullptr) {
+      USBGUARD_LOG(Info) << "No username associated with uid=" << uid;
+      return String();
+    }
+
+    return String(pw.pw_name);
+  }
+
+  String IPCServerPrivate::getNameFromGID(gid_t gid)
+  {
+    String buffer(4096, 0);
+    struct group gr = { };
+    struct group *grptr = nullptr;
+
+    if (getgrgid_r(gid, &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
+      USBGUARD_LOG(Warning) << "Unable to lookup groupname for gid=" << gid << ": errno=" << errno;
+      return String();
+    }
+
+    if (grptr == nullptr || gr.gr_name == nullptr) {
+      USBGUARD_LOG(Info) << "No groupname associated with gid=" << gid;
+      return String();
+    }
+
+    return String(gr.gr_name);
+  }
+
+  std::vector<String> IPCServerPrivate::getGroupMemberNames(gid_t gid)
+  {
+    std::vector<String> names;
+    String buffer(4096, 0);
+    struct group gr = { };
+    struct group *grptr = nullptr;
+
+    if (getgrgid_r(gid, &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
+      USBGUARD_LOG(Warning) << "Unable to fetch group members for gid=" << gid << ": errno=" << errno;
+      return std::vector<String>();
+    }
+
+    if (grptr == nullptr || gr.gr_name == nullptr) {
+      USBGUARD_LOG(Info) << "No group associated with gid=" << gid;
+      return std::vector<String>();
+    }
+
+    for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
+      names.emplace_back(String(gr.gr_mem[i]));
+    }
+
+    return names;
+  }
+
+  std::vector<String> IPCServerPrivate::getGroupMemberNames(const std::string& groupname)
+  {
+    std::vector<String> names;
+    String buffer(4096, 0);
+    struct group gr = { };
+    struct group *grptr = nullptr;
+
+    if (getgrnam_r(groupname.c_str(), &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
+      USBGUARD_LOG(Warning) << "Unable to fetch group member names for groupname=" << groupname << ": errno=" << errno;
+      return std::vector<String>();
+    }
+
+    if (grptr == nullptr || gr.gr_name == nullptr) {
+      USBGUARD_LOG(Info) << "Can't find group with name=" << groupname;
+      return std::vector<String>();
+    }
+
+    for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
+      names.emplace_back(String(gr.gr_mem[i]));
+    }
+
+    return names;
   }
 
   IPC::MessagePointer IPCServerPrivate::handleIPCPayload(const uint32_t payload_type, const std::string& payload)
@@ -823,11 +933,21 @@ namespace usbguard
 
   void IPCServerPrivate::addAllowedUID(uid_t uid)
   {
-    _allowed_uids.push_back(uid);
+    _allowed_uids.emplace(uid, IPCServer::AccessControl());
   }
 
   void IPCServerPrivate::addAllowedGID(gid_t gid)
   {
-    _allowed_gids.push_back(gid);
+    _allowed_gids.emplace(gid, IPCServer::AccessControl());
+  }
+
+  void IPCServerPrivate::addAllowedUsername(const std::string& username)
+  {
+    _allowed_usernames.emplace(username, IPCServer::AccessControl());
+  }
+  
+  void IPCServerPrivate::addAllowedGroupname(const std::string& groupname)
+  {
+    _allowed_groupnames.emplace(groupname, IPCServer::AccessControl());
   }
 } /* namespace usbguard */

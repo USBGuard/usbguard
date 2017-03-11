@@ -85,9 +85,11 @@ namespace usbguard
     void dmHookDeviceException(const String& message) override;
 
     void addIPCAllowedUID(uid_t uid);
+    void addIPCAllowedUID(const String& uid_string);
     void addIPCAllowedGID(gid_t gid);
-    void addIPCAllowedUID(const String& username);
-    void addIPCAllowedGID(const String& groupname);
+    void addIPCAllowedGID(const String& gid_string);
+    void addIPCAllowedUser(const String& user);
+    void addIPCAllowedGroup(const String& group);
 
   private:
     void dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule);

@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include <alloca.h>
 #include <fstream>
 #include <algorithm>
@@ -333,6 +334,16 @@ namespace usbguard
   {
     const unsigned int num = stringToNumber<unsigned int>(s, base);
     return (uint8_t)num;
+  }
+
+  bool isNumericString(const String& s)
+  {
+    for (int c : s) {
+      if (!isdigit(c)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   int loadFiles(const String& directory,
