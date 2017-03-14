@@ -20,6 +20,7 @@
 
 #include "Exception.hpp"
 #include "Typedefs.hpp"
+#include "IPCServer.hpp"
 
 #include <memory>
 #include <google/protobuf/message.h>
@@ -48,17 +49,21 @@ namespace usbguard
       public:
         using HandlerType = void(C::*)(MessagePointer&, MessagePointer&);
 
-        MessageHandler(C& c, HandlerType method, const MessageType& factory)
+        MessageHandler(C& c, HandlerType method, const MessageType& factory, IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE, IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
           : _instance(c),
             _method(method),
-            _message_factory(factory)
+            _message_factory(factory),
+            _section(section),
+            _privilege(privilege)
         {
         }
 
         MessageHandler(const MessageHandler& rhs)
           : _instance(rhs._instance),
             _method(rhs._method),
-            _message_factory(rhs._message_factory)
+            _message_factory(rhs._message_factory),
+            _section(rhs._section),
+            _privilege(rhs._privilege)
         {
         }
 
@@ -84,15 +89,27 @@ namespace usbguard
         }
 
         template<class ProtobufType>
-        static MessageHandler create(C& c, HandlerType method)
+        static MessageHandler create(C& c, HandlerType method, IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE, IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
         {
-          return MessageHandler(c, method, ProtobufType::default_instance());
+          return MessageHandler(c, method, ProtobufType::default_instance(), section, privilege);
+        }
+
+        IPCServer::AccessControl::Section section() const
+        {
+          return _section;
+        }
+
+        IPCServer::AccessControl::Privilege privilege() const
+        {
+          return _privilege;
         }
 
       private:
         C& _instance;
         HandlerType _method;
         const MessageType& _message_factory;
+        IPCServer::AccessControl::Section _section;
+        IPCServer::AccessControl::Privilege _privilege;
    };
   }
 } /* namespace usbguard */

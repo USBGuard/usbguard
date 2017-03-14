@@ -43,23 +43,38 @@ namespace usbguard
           ALL = 255
         };
 
+        Section sectionFromString(const std::string& section_string);
+
         enum class Privilege : uint8_t {
           NONE = 0x00,
           LIST = 0x01,
           MODIFY = 0x02,
-          DROP = 0x04,
           LISTEN = 0x08,
           ALL = 0xff
         };
 
+        Privilege privilegeFromString(const std::string& privilege_string);
+
         AccessControl();
         AccessControl(Section section, Privilege privilege);
+        AccessControl(const AccessControl& rhs);
+        AccessControl& operator=(const AccessControl& rhs);
 
         bool hasPrivilege(Section section, Privilege privilege) const;
         void setPrivilege(Section section, Privilege privilege);
+        void clear();
+        void load(std::istream& stream);
+        void merge(const AccessControl& rhs);
 
       private:
-        std::unordered_map<uint8_t,uint8_t> _access_control;
+        struct SectionHash {
+          std::size_t operator()(Section value) const
+          {
+            return static_cast<std::size_t>(value);
+          }
+        };
+
+        std::unordered_map<Section,uint8_t,SectionHash> _access_control;
     };
 
     IPCServer();
@@ -83,12 +98,13 @@ namespace usbguard
                           const std::string& object,
                           const std::string& reason);
 
-    void addAllowedUID(uid_t uid);
-    void addAllowedGID(gid_t gid);
-    void addAllowedUsername(const std::string& username);
-    void addAllowedGroupname(const std::string& groupname);
+    void addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac);
+    void addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac);
+    void addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac);
+    void addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac);
 
   private:
     IPCServerPrivate* d_pointer;
   };
 } /* namespace usbguard */
+

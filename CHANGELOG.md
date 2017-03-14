@@ -13,6 +13,9 @@
 - Added setParameter, getParameter IPC (incl. D-Bus) methods.
 - Added set-parameter, get-parameter CLI subcommands.
 - Qt Applet: Added Spanish (es_AR) translation.
+- Added new configuration setting: IPCAccessControlFiles.
+- IPC access is now configurable down to a section and privilege
+  level per user and/or group.
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.
