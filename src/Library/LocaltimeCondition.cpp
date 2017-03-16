@@ -18,6 +18,7 @@
 //
 #include "LocaltimeCondition.hpp"
 #include "RuleParser.hpp"
+#include "Common/Utility.hpp"
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #include <ctime>
@@ -40,28 +41,39 @@ namespace usbguard
       time_end = time_range.substr(dash_pos + 1);
     }
 
-    _tp_begin = stringToTimePoint(time_begin);
+    _daytime_begin = stringToDaytime(time_begin);
 
     if (!time_end.empty()) {
-      _tp_end = stringToTimePoint(time_end);
+      _daytime_end = stringToDaytime(time_end);
     }
     else {
-      _tp_end = _tp_begin;
+      _daytime_end = _daytime_begin;
+    }
+
+    if (_daytime_begin > _daytime_end) {
+      throw Exception("LocaltimeCondition", "Invalid time range (begin > end)", time_range);
     }
   }
 
   LocaltimeCondition::LocaltimeCondition(const LocaltimeCondition& rhs)
     : RuleConditionBase(rhs)
   {
-    _tp_begin = rhs._tp_begin;
-    _tp_end = rhs._tp_end;
+    _daytime_begin = rhs._daytime_begin;
+    _daytime_end = rhs._daytime_end;
   }
 
   bool LocaltimeCondition::update(const Rule& rule)
   {
+    USBGUARD_LOG(Trace);
     (void)rule;
     const auto tp_now = std::chrono::system_clock::now();
-    return (tp_now >= _tp_begin && tp_now <= _tp_end);
+    const auto daytime = std::chrono::system_clock::to_time_t(tp_now) % 86400;
+
+    USBGUARD_LOG(Trace) << "daytime=" << daytime
+                        << " daytime_begin=" << _daytime_begin
+                        << " daytime_end=" << _daytime_end;
+
+    return (daytime >= _daytime_begin && daytime <= _daytime_end);
   }
 
   RuleConditionBase * LocaltimeCondition::clone() const
@@ -69,17 +81,45 @@ namespace usbguard
     return new LocaltimeCondition(*this);
   }
 
-  std::chrono::system_clock::time_point LocaltimeCondition::stringToTimePoint(const String& string)
+  std::string LocaltimeCondition::tmToString(const struct tm * const tm)
   {
+    std::string tm_string;
+    tm_string.append("{ tm.tm_sec=");
+    tm_string.append(numberToString(tm->tm_sec));
+    tm_string.append(" tm.tm_min=");
+    tm_string.append(numberToString(tm->tm_min));
+    tm_string.append(" tm.tm_hour=");
+    tm_string.append(numberToString(tm->tm_hour));
+    tm_string.append(" tm.tm_mday=");
+    tm_string.append(numberToString(tm->tm_mday));
+    tm_string.append(" tm.tm_mon=");
+    tm_string.append(numberToString(tm->tm_mon));
+    tm_string.append(" tm.tm_year=");
+    tm_string.append(numberToString(tm->tm_year));
+    tm_string.append(" tm.tm_wday=");
+    tm_string.append(numberToString(tm->tm_wday));
+    tm_string.append(" tm.tm_yday=");
+    tm_string.append(numberToString(tm->tm_yday));
+    tm_string.append(" tm.tm_isdst=");
+    tm_string.append(numberToString(tm->tm_isdst));
+    tm_string.append(" }");
+    return tm_string;
+  }
+
+  std::time_t LocaltimeCondition::stringToDaytime(const String& string)
+  {
+    USBGUARD_LOG(Trace) << "string=" << string;
     struct ::tm tm = { };
 
     if (::strptime(string.c_str(), "%H:%M:%s", &tm) == nullptr) {
       if (::strptime(string.c_str(), "%H:%M", &tm) == nullptr) {
-        throw std::runtime_error("Invalid time string. Expecing either HH:MM or HH:MM:SS format.");
+        throw Exception("LocaltimeCondition", "Invalid time or range format", string);
       }
     }
 
-    return std::chrono::system_clock::from_time_t(::mktime(&tm)); 
+    USBGUARD_LOG(Trace) << "tm=" << tmToString(&tm);
+
+    return tm.tm_sec + 60*tm.tm_min + 60*60*tm.tm_hour;
   }
 } /* namespace usbguard */
 

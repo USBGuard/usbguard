@@ -154,6 +154,7 @@ namespace usbguard {
   bool RulePrivate::meetsConditions(const Rule& rhs, bool with_update)
   {
     USBGUARD_LOG(Trace) << "entry:"
+                        << " conditions=" << _conditions.count()
                         << " rhs=" << rhs.toString()
                         << " with_update=" << with_update;
 

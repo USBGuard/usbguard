@@ -33,11 +33,12 @@ namespace usbguard
     RuleConditionBase * clone() const;
 
   protected:
-    static std::chrono::system_clock::time_point stringToTimePoint(const String& string);
+    static std::time_t stringToDaytime(const String& string);
+    static String tmToString(const struct ::tm * const tm);
 
   private:
-    std::chrono::system_clock::time_point _tp_begin;
-    std::chrono::system_clock::time_point _tp_end;
+    std::time_t _daytime_begin;
+    std::time_t _daytime_end;
   };
 } /* namespace usbguard */
 
