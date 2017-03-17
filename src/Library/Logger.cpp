@@ -255,11 +255,14 @@ namespace usbguard
 
   void Logger::setOutputFile(bool state, const std::string& filepath, bool append)
   {
-    (void)state;
-    (void)filepath;
-    (void)append;
     auto L = lock();
-    /* TODO */
+    if (state == true) {
+      std::unique_ptr<LogSink> sink(new FileSink(filepath, append));
+      addOutputSink_nolock(sink);
+    }
+    else {
+      delOutputSink_nolock("file");
+    }
   }
 
   void Logger::setOutputSyslog(bool state, const std::string& ident)
