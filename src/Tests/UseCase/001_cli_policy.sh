@@ -22,6 +22,12 @@
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 
+#
+# Skip the test if the kernel doesn't export the USB
+# device directory.
+#
+[ -d "/sys/bus/usb/devices" ] || exit 77
+
 #set -x
 
 # TODO? Move to testlib
