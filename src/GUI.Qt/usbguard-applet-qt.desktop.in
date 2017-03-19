@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=USBGuard Qt Applet
-GenericName=USBGuard Applet
-Comment=USBGuard Qt applet for interaction with the USBGuard daemon
+Name=USBGuard
+GenericName=USBGuard
+Comment=USBGuard Qt Applet
 TryExec=usbguard-applet-qt
 Exec=usbguard-applet-qt
 Icon=usbguard-icon
 Categories=System;
-Keywords=USB;Guard;Applet;
+Keywords=USB;USBGuard;Applet;Qt;
 X-Desktop-File-Install-Version=@VERSION@
