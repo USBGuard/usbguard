@@ -345,6 +345,11 @@ usbguard_CPPFLAGS=\
 usbguard_LDADD=\
 	$(top_builddir)/libusbguard.la
 
+if BASH_COMPLETION_ENABLED
+bashcompletiondir = $(BASH_COMPLETION_DIR)
+dist_bashcompletion_DATA = $(top_srcdir)/scripts/bash_completion/usbguard
+endif
+
 usbguard_rule_parser_SOURCES=\
 	src/CLI/usbguard-rule-parser.cpp
 

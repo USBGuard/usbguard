@@ -29,6 +29,7 @@ BuildRequires: protobuf-devel protobuf-compiler
 BuildRequires: PEGTL-static
 BuildRequires: catch-devel
 BuildRequires: autoconf automake libtool
+BuildRequires: bash-completion
 # For `pkg-config systemd` only
 BuildRequires: systemd
 
@@ -165,6 +166,7 @@ find %{buildroot} \( -name '*.la' -o -name '*.a' \) -exec rm -f {} ';'
 %{_datadir}/man/man5/usbguard-daemon.conf.5.gz
 %{_datadir}/man/man5/usbguard-rules.conf.5.gz
 %{_datadir}/man/man1/usbguard.1.gz
+%{_datadir}/bash-completion/completions/usbguard
 
 %files devel
 %defattr(-,root,root,-)

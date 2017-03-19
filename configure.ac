@@ -650,6 +650,13 @@ AC_ARG_ENABLE([systemd],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-systemd]) ;;
      esac], [systemd=no])
 
+
+PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+  [BASH_COMPLETION_DIR="`pkg-config --variable=completionsdir bash-completion`"
+   bash_completion=yes],
+  [bash_completion=no])
+
+
 if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
    CFLAGS="$CFLAGS $CFLAGS_DEBUG_ENABLED"
@@ -685,13 +692,15 @@ else
   systemd_unit_dir="-"
 fi
 
-AC_SUBST(ANALYZE_CONFIGURE_ARGS, $ac_configure_args)
+AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
+AC_SUBST([BASH_COMPLETION_DIR])
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
+AM_CONDITIONAL([BASH_COMPLETION_ENABLED],[test "x$bash_completion" != "xno"])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
 CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"
@@ -726,6 +735,7 @@ echo " D-Bus System Services: $dbus_services_dir"
 echo "       D-Bus Busconfig: $dbus_busconfig_dir"
 echo "    PolicyKit Policies: $polkit_policy_dir"
 echo "      systemd unit dir: $systemd_unit_dir"
+echo "   Bash completion dir: $BASH_COMPLETION_DIR"
 echo
 echo "## Compilation Flags"
 echo
