@@ -1,8 +1,6 @@
 # Change Log
 
 ## 0.6.3 - [unreleased]
-### Changed
-
 ### Added
 - Added InsertedDevicePolicy configuration option to control the policy
   method for inserted devices.
@@ -13,9 +11,15 @@
 - Added setParameter, getParameter IPC (incl. D-Bus) methods.
 - Added set-parameter, get-parameter CLI subcommands.
 - Qt Applet: Added Spanish (es_AR) translation.
+- Create empty rules.conf file at install time (make install).
+- Support for numeric UID/GID values in IPCAllowedUsers and IPCAllowedGroups
+  settings.
+- If bash completion support is detected at configure time, install the bash
+  completion script during make install.
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.
+- Removed UDev development files/API dependecy
 
 ### Changed
 - Refactored low-level USB device handling into SysFSDevice class which
@@ -23,7 +27,15 @@
 - Removed usage of `readdir_r` because it's obsolete. Replaced with readdir
   with the assumption that its usage is thread-safe if the directory handle
   passed to it is not shared between threads.
-- Extended test suite with use case tests
+- Extended test suite with use case tests.
+- Install the usbguard-daemon configuration and policy file with strict file
+  permissions to prevent policy leaks.
+- Reset Linux root hub bcdDevice value before updating device hash. This is
+  a backwards incompatible change because it changes how the device hash is
+  computed for Linux root hub devices.
+- Fixed several memory leaks.
+- Don't pre-resolve user and group names in IPCAllowedUsers and IPCAllowedGroups
+  settings. Instead, resolve the name during the IPC authentication phase.
 
 ## 0.6.2 - 2016-09-18
 ### Changed
