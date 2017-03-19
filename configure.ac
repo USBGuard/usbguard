@@ -652,10 +652,9 @@ AC_ARG_ENABLE([systemd],
 
 
 PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
-  [BASH_COMPLETION_DIR="`pkg-config --variable=completionsdir bash-completion`"
+  [bash_completion_dir="`$PKG_CONFIG --variable=completionsdir bash-completion`"
    bash_completion=yes],
   [bash_completion=no])
-
 
 if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
@@ -693,7 +692,20 @@ else
 fi
 
 AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
-AC_SUBST([BASH_COMPLETION_DIR])
+
+case "$bash_completion_dir" in
+  /usr/share/*|/usr/local/share/*)
+    bash_completion_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$bash_completion_dir)
+    ;;
+  /usr/*|/usr/local/*)
+    bash_completion_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$bash_completion_dir)
+    ;;
+  /*)
+    bash_completion_dir='${prefix}'"$bash_completion_dir"
+    ;;
+esac
+
+AC_SUBST([BASH_COMPLETION_DIR], $bash_completion_dir)
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
