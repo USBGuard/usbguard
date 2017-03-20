@@ -6,7 +6,7 @@
 
 Name:           usbguard
 Version:        0.6.3
-Release:        0.1.%{buildstamp}%{?dist}
+Release:        0.2.%{buildstamp}%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
