@@ -16,6 +16,9 @@
   settings.
 - If bash completion support is detected at configure time, install the bash
   completion script during make install.
+- Added new configuration setting: IPCAccessControlFiles.
+- IPC access is now configurable down to a section and privilege
+  level per user and/or group.
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.

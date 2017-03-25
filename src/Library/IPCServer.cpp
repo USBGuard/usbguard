@@ -17,9 +17,47 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "IPCServerPrivate.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
+  static const std::vector<std::pair<String,IPCServer::AccessControl::Section>> section_ttable = {
+    { "ALL", IPCServer::AccessControl::Section::ALL },
+    { "Policy", IPCServer::AccessControl::Section::POLICY },
+    { "Parameters", IPCServer::AccessControl::Section::PARAMETERS },
+    { "Devices", IPCServer::AccessControl::Section::DEVICES },
+    { "Exceptions", IPCServer::AccessControl::Section::EXCEPTIONS },
+    { "None", IPCServer::AccessControl::Section::NONE }
+  };
+
+  IPCServer::AccessControl::Section IPCServer::AccessControl::sectionFromString(const std::string& section_string)
+  {
+    for (auto ttable_entry : section_ttable) {
+      if (ttable_entry.first == section_string) {
+        return ttable_entry.second;
+      }
+    }
+    throw std::runtime_error("Invalid AccessControl::Section string");
+  }
+
+  static const std::vector<std::pair<String,IPCServer::AccessControl::Privilege>> privilege_ttable = {
+    { "ALL", IPCServer::AccessControl::Privilege::ALL },
+    { "modify", IPCServer::AccessControl::Privilege::MODIFY },
+    { "list", IPCServer::AccessControl::Privilege::LIST },
+    { "listen", IPCServer::AccessControl::Privilege::LISTEN },
+    { "none", IPCServer::AccessControl::Privilege::NONE }
+  };
+
+  IPCServer::AccessControl::Privilege IPCServer::AccessControl::privilegeFromString(const std::string& privilege_string)
+  {
+    for (auto ttable_entry : privilege_ttable) {
+      if (ttable_entry.first == privilege_string) {
+        return ttable_entry.second;
+      }
+    }
+    throw std::runtime_error("Invalid AccessControl::Section string");
+  }
+
   IPCServer::AccessControl::AccessControl()
   {
     /* Empty: no privileges */
@@ -30,23 +68,88 @@ namespace usbguard
     setPrivilege(section, privilege);
   }
 
+  IPCServer::AccessControl::AccessControl(const IPCServer::AccessControl& rhs)
+    : _access_control(rhs._access_control)
+  {
+  }
+
+  IPCServer::AccessControl& IPCServer::AccessControl::operator=(const IPCServer::AccessControl& rhs)
+  {
+    _access_control = rhs._access_control;
+    return *this;
+  }
+
   bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege) const
   {
-    (void)section;
-    (void)privilege;
-    /*
-     * TODO: No fine-grained access control at this moment.
-     */
-    return true;
+    if (section == Section::ALL || section == Section::NONE) {
+      throw USBGUARD_BUG("Cannot test against ALL, NONE sections");
+    }
+
+    const auto it = _access_control.find(section);
+
+    if (it == _access_control.cend()) {
+      return false;
+    }
+
+    return (it->second & static_cast<uint8_t>(privilege)) == static_cast<uint8_t>(privilege);
   }
 
   void IPCServer::AccessControl::setPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
   {
-    /*
-     * TODO: Setting fine-grained access control not implemented yet.
-     */
-    (void)section;
-    (void)privilege;
+    if (section == Section::NONE) {
+      throw USBGUARD_BUG("Cannot set privileges for NONE section");
+    }
+    if (section == Section::ALL) {
+      for (const auto& value : {
+            Section::POLICY,
+            Section::PARAMETERS,
+            Section::EXCEPTIONS,
+            Section::DEVICES }) {
+        _access_control[value] |= static_cast<uint8_t>(privilege);
+      }
+    }
+    else {
+      _access_control[section] |= static_cast<uint8_t>(privilege);
+    }
+  }
+
+  void IPCServer::AccessControl::clear()
+  {
+    _access_control.clear();
+  }
+
+  void IPCServer::AccessControl::load(std::istream& stream)
+  {
+    std::string line;
+    size_t line_number = 0;
+
+    while (std::getline(stream, line)) {
+      ++line_number;
+      const size_t nv_separator = line.find_first_of("=");
+
+      if (nv_separator == String::npos) {
+        continue;
+      }
+
+      const String section_string = trim(line.substr(0, nv_separator));
+      const Section section = sectionFromString(section_string);
+
+      const String privileges_string = line.substr(nv_separator + 1);
+      StringVector privilege_strings;
+      tokenizeString(privileges_string, privilege_strings, " ", /*trim_empty=*/true);
+
+      for (const String& privilege_string : privilege_strings) {
+        const Privilege privilege = privilegeFromString(privilege_string);
+        setPrivilege(section, privilege);
+      }
+    }
+  }
+
+  void IPCServer::AccessControl::merge(const IPCServer::AccessControl& rhs)
+  {
+    for (auto const& ac_entry : rhs._access_control) {
+      _access_control[ac_entry.first] |= ac_entry.second;
+    }
   }
 
   IPCServer::IPCServer()
@@ -93,23 +196,23 @@ namespace usbguard
     d_pointer->ExceptionMessage(context, object, reason);
   }
 
-  void IPCServer::addAllowedUID(uid_t uid)
+  void IPCServer::addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedUID(uid);
+    d_pointer->addAllowedUID(uid, ac);
   }
 
-  void IPCServer::addAllowedGID(gid_t gid)
+  void IPCServer::addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedGID(gid);
+    d_pointer->addAllowedGID(gid, ac);
   }
 
-  void IPCServer::addAllowedUsername(const std::string& username)
+  void IPCServer::addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedUsername(username);
+    d_pointer->addAllowedUsername(username, ac);
   }
 
-  void IPCServer::addAllowedGroupname(const std::string& groupname)
+  void IPCServer::addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedGroupname(groupname);
+    d_pointer->addAllowedGroupname(groupname, ac);
   }
 } /* namespace usbguard */

@@ -120,6 +120,24 @@ IPCAllowedUsers=root
 IPCAllowedGroups=wheel
 
 #
+# IPC access control definition files path.
+#
+# The files at this location will be interpreted by the daemon
+# as access control definition files. The (base)name of a file
+# should be in the form:
+#
+#   [user][:<group>]
+#
+# and should contain lines in the form:
+#
+#   <section>=[privilege] ...
+#
+# This way each file defines who is able to connect to the IPC
+# bus and what privileges he has.
+#
+IPCAccessControlFiles=%sysconfdir%/usbguard/IPCAccessControl.d/
+
+#
 # Generate device specific rules including the "via-port"
 # attribute.
 #

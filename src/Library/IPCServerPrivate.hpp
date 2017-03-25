@@ -63,10 +63,10 @@ namespace usbguard {
                           const std::string& reason,
                           uint64_t request_id = 0);
 
-    void addAllowedUID(uid_t uid);
-    void addAllowedGID(gid_t gid);
-    void addAllowedUsername(const std::string& username);
-    void addAllowedGroupname(const std::string& groupname);
+    void addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac);
+    void addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac);
+    void addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac);
+    void addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac);
 
   private:
     void initIPC();
@@ -90,8 +90,12 @@ namespace usbguard {
     static int32_t qbIPCConnectionClientPID(qb_ipcs_connection_t *connection);
 
     bool hasACLEntries() const;
-    bool qbIPCConnectionAllowed(uid_t uid, gid_t gid) const;
-    bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid) const;
+    bool qbIPCConnectionAllowed(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const;
+    bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr = nullptr) const;
+
+    bool matchACLByUID(uid_t uid, IPCServer::AccessControl * const ac_ptr) const;
+    bool matchACLByGID(gid_t gid, IPCServer::AccessControl * const ac_ptr) const;
+    bool matchACLByName(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const;
 
     static String getNameFromUID(uid_t uid);
     static String getNameFromGID(gid_t gid);
@@ -99,17 +103,18 @@ namespace usbguard {
     static std::vector<String> getGroupMemberNames(const std::string& groupname);
 
     static void qbIPCSendMessage(qb_ipcs_connection_t *qb_conn, const IPC::MessagePointer& message);
-    void qbIPCBroadcastData(const struct iovec *iov, size_t iov_len);
+    static IPCServer::AccessControl::Section messageTypeNameToAccessControlSection(const std::string& name);
+    void qbIPCBroadcastData(const struct iovec *iov, size_t iov_len, IPCServer::AccessControl::Section section);
     void qbIPCBroadcastMessage(const IPC::MessagePointer& message);
     void qbIPCBroadcastMessage(const IPC::MessageType* message);
 
-    IPC::MessagePointer handleIPCPayload(const uint32_t payload_type, const std::string& payload);
+    IPC::MessagePointer handleIPCPayload(const uint32_t payload_type, const std::string& payload, const IPCServer::AccessControl * const access_control);
  
     template<class T>
-    void registerHandler(MessageHandler::HandlerType method)
+    void registerHandler(MessageHandler::HandlerType method, IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
     {
       const uint32_t type_number = IPC::messageTypeNameToNumber(T::default_instance().GetTypeName());
-      _handlers.emplace(type_number, MessageHandler::create<T>(*this, method));
+      _handlers.emplace(type_number, MessageHandler::create<T>(*this, method, section, privilege));
     }
     
     void handleAppendRule(IPC::MessagePointer& request, IPC::MessagePointer& response);

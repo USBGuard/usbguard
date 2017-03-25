@@ -56,7 +56,8 @@ namespace usbguard
     "DeviceRulesWithPort",
     "InsertedDevicePolicy",
     "RestoreControllerDeviceState",
-    "DeviceManagerBackend"
+    "DeviceManagerBackend",
+    "IPCAccessControlFiles"
   };
 
   static const std::vector<std::pair<String,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
@@ -231,6 +232,12 @@ namespace usbguard
       _dm->setRestoreControllerDeviceState(_restore_controller_device_state);
     }
 
+    /* IPCAccessControlFiles */
+    if (_config.hasSettingValue("IPCAccessControlFiles")) {
+      const String value = _config.getSettingValue("IPCAccessControlFiles");
+      loadIPCAccessControlFiles(value);
+    }
+
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
@@ -238,6 +245,85 @@ namespace usbguard
   {
     USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
     _ruleset.load(path);
+  }
+
+  void Daemon::loadIPCAccessControlFiles(const String& path)
+  {
+    USBGUARD_LOG(Info) << "Loading IPC access control files at " << path;
+    loadFiles(path,
+      [](const String& path, const struct dirent * dir_entry)
+      {
+        (void)dir_entry;
+        return filenameFromPath(path, /*include_extension=*/true);
+      }
+      ,
+      [this](const String& basename, const String& fullpath)
+      {
+        return loadIPCAccessControlFile(basename, fullpath);
+      });
+  }
+
+  void Daemon::checkIPCAccessControlName(const String& name)
+  {
+    if (name.size() > 32) {
+      throw Exception("IPC access control", "name too long", name);
+    }
+    
+    const String valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+
+    if (name.find_first_not_of(valid_chars) != std::string::npos) {
+      throw Exception("IPC access control", "name contains invalid character", name);
+    }
+  }
+
+  void Daemon::parseIPCAccessControlFilename(const String& basename, String * const ptr_user, String * const ptr_group)
+  {
+    const auto ug_separator = basename.find_first_of(":");
+    const bool has_group = ug_separator != std::string::npos;
+
+    const String user = basename.substr(0, ug_separator);
+    const String group = has_group ? basename.substr(ug_separator + 1) : String();
+
+    checkIPCAccessControlName(user);
+    checkIPCAccessControlName(group);
+
+    *ptr_user = user;
+    *ptr_group = group;
+  }
+
+  bool Daemon::loadIPCAccessControlFile(const String& basename, const String& fullpath)
+  {
+    USBGUARD_LOG(Info) << "Loading IPC access control file " << fullpath;
+
+    String user;
+    String group;
+    IPCServer::AccessControl ac;
+
+    try {
+      parseIPCAccessControlFilename(basename, &user, &group);
+    }
+    catch(...) {
+      USBGUARD_LOG(Warning) << "Ignoring access control file because of malformed name: " << basename;
+      return false;
+    }
+
+    try {
+      std::ifstream ac_stream(fullpath);
+      ac.load(ac_stream);
+    }
+    catch(...) {
+      USBGUARD_LOG(Warning) << "Failed to load IPC access control file " << fullpath;
+      return false;
+    }
+
+    if (!user.empty()) {
+      addIPCAllowedUser(user, ac);
+    }
+    if (!group.empty()) {
+      addIPCAllowedGroup(group, ac);
+    }
+
+    return true;
   }
 
   void Daemon::setImplicitPolicyTarget(Rule::Target target)
@@ -693,49 +779,49 @@ namespace usbguard
     return upsert_rule;
   }
 
-  void Daemon::addIPCAllowedUID(uid_t uid)
+  void Daemon::addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "uid=" << uid;
-    IPCServer::addAllowedUID(uid);
+    IPCServer::addAllowedUID(uid, ac);
   }
 
-  void Daemon::addIPCAllowedUID(const String& uid_string)
+  void Daemon::addIPCAllowedUID(const String& uid_string, const IPCServer::AccessControl& ac)
   {
-    addIPCAllowedUID(stringToNumber<uid_t>(uid_string));
+    addIPCAllowedUID(stringToNumber<uid_t>(uid_string), ac);
   }
 
-  void Daemon::addIPCAllowedGID(gid_t gid)
+  void Daemon::addIPCAllowedGID(gid_t gid, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "gid=" << gid;
-    IPCServer::addAllowedGID(gid);
+    IPCServer::addAllowedGID(gid, ac);
   }
 
-  void Daemon::addIPCAllowedGID(const String& gid_string)
+  void Daemon::addIPCAllowedGID(const String& gid_string, const IPCServer::AccessControl& ac)
   {
-    addIPCAllowedGID(stringToNumber<gid_t>(gid_string));
+    addIPCAllowedGID(stringToNumber<gid_t>(gid_string), ac);
   }
 
-  void Daemon::addIPCAllowedUser(const String& user)
+  void Daemon::addIPCAllowedUser(const String& user, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "user=" << user;
 
     if (isNumericString(user)) {
-      addIPCAllowedUID(user);
+      addIPCAllowedUID(user, ac);
     }
     else {
-      IPCServer::addAllowedUsername(user);
+      IPCServer::addAllowedUsername(user, ac);
     }
   }
 
-  void Daemon::addIPCAllowedGroup(const String& group)
+  void Daemon::addIPCAllowedGroup(const String& group, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "group=" << group;
 
     if (isNumericString(group)) {
-      addIPCAllowedGID(group);
+      addIPCAllowedGID(group, ac);
     }
     else {
-      IPCServer::addAllowedGroupname(group);
+      IPCServer::addAllowedGroupname(group, ac);
     }
   }
 } /* namespace usbguard */

@@ -75,7 +75,8 @@ test_unit_SOURCES=\
 	Unit/test_UEvent.cpp \
 	Unit/test_UEventParser.cpp \
 	Unit/test_Utility.cpp \
-	Unit/test_RuleAttribute_id.cpp
+	Unit/test_RuleAttribute_id.cpp \
+	Unit/test_IPCServer_AccessControl.cpp
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la

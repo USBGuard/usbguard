@@ -54,6 +54,10 @@ namespace usbguard
 
     void loadConfiguration(const String& path);
     void loadRules(const String& path);
+    void loadIPCAccessControlFiles(const String& path);
+    bool loadIPCAccessControlFile(const String& basename, const String& fullpath);
+    void checkIPCAccessControlName(const String& basename);
+    void parseIPCAccessControlFilename(const String& basename, String * const ptr_user, String * const ptr_group); 
 
     void setImplicitPolicyTarget(Rule::Target target);
     void setPresentDevicePolicyMethod(DevicePolicyMethod policy);
@@ -84,12 +88,15 @@ namespace usbguard
     uint32_t dmHookAssignID() override;
     void dmHookDeviceException(const String& message) override;
 
-    void addIPCAllowedUID(uid_t uid);
-    void addIPCAllowedUID(const String& uid_string);
-    void addIPCAllowedGID(gid_t gid);
-    void addIPCAllowedGID(const String& gid_string);
-    void addIPCAllowedUser(const String& user);
-    void addIPCAllowedGroup(const String& group);
+#define USBGUARD_IPCSERVER_DEFAULT_AC \
+  IPCServer::AccessControl(IPCServer::AccessControl::Section::ALL, IPCServer::AccessControl::Privilege::ALL)
+
+    void addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedUID(const String& uid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedGID(gid_t gid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedGID(const String& gid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedUser(const String& user, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedGroup(const String& group, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
 
   private:
     void dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule);

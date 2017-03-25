@@ -65,13 +65,13 @@ namespace usbguard
       throw;
     }
 
-    registerHandler<IPC::appendRule>(&IPCServerPrivate::handleAppendRule);
-    registerHandler<IPC::removeRule>(&IPCServerPrivate::handleRemoveRule);
-    registerHandler<IPC::listRules>(&IPCServerPrivate::handleListRules);
-    registerHandler<IPC::applyDevicePolicy>(&IPCServerPrivate::handleApplyDevicePolicy);
-    registerHandler<IPC::listDevices>(&IPCServerPrivate::handleListDevices);
-    registerHandler<IPC::setParameter>(&IPCServerPrivate::handleSetParameter);
-    registerHandler<IPC::getParameter>(&IPCServerPrivate::handleGetParameter);
+    registerHandler<IPC::appendRule>(&IPCServerPrivate::handleAppendRule, IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::MODIFY);
+    registerHandler<IPC::removeRule>(&IPCServerPrivate::handleRemoveRule, IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::MODIFY);
+    registerHandler<IPC::listRules>(&IPCServerPrivate::handleListRules, IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::LIST);
+    registerHandler<IPC::applyDevicePolicy>(&IPCServerPrivate::handleApplyDevicePolicy, IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::MODIFY);
+    registerHandler<IPC::listDevices>(&IPCServerPrivate::handleListDevices, IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LIST);
+    registerHandler<IPC::setParameter>(&IPCServerPrivate::handleSetParameter, IPCServer::AccessControl::Section::PARAMETERS, IPCServer::AccessControl::Privilege::MODIFY);
+    registerHandler<IPC::getParameter>(&IPCServerPrivate::handleGetParameter, IPCServer::AccessControl::Section::PARAMETERS, IPCServer::AccessControl::Privilege::LIST);
   }
 
   void IPCServerPrivate::initIPC()
@@ -183,6 +183,11 @@ namespace usbguard
   void IPCServerPrivate::qbIPCConnectionDestroyedFn(qb_ipcs_connection_t *conn)
   {
     USBGUARD_LOG(Trace) << "conn=" << conn;
+    IPCServer::AccessControl * const access_control = \
+      static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(conn));
+    if (access_control != nullptr) {
+      delete access_control;
+    }
   }
 
   int32_t IPCServerPrivate::qbIPCConnectionClosedFn(qb_ipcs_connection_t *conn)
@@ -232,7 +237,9 @@ namespace usbguard
       IPCServerPrivate* server = \
         static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
 
-      const bool auth = server->qbIPCConnectionAllowed(uid, gid);
+      UniquePointer<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
+      const bool auth = server->qbIPCConnectionAllowed(uid, gid, access_control.get());
+      qb_ipcs_context_set(conn, access_control.release());
 
       if (auth) {
         USBGUARD_LOG(Info) << "IPC connection accepted: uid=" << uid
@@ -269,10 +276,10 @@ namespace usbguard
             || !_allowed_groupnames.empty());
   }
 
-  bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid) const
+  bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const
   {
     if (hasACLEntries()) {
-      return authenticateIPCConnectionDAC(uid, gid);
+      return authenticateIPCConnectionDAC(uid, gid, ac_ptr);
     }
     else {
       USBGUARD_LOG(Debug) << "IPC ACL is empty."
@@ -383,11 +390,17 @@ namespace usbguard
       const char * const payload_data = reinterpret_cast<const char*>(data) + sizeof(struct qb_ipc_request_header);
       const size_t payload_size = size - sizeof(struct qb_ipc_request_header);
       const std::string payload(payload_data, payload_size);
+      const IPCServer::AccessControl * const access_control = \
+        static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(conn));
+
+      if (access_control == nullptr) {
+        throw USBGUARD_BUG("IPC access control not set");
+      }
 
       USBGUARD_LOG(Debug) << "Handling IPC payload of type=" << payload_type
                           << " size=" << payload_size;
 
-      auto response = server->handleIPCPayload(payload_type, payload);
+      auto response = server->handleIPCPayload(payload_type, payload, access_control);
 
       if (response) {
         USBGUARD_LOG(Debug) << "Sending response to client_pid=" << client_pid;
@@ -432,7 +445,7 @@ namespace usbguard
     return 0;
   }
 
-  void IPCServerPrivate::qbIPCBroadcastData(const struct iovec * const iov, const size_t iov_len)
+  void IPCServerPrivate::qbIPCBroadcastData(const struct iovec * const iov, const size_t iov_len, IPCServer::AccessControl::Section section)
   {
     auto qb_conn = qb_ipcs_connection_first_get(_qb_service);
     size_t total_size = 0;
@@ -442,25 +455,38 @@ namespace usbguard
     }
 
     while (qb_conn != nullptr) {
-      /* Send the data */
-      const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
+      const IPCServer::AccessControl * const access_control = \
+        static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(qb_conn));
 
-      if (rc < 0 || (size_t)rc != total_size) {
-        std::unique_ptr<qb_ipcs_connection_stats_2, FreeDeleter> \
-          stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+      if (access_control == nullptr) {
+        throw USBGUARD_BUG("");
+      }
 
-        if (stats == nullptr) {
-          throw std::runtime_error("Cannot retrieve qb connection statistics");
-        }
+      if (access_control->hasPrivilege(section, IPCServer::AccessControl::Privilege::LISTEN)) {
+        /* Send the data */
+        const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
 
-        if (rc < 0) {
-          USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+        if (rc < 0 || (size_t)rc != total_size) {
+          std::unique_ptr<qb_ipcs_connection_stats_2, FreeDeleter> \
+            stats(qb_ipcs_connection_stats_get_2(qb_conn, /*clear_after_read=*/0));
+
+          if (stats == nullptr) {
+            throw std::runtime_error("Cannot retrieve qb connection statistics");
+          }
+
+          if (rc < 0) {
+            USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+          }
+          else if ((size_t)rc != total_size) {
+            USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)
+              << " sent=" << (size_t)rc
+              << " expected=" << total_size;
+          }
         }
-        else if ((size_t)rc != total_size) {
-          USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)
-            << " sent=" << (size_t)rc
-            << " expected=" << total_size;
-        }
+      }
+      else {
+        USBGUARD_LOG(Info) << "IPC message broadcast: Skipping client at pid=" << qbIPCConnectionClientPID(qb_conn)
+                           << ": Insufficient privileges to receive the message.";
       }
 
       /* Get the next connection */
@@ -475,12 +501,26 @@ namespace usbguard
     qbIPCBroadcastMessage(message.get());
   }
 
+  IPCServer::AccessControl::Section IPCServerPrivate::messageTypeNameToAccessControlSection(const std::string& name)
+  {
+    if (name == "usbguard.IPC.DevicePresenceChangedSignal") {
+      return IPCServer::AccessControl::Section::DEVICES;
+    }
+    if (name == "usbguard.IPC.DevicePolicyChangedSignal") {
+      return IPCServer::AccessControl::Section::DEVICES;
+    }
+    if (name == "usbguard.IPC.Exception") {
+      return IPCServer::AccessControl::Section::EXCEPTIONS;
+    }
+    throw Exception("IPC Server", name, "Invalid IPC typename to Access Control section translation request");
+  }
+
   void IPCServerPrivate::qbIPCBroadcastMessage(const IPC::MessageType * const message)
   {
     std::string payload;
     message->SerializeToString(&payload);
 
-    struct qb_ipc_response_header hdr;
+    struct qb_ipc_response_header hdr = { };
     hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message->GetTypeName());
     hdr.size = sizeof hdr + payload.size();
     hdr.error = 0;
@@ -491,44 +531,93 @@ namespace usbguard
     iov[1].iov_base = (void *)payload.data();
     iov[1].iov_len = payload.size();
 
-    qbIPCBroadcastData(iov, 2);
+    qbIPCBroadcastData(iov, 2, messageTypeNameToAccessControlSection(message->GetTypeName()));
 
     iov[0].iov_base = nullptr;
     iov[1].iov_base = nullptr;
   }
 
-  bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid) const
+  bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const
   {
-    /*
-     * Fast path
-     */
+    USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
+    return \
+      matchACLByUID(uid, ac_ptr) || \
+      matchACLByGID(gid, ac_ptr) || \
+      matchACLByName(uid, gid, ac_ptr);
+  }
 
-    /* Check for UID match */
-    if (_allowed_uids.count(uid) > 0) {
-      return true;
+  bool IPCServerPrivate::matchACLByUID(uid_t uid, IPCServer::AccessControl * const ac_ptr) const
+  {
+    USBGUARD_LOG(Trace) << "uid=" << uid << " ac_ptr=" << ac_ptr;
+
+    const auto& it = _allowed_uids.find(uid);
+
+    if (it == _allowed_uids.cend()) {
+      return false;
     }
-    /* Check for GID match */
-    if (_allowed_gids.count(gid) > 0) {
-      return true;
+    if (ac_ptr != nullptr) {
+      ac_ptr->merge(it->second);
     }
 
-    /*
-     * Slow path
-     */
-    bool check_uid_group_membership = true;
+    USBGUARD_LOG(Trace) << "matched";
+
+    return true;
+  }
+
+  bool IPCServerPrivate::matchACLByGID(gid_t gid, IPCServer::AccessControl * const ac_ptr) const
+  {
+    USBGUARD_LOG(Trace) << "gid=" << gid << " ac_ptr=" << ac_ptr;
+
+    const auto& it = _allowed_gids.find(gid);
+
+    if (it == _allowed_gids.cend()) {
+      return false;
+    }
+    if (ac_ptr != nullptr) {
+      ac_ptr->merge(it->second);
+    }
+
+    USBGUARD_LOG(Trace) << "matched";
+
+    return true;
+  }
+
+  bool IPCServerPrivate::matchACLByName(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const
+  {
+    USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
+
+    bool matched = false;
     const String uid_name = getNameFromUID(uid);
+    const bool check_uid_group_membership = !uid_name.empty();
 
-    if (_allowed_usernames.count(uid_name) > 0) {
-      return true;
+    if (!uid_name.empty()) {
+      const auto& it = _allowed_usernames.find(uid_name);
+
+      if (it != _allowed_usernames.cend()) {
+        if (ac_ptr != nullptr) {
+          ac_ptr->merge(it->second);
+        }
+        USBGUARD_LOG(Trace) << "username matched: " << uid_name;
+        matched = true;
+      }
     }
 
     const String gid_name = getNameFromGID(gid);
 
-    if (_allowed_groupnames.count(gid_name) > 0) {
-      return true;
+    if (!gid_name.empty()) {
+      const auto& it = _allowed_groupnames.find(gid_name);
+      
+      if (it != _allowed_groupnames.cend()) {
+        if (ac_ptr != nullptr) {
+          ac_ptr->merge(it->second);
+        }
+        USBGUARD_LOG(Trace) << "groupname matched: " << gid_name;
+        matched = true;
+      }
     }
 
     if (check_uid_group_membership) {
+      USBGUARD_LOG(Trace) << "Checking UID group membership";
       /*
        * Check against allowed GIDs
        */
@@ -538,7 +627,11 @@ namespace usbguard
 
         for (const auto& group_member : group_members) {
           if (group_member == uid_name) {
-            return true;
+            if (ac_ptr != nullptr) {
+              ac_ptr->merge(allowed_gid_entry.second);
+            }
+            USBGUARD_LOG(Trace) << "matched member of group with GID: " << allowed_gid;
+            matched = true;
           }
         }
       }
@@ -552,11 +645,15 @@ namespace usbguard
 
         for (const auto& group_member : group_members) {
           if (group_member == uid_name) {
-            return true;
+            if (ac_ptr != nullptr) {
+              ac_ptr->merge(allowed_groupnames_entry.second);
+            }
+            USBGUARD_LOG(Trace) << "matched member of group with name: " << allowed_groupname;
+            matched = true;
           }
         }
       }
-    }
+    } /* check_uid_group_membership */
 
     /* TODO:
      *  Cache final result for some time to prevent DoS.
@@ -565,7 +662,7 @@ namespace usbguard
      *  stretching.
      */
 
-    return false;
+    return matched;
   }
 
   String IPCServerPrivate::getNameFromUID(uid_t uid)
@@ -654,7 +751,7 @@ namespace usbguard
     return names;
   }
 
-  IPC::MessagePointer IPCServerPrivate::handleIPCPayload(const uint32_t payload_type, const std::string& payload)
+  IPC::MessagePointer IPCServerPrivate::handleIPCPayload(const uint32_t payload_type, const std::string& payload, const IPCServer::AccessControl * const access_control)
   {
     const auto& handler_it = _handlers.find(payload_type);
 
@@ -678,6 +775,13 @@ namespace usbguard
     }
     catch(...) {
       throw Exception("IPC connection", "IPC payload data", "Payload data parsing failed");
+    }
+
+    if (!access_control->hasPrivilege(handler.section(), handler.privilege())) {
+      throw IPCException("IPC method",
+                          IPC::messageTypeNameFromNumber(payload_type),
+                          "Permission denied",
+                          request_id);
     }
 
     /*
@@ -931,23 +1035,23 @@ namespace usbguard
     qbIPCBroadcastMessage(&exception);
   }
 
-  void IPCServerPrivate::addAllowedUID(uid_t uid)
+  void IPCServerPrivate::addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)
   {
-    _allowed_uids.emplace(uid, IPCServer::AccessControl());
+    _allowed_uids.emplace(uid, ac);
   }
 
-  void IPCServerPrivate::addAllowedGID(gid_t gid)
+  void IPCServerPrivate::addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac)
   {
-    _allowed_gids.emplace(gid, IPCServer::AccessControl());
+    _allowed_gids.emplace(gid, ac);
   }
 
-  void IPCServerPrivate::addAllowedUsername(const std::string& username)
+  void IPCServerPrivate::addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac)
   {
-    _allowed_usernames.emplace(username, IPCServer::AccessControl());
+    _allowed_usernames.emplace(username, ac);
   }
   
-  void IPCServerPrivate::addAllowedGroupname(const std::string& groupname)
+  void IPCServerPrivate::addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac)
   {
-    _allowed_groupnames.emplace(groupname, IPCServer::AccessControl());
+    _allowed_groupnames.emplace(groupname, ac);
   }
 } /* namespace usbguard */
