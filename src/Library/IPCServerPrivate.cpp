@@ -779,9 +779,9 @@ namespace usbguard
 
     if (!access_control->hasPrivilege(handler.section(), handler.privilege())) {
       throw IPCException("IPC method",
-                          IPC::messageTypeNameFromNumber(payload_type),
-                          "Permission denied",
-                          request_id);
+                         IPC::messageTypeNameFromNumber(payload_type),
+                         "Permission denied",
+                         request_id);
     }
 
     /*

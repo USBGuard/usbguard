@@ -97,7 +97,7 @@ namespace usbguard
 
   IPCClientPrivate::~IPCClientPrivate()
   {
-    disconnect(/*do_wait=*/isConnected());
+    disconnect(/*do_wait=*/_thread.running());
     destruct();
   }
 
@@ -473,19 +473,19 @@ namespace usbguard
 
     if (exception->has_request_id()) {
       const uint64_t id = exception->request_id();
-      try {
-        auto& return_promise = _return_map.at(id);
-        return_promise.set_value(std::move(message_in));
-      }
-      catch(...) {
-        throw IPCException("IPC exception response", "message", "Unexpected method response exception", id);
+      if (id > 0) {
+        try {
+          auto& return_promise = _return_map.at(id);
+          return_promise.set_value(std::move(message_in));
+        }
+        catch(...) {
+          throw IPCException("IPC exception response", "message", "Unexpected method response exception", id);
+        }
       }
     }
-    else {
-      _p_instance.ExceptionMessage(exception->context(),
-                                   exception->object(),
-                                   exception->reason());
-    }
+    _p_instance.ExceptionMessage(exception->context(),
+                                 exception->object(),
+                                 exception->reason());
   }
 
   void IPCClientPrivate::handleDevicePresenceChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
