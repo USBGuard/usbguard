@@ -59,8 +59,8 @@ namespace usbguard
     if (_dirty) {
       /* Update _lines */
       for(auto const& map_entry : _settings) {
-	const NVPair& setting = map_entry.second;
-	_lines[setting.line_number - 1] = setting.name + "=" + setting.value;
+        const NVPair& setting = map_entry.second;
+        _lines[setting.line_number - 1] = setting.name + "=" + setting.value;
       }
     }
 
@@ -110,18 +110,18 @@ namespace usbguard
 
       const size_t nv_separator = config_line.find_first_of("=");
       if (nv_separator == String::npos) {
-	continue;
+        continue;
       }
 
       String name = trim(config_line.substr(0, nv_separator));
       String value = config_line.substr(nv_separator + 1);
 
       if (name[0] == '#') {
-	continue;
+        continue;
       }
 
       if (!checkNVPair(name, value)) {
-	continue;
+        continue;
       }
 
       NVPair& setting = _settings[name];
@@ -135,9 +135,18 @@ namespace usbguard
   bool ConfigFilePrivate::checkNVPair(const String& name, const String& value) const
   {
     (void)value; /* TODO */
+
+    /*
+     * If the known_names array is empty, then consider
+     * any name-value pair as known.
+     */
+    if (_known_names.empty()) {
+      return true;
+    }
+
     for (auto const& known_name : _known_names) {
       if (name == known_name) {
-	return true;
+        return true;
       }
     }
     return false;

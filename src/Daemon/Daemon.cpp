@@ -265,15 +265,7 @@ namespace usbguard
 
   void Daemon::checkIPCAccessControlName(const String& name)
   {
-    if (name.size() > 32) {
-      throw Exception("IPC access control", "name too long", name);
-    }
-    
-    const String valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
-
-    if (name.find_first_not_of(valid_chars) != std::string::npos) {
-      throw Exception("IPC access control", "name contains invalid character", name);
-    }
+    IPCServer::checkAccessControlName(name);
   }
 
   void Daemon::parseIPCAccessControlFilename(const String& basename, String * const ptr_user, String * const ptr_group)

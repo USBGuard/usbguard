@@ -3,7 +3,7 @@ AC_INIT([usbguard],
         m4_esyscmd_s([cat VERSION]),
         [dkopecek@redhat.com])
 AC_CONFIG_SRCDIR([src/])
-AC_CONFIG_HEADERS([src/build-config.h])
+AC_CONFIG_HEADERS([src/build-config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
 
@@ -716,6 +716,21 @@ AM_CONDITIONAL([BASH_COMPLETION_ENABLED],[test "x$bash_completion" != "xno"])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
 CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"
+
+AC_DEFINE_UNQUOTED([BINDIR], ["$bindir"], [Binaries root directory])
+AC_DEFINE_UNQUOTED([DATADIR], ["$datadir"], [Data directory])
+AC_DEFINE_UNQUOTED([DATAROOTDIR], ["$datarootdir"], [Data root directory])
+AC_DEFINE_UNQUOTED([DOCDIR], ["$docdir"], [Documentation directory])
+AC_DEFINE_UNQUOTED([EXEC_PREFIX], ["$exec_prefix"], [Exec Prefix])
+AC_DEFINE_UNQUOTED([INCLUDEDIR], ["$includedir"], [Include directory])
+AC_DEFINE_UNQUOTED([LIBEXECDIR], ["$libexecdir"], [Libexec directory])
+AC_DEFINE_UNQUOTED([LOCALSTATEDIR], ["$localstatedir"], [Local state directory])
+AC_DEFINE_UNQUOTED([PREFIX], ["$prefix"], [Prefix])
+AC_DEFINE_UNQUOTED([SBINDIR], ["$sbindir"], [System binaries root directory])
+AC_DEFINE_UNQUOTED([SHAREDSTATEDIR], ["$sharedstatedir"], [Shared state directory])
+AC_DEFINE_UNQUOTED([SYSCONFDIR], ["$sysconfdir"], [System config root directory])
+
+AC_DEFINE_UNQUOTED([USBGUARD_DAEMON_CONF_PATH], ["$sysconfdir/usbguard/usbguard-daemon.conf"], [Default USBGuard daemon config path])
 
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc

@@ -19,8 +19,24 @@
 #include "IPCServerPrivate.hpp"
 #include "Common/Utility.hpp"
 
+#include <sstream>
+
 namespace usbguard
 {
+  void IPCServer::checkAccessControlName(const std::string& name)
+  {
+    if (name.size() > 32) {
+      throw Exception("IPC access control", "name too long", name);
+    }
+
+    const String valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+
+    if (name.find_first_not_of(valid_chars) != std::string::npos) {
+      throw Exception("IPC access control", "name contains invalid character(s)", name);
+    }
+
+  }
+
   static const std::vector<std::pair<String,IPCServer::AccessControl::Section>> section_ttable = {
     { "ALL", IPCServer::AccessControl::Section::ALL },
     { "Policy", IPCServer::AccessControl::Section::POLICY },
@@ -38,6 +54,16 @@ namespace usbguard
       }
     }
     throw std::runtime_error("Invalid AccessControl::Section string");
+  }
+
+  std::string IPCServer::AccessControl::sectionToString(const IPCServer::AccessControl::Section section)
+  {
+    for (auto ttable_entry : section_ttable) {
+      if (ttable_entry.second == section) {
+        return ttable_entry.first;
+      }
+    }
+    throw std::runtime_error("Invalid AccessControl::Section value");
   }
 
   static const std::vector<std::pair<String,IPCServer::AccessControl::Privilege>> privilege_ttable = {
@@ -58,9 +84,25 @@ namespace usbguard
     throw std::runtime_error("Invalid AccessControl::Section string");
   }
 
+  std::string IPCServer::AccessControl::privilegeToString(const IPCServer::AccessControl::Privilege privilege)
+  {
+    for (auto ttable_entry : privilege_ttable) {
+      if (ttable_entry.second == privilege) {
+        return ttable_entry.first;
+      }
+    }
+    throw std::runtime_error("Invalid AccessControl::Privilege value");
+  }
+
   IPCServer::AccessControl::AccessControl()
   {
     /* Empty: no privileges */
+  }
+
+  IPCServer::AccessControl::AccessControl(const std::string& access_control_string)
+  {
+    std::stringstream ss(access_control_string);
+    load(ss);
   }
 
   IPCServer::AccessControl::AccessControl(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
@@ -136,7 +178,7 @@ namespace usbguard
 
       const String privileges_string = line.substr(nv_separator + 1);
       StringVector privilege_strings;
-      tokenizeString(privileges_string, privilege_strings, " ", /*trim_empty=*/true);
+      tokenizeString(privileges_string, privilege_strings, " ,", /*trim_empty=*/true);
 
       for (const String& privilege_string : privilege_strings) {
         const Privilege privilege = privilegeFromString(privilege_string);
@@ -145,11 +187,54 @@ namespace usbguard
     }
   }
 
+  void IPCServer::AccessControl::save(std::ostream& stream) const
+  {
+    std::string access_control_string;
+
+    for (auto const& section : {
+          Section::DEVICES,
+          Section::POLICY,
+          Section::PARAMETERS,
+          Section::EXCEPTIONS
+          }) {
+      bool section_is_empty = true;
+      std::string section_string = sectionToString(section);
+      section_string.append("=");
+
+      for (auto const& privilege : {
+            Privilege::LIST,
+            Privilege::MODIFY,
+            Privilege::LISTEN
+          }) {
+        if (hasPrivilege(section, privilege)) {
+          const std::string privilege_string = privilegeToString(privilege);
+          section_string.append(privilege_string);
+          section_string.append(",");
+          section_is_empty = false;
+        }
+      }
+
+      if (!section_is_empty) {
+        section_string.pop_back();
+        access_control_string.append(section_string);
+        access_control_string.append("\n");
+      }
+    }
+
+    stream << access_control_string;
+  }
+
   void IPCServer::AccessControl::merge(const IPCServer::AccessControl& rhs)
   {
     for (auto const& ac_entry : rhs._access_control) {
       _access_control[ac_entry.first] |= ac_entry.second;
     }
+  }
+
+  void IPCServer::AccessControl::merge(const std::string& access_control_string)
+  {
+    const AccessControl access_control(access_control_string);
+    merge(access_control);
   }
 
   IPCServer::IPCServer()

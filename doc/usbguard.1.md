@@ -30,6 +30,10 @@ usbguard **watch**
 
 usbguard **read-descriptor** <*file*>
 
+usbguard **add-user** <*name*>
+
+usbguard **remove-user** <*name*>
+
 # DESCRIPTION
 
 The **usbguard** command provides a command-line interface (CLI) to the **usbguard-daemon**(8) instance and provides a tool for generating initial USBGuard policies.
@@ -176,6 +180,63 @@ Available options:
 
 **-h**, **--help**
 :   Show help.
+
+~ ~ ~ ~
+
+**add-user** <*name*> [*OPTIONS*]
+
+Create an IPC access control file allowing the user/group identified by *name* to use the USBGuard IPC bus. The change takes effect only after restarting the **usbguard-daemon**(8) instance.
+
+Available options:
+
+**-u**, **--user**
+:   The specified *name* represents a username or UID (default).
+
+**-g**, **--group**
+:   The specified *name* represents a groupname or GID.
+
+**-p**, **--policy** <*privileges*>
+:   Policy related privileges.
+
+**-d**, **--devices** <*privileges*>
+:   Device related privileges.
+
+**-e**, **--exceptions** <*privileges*>
+:   Exceptions related privileges.
+
+**-P**, **--parameters** <*privileges*>
+:   Run-time parameter related privileges.
+
+**-h**, **--help**
+:   Show help.
+
+Privileges:
+
+When specifying *privileges*, they are expected to be in the form of a list separated by a colon:
+
+```
+    $ sudo usbguard add-user joe --devices=listen,modify
+```
+
+Consult the **usbguard-daemon.conf**(5) man-page for a detailed list of available privileges in each section.
+
+~ ~ ~ ~
+
+**remove-user** <*name*> [*OPTIONS*]
+
+Remove an IPC access control file associated with the user/group identified by *name*. The change takes effect only after restarting the **usbguard-daemon**(8) instance.
+
+Available options:
+
+**-u**, **--user**
+:   The specified *name* represents a username or UID (default).
+
+**-g**, **--group**
+:   The specified *name* represents a groupname or GID.
+
+**-h**, **--help**
+:   Show help.
+
 
 # EXAMPLES
 

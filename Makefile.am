@@ -26,8 +26,22 @@ EXTRA_DIST =\
 	VERSION \
 	CHANGELOG.md
 
-BUILT_SOURCES=
-DISTCLEANFILES=
+BUILT_SOURCES=\
+	src/build-config.h
+
+$(top_builddir)/src/build-config.h: $(top_builddir)/src/build-config.h.in
+	$(SED) \
+	  -e "s|[$$]{exec_prefix}|${prefix}|g" \
+	  -e "s|[$$]{datarootdir}|${datarootdir}|g" \
+	  -e "s|[$$]{datadir}|${pkgdatadir}|g" \
+	  -e "s|[$$]{sysconfdir}|${sysconfdir}|g" \
+	  -e "s|[$$]{prefix}|${prefix}|g" \
+	  -e "s|[$$]{PACKAGE_TARNAME}|${PACKAGE_TARNAME}|g" \
+	  $^ > $@ || rm -f $@
+
+DISTCLEANFILES=\
+	$(BUILT_SOURCES)
+
 CLEANFILES=
 
 ROFF_PAGES=\
@@ -239,7 +253,8 @@ libusbguard_la_SOURCES=\
 	src/Library/UEventDeviceManager.hpp \
 	src/Library/UEventDeviceManager.cpp \
 	src/Library/SysFSDevice.hpp \
-	src/Library/SysFSDevice.cpp
+	src/Library/SysFSDevice.cpp \
+	src/Library/USBGuard.cpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -256,7 +271,8 @@ pkginclude_HEADERS=\
 	src/Library/Logger.hpp \
 	src/Library/Predicates.hpp \
 	src/Library/Utility.hpp \
-	src/Library/Exception.hpp
+	src/Library/Exception.hpp \
+	src/Library/USBGuard.hpp
 
 # Workaround for generated protobuf code mishaps
 #```
@@ -335,7 +351,11 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-set-parameter.hpp \
 	src/CLI/usbguard-set-parameter.cpp \
 	src/CLI/usbguard-get-parameter.hpp \
-	src/CLI/usbguard-get-parameter.cpp
+	src/CLI/usbguard-get-parameter.cpp \
+	src/CLI/usbguard-add-user.cpp \
+	src/CLI/usbguard-add-user.hpp \
+	src/CLI/usbguard-remove-user.cpp \
+	src/CLI/usbguard-remove-user.hpp
 
 usbguard_CPPFLAGS=\
 	-fPIE \

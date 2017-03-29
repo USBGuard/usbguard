@@ -3,6 +3,7 @@ ACL
 API
 AUR
 BadUSB
+basename
 BNF
 CentOS
 CLI
@@ -17,15 +18,18 @@ devel
 discriminative
 DocToc
 EPEL
+GID
 Github
 GPL
 GPLv
 groupname
 groupnames
 IPC
+IPCAccessControlFiles
 IPCAllowedGroups
 IPCAllowedUsers
 iSerial
+joe
 json
 libcap
 libqb
@@ -60,6 +64,7 @@ systemd
 UDev
 udev
 udevadm
+UID
 unconfigured
 untrusted
 usb

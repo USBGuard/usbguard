@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,26 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#pragma once
-#include <Typedefs.hpp>
-
-namespace usbguard {
-  class ConfigFilePrivate;
-  class DLL_PUBLIC ConfigFile
-  {
-  public:
-    ConfigFile(const StringVector& known_names = StringVector());
-    ~ConfigFile();
-
-    void open(const String& path);
-    void write();
-    void close();
-
-    void setSettingValue(const String& name, String& value);
-    bool hasSettingValue(const String& name) const;
-    const String& getSettingValue(const String& name) const;
-
-  private:
-    ConfigFilePrivate* d_pointer;
-  };
+namespace usbguard
+{
+  int usbguard_add_user(int argc, char **argv);
 } /* namespace usbguard */

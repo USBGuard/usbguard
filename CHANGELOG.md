@@ -19,6 +19,8 @@
 - Added new configuration setting: IPCAccessControlFiles.
 - IPC access is now configurable down to a section and privilege
   level per user and/or group.
+- Added add-user, remove-user usbuard CLI subcommands for creating, removing
+  IPC access control files.
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.

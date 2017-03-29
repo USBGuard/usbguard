@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,25 +17,12 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#include <Typedefs.hpp>
+#include "Typedefs.hpp"
+#include <string>
 
-namespace usbguard {
-  class ConfigFilePrivate;
-  class DLL_PUBLIC ConfigFile
-  {
-  public:
-    ConfigFile(const StringVector& known_names = StringVector());
-    ~ConfigFile();
-
-    void open(const String& path);
-    void write();
-    void close();
-
-    void setSettingValue(const String& name, String& value);
-    bool hasSettingValue(const String& name) const;
-    const String& getSettingValue(const String& name) const;
-
-  private:
-    ConfigFilePrivate* d_pointer;
-  };
+namespace usbguard
+{
+  DLL_PUBLIC std::string getDaemonConfigPath();
+  DLL_PUBLIC std::string getIPCAccessControlFilesPath();
+  DLL_PUBLIC std::string getIPCAccessControlFileBasename(const std::string& name, bool is_group);
 } /* namespace usbguard */

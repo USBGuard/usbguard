@@ -54,6 +54,6 @@ namespace usbguard {
     StringVector _lines;
     StringKeyMap<NVPair> _settings;
     bool _dirty;
-    const StringVector& _known_names;
+    StringVector _known_names;
   };
 }

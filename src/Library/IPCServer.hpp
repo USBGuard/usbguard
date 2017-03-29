@@ -31,6 +31,8 @@ namespace usbguard
   class DLL_PUBLIC IPCServer : public Interface
   {
   public:
+    static void checkAccessControlName(const std::string& name);
+
     class AccessControl
     {
       public:
@@ -43,7 +45,8 @@ namespace usbguard
           ALL = 255
         };
 
-        Section sectionFromString(const std::string& section_string);
+        static Section sectionFromString(const std::string& section_string);
+        static std::string sectionToString(const Section section);
 
         enum class Privilege : uint8_t {
           NONE = 0x00,
@@ -53,9 +56,11 @@ namespace usbguard
           ALL = 0xff
         };
 
-        Privilege privilegeFromString(const std::string& privilege_string);
+        static Privilege privilegeFromString(const std::string& privilege_string);
+        static std::string privilegeToString(const Privilege privilege);
 
         AccessControl();
+        AccessControl(const std::string& access_control_string);
         AccessControl(Section section, Privilege privilege);
         AccessControl(const AccessControl& rhs);
         AccessControl& operator=(const AccessControl& rhs);
@@ -64,7 +69,9 @@ namespace usbguard
         void setPrivilege(Section section, Privilege privilege);
         void clear();
         void load(std::istream& stream);
+        void save(std::ostream& stream) const;
         void merge(const AccessControl& rhs);
+        void merge(const std::string& access_control_string);
 
       private:
         struct SectionHash {

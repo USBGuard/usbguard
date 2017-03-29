@@ -25,6 +25,10 @@ usbguard\ \f[B]generate\-policy\f[]
 usbguard\ \f[B]watch\f[]
 .PP
 usbguard \f[B]read\-descriptor\f[] <\f[I]file\f[]>
+.PP
+usbguard \f[B]add\-user\f[] <\f[I]name\f[]>
+.PP
+usbguard \f[B]remove\-user\f[] <\f[I]name\f[]>
 .SH DESCRIPTION
 .PP
 The \f[B]usbguard\f[] command provides a command\-line interface (CLI)
@@ -225,6 +229,92 @@ Show help.
 Read a USB descriptor from a file and print it in human\-readable form.
 .PP
 Available options:
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+~ ~ ~ ~
+.PP
+\f[B]add\-user\f[] <\f[I]name\f[]> [\f[I]OPTIONS\f[]]
+.PP
+Create an IPC access control file allowing the user/group identified by
+\f[I]name\f[] to use the USBGuard IPC bus.
+The change takes effect only after restarting the
+\f[B]usbguard\-daemon\f[](8) instance.
+.PP
+Available options:
+.TP
+.B \f[B]\-u\f[], \f[B]\-\-user\f[]
+The specified \f[I]name\f[] represents a username or UID (default).
+.RS
+.RE
+.TP
+.B \f[B]\-g\f[], \f[B]\-\-group\f[]
+The specified \f[I]name\f[] represents a groupname or GID.
+.RS
+.RE
+.TP
+.B \f[B]\-p\f[], \f[B]\-\-policy\f[] <\f[I]privileges\f[]>
+Policy related privileges.
+.RS
+.RE
+.TP
+.B \f[B]\-d\f[], \f[B]\-\-devices\f[] <\f[I]privileges\f[]>
+Device related privileges.
+.RS
+.RE
+.TP
+.B \f[B]\-e\f[], \f[B]\-\-exceptions\f[] <\f[I]privileges\f[]>
+Exceptions related privileges.
+.RS
+.RE
+.TP
+.B \f[B]\-P\f[], \f[B]\-\-parameters\f[] <\f[I]privileges\f[]>
+Run\-time parameter related privileges.
+.RS
+.RE
+.TP
+.B \f[B]\-h\f[], \f[B]\-\-help\f[]
+Show help.
+.RS
+.RE
+.PP
+Privileges:
+.PP
+When specifying \f[I]privileges\f[], they are expected to be in the form
+of a list separated by a colon:
+.IP
+.nf
+\f[C]
+\ \ \ \ $\ sudo\ usbguard\ add\-user\ joe\ \-\-devices=listen,modify
+\f[]
+.fi
+.PP
+Consult the \f[B]usbguard\-daemon.conf\f[](5) man\-page for a detailed
+list of available privileges in each section.
+.PP
+~ ~ ~ ~
+.PP
+\f[B]remove\-user\f[] <\f[I]name\f[]> [\f[I]OPTIONS\f[]]
+.PP
+Remove an IPC access control file associated with the user/group
+identified by \f[I]name\f[].
+The change takes effect only after restarting the
+\f[B]usbguard\-daemon\f[](8) instance.
+.PP
+Available options:
+.TP
+.B \f[B]\-u\f[], \f[B]\-\-user\f[]
+The specified \f[I]name\f[] represents a username or UID (default).
+.RS
+.RE
+.TP
+.B \f[B]\-g\f[], \f[B]\-\-group\f[]
+The specified \f[I]name\f[] represents a groupname or GID.
+.RS
+.RE
 .TP
 .B \f[B]\-h\f[], \f[B]\-\-help\f[]
 Show help.
