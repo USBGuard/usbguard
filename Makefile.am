@@ -90,7 +90,8 @@ usbguard_confdir= $(sysconfdir)/usbguard
 distuninstallcheck_listfiles= find . -type f ! -name rules.conf -print
 
 install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
-	mkdir -p $(DESTDIR)/$(usbguard_confdir)
+	$(MKDIR_P) $(DESTDIR)/$(usbguard_confdir)
+	$(MKDIR_P) $(DESTDIR)/$(usbguard_confdir)/IPCAccessControl.d
 	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
 	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
 	if ! test -f "$(DESTDIR)/$(usbguard_confdir)/rules.conf"; then \
@@ -109,7 +110,7 @@ usbguard.service: $(top_srcdir)/usbguard.service.in
 	$(SED) -e "s|%sbindir%|${sbindir}|" -e "s|%sysconfdir%|${sysconfdir}|" $^ > $@ || rm -f $@
 
 install-systemd-service: $(top_builddir)/usbguard.service
-	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR)
+	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL) -m 644 $(top_builddir)/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
@@ -283,7 +284,7 @@ pkginclude_HEADERS=\
 %.pb.lo : CXXFLAGS += -Wno-missing-declarations
 
 %.pb.cc %.pb.h: %.proto
-	mkdir -p $(top_builddir)/src/Library/IPC
+	$(MKDIR_P) $(top_builddir)/src/Library/IPC
 	@PROTOC@ --cpp_out=$(top_builddir)/src/Library/IPC --proto_path=$(top_srcdir)/src/Library/IPC "$<"
 	sed -i -e '1i#ifndef __clang_analyzer__' -e '$$a#endif' "$@"
 
@@ -433,9 +434,9 @@ usbguard_dbus_LDADD=\
 	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
 
 install-data-dbus: $(top_builddir)/src/DBus/org.usbguard.service install-polkit-policy install-systemd-dbus-service
-	mkdir -p $(DESTDIR)$(DBUS_SERVICES_DIR) && \
+	$(MKDIR_P) $(DESTDIR)$(DBUS_SERVICES_DIR) && \
 	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard.service $(DESTDIR)$(DBUS_SERVICES_DIR)
-	mkdir -p $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
+	$(MKDIR_P) $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
 	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
 uninstall-data-dbus: uninstall-polkit-policy uninstall-systemd-dbus-service
@@ -451,7 +452,7 @@ dbus-docs: $(top_srcdir)/src/DBus/DBusInterface.xml
 # else than in the directory where the input files are. And we
 # don't want to create files in the srcdir when building.
 #
-	mkdir -p "$(top_builddir)/src/DBus"
+	$(MKDIR_P) "$(top_builddir)/src/DBus"
 	cp "$<" "$(top_builddir)/src/DBus/"
 	$(GDBUS_CODEGEN) --interface-prefix org.usbguard --generate-docbook=docbook \
 	  "$(top_builddir)/src/DBus/DBusInterface.xml"
@@ -463,7 +464,7 @@ dbus-docs: $(top_srcdir)/src/DBus/DBusInterface.xml
 
 if POLICYKIT_ENABLED
 install-polkit-policy:
-	mkdir -p $(DESTDIR)$(POLKIT_POLICY_DIR) && \
+	$(MKDIR_P) $(DESTDIR)$(POLKIT_POLICY_DIR) && \
 	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.policy $(DESTDIR)$(POLKIT_POLICY_DIR)
 
 uninstall-polkit-policy:
@@ -477,7 +478,7 @@ endif
 
 if SYSTEMD_SUPPORT_ENABLED
 install-systemd-dbus-service: $(top_builddir)/src/DBus/usbguard-dbus.service
-	mkdir -p $(DESTDIR)$(SYSTEMD_UNIT_DIR) && \
+	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR) && \
 	  $(INSTALL_DATA) $(top_builddir)/src/DBus/usbguard-dbus.service $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 
 uninstall-systemd-dbus-service:
@@ -575,7 +576,7 @@ usbguard_applet_qt_CPPFLAGS=\
 	@qt_CFLAGS@
 
 %.qm: %.ts
-	mkdir -p "$(top_builddir)/$(shell dirname $@)"
+	$(MKDIR_P) "$(top_builddir)/$(shell dirname $@)"
 	@QTLRELEASE@ "$<" -qm "$@"
 
 %.moc.cpp: %.h
@@ -624,8 +625,8 @@ rpmbuild: $(DIST_ARCHIVES)
 	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
 	$(eval RPMBUILD_SPECS:=$(RPMBUILD_ROOT)/SPECS)
 	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
-	mkdir -p $(RPMBUILD_SOURCES)
-	mkdir -p $(RPMBUILD_SPECS)
+	$(MKDIR_P) $(RPMBUILD_SOURCES)
+	$(MKDIR_P) $(RPMBUILD_SPECS)
 	cp $(top_srcdir)/usbguard.spec $(RPMBUILD_SPECS)
 	cp $(top_builddir)/$(DIST_ARCHIVES) $(RPMBUILD_SOURCES)
 	rpmbuild $(RPMBUILD_FLAGS) \
@@ -645,7 +646,7 @@ rpmbuild-ba:
 release-files: rpmbuild-bs
 	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
 	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
-	mkdir -p $(RELEASE_DIR)
+	$(MKDIR_P) $(RELEASE_DIR)
 	cp $(DIST_ARCHIVES) $(RELEASE_DIR)
 	cp $(PACKAGE)-$(VERSION)-*.src.rpm $(RELEASE_DIR)
 	cd $(RELEASE_DIR) && $(GPG) -b -a $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig
