@@ -47,6 +47,8 @@ namespace usbguard
   const std::string LogStream::levelToString(Level level)
   {
     switch (level) {
+      case LogStream::Level::Audit:
+        return "(A)";
       case LogStream::Level::Error:
         return "(E)";
       case LogStream::Level::Warning:
@@ -155,6 +157,8 @@ namespace usbguard
       int levelToPriority(const LogStream::Level level)
       {
         switch (level) {
+          case LogStream::Level::Audit:
+            return LOG_NOTICE;
           case LogStream::Level::Error:
             return LOG_ERR;
           case LogStream::Level::Warning:
@@ -192,10 +196,40 @@ namespace usbguard
       FileSink(const std::string& filepath, bool append = true)
         : OStreamSink("file", _stream)
       {
+        _filepath = filepath;
         _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
       }
 
       ~FileSink()
+      {
+        _stream.close();
+      }
+    private:
+      std::string _filepath;
+      std::ofstream _stream;
+  };
+
+  class AuditFileSink : public OStreamSink
+  {
+    public:
+      AuditFileSink(const std::string& filepath)
+        : OStreamSink("auditfile", _stream)
+      {
+        _filepath = filepath;
+        _stream.open(filepath, std::fstream::app);
+      }
+
+      void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
+      {
+        /*
+         * AuditFileSink logs only Audit level messages.
+         */
+        if (level == LogStream::Level::Audit) {
+          OStreamSink::write(source, level, message);
+        }
+      }
+   
+      ~AuditFileSink()
       {
         _stream.close();
       }
@@ -274,6 +308,18 @@ namespace usbguard
     }
     else {
       delOutputSink_nolock("syslog");
+    }
+  }
+
+  void Logger::setAuditFile(bool state, const std::string& filepath)
+  {
+    auto L = lock();
+    if (state == true) {
+      std::unique_ptr<LogSink> sink(new AuditFileSink(filepath));
+      addOutputSink_nolock(sink);
+    }
+    else {
+      delOutputSink_nolock("auditfile");
     }
   }
 

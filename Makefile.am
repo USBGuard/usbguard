@@ -31,6 +31,7 @@ BUILT_SOURCES=\
 
 $(top_builddir)/src/build-config.h: $(top_builddir)/src/build-config.h.in
 	$(SED) \
+	  -e "s|[$$]{localstatedir}|${localstatedir}|g" \
 	  -e "s|[$$]{exec_prefix}|${prefix}|g" \
 	  -e "s|[$$]{datarootdir}|${datarootdir}|g" \
 	  -e "s|[$$]{datadir}|${pkgdatadir}|g" \
@@ -83,7 +84,10 @@ CLEANFILES+=\
 	$(top_builddir)/usbguard-daemon.conf
 
 usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
-	$(SED) "s|%sysconfdir%|${sysconfdir}|g" $^ > $@ || rm -f $@
+	$(SED) \
+	  -e "s|%sysconfdir%|${sysconfdir}|g" \
+	  -e "s|%localstatedir%|${localstatedir}|g" \
+	  $^ > $@ || rm -f $@
 
 usbguard_confdir= $(sysconfdir)/usbguard
 
@@ -92,6 +96,7 @@ distuninstallcheck_listfiles= find . -type f ! -name rules.conf -print
 install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	$(MKDIR_P) $(DESTDIR)/$(usbguard_confdir)
 	$(MKDIR_P) $(DESTDIR)/$(usbguard_confdir)/IPCAccessControl.d
+	$(MKDIR_P) $(DESTDIR)/${localstatedir}/log/usbguard
 	$(INSTALL) -m 600 $(top_builddir)/usbguard-daemon.conf \
 	  $(DESTDIR)/$(usbguard_confdir)/usbguard-daemon.conf
 	if ! test -f "$(DESTDIR)/$(usbguard_confdir)/rules.conf"; then \
@@ -255,7 +260,10 @@ libusbguard_la_SOURCES=\
 	src/Library/UEventDeviceManager.cpp \
 	src/Library/SysFSDevice.hpp \
 	src/Library/SysFSDevice.cpp \
-	src/Library/USBGuard.cpp
+	src/Library/USBGuard.cpp \
+	src/Library/Policy.cpp \
+	src/Library/Audit.cpp \
+	src/Library/Audit.hpp
 
 pkginclude_HEADERS=\
 	src/Library/ConfigFile.hpp \
@@ -273,7 +281,9 @@ pkginclude_HEADERS=\
 	src/Library/Predicates.hpp \
 	src/Library/Utility.hpp \
 	src/Library/Exception.hpp \
-	src/Library/USBGuard.hpp
+	src/Library/USBGuard.hpp \
+	src/Library/Policy.hpp \
+	src/Library/Audit.hpp
 
 # Workaround for generated protobuf code mishaps
 #```

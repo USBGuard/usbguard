@@ -154,3 +154,7 @@ IPCAccessControlFiles=%sysconfdir%/usbguard/IPCAccessControl.d/
 #
 DeviceRulesWithPort=false
 
+#
+# USBGuard audit events log file path.
+#
+AuditFilePath=%localstatedir%/log/usbguard/usbguard-audit.log

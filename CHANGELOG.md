@@ -21,6 +21,9 @@
   level per user and/or group.
 - Added add-user, remove-user usbuard CLI subcommands for creating, removing
   IPC access control files.
+- Added AuditFilePath configuration option for setting the location of the
+  USBGuard audit events log file path. If set, the usbguard-daemon will log
+  policy and device related actions and whether they succeeded or not.
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.

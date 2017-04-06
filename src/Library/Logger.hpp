@@ -42,6 +42,7 @@ namespace usbguard
       static const std::string sourceToString(const Source& source);
 
       enum class Level : int {
+        Audit = -2,
         Error = -1,
         Warning = 0,
         Info = 1,
@@ -88,6 +89,7 @@ namespace usbguard
       void setOutputConsole(bool state);
       void setOutputFile(bool state, const std::string& filepath = std::string(), bool append = true);
       void setOutputSyslog(bool state, const std::string& ident = std::string());
+      void setAuditFile(bool state, const std::string& filepath);
 
       void addOutputSink(std::unique_ptr<LogSink>& sink);
       void delOutputSink(const std::string& name);
