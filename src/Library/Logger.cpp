@@ -25,6 +25,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -216,7 +217,15 @@ namespace usbguard
         : OStreamSink("auditfile", _stream)
       {
         _filepath = filepath;
-        _stream.open(filepath, std::fstream::app);
+        const auto saved_umask = umask(0177);
+        try {
+          _stream.open(filepath, std::fstream::app);
+        }
+        catch(...) {
+          umask(saved_umask);
+          throw;
+        }
+        umask(saved_umask);
       }
 
       void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
