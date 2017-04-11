@@ -24,6 +24,7 @@
 #include "IPCPrivate.hpp"
 #include "RulePrivate.hpp"
 #include "RuleParser.hpp"
+#include "Audit.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -57,7 +58,8 @@ namespace usbguard
     "InsertedDevicePolicy",
     "RestoreControllerDeviceState",
     "DeviceManagerBackend",
-    "IPCAccessControlFiles"
+    "IPCAccessControlFiles",
+    "AuditFilePath"
   };
 
   static const std::vector<std::pair<String,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
@@ -177,7 +179,7 @@ namespace usbguard
       USBGUARD_LOG(Debug) << "Setting IPCAllowedUsers to { " << users_value << " }";
 
       for (auto const& user : users) {
-	addIPCAllowedUser(user);
+        addIPCAllowedUser(user);
       }
     }
 
@@ -189,7 +191,7 @@ namespace usbguard
       USBGUARD_LOG(Debug) << "Setting IPCAllowedGroups to { " << groups_value << " }";
 
       for (auto const& group : groups) {
-	addIPCAllowedGroup(group);
+        addIPCAllowedGroup(group);
       }
     }
 
@@ -236,6 +238,13 @@ namespace usbguard
     if (_config.hasSettingValue("IPCAccessControlFiles")) {
       const String value = _config.getSettingValue("IPCAccessControlFiles");
       loadIPCAccessControlFiles(value);
+    }
+
+    /* AuditFilePath */
+    if (_config.hasSettingValue("AuditFilePath")) {
+      const String value = _config.getSettingValue("AuditFilePath");
+      USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
+      USBGUARD_LOGGER.setAuditFile(true, value);
     }
 
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
@@ -520,6 +529,8 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
                         << " device_ptr=" << device.get();
 
+    auto audit_event = Audit::deviceEvent(_audit_identity, device, event);
+
     Pointer<const Rule> device_rule = \
       device->getDeviceRule(/*with_port*/true,
                             /*with_parent_hash=*/true);
@@ -528,6 +539,8 @@ namespace usbguard
                           event,
                           device->getTarget(),
                           device_rule->toString());
+
+    audit_event.success();
 
     Pointer<Rule> policy_rule = nullptr;
 
@@ -559,6 +572,9 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get()
                         << " matched_rule_ptr=" << matched_rule.get();
 
+    auto audit_event = Audit::policyEvent(_audit_identity,
+        device, device->getTarget(), matched_rule->getTarget());
+
     const Rule::Target target_old = device->getTarget();
     Pointer<Device> device_post = \
       _dm->applyDevicePolicy(device->getID(),
@@ -588,6 +604,7 @@ namespace usbguard
     }
 
     matched_rule->updateMetaDataCounters(/*applied=*/true);
+    audit_event.success();
   }
 
   Pointer<Rule> Daemon::getInsertedDevicePolicyRule(Pointer<Device> device)

@@ -26,6 +26,7 @@
 #include "Device.hpp"
 #include "DeviceManager.hpp"
 #include "DeviceManagerHooks.hpp"
+#include "Audit.hpp"
 
 #include "Common/Thread.hpp"
 
@@ -118,5 +119,7 @@ namespace usbguard
 
     bool _device_rules_with_port;
     bool _restore_controller_device_state;
+
+    AuditIdentity _audit_identity;
   };
 } /* namespace usbguard */

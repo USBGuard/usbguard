@@ -158,6 +158,7 @@ find %{buildroot} \( -name '*.la' -o -name '*.a' \) -exec rm -f {} ';'
 %{_libdir}/*.so.*
 %{_sbindir}/usbguard-daemon
 %{_bindir}/usbguard
+%dir %{_localstatedir}/log/usbguard
 %dir %{_sysconfdir}/usbguard
 %dir %{_sysconfdir}/usbguard/IPCAccessControl.d
 %config(noreplace) %attr(0600,-,-) %{_sysconfdir}/usbguard/usbguard-daemon.conf
