@@ -44,6 +44,9 @@
 - Fixed several memory leaks.
 - Don't pre-resolve user and group names in IPCAllowedUsers and IPCAllowedGroups
   settings. Instead, resolve the name during the IPC authentication phase.
+- Changed default values of PresentDevicePolicy (to apply-policy) and
+  IPCAllowedGroups (removed wheel group entry) settings in the shipped
+  usbguard-daemon.conf configuration file.
 
 ## 0.6.2 - 2016-09-18
 ### Changed

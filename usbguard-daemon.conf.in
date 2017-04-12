@@ -34,7 +34,7 @@ ImplicitPolicyTarget=block
 # * apply-policy - evaluate the ruleset for every present
 #                  device
 #
-PresentDevicePolicy=keep
+PresentDevicePolicy=apply-policy
 
 #
 # Present controller policy.
@@ -117,7 +117,7 @@ IPCAllowedUsers=root
 #
 # IPCAllowedGroups=groupname1 groupname2 ...
 #
-IPCAllowedGroups=wheel
+IPCAllowedGroups=
 
 #
 # IPC access control definition files path.
