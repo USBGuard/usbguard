@@ -3,6 +3,8 @@ ACL
 API
 AuditFilePath
 AUR
+autoconf
+automake
 backend
 Backend
 BadUSB
@@ -40,6 +42,7 @@ iSerial
 joe
 json
 libcap
+libgcrypt
 libqb
 libseccomp
 libsodium
@@ -49,6 +52,7 @@ MERCHANTABILITY
 multi
 nroff
 pandoc
+PEGTL
 PID
 Precompiled
 PresentControllerPolicy
@@ -69,6 +73,7 @@ subclass
 subclasses
 subcommand
 subcommands
+submodules
 syscall
 syslog
 systemd
