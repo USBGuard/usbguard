@@ -1,10 +1,14 @@
 personal_ws-1.1 en 0
 ACL
 API
+AuditFilePath
 AUR
+backend
+Backend
 BadUSB
 basename
 BNF
+boolean
 CentOS
 CLI
 conf
@@ -15,15 +19,19 @@ Deauthorize
 deauthorize
 deauthorizes
 devel
+DeviceManagerBackend
 discriminative
 DocToc
 EPEL
+filepath
 GID
 Github
 GPL
 GPLv
 groupname
 groupnames
+ImplicitPolicyTarget
+InsertedDevicePolicy
 IPC
 IPCAccessControlFiles
 IPCAllowedGroups
@@ -43,7 +51,10 @@ nroff
 pandoc
 PID
 Precompiled
+PresentControllerPolicy
+PresentDevicePolicy
 README
+RestoreControllerDeviceState
 RHEL
 roff
 RuleFile
