@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.6.3 - [unreleased]
+## 0.7.0 - 2017-04-12
 ### Added
 - Added InsertedDevicePolicy configuration option to control the policy
   method for inserted devices.
@@ -30,6 +30,9 @@
 - Removed UDev development files/API dependecy
 
 ### Changed
+- Reset Linux root hub bcdDevice value before updating device hash. This is
+  a backwards incompatible change because it changes how the device hash is
+  computed for Linux root hub devices.
 - Refactored low-level USB device handling into SysFSDevice class which
   represents a device in the /sys filesystem (sysfs).
 - Removed usage of `readdir_r` because it's obsolete. Replaced with readdir
@@ -38,9 +41,6 @@
 - Extended test suite with use case tests.
 - Install the usbguard-daemon configuration and policy file with strict file
   permissions to prevent policy leaks.
-- Reset Linux root hub bcdDevice value before updating device hash. This is
-  a backwards incompatible change because it changes how the device hash is
-  computed for Linux root hub devices.
 - Fixed several memory leaks.
 - Don't pre-resolve user and group names in IPCAllowedUsers and IPCAllowedGroups
   settings. Instead, resolve the name during the IPC authentication phase.
