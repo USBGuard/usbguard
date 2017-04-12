@@ -158,7 +158,7 @@ The target of a rule specifies whether the device will be authorized for use or 
 
  * *allow* -- **Authorize** the device. The device and its interfaces will be allowed to communicate with the system.
  * *block* -- **Deauthorize** the device, i.e. don't talk to the device for now.
- * *reject* -- **Remove** the device from the system, i.e. ignore the device as if didn't exist.
+ * *reject* -- **Remove** the device from the system, i.e. ignore the device as if it didn't exist.
 
 ### Device Specification
 
