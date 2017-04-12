@@ -80,8 +80,7 @@ Although the primary target and development platform of this project is Linux, t
 If you want to compile the sources from a release tarball, you'll have to install development files for:
 
  * [libqb](https://github.com/ClusterLabs/libqb) - used for IPC
- * [libsodium](http://libsodium.org) - used for hashing
- * systemd-devel - used for udev
+ * [libsodium](http://libsodium.org) or [libgcrypt](https://www.gnupg.org/software/libgcrypt)- used for hashing
 
 Optionally, you may want to install:
 
@@ -98,30 +97,21 @@ After the sources are successfully built, you can run the test suite by executin
 
     $ make check
 
-If you want to compile the sources in a cloned repository, there are additional step required:
-
-    $ git submodule init
-    $ git submodule update
-
-This will fetch the sources of [json](https://github.com/nlohmann/json/), [spdlog](https://github.com/gabime/spdlog) and [Catch](https://github.com/philsquared/Catch) which are used in this project too.
-
-And to generate the *configure* script, run:
-
-    $ ./autogen.sh
-
-If you want to modify the lexer and/or the parser, you'll have to generate new source files for them. To learn how to do that, read [src/Library/RuleParser/README.md](src/Library/RuleParser/README.md).
+If you want to compile the sources in a cloned repository, you'll have to run the `./autogen.sh` script which will fetch the sources (git submodules) of [PEGTL](https://github.com/taocpp/PEGTL/) and [Catch](https://github.com/philsquared/Catch) which are used in this project too. The script will then initialize the autoconf & automake based build system.
 
 ## OS packages
 
 ### Fedora Linux, RHEL or CentOS
 
-Precompiled packages for Fedora 21, 22, 23, rawhide and EPEL 7 (RHEL, CentOS) are distributed in a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
+Precompiled packages for Fedora and EPEL (RHEL, CentOS, ...) are distributed via a Copr [repository](https://copr.fedoraproject.org/coprs/mildew/usbguard/).
 You can install the repository by executing the following steps:
 
     $ sudo yum install yum-plugin-copr
     $ sudo yum copr enable mildew/usbguard
     $ sudo yum install usbguard
     $ sudo yum install usbguard-applet-qt
+
+Use `dnf` instead of `yum` if you are on a Fedora based system.
 
 ### Gentoo
 
@@ -138,23 +128,27 @@ For Arch Linux there are two packages in AUR:
 
 ### Usage
 
-To actually start the daemon, use:
+A quick way to start using USBGuard on your system is to follow these steps:
 
-    $ sudo systemctl start usbguard.service
-    $ usbguard-applet-qt
+  1. Generate a [policy](#initial-policy) for your system.
+  2. Start the usbguard-daemon (`systemctl start usbguard.service`).
+
+Additionally, you can use the usbguard desktop applet (`usbguard-applet-qt`) but since this applet is going to run from the desktop session, i.e. non-root user, you'll have to enable USBGuard IPC access for that user. By default, access to the IPC is allowed only to the `root` user. Adding users or groups can be done via the usbguard CLI. For example, if you want user `joe` to be able to use the desktop applet, run:
+
+    # usbguard add-user joe --devices ALL --exceptions ALL
 
 ## Rule Language
 
 The USBGuard daemon decides which USB device to authorize based on a policy defined by a set of rules. When a USB device is inserted into the system, the daemon scans the existing rules sequentially and when a matching rule is found, it either authorizes (**allows**), deauthorizes (**blocks**) or removes (**rejects**) the device, based on the rule target. If no matching rule is found, the decision is based on an implicit default target. This implicit default is to block the device until a decision is made by the user. The rule language grammar, expressed in a BNF-like syntax, is the following:
 
-```
+
     rule ::= target attributes.
 
     target ::= "allow" | "block" | "reject".
 
     attributes ::= attributes | attribute.
     attributes ::= .
-```
+
 
 Rule attributes specify which devices to match or what condition have to be met for the rule to be applicable. See the [Device Attributes](https://github.com/dkopecek/usbguard#device-attributes) section for the list of available attributes and [Conditions](https://github.com/dkopecek/usbguard#conditions) for the list of supported rule conditions.
 
@@ -274,7 +268,7 @@ The policy will be printed out on the standard output. It's a good idea to revie
     # vi rules.conf
     (review/modify the rule set)
     # sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
-    # sudo systemctl restart usbguard
+    # sudo systemctl start usbguard.service
 
 ## Example policies
 
@@ -318,7 +312,7 @@ The policy rejects all USB flash disk devices with an interface from the HID/Key
 
 ## License
 >
-> Copyright (C) 2016 Red Hat, Inc.
+> Copyright (C) 2017 Red Hat, Inc.
 >
 > This program is free software; you can redistribute it and/or modify
 > it under the terms of the GNU General Public License as published by
