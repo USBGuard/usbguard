@@ -1,12 +1,11 @@
 %global _hardened_build 1
-%define buildstamp %(date +%s)
 
 %define with_gui_qt5 1
 %define with_dbus    1
 
 Name:           usbguard
-Version:        0.6.3
-Release:        0.2.%{buildstamp}%{?dist}
+Version:        0.7.0
+Release:        1%{?dist}
 Summary:        A tool for implementing USB device usage policy
 Group:          System Environment/Daemons
 License:        GPLv2+
@@ -214,5 +213,5 @@ find %{buildroot} \( -name '*.la' -o -name '*.a' \) -exec rm -f {} ';'
 %endif
 
 %changelog
-* Mon Jan 16 2017 Daniel Kopeček <dnk1618@gmail.com> 0.6.3-1
-- Update to 0.6.3
+* Wed Apr 12 2017 Daniel Kopeček <dnk1618@gmail.com> 0.7.0-1
+- Update to 0.7.0
