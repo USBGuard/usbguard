@@ -79,7 +79,8 @@ Although the primary target and development platform of this project is Linux, t
 
 If you want to compile the sources from a release tarball, you'll have to install development files for:
 
- * [libqb](https://github.com/ClusterLabs/libqb) - used for IPC
+ * [libqb](https://github.com/ClusterLabs/libqb) - used for local UNIX socket based IPC
+ * [protobuf](https://github.com/google/protobuf) - used for IPC message (de)serialization
  * [libsodium](http://libsodium.org) or [libgcrypt](https://www.gnupg.org/software/libgcrypt)- used for hashing
 
 Optionally, you may want to install:
