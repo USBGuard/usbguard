@@ -1,17 +1,8 @@
 # Roadmap
 
-## 0.6.x
-
-- Resolve GCC 4.8.x compatibility
- - Reimplement json parsing/serialization on top of json-c
-- Revision of the logging code
- - Drop spdlog, implement a simple file/console/syslog logger
- - Allow custom logging handlers from third-party code
- - Use logging consistently in the code
-- Investigate possibility of supporting comments in the rule file
-
 ## 0.7.x
 
+- Investigate possibility of supporting comments in the rule file
 - Per-interface authorization
 - Block device signing and verification
 - Support for USB authorization on user authentication (probably via
