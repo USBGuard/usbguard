@@ -51,6 +51,13 @@ BuildRequires: libxml2
 BuildRequires: pandoc
 %endif
 
+%ifarch ppc
+#
+# We need atomic instruction emulation on 32bit PPC arch.
+#
+BuildRequires: libatomic
+%endif
+
 %description
 The USBGuard software framework helps to protect your computer against rogue USB
 devices by implementing basic whitelisting/blacklisting capabilities based on
