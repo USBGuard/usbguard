@@ -1,5 +1,16 @@
 # Notes
 
+## usbguard.spec
+
+pre-release version template:
+
+```
+%define buildstamp %(date +%s)
+
+Version: <Major>.<minor>.<patch>
+Release: 0.2.%{buildstamp}%{?dist}
+```
+
 ## USBGuard CLI
 
 ### Working with rules
