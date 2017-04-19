@@ -291,7 +291,7 @@ else
 	AC_LANG_PUSH([C++])
 	AC_CHECK_HEADER([pegtl.hh], [], [AC_MSG_FAILURE(pegtl.hh not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
 	AC_LANG_POP
-	pegtl_CFLAGS=""
+	pegtl_CFLAGS="-I/usr/include/pegtl"
 	pegtl_AC_CFLAGS=""
 	pegtl_LIBS=""
 	CPPFLAGS=$SAVE_CPPFLAGS
