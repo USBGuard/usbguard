@@ -1,0 +1,182 @@
+#compdef usbguard
+#autoload
+
+# usbguard completion, based on cli help text
+
+local curcontext="$curcontext" state line ret=1
+local -a _command_args
+local -a _global_args
+local -a _subcommands
+
+local IFS=$'\n'
+_global_args=($(usbguard advanced | grep '^\s*--' | sed -r 's/^[\t ]*(--[^\t ,]+)( [^\t ,]*)?,? ?(--?[^\t ]+)?[\t ]*(.*)$/(\3)\1[\4]/'))
+
+_arguments -C -A "-v" -A "--version"\
+  '(- 1 *)'{-v,--version}'[display version information]' \
+  '1: :->cmds' \
+  $_global_args \
+  '*:: :->args' && ret=0
+
+case $state in
+  cmds)
+    _subcommands=(
+      "get-parameter:Get the value of a runtime parameter."
+      "set-parameter:Set the value of a runtime parameter."
+      "list-devices:List all USB devices recognized by the USBGuard daemon."
+      "allow-device:Authorize a device to interact with the system."
+      "block-device:Deauthorize a device."
+      "reject-device:Deauthorize and remove a device from the system."
+      "list-rules:List the rule set (policy) used by the USBGuard daemon."
+      "append-rule:Append a rule to the rule set."
+      "remove-rule:Remove a rule from the rule set."
+      "generate-policy:Generate a rule set (policy) based on the connected USB devices."
+      "watch:Watch for IPC interface events and print them to stdout."
+      "read-descriptor:Read a USB descriptor from a file and print it in human-readable form."
+      "add-user:Add USBGuard IPC user/group (requires root privilges)"
+      "remove-user:Remove USBGuard IPC user/group (requires root privileges)"
+    )
+    _describe -t subcommands 'usbguard subcommands' _subcommands && ret=0
+    ;;
+  args)
+    case $line[1] in
+      help)
+        _values 'commands' \
+          'get-parameter' \
+          'set-parameter' \
+          'list-devices' \
+          'allow-device' \
+          'block-device' \
+          'reject-device' \
+          'list-rules' \
+          'append-rule' \
+          'remove-rule' \
+          'generate-policy' \
+          'watch' \
+          'read-descriptor' \
+          'add-user' \
+          'remove-user' && ret=0
+        ;;
+      get-parameter)
+        _values "command" \
+          '<name>[name]'
+        _command_args=( \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      set-parameter)
+        _values "command" \
+          '<name>[name]' \
+          '<value>[value]'
+        _command_args=( \
+          '(--verbose)--verbose[Print the previous and new attribute value]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      list-devices)
+        _command_args=( \
+          '(--allowed)--allowed[List allowed devices]' \
+          '(--blocked)--blocked[List blocked devices]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      allow-device)
+        _values "command" \
+          '<id>[device-id]'
+        _command_args=( \
+          '(--permanent)--permanent[Make the decision permanent]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      block-device)
+        _values "command" \
+          '<id>[device-id]'
+        _command_args=( \
+          '(--permanent)--permanent[Make the decision permanent]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      reject-device)
+        _values "command" \
+          '<id>[device-id]'
+        _command_args=( \
+          '(--permanent)--permanent[Make the decision permanent]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      list-rules)
+        _command_args=( \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      append-rule)
+        _values "command" \
+          '<rule>[rule]'
+        _command_args=( \
+          '(--after)--after <id>[Append the new rule after a rule with the specified id instead of appending it]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      remove-rule)
+        _values "command" \
+          '<id>[device-id]'
+        _command_args=( \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      generate-policy)
+        _command_args=( \
+          '(--with-ports-sn)--with-ports-sn[Generate port specific rules for all devices]' \
+          '(--no-ports-sn)--no-ports-sn[Do not generate port specific rule for devices without an iSerial value]' \
+          '(--target)--target <T>[Generate an explicit "catch all" rule with the specified target (allow, block, reject)]' \
+          '(--no-hashes)--no-hashes[Do not generate a hash attribute for each device]' \
+          '(--hash-only)--hash-only[Generate a hash-only policy]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      get-parameter)
+        _command_args=( \
+          '(--wait)--wait[Wait for IPC connection to become available]' \
+          '(--once)--once[Wait only when starting, if needed. Exit when the connection is lost]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      read-descriptor)
+        _values "command" \
+          '<name>[name]'
+        _command_args=( \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      add-user)
+        _values "command" \
+          '<name>[name]'
+        _command_args=( \
+          '(--user)--user[The specified name represents a username or UID (default)]' \
+          '(--group)--group[The specified name represents a groupname or GID]' \
+          '(--policy)--policy <privileges>[Policy related privileges]' \
+          '(--devices)--devices <privileges>[Device related privileges]' \
+          '(--exceptions)--exceptions <privileges>[Exceptions related privileges]' \
+          '(--parameters)--parameters <privileges>[Run-time parameter related privileges]' \
+          '(--no-root-check)--no-root-check[Disable root privileges checking]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+      remove-user)
+        _values "command" \
+          '<name>[name]'
+        _command_args=( \
+          '(--user)--user[The specified name represents a username or UID (default)]' \
+          '(--group)--group[The specified name represents a groupname or GID]' \
+          '(--no-root-check)--no-root-check[Disable root privileges checking]' \
+          '(--help)--help[Show help]'
+        )
+        ;;
+    esac
+    ;;
+esac
+
+_arguments \
+  $_command_args \
+  &&  ret=0
+
+return ret
