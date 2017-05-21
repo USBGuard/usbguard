@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "MainWindow.h"
+#include "SessionBlocker.h"
 #include <Logger.hpp>
 #include <QApplication>
 #include <QLocale>
@@ -41,6 +42,8 @@ int main(int argc, char *argv[])
     else {
       USBGUARD_LOG(Debug) << "Translations not available for the current locale.";
     }
+
+    const SessionBlocker block(a);
 
     MainWindow w;
     a.setQuitOnLastWindowClosed(false);
