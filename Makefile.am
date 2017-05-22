@@ -528,6 +528,8 @@ usbguard_applet_qt_SOURCES_BASE=\
 	src/GUI.Qt/MainWindow.h \
 	src/GUI.Qt/DeviceModel.cpp \
 	src/GUI.Qt/DeviceModel.h \
+	src/GUI.Qt/SessionBlocker.cpp \
+	src/GUI.Qt/SessionBlocker.h \
 	src/GUI.Qt/TargetDelegate.cpp \
 	src/GUI.Qt/TargetDelegate.h
 
@@ -564,6 +566,7 @@ CLEANFILES +=\
 	$(top_builddir)/src/GUI.Qt/usbguard.qrc.cpp \
 	$(top_builddir)/src/GUI.Qt/usbguard.qrc \
 	$(top_builddir)/src/GUI.Qt/DeviceModel.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/SessionBlocker.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/TargetDelegate.moc.cpp
 
 nodist_usbguard_applet_qt_SOURCES=\
@@ -572,6 +575,7 @@ nodist_usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt/MainWindow.moc.cpp \
 	src/GUI.Qt/usbguard.qrc.cpp \
 	src/GUI.Qt/DeviceModel.moc.cpp \
+	src/GUI.Qt/SessionBlocker.moc.cpp \
 	src/GUI.Qt/TargetDelegate.moc.cpp
 
 usbguard_applet_qt_LDADD=\
