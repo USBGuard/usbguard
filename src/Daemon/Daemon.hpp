@@ -27,6 +27,7 @@
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/ConfigFile.hpp"
 #include "usbguard/IPCServer.hpp"
+#include "usbguard/Policy.hpp"
 #include "usbguard/RuleSet.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/Device.hpp"
@@ -114,7 +115,7 @@ namespace usbguard
     std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
-    RuleSet _ruleset;
+    Policy _policy;
 
     int pid_fd;
 
