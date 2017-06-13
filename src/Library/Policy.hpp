@@ -20,9 +20,14 @@
 
 #include <Typedefs.hpp>
 #include <string>
+#include <vector>
+
+#include <RuleSet.hpp>
 
 namespace usbguard
 {
+  class Interface;
+
   class DLL_PUBLIC Policy
   {
     public:
@@ -30,9 +35,48 @@ namespace usbguard
       {
         Insert = 1,
         Update = 2,
-        Remove = 3,
+        Remove = 3
       };
 
+      enum class SourceType
+      {
+        Local = 1,
+        Ldap = 2,
+        SSSD = 3
+      };
+
+      Policy(Interface * const interface_ptr);
+
+      const RuleSet getRuleSet();
+      void load();
+      void setPolicySource(SourceType source);
+      void setLocalSourcePath(const String& path);
+
+
+      void load(const String& path);
+      void load(std::istream& stream);
+      void save(const String& path) const;
+      void save(std::ostream& stream) const;
+      void setDefaultTarget(Rule::Target target);
+      Rule::Target getDefaultTarget() const;
+      void setDefaultAction(const String& action);
+      uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID);
+      uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
+      Pointer<Rule> getRule(uint32_t id);
+      bool removeRule(uint32_t id);
+      Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
+      PointerVector<const Rule> getRules();
+      Pointer<Rule> getTimedOutRule();
+      uint32_t assignID(Pointer<Rule> rule);
+      uint32_t assignID();
+
       static std::string eventTypeToString(EventType event);
+      static std::string sourceTypeToString(SourceType source);
+
+    private:
+      SourceType _source;
+      String _localPath;
+
+      RuleSet _ruleset;
   };
 } /* namespace usbguard */
