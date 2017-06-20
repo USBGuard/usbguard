@@ -22,6 +22,7 @@
 #include "ConfigFile.hpp"
 #include "IPCServer.hpp"
 #include "RuleSet.hpp"
+#include "Policy.hpp"
 #include "Rule.hpp"
 #include "Device.hpp"
 #include "DeviceManager.hpp"
@@ -107,7 +108,7 @@ namespace usbguard
     Pointer<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
-    RuleSet _ruleset;
+    Policy _policy;
 
     String _device_manager_backend;
     Pointer<DeviceManager> _dm;
