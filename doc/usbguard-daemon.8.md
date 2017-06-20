@@ -23,7 +23,10 @@ The **usbguard-daemon** is the main component of the USBGuard software framework
 :   Log to syslog.
 
 **-k**
-:   Log to console.
+:   Log to console. (default)
+
+**-K**
+:   Disable Logging to console.
 
 **-l** <*path*>
 :   Log to a file at *path*.

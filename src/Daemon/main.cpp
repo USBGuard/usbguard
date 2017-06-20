@@ -36,7 +36,7 @@ static void setupCapabilities(void);
 
 using namespace usbguard;
 
-const char * const G_optstring = "dskl:p:c:hWC";
+const char * const G_optstring = "dskKl:p:c:hWC";
 
 static void printUsage(std::ostream& stream, const char *arg0)
 {
@@ -46,6 +46,7 @@ static void printUsage(std::ostream& stream, const char *arg0)
   stream << "  -d         Enable debugging messages in the log." << std::endl;
   stream << "  -s         Log to syslog." << std::endl;
   stream << "  -k         Log to console." << std::endl;
+  stream << "  -K         Disable Logging to console." << std::endl;
   stream << "  -l <path>  Log to a file at `path'." << std::endl;
   stream << "  -p <path>  Write PID to a file at `path'." << std::endl;
   stream << "  -c <path>  Load configuration from a file at `path'." << std::endl;
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
   const char * const arg0 = argv[0];
   bool debug_mode = false;
   bool log_syslog = false;
-  bool log_console = false;
+  bool log_console = true;
   bool log_file = false;
   bool use_seccomp_whitelist = false;
   bool drop_capabilities = false;
@@ -81,6 +82,9 @@ int main(int argc, char *argv[])
 	break;
       case 'k':
 	log_console = true;
+	break;
+      case 'K':
+	log_console = false;
 	break;
       case 'l':
 	log_file = true;
