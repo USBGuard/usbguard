@@ -309,6 +309,8 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
 	src/Daemon/main.cpp \
+	src/Daemon/NSHandler.cpp \
+	src/Daemon/NSHandler.hpp \
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
 	src/Common/Utility.hpp \
@@ -324,12 +326,14 @@ usbguard_daemon_CPPFLAGS=\
 	@seccomp_CFLAGS@ \
 	@libcapng_CFLAGS@ \
 	@audit_CFLAGS@
+	@pegtl_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@seccomp_LIBS@ \
 	@libcapng_LIBS@ \
 	@audit_LIBS@
+	@pegtl_LIBS@
 
 EXTRA_DIST +=\
 	README.adoc \
