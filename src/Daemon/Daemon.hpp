@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 
@@ -23,6 +24,7 @@
 #include "IPCServer.hpp"
 #include "RuleSet.hpp"
 #include "Policy.hpp"
+#include "NSHandler.hpp"
 #include "Rule.hpp"
 #include "Device.hpp"
 #include "DeviceManager.hpp"
@@ -108,6 +110,8 @@ namespace usbguard
     Pointer<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
+
+    NSHandler _nss;
     Policy _policy;
 
     String _device_manager_backend;

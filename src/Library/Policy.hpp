@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 
@@ -39,13 +40,7 @@ namespace usbguard
       Policy();
 
       void setRuleSet(std::shared_ptr<RuleSet> ptr);
-      const RuleSet getRuleSet();
-
-      void load(const String& path);
-      void load(std::istream& stream);
-
-      void save(const String& path) const;
-      void save(std::ostream& stream) const;
+      std::shared_ptr<RuleSet> getRuleSet();
 
       void setDefaultTarget(Rule::Target target);
       Rule::Target getDefaultTarget() const;

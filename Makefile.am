@@ -212,6 +212,8 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCServer.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/IPCServerPrivate.cpp \
+	src/Library/NSHandler.cpp \
+	src/Library/NSHandler.hpp \
 	src/Library/USB.cpp \
 	src/Library/Rule.cpp \
 	src/Library/RuleParser.cpp \
@@ -278,6 +280,7 @@ pkginclude_HEADERS=\
 	src/Library/Device.hpp \
 	src/Library/DeviceManager.hpp \
 	src/Library/Logger.hpp \
+	src/Library/NSHandler.hpp \
 	src/Library/Predicates.hpp \
 	src/Library/Utility.hpp \
 	src/Library/Exception.hpp \
@@ -316,12 +319,14 @@ usbguard_daemon_CPPFLAGS=\
 	-fPIE \
 	$(AM_CPPFLAGS) \
 	@seccomp_CFLAGS@ \
-	@libcapng_CFLAGS@
+	@libcapng_CFLAGS@ \
+	@pegtl_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@seccomp_LIBS@ \
-	@libcapng_LIBS@
+	@libcapng_LIBS@ \
+	@pegtl_LIBS@
 
 EXTRA_DIST +=\
 	README.md \

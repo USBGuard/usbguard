@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #include "Policy.hpp"
 #include "Exception.hpp"
@@ -31,29 +32,9 @@ namespace usbguard
     _ruleset_ptr = ptr;
   }
 
-  const RuleSet Policy::getRuleSet()
+  std::shared_ptr<RuleSet> Policy::getRuleSet()
   {
-    return *_ruleset_ptr;
-  }
-
-  void Policy::load(const String& path)
-  {
-    _ruleset_ptr->load(path);
-  }
-
-  void Policy::load(std::istream& stream)
-  {
-    _ruleset_ptr->load(stream);
-  }
-
-  void Policy::save(const String& path) const
-  {
-    _ruleset_ptr->save(path);
-  }
-
-  void Policy::save(std::ostream& stream) const
-  {
-    _ruleset_ptr->save(stream);
+    return _ruleset_ptr;
   }
 
   void Policy::setDefaultTarget(Rule::Target target)

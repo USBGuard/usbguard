@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,11 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #include <build-config.h>
 
 #include "Daemon.hpp"
 #include "Logger.hpp"
+#include "NSHandler.hpp"
 #include "Common/Utility.hpp"
 #include "IPCPrivate.hpp"
 #include "RulePrivate.hpp"
@@ -120,8 +122,12 @@ namespace usbguard
 
   void Daemon::loadConfiguration(const String& path)
   {
+
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
     _config.open(path);
+
+    USBGUARD_LOG(Info) << "Loading NSSwitch...";
+    _nss.parseNSSwitch();
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
@@ -252,9 +258,10 @@ namespace usbguard
   void Daemon::loadRules(const String& path)
   {
     USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
-    std::shared_ptr<RuleSet> ptr(new RuleSet(this));
-    _policy.setRuleSet(ptr);
-    _policy.load(path);
+
+    auto ruleset = _nss.getRuleSet(this);
+    ruleset->load(path);
+    _policy.setRuleSet(ruleset);
   }
 
   void Daemon::loadIPCAccessControlFiles(const String& path)
@@ -439,7 +446,7 @@ namespace usbguard
 
     const uint32_t id = _policy.upsertRule(match_rule, new_rule, parent_insensitive);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -477,9 +484,9 @@ namespace usbguard
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
 
-    const uint32_t id = _policy.appendRule(rule, parent_id);
+    const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
     }
     USBGUARD_LOG(Trace) << "return: id=" << id;
     return id;
@@ -490,14 +497,14 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "id=" << id;
     _policy.removeRule(id);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
     }
   }
 
   const RuleSet Daemon::listRules(const std::string& query)
   {
     USBGUARD_LOG(Trace) << "entry: query=" << query; 
-    return _policy.getRuleSet();
+    return (*_policy.getRuleSet());
   }
 
   uint32_t Daemon::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
