@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //          Jiri Vymazal   <jvymazal@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -23,6 +24,8 @@
 #endif
 
 #include "Common/Thread.hpp"
+
+#include "NSHandler.hpp"
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/ConfigFile.hpp"
@@ -115,6 +118,8 @@ namespace usbguard
     std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
+
+    NSHandler _nss;
     Policy _policy;
 
     int pid_fd;

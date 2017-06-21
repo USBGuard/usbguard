@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -35,29 +36,9 @@ namespace usbguard
     _ruleset_ptr = ptr;
   }
 
-  const RuleSet Policy::getRuleSet()
+  std::shared_ptr<RuleSet> Policy::getRuleSet()
   {
-    return *_ruleset_ptr;
-  }
-
-  void Policy::load(const String& path)
-  {
-    _ruleset_ptr->load(path);
-  }
-
-  void Policy::load(std::istream& stream)
-  {
-    _ruleset_ptr->load(stream);
-  }
-
-  void Policy::save(const String& path) const
-  {
-    _ruleset_ptr->save(path);
-  }
-
-  void Policy::save(std::ostream& stream) const
-  {
-    _ruleset_ptr->save(stream);
+    return _ruleset_ptr;
   }
 
   void Policy::setDefaultTarget(Rule::Target target)
@@ -70,7 +51,7 @@ namespace usbguard
     return _ruleset_ptr->getDefaultTarget();
   }
 
-  void Policy::setDefaultAction(const String& action)
+  void Policy::setDefaultAction(const std::string& action)
   {
     _ruleset_ptr->setDefaultAction(action);
   }
@@ -85,7 +66,7 @@ namespace usbguard
     return _ruleset_ptr->upsertRule(match_rule, new_rule, parent_insensitive);
   }
 
-  Pointer<Rule> Policy::getRule(uint32_t id)
+  std::shared_ptr<Rule> Policy::getRule(uint32_t id)
   {
     return _ruleset_ptr->getRule(id);
   }
@@ -95,22 +76,17 @@ namespace usbguard
     return _ruleset_ptr->removeRule(id);
   }
 
-  Pointer<Rule> Policy::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
+  std::shared_ptr<Rule> Policy::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
     return _ruleset_ptr->getFirstMatchingRule(device_rule, from_id);
   }
 
-  PointerVector<const Rule> Policy::getRules()
+  std::vector<std::shared_ptr<const Rule>> Policy::getRules()
   {
     return _ruleset_ptr->getRules();
   }
 
-  Pointer<Rule> Policy::getTimedOutRule()
-  {
-    return _ruleset_ptr->getTimedOutRule();
-  }
-
-  uint32_t Policy::assignID(Pointer<Rule> rule)
+  uint32_t Policy::assignID(std::shared_ptr<Rule> rule)
   {
     return _ruleset_ptr->assignID(rule);
   }
