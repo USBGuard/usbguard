@@ -44,7 +44,7 @@ namespace usbguard {
     return *this;
   }
 
-  void RuleSet::load(const String& path)
+  void RuleSet::load(const std::string& path)
   {
     d_pointer->load(path);
   }
@@ -54,7 +54,7 @@ namespace usbguard {
     d_pointer->load(stream);
   }
 
-  void RuleSet::save(const String& path) const
+  void RuleSet::save(const std::string& path) const
   {
     d_pointer->save(path);
   }
@@ -74,7 +74,7 @@ namespace usbguard {
     return d_pointer->getDefaultTarget();
   }
 
-  void RuleSet::setDefaultAction(const String& action)
+  void RuleSet::setDefaultAction(const std::string& action)
   {
     d_pointer->setDefaultAction(action);
   }

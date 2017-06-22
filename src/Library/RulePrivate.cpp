@@ -292,102 +292,102 @@ namespace usbguard {
     return _device_id;
   }
 
-  void RulePrivate::setSerial(const String& value)
+  void RulePrivate::setSerial(const std::string& value)
   {
     _serial.set(value);
   }
 
-  const String& RulePrivate::getSerial() const
+  const std::string& RulePrivate::getSerial() const
   {
     return _serial.get();
   }
 
-  const Rule::Attribute<String>& RulePrivate::attributeSerial() const
+  const Rule::Attribute<std::string>& RulePrivate::attributeSerial() const
   {
     return _serial;
   }
 
-  Rule::Attribute<String>& RulePrivate::attributeSerial()
+  Rule::Attribute<std::string>& RulePrivate::attributeSerial()
   {
     return _serial;
   }
 
-  void RulePrivate::setName(const String& value)
+  void RulePrivate::setName(const std::string& value)
   {
     _name.set(value);
   }
 
-  const String& RulePrivate::getName() const
+  const std::string& RulePrivate::getName() const
   {
     return _name.get();
   }
 
-  const Rule::Attribute<String>& RulePrivate::attributeName() const
+  const Rule::Attribute<std::string>& RulePrivate::attributeName() const
   {
     return _name;
   }
 
-  Rule::Attribute<String>& RulePrivate::attributeName()
+  Rule::Attribute<std::string>& RulePrivate::attributeName()
   {
     return _name;
   }
 
-  void RulePrivate::setHash(const String& value)
+  void RulePrivate::setHash(const std::string& value)
   {
     _hash.set(value);
   }
 
-  const String& RulePrivate::getHash() const
+  const std::string& RulePrivate::getHash() const
   {
     return _hash.get();
   }
 
-  const Rule::Attribute<String>& RulePrivate::attributeHash() const
+  const Rule::Attribute<std::string>& RulePrivate::attributeHash() const
   {
     return _hash;
   }
 
-  Rule::Attribute<String>& RulePrivate::attributeHash()
+  Rule::Attribute<std::string>& RulePrivate::attributeHash()
   {
     return _hash;
   }
 
-  void RulePrivate::setParentHash(const String& value)
+  void RulePrivate::setParentHash(const std::string& value)
   {
     _parent_hash.set(value);
   }
 
-  const String& RulePrivate::getParentHash() const
+  const std::string& RulePrivate::getParentHash() const
   {
     return _parent_hash.get();
   }
 
-  const Rule::Attribute<String>& RulePrivate::attributeParentHash() const
+  const Rule::Attribute<std::string>& RulePrivate::attributeParentHash() const
   {
     return _parent_hash;
   }
 
-  Rule::Attribute<String>& RulePrivate::attributeParentHash()
+  Rule::Attribute<std::string>& RulePrivate::attributeParentHash()
   {
     return _parent_hash;
   }
 
-  void RulePrivate::setViaPort(const String& value)
+  void RulePrivate::setViaPort(const std::string& value)
   {
     _via_port.set(value);
   }
 
-  const String& RulePrivate::getViaPort() const
+  const std::string& RulePrivate::getViaPort() const
   {
     return _via_port.get();
   }
 
-  const Rule::Attribute<String>& RulePrivate::attributeViaPort() const
+  const Rule::Attribute<std::string>& RulePrivate::attributeViaPort() const
   {
     return _via_port;
   }
 
-  Rule::Attribute<String>& RulePrivate::attributeViaPort()
+  Rule::Attribute<std::string>& RulePrivate::attributeViaPort()
   {
     return _via_port;
   }
@@ -418,7 +418,7 @@ namespace usbguard {
   }
 
   template<class ValueType>
-  static void toString_appendNonEmptyAttribute(String& rule_string, const Rule::Attribute<ValueType>& attribute)
+  static void toString_appendNonEmptyAttribute(std::string& rule_string, const Rule::Attribute<ValueType>& attribute)
   {
     if (attribute.empty()) {
       return;
@@ -430,9 +430,9 @@ namespace usbguard {
     return;
   }
 
-  String RulePrivate::toString(bool invalid) const
+  std::string RulePrivate::toString(bool invalid) const
   {
-    String rule_string;
+    std::string rule_string;
 
     try {
       rule_string.append(Rule::targetToString(_target));
@@ -467,7 +467,7 @@ namespace usbguard {
     return _meta;
   }
 
-  Rule RulePrivate::fromString(const String& rule_string)
+  Rule RulePrivate::fromString(const std::string& rule_string)
   {
     return parseRuleFromString(rule_string);
   }

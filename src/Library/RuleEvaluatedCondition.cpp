@@ -27,7 +27,7 @@
 
 namespace usbguard
 {
-  RuleEvaluatedCondition::RuleEvaluatedCondition(const String& elapsed_time, bool negated)
+  RuleEvaluatedCondition::RuleEvaluatedCondition(const std::string& elapsed_time, bool negated)
     : RuleConditionBase("rule-applied", elapsed_time, negated)
   {
     _elapsed_time = std::chrono::steady_clock::duration(stringToSeconds(elapsed_time));
@@ -62,7 +62,7 @@ namespace usbguard
     return new RuleEvaluatedCondition(*this);
   }
 
-  uint64_t RuleEvaluatedCondition::stringToSeconds(const String& string)
+  uint64_t RuleEvaluatedCondition::stringToSeconds(const std::string& string)
   {
     struct ::tm tm = { };
 

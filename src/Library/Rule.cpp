@@ -21,7 +21,7 @@
 
 namespace usbguard {
   template<>
-  String toRuleString(const String& value)
+  std::string toRuleString(const std::string& value)
   {
     return Utility::quoteEscapeString(value);
   }
@@ -95,102 +95,102 @@ namespace usbguard {
     return d_pointer->attributeDeviceID();
   }
 
-  void Rule::setSerial(const String& value)
+  void Rule::setSerial(const std::string& value)
   {
     d_pointer->setSerial(value);
   }
 
-  const String& Rule::getSerial() const
+  const std::string& Rule::getSerial() const
   {
     return d_pointer->getSerial();
   }
 
-  const Rule::Attribute<String>& Rule::attributeSerial() const
+  const Rule::Attribute<std::string>& Rule::attributeSerial() const
   {
     return d_pointer->attributeSerial();
   }
 
-  Rule::Attribute<String>& Rule::attributeSerial()
+  Rule::Attribute<std::string>& Rule::attributeSerial()
   {
     return d_pointer->attributeSerial();
   }
 
-  void Rule::setName(const String& value)
+  void Rule::setName(const std::string& value)
   {
     d_pointer->setName(value);
   }
 
-  const String& Rule::getName() const
+  const std::string& Rule::getName() const
   {
     return d_pointer->getName();
   }
 
-  const Rule::Attribute<String>& Rule::attributeName() const
+  const Rule::Attribute<std::string>& Rule::attributeName() const
   {
     return d_pointer->attributeName();
   }
 
-  Rule::Attribute<String>& Rule::attributeName()
+  Rule::Attribute<std::string>& Rule::attributeName()
   {
     return d_pointer->attributeName();
   }
 
-  void Rule::setHash(const String& value)
+  void Rule::setHash(const std::string& value)
   {
     d_pointer->setHash(value);
   }
 
-  const String& Rule::getHash() const
+  const std::string& Rule::getHash() const
   {
     return d_pointer->getHash();
   }
 
-  const Rule::Attribute<String>& Rule::attributeHash() const
+  const Rule::Attribute<std::string>& Rule::attributeHash() const
   {
     return d_pointer->attributeHash();
   }
 
-  Rule::Attribute<String>& Rule::attributeHash()
+  Rule::Attribute<std::string>& Rule::attributeHash()
   {
     return d_pointer->attributeHash();
   }
 
-  void Rule::setParentHash(const String& value)
+  void Rule::setParentHash(const std::string& value)
   {
     d_pointer->setParentHash(value);
   }
 
-  const String& Rule::getParentHash() const
+  const std::string& Rule::getParentHash() const
   {
     return d_pointer->getParentHash();
   }
 
-  const Rule::Attribute<String>& Rule::attributeParentHash() const
+  const Rule::Attribute<std::string>& Rule::attributeParentHash() const
   {
     return d_pointer->attributeParentHash();
   }
 
-  Rule::Attribute<String>& Rule::attributeParentHash()
+  Rule::Attribute<std::string>& Rule::attributeParentHash()
   {
     return d_pointer->attributeParentHash();
   }
 
-  void Rule::setViaPort(const String& value)
+  void Rule::setViaPort(const std::string& value)
   {
     d_pointer->setViaPort(value);
   }
 
-  const String& Rule::getViaPort() const
+  const std::string& Rule::getViaPort() const
   {
     return d_pointer->getViaPort();
   }
 
-  const Rule::Attribute<String>& Rule::attributeViaPort() const
+  const Rule::Attribute<std::string>& Rule::attributeViaPort() const
   {
     return d_pointer->attributeViaPort();
   }
 
-  Rule::Attribute<String>& Rule::attributeViaPort()
+  Rule::Attribute<std::string>& Rule::attributeViaPort()
   {
     return d_pointer->attributeViaPort();
   }
@@ -252,7 +252,7 @@ namespace usbguard {
 	     getTarget() == Target::Invalid);
   }
 
-  String Rule::toString(bool invalid) const
+  std::string Rule::toString(bool invalid) const
   {
     return d_pointer->toString(invalid);
   }
@@ -262,7 +262,7 @@ namespace usbguard {
     d_pointer->updateMetaDataCounters(applied, evaluated);
   }
 
-  Rule Rule::fromString(const String& rule_string)
+  Rule Rule::fromString(const std::string& rule_string)
   {
     return RulePrivate::fromString(rule_string);
   }
@@ -277,7 +277,7 @@ namespace usbguard {
     return d_pointer;
   }
 
-  static const std::vector<std::pair<String,Rule::Target> > target_ttable = {
+  static const std::vector<std::pair<std::string,Rule::Target> > target_ttable = {
     { "allow", Rule::Target::Allow },
     { "block", Rule::Target::Block },
     { "reject", Rule::Target::Reject },
@@ -285,7 +285,7 @@ namespace usbguard {
     { "device", Rule::Target::Device }
   };
 
-  const String Rule::targetToString(const Rule::Target target)
+  const std::string Rule::targetToString(const Rule::Target target)
   {
     for (auto ttable_entry : target_ttable) {
       if (ttable_entry.second == target) {
@@ -295,7 +295,7 @@ namespace usbguard {
     throw std::runtime_error("Invalid rule target string");
   }
 
-  Rule::Target Rule::targetFromString(const String& target_string)
+  Rule::Target Rule::targetFromString(const std::string& target_string)
   {
     for (auto ttable_entry : target_ttable) {
       if (ttable_entry.first == target_string) {
@@ -325,7 +325,7 @@ namespace usbguard {
     return static_cast<Rule::Target>(target_integer);
   }
 
-  static const std::vector<std::pair<String,Rule::SetOperator> > set_operator_ttable = {
+  static const std::vector<std::pair<std::string,Rule::SetOperator> > set_operator_ttable = {
     { "all-of", Rule::SetOperator::AllOf },
     { "one-of", Rule::SetOperator::OneOf },
     { "none-of", Rule::SetOperator::NoneOf },
@@ -334,7 +334,7 @@ namespace usbguard {
     { "match", Rule::SetOperator::Match }
   };
 
-  const String Rule::setOperatorToString(const Rule::SetOperator& op)
+  const std::string Rule::setOperatorToString(const Rule::SetOperator& op)
   {
     for (auto ttable_entry : set_operator_ttable) {
       if (ttable_entry.second == op) {
@@ -344,7 +344,7 @@ namespace usbguard {
     throw std::runtime_error("Invalid set operator string");
   }
 
-  Rule::SetOperator Rule::setOperatorFromString(const String& set_operator_string)
+  Rule::SetOperator Rule::setOperatorFromString(const std::string& set_operator_string)
   {
     for (auto ttable_entry : set_operator_ttable) {
       if (ttable_entry.first == set_operator_string) {

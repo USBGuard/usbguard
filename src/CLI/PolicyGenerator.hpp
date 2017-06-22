@@ -39,7 +39,7 @@ namespace usbguard
 
     void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;
     uint32_t dmHookAssignID() override;
-    void dmHookDeviceException(const String& message) override;
+    void dmHookDeviceException(const std::string& message) override;
 
   private:
     RuleSet _ruleset;

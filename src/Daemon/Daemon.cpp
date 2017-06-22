@@ -47,7 +47,7 @@ namespace usbguard
    * unknown setting is found in the config file,
    * a warning message will be displayed.
    */
-  static const StringVector G_config_known_names = {
+  static const std::vector<std::string> G_config_known_names = {
     "RuleFile",
     "ImplicitPolicyTarget",
     "PresentDevicePolicy",
@@ -62,7 +62,7 @@ namespace usbguard
     "AuditFilePath"
   };
 
-  static const std::vector<std::pair<String,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
+  static const std::vector<std::pair<std::string,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
     { "allow", Daemon::DevicePolicyMethod::Allow },
     { "block", Daemon::DevicePolicyMethod::Block },
     { "reject", Daemon::DevicePolicyMethod::Reject },
@@ -70,7 +70,7 @@ namespace usbguard
     { "apply-policy", Daemon::DevicePolicyMethod::ApplyPolicy }
   };
 
-  Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const String& policy_string)
+  Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const std::string& policy_string)
   {
     for (auto device_policy_method_string : device_policy_method_strings) {
       if (device_policy_method_string.first == policy_string) {
@@ -119,14 +119,14 @@ namespace usbguard
     _config.close();
   }
 
-  void Daemon::loadConfiguration(const String& path)
+  void Daemon::loadConfiguration(const std::string& path)
   {
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
     _config.open(path);
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
-      const String& rule_file = _config.getSettingValue("RuleFile");
+      const std::string& rule_file = _config.getSettingValue("RuleFile");
       try {
 	loadRules(rule_file);
       }
@@ -145,36 +145,36 @@ namespace usbguard
 
     /* ImplicitPolicyTarget */
     if (_config.hasSettingValue("ImplicitPolicyTarget")) {
-      const String& target_string = _config.getSettingValue("ImplicitPolicyTarget");
+      const std::string& target_string = _config.getSettingValue("ImplicitPolicyTarget");
       Rule::Target target = Rule::targetFromString(target_string);
       setImplicitPolicyTarget(target);
     }
 
     /* PresentDevicePolicy */
     if (_config.hasSettingValue("PresentDevicePolicy")) {
-      const String& policy_string = _config.getSettingValue("PresentDevicePolicy");
+      const std::string& policy_string = _config.getSettingValue("PresentDevicePolicy");
       DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
       setPresentDevicePolicyMethod(policy);
     }
 
     /* PresentControllerPolicy */
     if (_config.hasSettingValue("PresentControllerPolicy")) {
-      const String& policy_string = _config.getSettingValue("PresentControllerPolicy");
+      const std::string& policy_string = _config.getSettingValue("PresentControllerPolicy");
       DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
       setPresentControllerPolicyMethod(policy);
     }
 
     /* InsertedDevicePolicy */
     if (_config.hasSettingValue("InsertedDevicePolicy")) {
-      const String& policy_string = _config.getSettingValue("InsertedDevicePolicy");
+      const std::string& policy_string = _config.getSettingValue("InsertedDevicePolicy");
       DevicePolicyMethod policy = Daemon::devicePolicyMethodFromString(policy_string);
       setInsertedDevicePolicyMethod(policy);
     }
 
     /* IPCAllowedUsers */
     if (_config.hasSettingValue("IPCAllowedUsers")) {
-      const String users_value = _config.getSettingValue("IPCAllowedUsers"); 
-      StringVector users;
+      const std::string users_value = _config.getSettingValue("IPCAllowedUsers"); 
+      std::vector<std::string> users;
       tokenizeString(users_value, users, " ", /*trim_empty=*/true);
       USBGUARD_LOG(Debug) << "Setting IPCAllowedUsers to { " << users_value << " }";
 
@@ -185,8 +185,8 @@ namespace usbguard
 
     /* IPCAllowedGroups */
     if (_config.hasSettingValue("IPCAllowedGroups")) {
-      const String groups_value =_config.getSettingValue("IPCAllowedGroups"); 
-      StringVector groups;
+      const std::string groups_value =_config.getSettingValue("IPCAllowedGroups"); 
+      std::vector<std::string> groups;
       tokenizeString(groups_value, groups, " ", /*trim_empty=*/true);
       USBGUARD_LOG(Debug) << "Setting IPCAllowedGroups to { " << groups_value << " }";
 
@@ -197,7 +197,7 @@ namespace usbguard
 
     /* DeviceRulesWithPort */
     if (_config.hasSettingValue("DeviceRulesWithPort")) {
-      const String value = _config.getSettingValue("DeviceRulesWithPort");
+      const std::string value = _config.getSettingValue("DeviceRulesWithPort");
       USBGUARD_LOG(Debug) << "Setting DeviceRulesWithPort to " << value;
       if (value == "true") {
         _device_rules_with_port = true;
@@ -219,7 +219,7 @@ namespace usbguard
 
     /* RestoreControllerDeviceState */
     if (_config.hasSettingValue("RestoreControllerDeviceState")) {
-      const String value = _config.getSettingValue("RestoreControllerDeviceState");
+      const std::string value = _config.getSettingValue("RestoreControllerDeviceState");
 
       if (value == "true") {
         _restore_controller_device_state = true;
@@ -236,13 +236,13 @@ namespace usbguard
 
     /* IPCAccessControlFiles */
     if (_config.hasSettingValue("IPCAccessControlFiles")) {
-      const String value = _config.getSettingValue("IPCAccessControlFiles");
+      const std::string value = _config.getSettingValue("IPCAccessControlFiles");
       loadIPCAccessControlFiles(value);
     }
 
     /* AuditFilePath */
     if (_config.hasSettingValue("AuditFilePath")) {
-      const String value = _config.getSettingValue("AuditFilePath");
+      const std::string value = _config.getSettingValue("AuditFilePath");
       USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
       USBGUARD_LOGGER.setAuditFile(true, value);
     }
@@ -250,40 +250,40 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const String& path)
+  void Daemon::loadRules(const std::string& path)
   {
     USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
     _ruleset.load(path);
   }
 
-  void Daemon::loadIPCAccessControlFiles(const String& path)
+  void Daemon::loadIPCAccessControlFiles(const std::string& path)
   {
     USBGUARD_LOG(Info) << "Loading IPC access control files at " << path;
     loadFiles(path,
-      [](const String& path, const struct dirent * dir_entry)
+      [](const std::string& path, const struct dirent * dir_entry)
       {
         (void)dir_entry;
         return filenameFromPath(path, /*include_extension=*/true);
       }
       ,
-      [this](const String& basename, const String& fullpath)
+      [this](const std::string& basename, const std::string& fullpath)
       {
         return loadIPCAccessControlFile(basename, fullpath);
       });
   }
 
-  void Daemon::checkIPCAccessControlName(const String& name)
+  void Daemon::checkIPCAccessControlName(const std::string& name)
   {
     IPCServer::checkAccessControlName(name);
   }
 
-  void Daemon::parseIPCAccessControlFilename(const String& basename, String * const ptr_user, String * const ptr_group)
+  void Daemon::parseIPCAccessControlFilename(const std::string& basename, std::string * const ptr_user, std::string * const ptr_group)
   {
     const auto ug_separator = basename.find_first_of(":");
     const bool has_group = ug_separator != std::string::npos;
 
-    const String user = basename.substr(0, ug_separator);
-    const String group = has_group ? basename.substr(ug_separator + 1) : String();
+    const std::string user = basename.substr(0, ug_separator);
+    const std::string group = has_group ? basename.substr(ug_separator + 1) : std::string();
 
     checkIPCAccessControlName(user);
     checkIPCAccessControlName(group);
@@ -292,12 +292,12 @@ namespace usbguard
     *ptr_group = group;
   }
 
-  bool Daemon::loadIPCAccessControlFile(const String& basename, const String& fullpath)
+  bool Daemon::loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath)
   {
     USBGUARD_LOG(Info) << "Loading IPC access control file " << fullpath;
 
-    String user;
-    String group;
+    std::string user;
+    std::string group;
     IPCServer::AccessControl ac;
 
     try {
@@ -562,7 +562,7 @@ namespace usbguard
     dmApplyDevicePolicy(device, policy_rule);
   }
 
-  void Daemon::dmHookDeviceException(const String& message)
+  void Daemon::dmHookDeviceException(const std::string& message)
   {
     USBGUARD_LOG(Warning) << message;
   }
@@ -767,14 +767,14 @@ namespace usbguard
 
     /* Generate a match rule for upsert */
     Pointer<Rule> match_rule = device->getDeviceRule(false, false, /*match_rule=*/true);
-    const String match_spec = match_rule->toString();
+    const std::string match_spec = match_rule->toString();
 
     USBGUARD_LOG(Debug) << "match_spec=" << match_spec;
 
     /* Generate new device rule */
     Pointer<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash); 
     device_rule->setTarget(target);
-    const String rule_spec = device_rule->toString();
+    const std::string rule_spec = device_rule->toString();
 
     USBGUARD_LOG(Debug) << "rule_spec=" << rule_spec;
 
@@ -794,7 +794,7 @@ namespace usbguard
     IPCServer::addAllowedUID(uid, ac);
   }
 
-  void Daemon::addIPCAllowedUID(const String& uid_string, const IPCServer::AccessControl& ac)
+  void Daemon::addIPCAllowedUID(const std::string& uid_string, const IPCServer::AccessControl& ac)
   {
     addIPCAllowedUID(stringToNumber<uid_t>(uid_string), ac);
   }
@@ -805,12 +805,12 @@ namespace usbguard
     IPCServer::addAllowedGID(gid, ac);
   }
 
-  void Daemon::addIPCAllowedGID(const String& gid_string, const IPCServer::AccessControl& ac)
+  void Daemon::addIPCAllowedGID(const std::string& gid_string, const IPCServer::AccessControl& ac)
   {
     addIPCAllowedGID(stringToNumber<gid_t>(gid_string), ac);
   }
 
-  void Daemon::addIPCAllowedUser(const String& user, const IPCServer::AccessControl& ac)
+  void Daemon::addIPCAllowedUser(const std::string& user, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "user=" << user;
 
@@ -822,7 +822,7 @@ namespace usbguard
     }
   }
 
-  void Daemon::addIPCAllowedGroup(const String& group, const IPCServer::AccessControl& ac)
+  void Daemon::addIPCAllowedGroup(const std::string& group, const IPCServer::AccessControl& ac)
   {
     USBGUARD_LOG(Trace) << "group=" << group;
 

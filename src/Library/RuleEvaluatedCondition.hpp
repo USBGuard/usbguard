@@ -27,14 +27,13 @@ namespace usbguard
   class RuleEvaluatedCondition : public RuleConditionBase
   {
   public:
-    RuleEvaluatedCondition(const String& elapsed_time, bool negated = false);
+    RuleEvaluatedCondition(const std::string& elapsed_time, bool negated = false);
     RuleEvaluatedCondition(const RuleEvaluatedCondition& rhs);
     bool update(const Rule& rule);
     RuleConditionBase * clone() const;
   protected:
-    static uint64_t stringToSeconds(const String& string);
+    static uint64_t stringToSeconds(const std::string& string);
   private:
     std::chrono::steady_clock::duration _elapsed_time;
   };
 } /* namespace usbguard */
-

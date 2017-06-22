@@ -59,7 +59,7 @@ namespace usbguard {
     return d_pointer->getDeviceRule(with_port, with_parent_hash, match_rule);
   }
 
-  String Device::hashString(const String& value) const
+  std::string Device::hashString(const std::string& value) const
   {
     return d_pointer->hashString(value);
   }
@@ -79,17 +79,17 @@ namespace usbguard {
     d_pointer->updateHash(descriptor_stream, expected_size);
   }
 
-  String Device::finalizeHash()
+  std::string Device::finalizeHash()
   {
     return d_pointer->finalizeHash();
   }
 
-  const String& Device::getHash() const
+  const std::string& Device::getHash() const
   {
     return d_pointer->getHash();
   }
 
-  void Device::setParentHash(const String& hash)
+  void Device::setParentHash(const std::string& hash)
   {
     d_pointer->setParentHash(hash);
   }
@@ -124,12 +124,12 @@ namespace usbguard {
     return d_pointer->getTarget();
   }
 
-  void Device::setName(const String& name)
+  void Device::setName(const std::string& name)
   {
     d_pointer->setName(name);
   }
 
-  const String& Device::getName() const
+  const std::string& Device::getName() const
   {
     return d_pointer->getName();
   }
@@ -144,22 +144,22 @@ namespace usbguard {
     return d_pointer->getDeviceID();
   }
 
-  void Device::setPort(const String& port)
+  void Device::setPort(const std::string& port)
   {
     d_pointer->setPort(port);
   }
 
-  const String& Device::getPort() const
+  const std::string& Device::getPort() const
   {
     return d_pointer->getPort();
   }
 
-  void Device::setSerial(const String& serial_number)
+  void Device::setSerial(const std::string& serial_number)
   {
     d_pointer->setSerial(serial_number);
   }
 
-  const String& Device::getSerial() const
+  const std::string& Device::getSerial() const
   {
     return d_pointer->getSerial();
   }

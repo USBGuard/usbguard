@@ -68,9 +68,9 @@ namespace usbguard {
 
     /* Call Daemon instance hooks */
     void DeviceEvent(EventType event, Pointer<Device> device);
-    void DeviceException(const String& message);
+    void DeviceException(const std::string& message);
 
-    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks, const String& backend);
+    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks, const std::string& backend);
 
   private:
     DeviceManagerPrivate *d_pointer;

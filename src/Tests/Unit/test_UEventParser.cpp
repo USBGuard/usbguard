@@ -58,7 +58,7 @@ TEST_CASE("UEvent parsing", "[UEventParser]") {
   const size_t uevent_strlen = sizeof uevent_string;
   UEvent uevent;
 
-  REQUIRE_NOTHROW(uevent = UEvent::fromString(String(uevent_string, uevent_strlen),
+  REQUIRE_NOTHROW(uevent = UEvent::fromString(std::string(uevent_string, uevent_strlen),
         /*attributes_only=*/false,
         /*trace=*/true));
   REQUIRE(uevent.hasRequiredAttributes());

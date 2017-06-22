@@ -127,7 +127,7 @@ namespace usbguard
     return _ruleset.assignID();
   }
 
-  void PolicyGenerator::dmHookDeviceException(const String& message)
+  void PolicyGenerator::dmHookDeviceException(const std::string& message)
   {
     USBGUARD_LOG(Error) << message;
   }

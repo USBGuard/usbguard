@@ -25,14 +25,14 @@
 
 namespace usbguard
 {
-  RuleConditionBase::RuleConditionBase(const String& identifier, const String& parameter, bool negated)
+  RuleConditionBase::RuleConditionBase(const std::string& identifier, const std::string& parameter, bool negated)
     : _identifier(identifier),
       _parameter(parameter),
       _negated(negated)
   {
   }
 
-  RuleConditionBase::RuleConditionBase(const String& identifier, bool negated)
+  RuleConditionBase::RuleConditionBase(const std::string& identifier, bool negated)
     : _identifier(identifier),
       _negated(negated)
   {
@@ -64,12 +64,12 @@ namespace usbguard
     return isNegated() ? !update(rule) : update(rule);
   }
 
-  const String& RuleConditionBase::identifier() const
+  const std::string& RuleConditionBase::identifier() const
   {
     return _identifier;
   }
 
-  const String& RuleConditionBase::parameter() const
+  const std::string& RuleConditionBase::parameter() const
   {
     return _parameter;
   }
@@ -84,9 +84,9 @@ namespace usbguard
     return _negated;
   }
 
-  const String RuleConditionBase::toString() const
+  const std::string RuleConditionBase::toString() const
   {
-    String condition_string;
+    std::string condition_string;
 
     if (isNegated()) {
       condition_string.append("!");
@@ -103,7 +103,7 @@ namespace usbguard
     return condition_string;
   }
 
-  const String RuleConditionBase::toRuleString() const
+  const std::string RuleConditionBase::toRuleString() const
   {
     return toString();
   }
@@ -121,7 +121,7 @@ namespace usbguard
 
 namespace usbguard
 {
-  RuleConditionBase* RuleConditionBase::getImplementation(const String& condition_string)
+  RuleConditionBase* RuleConditionBase::getImplementation(const std::string& condition_string)
   {
     if (condition_string.empty()) {
       throw std::runtime_error("Empty condition");
@@ -131,8 +131,8 @@ namespace usbguard
     const size_t identifier_start = negated ? 1 : 0;
     const size_t p_pos = condition_string.find_first_of('(');
 
-    String identifier;
-    String parameter;
+    std::string identifier;
+    std::string parameter;
 
     if (p_pos == std::string::npos) {
       /*
@@ -165,7 +165,7 @@ namespace usbguard
     return getImplementation(identifier, parameter, negated);
   }
 
-  RuleConditionBase* RuleConditionBase::getImplementation(const String& identifier, const String& parameter, bool negated)
+  RuleConditionBase* RuleConditionBase::getImplementation(const std::string& identifier, const std::string& parameter, bool negated)
   {
     if (identifier == "allowed-matches") {
       return new AllowedMatchesCondition(parameter, negated);
@@ -195,7 +195,7 @@ namespace usbguard
   {
   }
 
-  RuleCondition::RuleCondition(const String& condition_string)
+  RuleCondition::RuleCondition(const std::string& condition_string)
     : _condition(RuleConditionBase::getImplementation(condition_string))
   {
   }

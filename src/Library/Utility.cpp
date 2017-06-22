@@ -25,9 +25,9 @@ namespace usbguard
 {
   namespace Utility
   {
-     String escapeString(const String& string_raw)
+    std::string escapeString(const std::string& string_raw)
      {
-       String result;
+       std::string result;
        const std::locale c_locale("C");
 
        for (auto it = string_raw.cbegin(); it != string_raw.cend(); ++it) {
@@ -54,7 +54,7 @@ namespace usbguard
          if (std::isprint(c, c_locale)) {
            result.push_back((char)c);
          } else {
-           const String hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
+           const std::string hexbyte = numberToString((uint8_t)c, "\\x", 16, 2, '0');
            result.append(hexbyte);
          }
        }
@@ -62,9 +62,9 @@ namespace usbguard
        return result;
      }
 
-     String unescapeString(const String& string_escaped)
+    std::string unescapeString(const std::string& string_escaped)
      {
-       String result;
+       std::string result;
        bool escaped = false;
        const std::locale c_locale("C");
 
@@ -94,7 +94,7 @@ namespace usbguard
                    throw std::runtime_error("Invalid \\xHH escape sequence: HH is not a hexadecimal number");
                  }
 
-                 const String hexbyte(hb, 2);
+                 const std::string hexbyte(hb, 2);
                  result.push_back((char)stringToNumber<uint8_t>(hexbyte, 16));
 
                  ++it;
@@ -123,9 +123,9 @@ namespace usbguard
        return result;
      }
 
-     String quoteEscapeString(const String& value)
+     std::string quoteEscapeString(const std::string& value)
      {
-       String result;
+       std::string result;
        result.push_back('"');
        result.append(escapeString(value));
        result.push_back('"');

@@ -30,6 +30,6 @@ namespace usbguard
   public:
     virtual void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
     virtual uint32_t dmHookAssignID() = 0;
-    virtual void dmHookDeviceException(const String& message) = 0;
+    virtual void dmHookDeviceException(const std::string& message) = 0;
   };
 } /* namespace usbguard */

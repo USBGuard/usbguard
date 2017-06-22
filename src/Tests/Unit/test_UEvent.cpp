@@ -26,7 +26,7 @@ TEST_CASE("Default constructed UEvent", "[UEvent]") {
 
   SECTION("empty") {
     REQUIRE_NOTHROW(uevent.getAttribute("KEY1"));
-    REQUIRE(uevent.getAttribute("KEY1") == String());
+    REQUIRE(uevent.getAttribute("KEY1") == std::string());
     REQUIRE_FALSE(uevent.hasAttribute("KEY1"));
     REQUIRE_FALSE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.clear());
@@ -55,7 +55,7 @@ TEST_CASE("UEvent with required attributes", "[UEvent]") {
 
   SECTION("non-existing attribute") {
     REQUIRE_NOTHROW(uevent.getAttribute("KEY1"));
-    REQUIRE(uevent.getAttribute("KEY1") == String());
+    REQUIRE(uevent.getAttribute("KEY1") == std::string());
     REQUIRE_FALSE(uevent.hasAttribute("KEY1"));
   }
 

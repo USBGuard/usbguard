@@ -17,6 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include "Base64.hpp"
+#include <stdexcept>
 #include <cstdint>
 
 namespace usbguard
@@ -180,7 +181,7 @@ namespace usbguard
   }
 #undef B
 
-  String base64Encode (const uint8_t * const data, const size_t size) {
+  std::string base64Encode (const uint8_t * const data, const size_t size) {
     if (size == 0 || data == nullptr) {
       throw std::runtime_error("base64encode: invalid input");
     }
@@ -189,7 +190,7 @@ namespace usbguard
     const uint8_t remainder = size % 3;
     const size_t enc3_count = (size - remainder) / 3;
 
-    String result(encoded_size, 0);
+    std::string result(encoded_size, 0);
     char * const buffer = &result[0];
     size_t i = 0;
 
@@ -213,7 +214,7 @@ namespace usbguard
     return result;
   }
 
-  String base64Decode(const char * const data, const size_t size) {
+  std::string base64Decode(const char * const data, const size_t size) {
     if (size == 0 || (size % 4) != 0) {
       throw std::runtime_error("base64Decode: invalid input");
     }
@@ -231,7 +232,7 @@ namespace usbguard
       --dec4_count;
     }
 
-    String result(decoded_size, 0);
+    std::string result(decoded_size, 0);
     uint8_t * const buffer = reinterpret_cast<uint8_t *>(&result[0]);
     size_t i = 0;
 
@@ -268,12 +269,12 @@ namespace usbguard
     return (encoded_size / 4 * 3) + (encoded_size % 4);
   }
 
-  String base64Encode(const String& value)
+  std::string base64Encode(const std::string& value)
   {
     return base64Encode(reinterpret_cast<const uint8_t *>(value.c_str()), value.size());
   }
 
-  String base64Decode(const String& value)
+  std::string base64Decode(const std::string& value)
   {
     return base64Decode(value.c_str(), value.size());
   }

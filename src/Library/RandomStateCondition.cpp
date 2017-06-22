@@ -22,7 +22,7 @@
 
 namespace usbguard
 {
-  RandomStateCondition::RandomStateCondition(const String& true_probability, bool negated)
+  RandomStateCondition::RandomStateCondition(const std::string& true_probability, bool negated)
     : RuleConditionBase("random", true_probability, negated),
       _rng_gen(_rng_device()),
       _true_probability(true_probability.empty() ? 0.5 : std::stod(true_probability)),

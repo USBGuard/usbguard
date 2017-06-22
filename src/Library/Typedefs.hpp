@@ -27,22 +27,6 @@
 #include <atomic>
 
 namespace usbguard {
-  /*
-   * Char string typedefs
-   */
-  typedef std::string String;
-  typedef std::vector<String> StringVector;
-  typedef std::list<String> StringList;
-  
-  template<typename key_type>
-  using StringMap = std::map<key_type, String>;
-
-  template<typename value_type>
-  using StringKeyMap = std::map<String, value_type>;
-
-  template<typename key_type>
-  using StringVectorMap = std::map<key_type, StringVector>;
-
   template<typename T>
   bool matches(const T& a, const T& b)
   {
@@ -50,7 +34,7 @@ namespace usbguard {
   }
 
   template<>
-  bool matches(const String& a, const String& b);
+  bool matches(const std::string& a, const std::string& b);
 
   /*
    * Smart Pointer typedefs and custom operations

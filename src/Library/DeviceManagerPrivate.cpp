@@ -109,7 +109,7 @@ namespace usbguard {
     _hooks.dmHookDeviceEvent(event, device);
   }
 
-  void DeviceManagerPrivate::DeviceException(const String& message)
+  void DeviceManagerPrivate::DeviceException(const std::string& message)
   {
     USBGUARD_LOG(Trace) << "message=" << message;
     _hooks.dmHookDeviceException(message);

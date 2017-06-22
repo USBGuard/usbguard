@@ -40,7 +40,7 @@ namespace usbguard {
      * Load a ruleset from a file at `path'.
      * Internally, this opens an input file stream and calls load(std::istream& stream).
      */
-    void load(const String& path);
+    void load(const std::string& path);
 
     /**
      * Load a ruleset from an input stream.
@@ -54,7 +54,7 @@ namespace usbguard {
      * If a file exists at `path', it will be overwritten. Internally, this opens an output
      * stream and calls save(std::ostream& stream).
      */
-    void save(const String& path) const;
+    void save(const std::string& path) const;
 
     /**
      * Write the ruleset to an output stream.
@@ -78,7 +78,7 @@ namespace usbguard {
      * Set an implicit default action which will be used if there's no match for a device
      * rule.
      */
-    void setDefaultAction(const String& action);
+    void setDefaultAction(const std::string& action);
 
     /**
      * Assign a sequence number to a rule and append it to the rule set.

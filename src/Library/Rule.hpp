@@ -31,19 +31,19 @@
 
 namespace usbguard {
   template<typename T>
-  String toRuleString(T* const value)
+  std::string toRuleString(T* const value)
   {
     return value->toRuleString();
   }
 
   template<typename T>
-  String toRuleString(const T& value)
+  std::string toRuleString(const T& value)
   {
     return value.toRuleString();
   }
 
   template<>
-  String DLL_PUBLIC toRuleString(const String& value);
+  std::string DLL_PUBLIC toRuleString(const std::string& value);
 
   class RulePrivate;
   class DLL_PUBLIC Rule
@@ -62,8 +62,8 @@ namespace usbguard {
       Invalid = 6
     };
 
-    static const String targetToString(Target target);
-    static Target targetFromString(const String& target_string);
+    static const std::string targetToString(Target target);
+    static Target targetFromString(const std::string& target_string);
 
     static uint32_t targetToInteger(Target target);
     static Target targetFromInteger(uint32_t target_integer);
@@ -78,8 +78,8 @@ namespace usbguard {
       Match /* Special operator: matches anything, cannot be used directly in a rule */
     };
 
-    static const String setOperatorToString(const Rule::SetOperator& op);
-    static SetOperator setOperatorFromString(const String& set_operator_string);
+    static const std::string setOperatorToString(const Rule::SetOperator& op);
+    static SetOperator setOperatorFromString(const std::string& set_operator_string);
 
     /**< Sequence number of the (fake) root rule */
     static const uint32_t RootID;
@@ -238,9 +238,9 @@ namespace usbguard {
           return applies;
         }
 
-        String toRuleString() const
+        std::string toRuleString() const
         {
-          String result;
+          std::string result;
 
           result.append(_name);
           result.append(" ");
@@ -391,7 +391,7 @@ namespace usbguard {
           return false;
         }
 
-        String _name;
+        std::string _name;
         SetOperator _set_operator;
         std::vector<ValueType> _values;
     };
@@ -417,30 +417,31 @@ namespace usbguard {
     const Attribute<USBDeviceID>& attributeDeviceID() const;
     Attribute<USBDeviceID>& attributeDeviceID();
 
-    void setSerial(const String& value);
-    const String& getSerial() const;
-    const Attribute<String>& attributeSerial() const;
-    Attribute<String>& attributeSerial();
+    void setSerial(const std::string& value);
+    const std::string& getSerial() const;
+    const Attribute<std::string>& attributeSerial() const;
+    Attribute<std::string>& attributeSerial();
 
-    void setName(const String& value);
-    const String& getName() const;
-    const Attribute<String>& attributeName() const;
-    Attribute<String>& attributeName();
+    void setName(const std::string& value);
+    const std::string& getName() const;
+    const Attribute<std::string>& attributeName() const;
+    Attribute<std::string>& attributeName();
 
-    void setHash(const String& value);
-    const String& getHash() const;
-    const Attribute<String>& attributeHash() const;
-    Attribute<String>& attributeHash();
+    void setHash(const std::string& value);
+    const std::string& getHash() const;
+    const Attribute<std::string>& attributeHash() const;
+    Attribute<std::string>& attributeHash();
 
-    void setParentHash(const String& value);
-    const String& getParentHash() const;
-    const Rule::Attribute<String>& attributeParentHash() const;
-    Rule::Attribute<String>& attributeParentHash();
+    void setParentHash(const std::string& value);
+    const std::string& getParentHash() const;
+    const Rule::Attribute<std::string>& attributeParentHash() const;
 
-    void setViaPort(const String& value);
-    const String& getViaPort() const;
-    const Attribute<String>& attributeViaPort() const;
-    Attribute<String>& attributeViaPort();
+    Rule::Attribute<std::string>& attributeParentHash();
+
+    void setViaPort(const std::string& value);
+    const std::string& getViaPort() const;
+    const Attribute<std::string>& attributeViaPort() const;
+    Attribute<std::string>& attributeViaPort();
 
     /*
      * Set/get for a single value isn't useful for the
@@ -464,7 +465,7 @@ namespace usbguard {
 
 
     operator bool() const;
-    String toString(bool invalid = false) const;
+    std::string toString(bool invalid = false) const;
 
     void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 
@@ -472,7 +473,7 @@ namespace usbguard {
     const RulePrivate* internal() const;
     
     /*** Static methods ***/
-    static Rule fromString(const String& rule_string);
+    static Rule fromString(const std::string& rule_string);
 
   private:
     RulePrivate* d_pointer;

@@ -51,7 +51,7 @@ namespace usbguard
    * Writes the current PID to a file at filepath.
    * Returns true on success, otherwise returns false.
    */
-  bool writePID(const String& filepath);
+  bool writePID(const std::string& filepath);
 
   /**
    * Wrappers for the __builtin_expect function.
@@ -66,7 +66,7 @@ namespace usbguard
 
   int runCommand(const char *path, const char *arg1, int timeout_secs = 10);
   int runCommand(const char *path, const char *arg1, const char *arg2, int timeout_secs = 10);
-  int runCommand(const String& path, const std::vector<String>& args = std::vector<String>(), int timeout_secs = 10);
+  int runCommand(const std::string& path, const std::vector<std::string>& args = std::vector<std::string>(), int timeout_secs = 10);
 
   /**
    * Tokenize a std::string compatible type using delimiters specified in a string.
@@ -105,15 +105,15 @@ namespace usbguard
    * representation.
    */
   template<typename T>
-  String numberToString(const T number, const String& prefix = String(), const int base = 10, const int align = -1, const char align_char = ' ')
+  std::string numberToString(const T number, const std::string& prefix = std::string(), const int base = 10, const int align = -1, const char align_char = ' ')
   {
     std::ostringstream ss;
 
     ss << std::setbase(base);
     ss << number;
 
-    const String number_string = ss.str();
-    String result;
+    const std::string number_string = ss.str();
+    std::string result;
     result.append(prefix);
 
     if (align > 0 && number_string.size() < (size_t)align) {
@@ -128,14 +128,14 @@ namespace usbguard
   }
 
   template<>
-  String numberToString(const uint8_t number, const String& prefix, const int base, const int align, const char align_char);
+  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align, const char align_char);
 
   /**
    * Convert a string representation of a number
    * to a number of type T.
    */
   template<typename T>
-  T stringToNumber(const String& s, const int base = 10)
+  T stringToNumber(const std::string& s, const int base = 10)
   {
     std::istringstream ss(s);
     T num;
@@ -144,9 +144,9 @@ namespace usbguard
   }
 
   template<>
-  uint8_t stringToNumber(const String& s, const int base);
+  uint8_t stringToNumber(const std::string& s, const int base);
 
-  bool isNumericString(const String& s);
+  bool isNumericString(const std::string& s);
 
   /**
    * Return the filename part of a path. If include_extension is set to
@@ -159,48 +159,48 @@ namespace usbguard
    *           "/foo/bar/baz.woo.txt" (include_extension=false) => "baz.woo"
    *           "foo.txt" (include_extension=true) => "foo.txt"
    */
-  String filenameFromPath(const String& filepath, bool include_extension = false);
+  std::string filenameFromPath(const std::string& filepath, bool include_extension = false);
 
   /**
    * Return the parent path part of a path.
    */
-  String parentPath(const String& path);
+  std::string parentPath(const std::string& path);
 
   /**
    * Remove whitespace characters from the right side of a string.
    */
-  String trimRight(const String& s, const String& delimiters = " \f\n\r\t\v");
+  std::string trimRight(const std::string& s, const std::string& delimiters = " \f\n\r\t\v");
 
   /**
    * Remove whitespace characters from the left side of a string.
    */
-  String trimLeft(const String& s, const String& delimiters = " \f\n\r\t\v");
+  std::string trimLeft(const std::string& s, const std::string& delimiters = " \f\n\r\t\v");
 
   /**
    * Remove whitespace characters from the left & right side of a string.
    */
-  String trim(const String& s, const String& delimiters = " \f\n\r\t\v");
+  std::string trim(const std::string& s, const std::string& delimiters = " \f\n\r\t\v");
 
   /**
-   * Call a void(*)(const String&) compatible method for every file in a directory
+   * Call a void(*)(const std::string&) compatible method for every file in a directory
    * matching a regular expression. The function does not recursively descent into
    * subdirectories.
    */
-  int loadFiles(const String& directory,
-                std::function<String(const String&, const struct dirent *)> filter,
-                std::function<int(const String&, const String&)> loader,
-                std::function<bool(const std::pair<String, String>&, const std::pair<String, String>&)> sorter = \
-                  [](const std::pair<String, String>& a, const std::pair<String, String>& b) { return a.first < b.first; });
+  int loadFiles(const std::string& directory,
+                std::function<std::string(const std::string&, const struct dirent *)> filter,
+                std::function<int(const std::string&, const std::string&)> loader,
+                std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
+                  [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) { return a.first < b.first; });
 
   /**
    * Remove prefix from string.
    */
-  String removePrefix(const String& prefix, const String& value);
+  std::string removePrefix(const std::string& prefix, const std::string& value);
 
   /**
    * Read symlink destination.
    */
-  String symlinkPath(const String& linkpath, struct stat *st_user = nullptr);
+  std::string symlinkPath(const std::string& linkpath, struct stat *st_user = nullptr);
 
   /*
    * Restorer class

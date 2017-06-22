@@ -37,7 +37,7 @@ namespace usbguard
     return *this;
   }
 
-  UEvent UEvent::fromString(const String& uevent_string, bool attributes_only, bool trace)
+  UEvent UEvent::fromString(const std::string& uevent_string, bool attributes_only, bool trace)
   {
     UEvent uevent;
     parseUEventFromString(uevent_string, uevent, attributes_only, trace);
@@ -49,35 +49,35 @@ namespace usbguard
     _attributes.clear();
   }
 
-  void UEvent::setAttribute(const String& name, const String& value)
+  void UEvent::setAttribute(const std::string& name, const std::string& value)
   {
     USBGUARD_LOG(Trace) << "Setting attribute: " << name << "=" << value;
     _attributes[name] = value;
   }
 
-  String UEvent::getAttribute(const String& name) const
+  std::string UEvent::getAttribute(const std::string& name) const
   {
     auto it = _attributes.find(name);
     if (it == _attributes.end()) {
-      return String();
+      return std::string();
     } else {
       return it->second;
     }
   }
 
-  bool UEvent::hasAttribute(const String& name) const
+  bool UEvent::hasAttribute(const std::string& name) const
   {
     return _attributes.count(name) == 1;
   }
 
-  String UEvent::getHeaderLine() const
+  std::string UEvent::getHeaderLine() const
   {
     if (!hasAttribute("ACTION") ||
         !hasAttribute("DEVPATH")) {
       throw std::runtime_error("uevent: missing required header line values");
     }
 
-    String header_line;
+    std::string header_line;
 
     header_line.append(getAttribute("ACTION"));
     header_line.append(1, '@');
@@ -86,9 +86,9 @@ namespace usbguard
     return header_line;
   }
 
-  String UEvent::toString(char separator) const
+  std::string UEvent::toString(char separator) const
   {
-    String uevent_string = getHeaderLine();
+    std::string uevent_string = getHeaderLine();
 
     uevent_string.append(1, separator);
 
@@ -104,7 +104,7 @@ namespace usbguard
 
   bool UEvent::hasRequiredAttributes() const
   {
-    for (const String name : { "ACTION", "DEVPATH", "SUBSYSTEM" }) {
+    for (const std::string name : { "ACTION", "DEVPATH", "SUBSYSTEM" }) {
       if (!hasAttribute(name)) {
         return false;
       }

@@ -31,7 +31,7 @@ namespace usbguard {
   {
     (void)_p_instance;
     _default_target = Rule::Target::Block;
-    _default_action = String();
+    _default_action = std::string();
     _id_next = Rule::RootID + 1;
   }
 
@@ -56,7 +56,7 @@ namespace usbguard {
   {
   }
 
-  void RuleSetPrivate::load(const String& path)
+  void RuleSetPrivate::load(const std::string& path)
   {
     std::ifstream stream(path);
     if (!stream.is_open()) {
@@ -81,7 +81,7 @@ namespace usbguard {
     } while(stream.good());
   }
 
-  void RuleSetPrivate::save(const String& path) const
+  void RuleSetPrivate::save(const std::string& path) const
   {
     std::ofstream stream(path, std::fstream::trunc);
     if (!stream.is_open()) {
@@ -113,7 +113,7 @@ namespace usbguard {
     return _default_target;
   }
 
-  void RuleSetPrivate::setDefaultAction(const String& action)
+  void RuleSetPrivate::setDefaultAction(const std::string& action)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     _default_action = action;

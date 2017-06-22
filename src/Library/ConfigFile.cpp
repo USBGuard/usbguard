@@ -20,7 +20,7 @@
 
 namespace usbguard
 {
-  ConfigFile::ConfigFile(const StringVector& known_names)
+  ConfigFile::ConfigFile(const std::vector<std::string>& known_names)
   {
     d_pointer = new ConfigFilePrivate(*this, known_names);
   }
@@ -30,7 +30,7 @@ namespace usbguard
     delete d_pointer;
   }
 
-  void ConfigFile::open(const String& path)
+  void ConfigFile::open(const std::string& path)
   {
     d_pointer->open(path);
   }
@@ -45,17 +45,17 @@ namespace usbguard
     d_pointer->close();
   }
 
-  const String& ConfigFile::getSettingValue(const String& name) const
+  const std::string& ConfigFile::getSettingValue(const std::string& name) const
   {
     return d_pointer->getSettingValue(name);
   }
 
-  void ConfigFile::setSettingValue(const String& name, String& value)
+  void ConfigFile::setSettingValue(const std::string& name, std::string& value)
   {
     d_pointer->setSettingValue(name, value);
   }
 
-  bool ConfigFile::hasSettingValue(const String& name) const
+  bool ConfigFile::hasSettingValue(const std::string& name) const
   {
     return d_pointer->hasSettingValue(name);
   }

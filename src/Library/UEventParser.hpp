@@ -58,6 +58,6 @@ namespace usbguard
 
   } /* namespace UEventParser */
 
-  void parseUEventFromFile(const String& uevent_path, UEvent& uevent, bool attributes_only = false, bool trace = false);
-  void parseUEventFromString(const String& uevent_string, UEvent& uevent, bool attributes_only = false, bool trace = false);
+  void parseUEventFromFile(const std::string& uevent_path, UEvent& uevent, bool attributes_only = false, bool trace = false);
+  void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool attributes_only = false, bool trace = false);
 } /* namespace usbguard */

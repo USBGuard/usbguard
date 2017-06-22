@@ -145,7 +145,7 @@ namespace usbguard {
     d_pointer->DeviceEvent(event, device);
   }
 
-  void DeviceManager::DeviceException(const String& message)
+  void DeviceManager::DeviceException(const std::string& message)
   {
     d_pointer->DeviceException(message);
   }
@@ -155,7 +155,7 @@ namespace usbguard {
 # include "UEventDeviceManager.hpp"
 #endif
 
-usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const String& backend)
+usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const std::string& backend)
 {
 #if defined(HAVE_UEVENT)
   if (backend == "udev") {
@@ -169,7 +169,7 @@ usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(Devic
     if (device_root_cstr == nullptr) {
       throw Exception("DeviceManager", "dummy", "USBGUARD_DUMMY_DEVICE_ROOT environment variable not defined");
     }
-    const String device_root(device_root_cstr);
+    const std::string device_root(device_root_cstr);
     return usbguard::makePointer<usbguard::UEventDeviceManager>(hooks, device_root, /*dummy_mode=*/true);
   }
 #endif

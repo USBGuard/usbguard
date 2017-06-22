@@ -42,10 +42,10 @@ namespace usbguard
       Hash(Hash&& rhs);
       Hash& operator=(Hash&& rhs);
       ~Hash();
-      size_t update(const String& value);
+      size_t update(const std::string& value);
       size_t update(const void *ptr, size_t size);
       size_t update(std::istream& stream);
-      String getBase64();
+      std::string getBase64();
     private:
 #if defined(USBGUARD_USE_LIBSODIUM)
       crypto_hash_sha256_state _state;

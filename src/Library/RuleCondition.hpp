@@ -27,8 +27,8 @@ namespace usbguard
   class RuleConditionBase
   {
   public:
-    RuleConditionBase(const String& identifier, const String& parameter, bool negated = false);
-    RuleConditionBase(const String& identifier, bool negated = false);
+    RuleConditionBase(const std::string& identifier, const std::string& parameter, bool negated = false);
+    RuleConditionBase(const std::string& identifier, bool negated = false);
     RuleConditionBase(const RuleConditionBase& rhs);
     virtual ~RuleConditionBase();
 
@@ -38,19 +38,19 @@ namespace usbguard
     virtual RuleConditionBase* clone() const = 0;
 
     bool evaluate(const Rule& rule);
-    const String& identifier() const;
-    const String& parameter() const;
+    const std::string& identifier() const;
+    const std::string& parameter() const;
     bool hasParameter() const;
     bool isNegated() const;
-    const String toString() const;
-    const String toRuleString() const;
+    const std::string toString() const;
+    const std::string toRuleString() const;
 
-    static RuleConditionBase* getImplementation(const String& condition_string);
-    static RuleConditionBase* getImplementation(const String& identifier, const String& parameter, bool negated);
+    static RuleConditionBase* getImplementation(const std::string& condition_string);
+    static RuleConditionBase* getImplementation(const std::string& identifier, const std::string& parameter, bool negated);
 
   private:
-    const String _identifier;
-    const String _parameter;
+    const std::string _identifier;
+    const std::string _parameter;
     const bool _negated;
   };
 
@@ -58,7 +58,7 @@ namespace usbguard
   {
     public:
       RuleCondition();
-      RuleCondition(const String& condition_string);
+      RuleCondition(const std::string& condition_string);
       RuleCondition(const RuleCondition& rhs);
       RuleCondition(RuleCondition&& rhs);
 
@@ -75,7 +75,7 @@ namespace usbguard
         return *_condition.get();
       }
 
-      String toRuleString() const
+      std::string toRuleString() const
       {
         return _condition->toRuleString();
       }
