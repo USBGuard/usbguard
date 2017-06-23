@@ -676,13 +676,7 @@ analyze-clang:
 	rm -rf "$(ANALYSIS_ROOT)"
 
 if MAINTAINER_MODE
-check-local: check-copyright
-
-check-copyright:
-	$(eval GIT_CLONE_ROOT:=$(shell mktemp -d -t usbguard-git-clone.XXXXXX))
-	git clone "$(abs_top_srcdir)" "$(GIT_CLONE_ROOT)" && \
-	  $(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh "$(GIT_CLONE_ROOT)"
-	rm -rf "$(GIT_CLONE_ROOT)"
+check-local:
 else
 check-local:
 endif

@@ -24,22 +24,24 @@ AM_CPPFLAGS=\
 EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/custom.supp \
 	$(top_srcdir)/src/Tests/test-driver \
+	$(top_srcdir)/src/Tests/bash-testlib.sh \
 	$(top_srcdir)/src/ThirdParty/Catch \
-	$(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh \
 	$(top_srcdir)/src/Tests/USB/test-descriptor-parser.sh \
 	$(top_srcdir)/src/Tests/USB/data/0001.bin \
 	$(top_srcdir)/src/Tests/USB/data/0001.out \
-	$(top_srcdir)/src/Tests/Packaging/spell-check.sh \
-	$(top_srcdir)/src/Tests/Packaging/spell-check.rws \
 	$(top_srcdir)/src/Tests/Rules/test-rules.sh \
 	$(top_srcdir)/src/Tests/Rules/test-rules.good \
 	$(top_srcdir)/src/Tests/Rules/test-rules.bad \
-	$(top_srcdir)/src/Tests/bash-testlib.sh \
 	$(top_srcdir)/src/Tests/UseCase/000_executable.sh \
 	$(top_srcdir)/src/Tests/UseCase/001_cli_policy.sh \
 	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \
 	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_dummy.sh \
-	$(top_srcdir)/src/Tests/UseCase/DummyDevices
+	$(top_srcdir)/src/Tests/UseCase/DummyDevices \
+	$(top_srcdir)/src/Tests/Source/check-driver.sh \
+	$(top_srcdir)/src/Tests/Source/CheckScripts/copyright.sh \
+	$(top_srcdir)/src/Tests/Source/CheckScripts/vim-modeline.sh \
+	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.sh \
+	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.rws
 
 LOG_DRIVER=\
 	$(top_srcdir)/src/Tests/test-driver
@@ -55,8 +57,8 @@ TESTS_ENVIRONMENT=\
 TESTS=\
 	test-unit \
 	test-regression \
+	Source/check-driver.sh \
 	USB/test-descriptor-parser.sh \
-	Packaging/spell-check.sh \
 	Rules/test-rules.sh \
 	UseCase/000_executable.sh \
 	UseCase/001_cli_policy.sh \
