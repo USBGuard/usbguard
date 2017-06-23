@@ -506,14 +506,14 @@ namespace usbguard
                         << " target=" << Rule::targetToString(target)
                         << " permanent=" << permanent;
 
-    Pointer<Device> device = _dm->getDevice(id);
-    Pointer<Rule> rule;
+    std::shared_ptr<Device> device = _dm->getDevice(id);
+    std::shared_ptr<Rule> rule;
 
     if (permanent) {
       rule = upsertDeviceRule(id, target);
     }
     else {
-      rule = makePointer<Rule>();
+      rule = std::make_shared<Rule>();
       rule->setTarget(target);
     }
 
@@ -524,14 +524,14 @@ namespace usbguard
     return rule->getRuleID();
   }
 
-  void Daemon::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
+  void Daemon::dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
                         << " device_ptr=" << device.get();
 
     auto audit_event = Audit::deviceEvent(_audit_identity, device, event);
 
-    Pointer<const Rule> device_rule = \
+    std::shared_ptr<const Rule> device_rule = \
       device->getDeviceRule(/*with_port*/true,
                             /*with_parent_hash=*/true);
 
@@ -542,7 +542,7 @@ namespace usbguard
 
     audit_event.success();
 
-    Pointer<Rule> policy_rule = nullptr;
+    std::shared_ptr<Rule> policy_rule = nullptr;
 
     switch(event) {
       case DeviceManager::EventType::Present:
@@ -567,7 +567,7 @@ namespace usbguard
     USBGUARD_LOG(Warning) << message;
   }
 
-  void Daemon::dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule)
+  void Daemon::dmApplyDevicePolicy(std::shared_ptr<Device> device, std::shared_ptr<Rule> matched_rule)
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get()
                         << " matched_rule_ptr=" << matched_rule.get();
@@ -576,7 +576,7 @@ namespace usbguard
         device, device->getTarget(), matched_rule->getTarget());
 
     const Rule::Target target_old = device->getTarget();
-    Pointer<Device> device_post = \
+    std::shared_ptr<Device> device_post = \
       _dm->applyDevicePolicy(device->getID(),
                              matched_rule->getTarget());
 
@@ -592,7 +592,7 @@ namespace usbguard
         USBGUARD_LOG(Debug) << "Implicit rule matched";
       }
 
-      Pointer<const Rule> device_rule = \
+      std::shared_ptr<const Rule> device_rule = \
         device_post->getDeviceRule(/*with_port=*/true,
                                    /*with_parent_hash=*/true);
 
@@ -607,17 +607,17 @@ namespace usbguard
     audit_event.success();
   }
 
-  Pointer<Rule> Daemon::getInsertedDevicePolicyRule(Pointer<Device> device)
+  std::shared_ptr<Rule> Daemon::getInsertedDevicePolicyRule(std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get();
 
-    Pointer<const Rule> device_rule = \
+    std::shared_ptr<const Rule> device_rule = \
       device->getDeviceRule(/*with_port=*/true,
                             /*with_parent_hash=*/true,
                             /*match_rule=*/true);
 
     Rule::Target target = Rule::Target::Invalid;
-    Pointer<Rule> policy_rule;
+    std::shared_ptr<Rule> policy_rule;
     const DevicePolicyMethod policy_method = _inserted_device_policy_method;
 
     switch (policy_method) {
@@ -637,7 +637,7 @@ namespace usbguard
     }
 
     if (policy_rule == nullptr) {
-      policy_rule = makePointer<Rule>();
+      policy_rule = std::make_shared<Rule>();
       policy_rule->setTarget(target);
       policy_rule->setRuleID(Rule::RootID);
     }
@@ -645,11 +645,11 @@ namespace usbguard
     return policy_rule;
   }
 
-  Pointer<Rule> Daemon::getPresentDevicePolicyRule(Pointer<Device> device)
+  std::shared_ptr<Rule> Daemon::getPresentDevicePolicyRule(std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "entry: device_ptr=" << device.get();
 
-    Pointer<const Rule> device_rule = \
+    std::shared_ptr<const Rule> device_rule = \
       device->getDeviceRule(/*with_port=*/true,
                             /*with_parent_hash=*/true,
                             /*match_rule=*/true);
@@ -661,7 +661,7 @@ namespace usbguard
       device->isController() ? _present_controller_policy_method : _present_device_policy_method;
 
     Rule::Target target = Rule::Target::Invalid;
-    Pointer<Rule> matched_rule = nullptr;
+    std::shared_ptr<Rule> matched_rule = nullptr;
 
     switch (policy_method) {
     case DevicePolicyMethod::Allow:
@@ -685,7 +685,7 @@ namespace usbguard
     }
 
     if (matched_rule == nullptr) {
-      matched_rule = makePointer<Rule>();
+      matched_rule = std::make_shared<Rule>();
       matched_rule->setTarget(target);
       matched_rule->setRuleID(Rule::ImplicitID);
     }
@@ -719,13 +719,13 @@ namespace usbguard
     return device_rules;
   }
 
-  Pointer<Rule> Daemon::upsertDeviceRule(uint32_t id, Rule::Target target)
+  std::shared_ptr<Rule> Daemon::upsertDeviceRule(uint32_t id, Rule::Target target)
   {
     USBGUARD_LOG(Trace) << "entry:"
                         << "id=" << id
                         << "target=" << Rule::targetToString(target);
 
-    Pointer<Device> device = _dm->getDevice(id);
+    std::shared_ptr<Device> device = _dm->getDevice(id);
 
     bool with_port = true && _device_rules_with_port;
     bool with_parent_hash = true;
@@ -766,13 +766,13 @@ namespace usbguard
     }
 
     /* Generate a match rule for upsert */
-    Pointer<Rule> match_rule = device->getDeviceRule(false, false, /*match_rule=*/true);
+    std::shared_ptr<Rule> match_rule = device->getDeviceRule(false, false, /*match_rule=*/true);
     const std::string match_spec = match_rule->toString();
 
     USBGUARD_LOG(Debug) << "match_spec=" << match_spec;
 
     /* Generate new device rule */
-    Pointer<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash); 
+    std::shared_ptr<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash); 
     device_rule->setTarget(target);
     const std::string rule_spec = device_rule->toString();
 

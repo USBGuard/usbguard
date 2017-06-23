@@ -85,7 +85,7 @@ namespace usbguard
     const std::vector<Rule> listDevices(const std::string& query) override;
 
     /* Device manager hooks */
-    void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;
+    void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device) override;
     uint32_t dmHookAssignID() override;
     void dmHookDeviceException(const std::string& message) override;
 
@@ -100,17 +100,17 @@ namespace usbguard
     void addIPCAllowedGroup(const std::string& group, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
 
   private:
-    void dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule);
-    Pointer<Rule> getInsertedDevicePolicyRule(Pointer<Device> device);
-    Pointer<Rule> getPresentDevicePolicyRule(Pointer<Device> device);
+    void dmApplyDevicePolicy(std::shared_ptr<Device> device, std::shared_ptr<Rule> matched_rule);
+    std::shared_ptr<Rule> getInsertedDevicePolicyRule(std::shared_ptr<Device> device);
+    std::shared_ptr<Rule> getPresentDevicePolicyRule(std::shared_ptr<Device> device);
 
-    Pointer<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
+    std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
     RuleSet _ruleset;
 
     std::string _device_manager_backend;
-    Pointer<DeviceManager> _dm;
+    std::shared_ptr<DeviceManager> _dm;
 
     std::atomic<Rule::Target> _implicit_policy_target;
     std::atomic<DevicePolicyMethod> _present_device_policy_method;

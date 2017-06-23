@@ -54,7 +54,7 @@ namespace usbguard {
     return d_pointer->refDeviceMutex();
   }
 
-  Pointer<Rule> Device::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
+  std::shared_ptr<Rule> Device::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     return d_pointer->getDeviceRule(with_port, with_parent_hash, match_rule);
   }

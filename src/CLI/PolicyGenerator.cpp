@@ -77,7 +77,7 @@ namespace usbguard
     _catchall_target = target;
   }
 
-  void PolicyGenerator::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
+  void PolicyGenerator::dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     if (event != DeviceManager::EventType::Present) {
       /*
@@ -96,11 +96,11 @@ namespace usbguard
       port_specific = device->getSerial().empty();
     }
 
-    Pointer<Rule> rule = device->getDeviceRule(/*include_port=*/port_specific);
+    std::shared_ptr<Rule> rule = device->getDeviceRule(/*include_port=*/port_specific);
 
     /* Remove everything but the hash value for hash-only rules */
     if (_hash_only) {
-      Pointer<Rule> rule_hashonly(new Rule());
+      std::shared_ptr<Rule> rule_hashonly(new Rule());
       rule_hashonly->setRuleID(rule->getRuleID());
       rule_hashonly->setHash(rule->getHash());
       rule_hashonly->setParentHash(rule->getParentHash());

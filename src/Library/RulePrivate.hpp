@@ -56,7 +56,7 @@ namespace usbguard {
     const RulePrivate& operator=(const RulePrivate& rhs);
     ~RulePrivate();
 
-    bool appliesTo(Pointer<const Rule> rhs, bool parent_insensitive = false) const;
+    bool appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive = false) const;
     bool appliesTo(const Rule& rhs, bool parent_insensitive = false) const;
     bool appliesToWithConditions(const Rule& rhs, bool with_update = false);
     
@@ -115,9 +115,6 @@ namespace usbguard {
     const Rule::Attribute<RuleCondition>& attributeConditions() const;
     Rule::Attribute<RuleCondition>& attributeConditions();
 
-    void setTimeoutSeconds(uint32_t timeout_seconds);
-    uint32_t getTimeoutSeconds() const;
-
     std::string toString(bool invalid = false) const;
 
     MetaData& metadata();
@@ -141,6 +138,5 @@ namespace usbguard {
     Rule::Attribute<USBInterfaceType> _with_interface;
     Rule::Attribute<RuleCondition> _conditions;
     uint64_t _conditions_state;
-    uint32_t _timeout_seconds;
   };
 }

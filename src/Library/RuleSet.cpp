@@ -89,7 +89,7 @@ namespace usbguard {
     return d_pointer->upsertRule(match_rule, new_rule, parent_insensitive);
   }
 
-  Pointer<Rule> RuleSet::getRule(uint32_t id)
+  std::shared_ptr<Rule> RuleSet::getRule(uint32_t id)
   {
     return d_pointer->getRule(id);
   }
@@ -99,22 +99,17 @@ namespace usbguard {
     return d_pointer->removeRule(id);
   }
 
-  Pointer<Rule> RuleSet::getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id) const
+  std::shared_ptr<Rule> RuleSet::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
     return d_pointer->getFirstMatchingRule(device_rule, from_id);
   }
 
-  PointerVector<const Rule> RuleSet::getRules()
+  std::vector<std::shared_ptr<const Rule>> RuleSet::getRules()
   {
     return d_pointer->getRules();
   }
 
-  Pointer<Rule> RuleSet::getTimedOutRule()
-  {
-    return d_pointer->getTimedOutRule();
-  }
-
-  uint32_t RuleSet::assignID(Pointer<Rule> rule)
+  uint32_t RuleSet::assignID(std::shared_ptr<Rule> rule)
   {
     return d_pointer->assignID(rule);
   }

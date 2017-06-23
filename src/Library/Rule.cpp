@@ -215,17 +215,7 @@ namespace usbguard {
     return d_pointer->attributeConditions();
   }
 
-  void Rule::setTimeoutSeconds(uint32_t timeout_seconds)
-  {
-    d_pointer->setTimeoutSeconds(timeout_seconds);
-  }
-
-  uint32_t Rule::getTimeoutSeconds() const
-  {
-    return d_pointer->getTimeoutSeconds();
-  }
-
-  bool Rule::appliesTo(Pointer<const Rule> rhs) const
+  bool Rule::appliesTo(std::shared_ptr<const Rule> rhs) const
   {
     return appliesTo(*rhs);
   }

@@ -455,10 +455,7 @@ namespace usbguard {
     const Attribute<RuleCondition>& attributeConditions() const;
     Attribute<RuleCondition>& attributeConditions();
 
-    void setTimeoutSeconds(uint32_t timeout_seconds);
-    uint32_t getTimeoutSeconds() const;
-
-    bool appliesTo(Pointer<const Rule> rhs) const;
+    bool appliesTo(std::shared_ptr<const Rule> rhs) const;
     bool appliesTo(const Rule& rhs) const;
     bool appliesTo(const Rule& rhs);
     bool isImplicit() const;

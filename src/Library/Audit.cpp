@@ -107,37 +107,37 @@ namespace usbguard
 
   }
 
-  AuditEvent Audit::policyEvent(Pointer<Rule> rule, Policy::EventType event)
+  AuditEvent Audit::policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event)
   {
     return policyEvent(_identity, rule, event);
   }
   
-  AuditEvent Audit::policyEvent(Pointer<Rule> new_rule, Pointer<Rule> old_rule)
+  AuditEvent Audit::policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule)
   {
     return policyEvent(_identity, new_rule, old_rule);
   }
 
-  AuditEvent Audit::policyEvent(Pointer<Device> device, Policy::EventType event)
+  AuditEvent Audit::policyEvent(std::shared_ptr<Device> device, Policy::EventType event)
   {
     return policyEvent(_identity, device, event);
   }
 
-  AuditEvent Audit::policyEvent(Pointer<Device> device, Rule::Target old_target, Rule::Target new_target)
+  AuditEvent Audit::policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target)
   {
     return policyEvent(_identity, device, old_target, new_target);
   }
 
-  AuditEvent Audit::deviceEvent(Pointer<Device> device, DeviceManager::EventType event)
+  AuditEvent Audit::deviceEvent(std::shared_ptr<Device> device, DeviceManager::EventType event)
   {
     return deviceEvent(_identity, device, event);
   }
   
-  AuditEvent Audit::deviceEvent(Pointer<Device> new_device, Pointer<Device> old_device)
+  AuditEvent Audit::deviceEvent(std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
   {
     return deviceEvent(_identity, new_device, old_device);
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, Pointer<Rule> rule, Policy::EventType event)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();
@@ -155,7 +155,7 @@ namespace usbguard
     return audit_event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, Pointer<Rule> new_rule, Pointer<Rule> old_rule)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();
@@ -177,7 +177,7 @@ namespace usbguard
     return audit_event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, Pointer<Device> device, Policy::EventType event)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();
@@ -195,7 +195,7 @@ namespace usbguard
     return audit_event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, Pointer<Device> device, Rule::Target old_target, Rule::Target new_target)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();
@@ -216,7 +216,7 @@ namespace usbguard
     return audit_event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, Pointer<Device> device, DeviceManager::EventType event)
+  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();
@@ -231,7 +231,7 @@ namespace usbguard
     return audit_event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, Pointer<Device> new_device, Pointer<Device> old_device)
+  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
   {
     AuditEvent audit_event(identity);
     auto& message = audit_event.refMessage();

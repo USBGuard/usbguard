@@ -237,7 +237,7 @@ namespace usbguard
       IPCServerPrivate* server = \
         static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
 
-      UniquePointer<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
+      std::unique_ptr<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
       const bool auth = server->qbIPCConnectionAllowed(uid, gid, access_control.get());
       qb_ipcs_context_set(conn, access_control.release());
 

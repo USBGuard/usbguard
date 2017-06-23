@@ -37,7 +37,6 @@ namespace usbguard {
     _rule_id = Rule::DefaultID;
     _target = Rule::Target::Invalid;
     _conditions_state = 0;
-    _timeout_seconds = 0;
   }
 
   RulePrivate::RulePrivate(Rule& p_instance, const RulePrivate& rhs)
@@ -71,7 +70,6 @@ namespace usbguard {
     _conditions = rhs._conditions;
 
     _conditions_state = rhs._conditions_state;
-    _timeout_seconds = rhs._timeout_seconds;
 
     return *this;
 #if 0
@@ -94,7 +92,7 @@ namespace usbguard {
   {
   }
 
-  bool RulePrivate::appliesTo(Pointer<const Rule> rhs, bool parent_insensitive) const
+  bool RulePrivate::appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive) const
   {
     return appliesTo(*rhs, parent_insensitive);
   }
@@ -245,11 +243,6 @@ namespace usbguard {
   void RulePrivate::setConditionsState(uint64_t state)
   {
     _conditions_state = state;
-  }
-
-  uint32_t RulePrivate::getTimeoutSeconds() const
-  {
-    return _timeout_seconds;
   }
 
   void RulePrivate::setRuleID(uint32_t rule_id)
@@ -410,11 +403,6 @@ namespace usbguard {
   Rule::Attribute<RuleCondition>& RulePrivate::attributeConditions()
   {
     return _conditions;
-  }
-
-  void RulePrivate::setTimeoutSeconds(uint32_t timeout_seconds)
-  {
-    _timeout_seconds = timeout_seconds;
   }
 
   template<class ValueType>

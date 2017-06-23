@@ -35,23 +35,23 @@ namespace usbguard {
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;
 
-    void insertDevice(Pointer<Device> device);
-    Pointer<Device> removeDevice(uint32_t id);
+    void insertDevice(std::shared_ptr<Device> device);
+    std::shared_ptr<Device> removeDevice(uint32_t id);
 
     /* Returns a copy of the list of active USB devices */
-    PointerVector<Device> getDeviceList();
-    Pointer<Device> getDevice(uint32_t id);
+    std::vector<std::shared_ptr<Device>> getDeviceList();
+    std::shared_ptr<Device> getDevice(uint32_t id);
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */
-    void DeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
+    void DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device);
     void DeviceException(const std::string& message);
 
   private:
     DeviceManager& _p_instance;
     DeviceManagerHooks& _hooks;
     mutable std::mutex _device_map_mutex;
-    PointerMap<uint32_t, Device> _device_map;
+    std::map<uint32_t, std::shared_ptr<Device>> _device_map;
     bool _restore_controller_device_state;
   };
 

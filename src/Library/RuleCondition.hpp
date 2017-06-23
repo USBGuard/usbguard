@@ -81,7 +81,7 @@ namespace usbguard
       }
 
     private:
-      UniquePointer<RuleConditionBase> _condition;
+      std::unique_ptr<RuleConditionBase> _condition;
   };
 } /*namespace usbguard */
 

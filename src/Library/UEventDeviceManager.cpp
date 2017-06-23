@@ -321,12 +321,12 @@ namespace usbguard {
     }
   }
 
-  Pointer<Device> UEventDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
+  std::shared_ptr<Device> UEventDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
   {
     USBGUARD_LOG(Trace) << "id=" << id
                         << " target=" << Rule::targetToString(target);
 
-    Pointer<UEventDevice> device = std::static_pointer_cast<UEventDevice>(getDevice(id));
+    std::shared_ptr<UEventDevice> device = std::static_pointer_cast<UEventDevice>(getDevice(id));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
 
     sysfsApplyTarget(device->sysfsDevice(), target);
@@ -776,7 +776,7 @@ namespace usbguard {
     USBGUARD_LOG(Trace) << "id=" << id;
 
     try {
-      Pointer<UEventDevice> device = \
+      std::shared_ptr<UEventDevice> device = \
         std::static_pointer_cast<UEventDevice>(DeviceManager::getDevice(id));
 
       device->sysfsDevice().reload();
@@ -811,7 +811,7 @@ namespace usbguard {
   void UEventDeviceManager::processDeviceInsertion(SysFSDevice& sysfs_device, const bool signal_present)
   {
     try {
-      Pointer<UEventDevice> device = makePointer<UEventDevice>(*this, sysfs_device);
+      std::shared_ptr<UEventDevice> device = std::make_shared<UEventDevice>(*this, sysfs_device);
 
       if (device->isController() && !_enumeration_only_mode) {
         USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
@@ -861,7 +861,7 @@ namespace usbguard {
     sysfsApplyTarget(sysfs_device, Rule::Target::Reject);
   }
 
-  void UEventDeviceManager::insertDevice(Pointer<UEventDevice> device)
+  void UEventDeviceManager::insertDevice(std::shared_ptr<UEventDevice> device)
   {
     DeviceManager::insertDevice(std::static_pointer_cast<Device>(device));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
@@ -873,7 +873,7 @@ namespace usbguard {
     USBGUARD_LOG(Trace) << "sysfs_devpath=" << sysfs_devpath;
 
     try {
-      Pointer<Device> device = removeDevice(sysfs_devpath);
+      std::shared_ptr<Device> device = removeDevice(sysfs_devpath);
       DeviceEvent(DeviceManager::EventType::Remove, device);
     } catch(...) {
       /* Ignore for now */
@@ -882,7 +882,7 @@ namespace usbguard {
     }
   }
 
-  Pointer<Device> UEventDeviceManager::removeDevice(const std::string& syspath)
+  std::shared_ptr<Device> UEventDeviceManager::removeDevice(const std::string& syspath)
   {
     /*
      * FIXME: device map locking
@@ -891,7 +891,7 @@ namespace usbguard {
       throw Exception("removeDevice", syspath, "unknown syspath, cannot remove device");
     }
 
-    Pointer<Device> device = DeviceManager::removeDevice(getIDFromSysPath(syspath));
+    std::shared_ptr<Device> device = DeviceManager::removeDevice(getIDFromSysPath(syspath));
     _syspath_map.erase(syspath);
 
     return device;

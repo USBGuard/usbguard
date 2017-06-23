@@ -73,13 +73,13 @@ namespace usbguard
     public:
       Audit(const AuditIdentity& identity);
 
-      AuditEvent policyEvent(Pointer<Rule> rule, Policy::EventType event);
-      AuditEvent policyEvent(Pointer<Rule> new_rule, Pointer<Rule> old_rule);
-      AuditEvent policyEvent(Pointer<Device> device, Policy::EventType event);
-      AuditEvent policyEvent(Pointer<Device> device, Rule::Target old_target, Rule::Target new_target);
+      AuditEvent policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event);
+      AuditEvent policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
+      AuditEvent policyEvent(std::shared_ptr<Device> device, Policy::EventType event);
+      AuditEvent policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
-      AuditEvent deviceEvent(Pointer<Device> device, DeviceManager::EventType event);
-      AuditEvent deviceEvent(Pointer<Device> new_device, Pointer<Device> old_device);
+      AuditEvent deviceEvent(std::shared_ptr<Device> device, DeviceManager::EventType event);
+      AuditEvent deviceEvent(std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
       /*
        * Audit policy changes:
@@ -94,10 +94,10 @@ namespace usbguard
        *   - what: append, remove, update
        *   - update: old, new
        */
-      static AuditEvent policyEvent(const AuditIdentity& identity, Pointer<Rule> rule, Policy::EventType event);
-      static AuditEvent policyEvent(const AuditIdentity& identity, Pointer<Rule> new_rule, Pointer<Rule> old_rule);
-      static AuditEvent policyEvent(const AuditIdentity& identity, Pointer<Device> device, Policy::EventType event);
-      static AuditEvent policyEvent(const AuditIdentity& identity, Pointer<Device> device, Rule::Target old_target, Rule::Target new_target);
+      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event);
+      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
+      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event);
+      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
       /*
        * Audit device changes:
@@ -111,8 +111,8 @@ namespace usbguard
        *   - what: insert, remove, authorization target
        *   - change: old, new
        */
-      static AuditEvent deviceEvent(const AuditIdentity& identity, Pointer<Device> device, DeviceManager::EventType event);
-      static AuditEvent deviceEvent(const AuditIdentity& identity, Pointer<Device> new_device, Pointer<Device> old_device);
+      static AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event);
+      static AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
     private:
       AuditIdentity _identity;

@@ -28,7 +28,7 @@ namespace usbguard
   class DLL_PUBLIC DeviceManagerHooks
   {
   public:
-    virtual void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device);
+    virtual void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device);
     virtual uint32_t dmHookAssignID() = 0;
     virtual void dmHookDeviceException(const std::string& message) = 0;
   };

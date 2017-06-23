@@ -76,9 +76,9 @@ namespace usbguard {
     void stop() override;
     void scan() override;
 
-    Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
-    void insertDevice(Pointer<UEventDevice> device);
-    Pointer<Device> removeDevice(const std::string& syspath);
+    std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
+    void insertDevice(std::shared_ptr<UEventDevice> device);
+    std::shared_ptr<Device> removeDevice(const std::string& syspath);
 
     uint32_t getIDFromSysPath(const std::string& syspath) const;
 

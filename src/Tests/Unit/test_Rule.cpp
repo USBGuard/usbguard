@@ -43,7 +43,6 @@ TEST_CASE("Default constructed rule", "[Rule]") {
     REQUIRE(rule.attributeHash().empty());
     REQUIRE(rule.attributeViaPort().empty());
     REQUIRE(rule.attributeWithInterface().empty());
-    REQUIRE(rule.getTimeoutSeconds() == 0);
   }
 
   SECTION("is not valid") {

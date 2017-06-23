@@ -54,23 +54,23 @@ namespace usbguard {
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;
 
-    virtual Pointer<Device> applyDevicePolicy(uint32_t id, Rule::Target target) = 0;
+    virtual std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) = 0;
 
-    virtual void insertDevice(Pointer<Device> device);
-    Pointer<Device> removeDevice(uint32_t id);
+    virtual void insertDevice(std::shared_ptr<Device> device);
+    std::shared_ptr<Device> removeDevice(uint32_t id);
 
     /* Returns a copy of the list of active USB devices */
-    PointerVector<Device> getDeviceList();
-    PointerVector<Device> getDeviceList(const Rule& query);
+    std::vector<std::shared_ptr<Device>> getDeviceList();
+    std::vector<std::shared_ptr<Device>> getDeviceList(const Rule& query);
 
-    Pointer<Device> getDevice(uint32_t id);
+    std::shared_ptr<Device> getDevice(uint32_t id);
     std::mutex& refDeviceMapMutex();
 
     /* Call Daemon instance hooks */
-    void DeviceEvent(EventType event, Pointer<Device> device);
+    void DeviceEvent(EventType event, std::shared_ptr<Device> device);
     void DeviceException(const std::string& message);
 
-    static Pointer<DeviceManager> create(DeviceManagerHooks& hooks, const std::string& backend);
+    static std::shared_ptr<DeviceManager> create(DeviceManagerHooks& hooks, const std::string& backend);
 
   private:
     DeviceManagerPrivate *d_pointer;

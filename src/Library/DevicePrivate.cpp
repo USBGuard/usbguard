@@ -68,14 +68,14 @@ namespace usbguard {
     return _mutex;
   }
 
-  Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
+  std::shared_ptr<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     USBGUARD_LOG(Trace) << "entry: "
                         << " with_port=" << with_port
                         << " with_parent_hash=" << with_parent_hash
                         << " match_rule=" << match_rule;
 
-    Pointer<Rule> device_rule = makePointer<Rule>();
+    std::shared_ptr<Rule> device_rule = std::make_shared<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
 
     device_rule->setRuleID(_id);

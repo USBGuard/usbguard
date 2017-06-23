@@ -100,7 +100,7 @@ namespace usbguard {
      * Get a rule pointer to a rule with the specified sequence number.
      * Returns nullptr if no such rule exists.
      */
-    Pointer<Rule> getRule(uint32_t id);
+    std::shared_ptr<Rule> getRule(uint32_t id);
     
     /**
      * Remove a rule from the ruleset.
@@ -113,24 +113,24 @@ namespace usbguard {
      * If `from_id' isn't specified, the method searches from the beginning of the ruleset.
      * If no matching rule is found, nullptr is returned.
      */
-    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
+    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
 
     /**
      * Get all rules from the set.
      */
-    PointerVector<const Rule> getRules();
+    std::vector<std::shared_ptr<const Rule>> getRules();
 
     /**
      * Get the oldest rule that timed out and should be removed from the ruleset.
      * Returns nullptr if there are not timed out rules.
      */
-    Pointer<Rule> getTimedOutRule();
+    std::shared_ptr<Rule> getTimedOutRule();
 
     /**
      * Assign a unique sequence number to a rule.
      * Return the assigned sequence number.
      */
-    uint32_t assignID(Pointer<Rule> rule);
+    uint32_t assignID(std::shared_ptr<Rule> rule);
 
     /**
      * Generate a unique sequence number.
