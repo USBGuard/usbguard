@@ -20,10 +20,12 @@
 
 namespace usbguard
 {
-  void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
+  void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     (void)event;
     (void)device;
     /* NOOP */
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

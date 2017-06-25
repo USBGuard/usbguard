@@ -72,7 +72,7 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]") {
   }
 
   SECTION("to/from string: allow via-port \"<non printable>\"") {
-    const std::vector<String> one_non_printable_string = { non_printable_string };
+    const std::vector<std::string> one_non_printable_string = { non_printable_string };
     rule.setTarget(Rule::Target::Allow);
     rule.attributeViaPort().set(one_non_printable_string, Rule::SetOperator::Equals);
 
@@ -87,7 +87,7 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]") {
   }
 
   SECTION("to/from string: allow via-port { \"<non printable>\" \"<non printable>\" }") {
-    const std::vector<String> two_non_printable_strings = \
+    const std::vector<std::string> two_non_printable_strings = \
       { non_printable_string, non_printable_string };
     rule.setTarget(Rule::Target::Allow);
     rule.attributeViaPort().set(two_non_printable_strings, Rule::SetOperator::OneOf);
@@ -153,7 +153,7 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
   }
 
   SECTION("to/from string: allow via-port \"<double quote and backslash>\"") {
-    const std::vector<String> one_dqb_string = { dqb_string };
+    const std::vector<std::string> one_dqb_string = { dqb_string };
     rule.setTarget(Rule::Target::Allow);
     rule.attributeViaPort().set(one_dqb_string, Rule::SetOperator::Equals);
 
@@ -168,7 +168,7 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
   }
 
   SECTION("to/from string: allow via-port { \"<double quote and backslash>\" \"<double quote and backslash>\" }") {
-    const std::vector<String> two_dqb_strings = { dqb_string, dqb_string };
+    const std::vector<std::string> two_dqb_strings = { dqb_string, dqb_string };
     rule.setTarget(Rule::Target::Allow);
     rule.attributeViaPort().set(two_dqb_strings, Rule::SetOperator::OneOf);
 
@@ -182,3 +182,5 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
 }
+
+/* vim: set ts=2 sw=2 et */

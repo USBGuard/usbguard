@@ -69,3 +69,5 @@ namespace usbguard
                                   const std::string& reason) = 0;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

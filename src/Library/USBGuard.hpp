@@ -26,3 +26,5 @@ namespace usbguard
   DLL_PUBLIC std::string getIPCAccessControlFilesPath();
   DLL_PUBLIC std::string getIPCAccessControlFileBasename(const std::string& name, bool is_group);
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

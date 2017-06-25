@@ -91,24 +91,24 @@ namespace usbguard {
     return d_pointer->getRestoreControllerDeviceState();
   }
 
-  void DeviceManager::insertDevice(Pointer<Device> device)
+  void DeviceManager::insertDevice(std::shared_ptr<Device> device)
   {
     d_pointer->insertDevice(device);
   }
 
-  Pointer<Device> DeviceManager::removeDevice(uint32_t id)
+  std::shared_ptr<Device> DeviceManager::removeDevice(uint32_t id)
   {
     return d_pointer->removeDevice(id);
   }
 
-  PointerVector<Device> DeviceManager::getDeviceList()
+  std::vector<std::shared_ptr<Device>> DeviceManager::getDeviceList()
   {
     return d_pointer->getDeviceList();
   }
 
-  PointerVector<Device> DeviceManager::getDeviceList(const Rule& query)
+  std::vector<std::shared_ptr<Device>> DeviceManager::getDeviceList(const Rule& query)
   {
-    PointerVector<Device> matching_devices;
+    std::vector<std::shared_ptr<Device>> matching_devices;
 
     for (auto const& device : getDeviceList()) {
       if (query.appliesTo(device->getDeviceRule())) {
@@ -135,17 +135,17 @@ namespace usbguard {
     return matching_devices;
   }
 
-  Pointer<Device> DeviceManager::getDevice(uint32_t id)
+  std::shared_ptr<Device> DeviceManager::getDevice(uint32_t id)
   {
     return d_pointer->getDevice(id);
   }
 
-  void DeviceManager::DeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
+  void DeviceManager::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     d_pointer->DeviceEvent(event, device);
   }
 
-  void DeviceManager::DeviceException(const String& message)
+  void DeviceManager::DeviceException(const std::string& message)
   {
     d_pointer->DeviceException(message);
   }
@@ -155,23 +155,25 @@ namespace usbguard {
 # include "UEventDeviceManager.hpp"
 #endif
 
-usbguard::Pointer<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const String& backend)
+std::shared_ptr<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const std::string& backend)
 {
 #if defined(HAVE_UEVENT)
   if (backend == "udev") {
     USBGUARD_LOG(Warning) << "udev backend is OBSOLETE. Falling back to new default: uevent";
   }
   if (backend == "uevent" || /* transition udev => uevent */backend == "udev") {
-    return usbguard::makePointer<usbguard::UEventDeviceManager>(hooks);
+    return std::make_shared<usbguard::UEventDeviceManager>(hooks);
   }
   if (backend == "dummy") {
     const char * const device_root_cstr = getenv("USBGUARD_DUMMY_DEVICE_ROOT");
     if (device_root_cstr == nullptr) {
       throw Exception("DeviceManager", "dummy", "USBGUARD_DUMMY_DEVICE_ROOT environment variable not defined");
     }
-    const String device_root(device_root_cstr);
-    return usbguard::makePointer<usbguard::UEventDeviceManager>(hooks, device_root, /*dummy_mode=*/true);
+    const std::string device_root(device_root_cstr);
+    return std::make_shared<usbguard::UEventDeviceManager>(hooks, device_root, /*dummy_mode=*/true);
   }
 #endif
   throw Exception("DeviceManager", "backend", "requested backend is not available");
 }
+
+/* vim: set ts=2 sw=2 et */

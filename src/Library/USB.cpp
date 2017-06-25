@@ -29,7 +29,7 @@ namespace usbguard {
   {
   }
 
-  USBDeviceID::USBDeviceID(const String& vendor_id, const String& product_id)
+  USBDeviceID::USBDeviceID(const std::string& vendor_id, const std::string& product_id)
   {
     checkDeviceID(vendor_id, product_id);
     setVendorID(vendor_id);
@@ -42,7 +42,7 @@ namespace usbguard {
     _product_id = rhs._product_id;
   }
 
-  void USBDeviceID::checkDeviceID(const String& vendor_id, const String& product_id)
+  void USBDeviceID::checkDeviceID(const std::string& vendor_id, const std::string& product_id)
   {
     if (vendor_id.empty() || vendor_id == "*") {
       /* product id must be empty or "*" */
@@ -58,34 +58,34 @@ namespace usbguard {
     }
   }
 
-  void USBDeviceID::setVendorID(const String& vendor_id)
+  void USBDeviceID::setVendorID(const std::string& vendor_id)
   {
     checkDeviceID(vendor_id, _product_id);
     _vendor_id = vendor_id;
   }
 
-  void USBDeviceID::setProductID(const String& product_id)
+  void USBDeviceID::setProductID(const std::string& product_id)
   {
     checkDeviceID(_vendor_id, product_id);
     _product_id = product_id;
   }
 
-  const String& USBDeviceID::getVendorID() const
+  const std::string& USBDeviceID::getVendorID() const
   {
     return _vendor_id;
   }
 
-  const String& USBDeviceID::getProductID() const
+  const std::string& USBDeviceID::getProductID() const
   {
     return _product_id;
   }
 
-  String USBDeviceID::toRuleString() const
+  std::string USBDeviceID::toRuleString() const
   {
     return _vendor_id + ":" + _product_id;
   }
 
-  String USBDeviceID::toString() const
+  std::string USBDeviceID::toString() const
   {
     return toRuleString();
   }
@@ -225,19 +225,19 @@ namespace usbguard {
     return source.appliesTo(target);
   }
 
-  const String USBInterfaceType::typeString() const
+  const std::string USBInterfaceType::typeString() const
   {
     return USBInterfaceType::typeString(_bClass, _bSubClass, _bProtocol, _mask);
   }
 
-  const String USBInterfaceType::toRuleString() const
+  const std::string USBInterfaceType::toRuleString() const
   {
     return typeString();
   }
 
-  const String USBInterfaceType::typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
+  const std::string USBInterfaceType::typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask)
   {
-    String type_string("");
+    std::string type_string("");
 
     if (mask & MatchClass) {
       type_string.append(numberToString(bClass, "", 16, 2, '0') + ":");
@@ -517,3 +517,5 @@ namespace usbguard {
     return counts;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

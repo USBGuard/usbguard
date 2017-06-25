@@ -59,3 +59,5 @@ namespace usbguard
     std::cout << " rule_id=" << rule_id << std::endl;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

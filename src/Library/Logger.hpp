@@ -133,3 +133,5 @@ namespace usbguard
     USBGUARD_LOGGER(USBGUARD_SOURCE_FILE, __LINE__, USBGUARD_FUNCTION, usbguard::LogStream::Level::level)
 
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

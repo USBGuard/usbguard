@@ -16,7 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include "Typedefs.hpp"
+#include <string>
 #include <cstddef>
 
 namespace usbguard
@@ -24,11 +24,12 @@ namespace usbguard
   size_t base64EncodedSize(size_t decoded_size);
   size_t base64DecodedSize(size_t encoded_size);
 
-  String base64Encode(const String& value);
-  String base64Encode(const uint8_t *buffer, size_t buflen);
+  std::string base64Encode(const std::string& value);
+  std::string base64Encode(const uint8_t *buffer, size_t buflen);
 
-  String base64Decode(const String& value);
-  size_t base64Decode(const String& value, void *buffer, size_t buflen);
-  String base64Decode(const char * const data, const size_t size);
+  std::string base64Decode(const std::string& value);
+  size_t base64Decode(const std::string& value, void *buffer, size_t buflen);
+  std::string base64Decode(const char * const data, const size_t size);
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */

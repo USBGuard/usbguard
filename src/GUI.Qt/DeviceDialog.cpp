@@ -262,3 +262,5 @@ void DeviceDialog::on_reject_button_clicked()
   emit rejected(device_id, ui->permanent_checkbox->isChecked());
   accept();
 }
+
+/* vim: set ts=2 sw=2 et */

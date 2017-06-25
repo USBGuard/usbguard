@@ -24,7 +24,7 @@
 
 namespace usbguard
 {
-  ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const StringVector& known_names)
+  ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const std::vector<std::string>& known_names)
     : _p_instance(p_instance),
       _known_names(known_names)
   {
@@ -40,7 +40,7 @@ namespace usbguard
     }
   }
 
-  void ConfigFilePrivate::open(const String& path)
+  void ConfigFilePrivate::open(const std::string& path)
   {
     _stream.open(path, std::ios::in|std::ios::out);
     if (!_stream.is_open()) {
@@ -81,27 +81,27 @@ namespace usbguard
     _stream.close();
   }
 
-  const String& ConfigFilePrivate::getSettingValue(const String& name) const
+  const std::string& ConfigFilePrivate::getSettingValue(const std::string& name) const
   {
     const NVPair& setting = _settings.at(name);
     return setting.value;
   }
 
-  void ConfigFilePrivate::setSettingValue(const String& name, String& value)
+  void ConfigFilePrivate::setSettingValue(const std::string& name, std::string& value)
   {
     NVPair& setting = _settings.at(name);
     setting.value = value;
     _dirty = true;
   }
 
-  bool ConfigFilePrivate::hasSettingValue(const String& name) const
+  bool ConfigFilePrivate::hasSettingValue(const std::string& name) const
   {
     return (_settings.count(name) != 0);
   }
 
   void ConfigFilePrivate::parse()
   {
-    String config_line;
+    std::string config_line;
     size_t config_line_number = 0;
 
     while(std::getline(_stream, config_line)) {
@@ -109,12 +109,12 @@ namespace usbguard
       _lines.push_back(config_line);
 
       const size_t nv_separator = config_line.find_first_of("=");
-      if (nv_separator == String::npos) {
+      if (nv_separator == std::string::npos) {
         continue;
       }
 
-      String name = trim(config_line.substr(0, nv_separator));
-      String value = config_line.substr(nv_separator + 1);
+      std::string name = trim(config_line.substr(0, nv_separator));
+      std::string value = config_line.substr(nv_separator + 1);
 
       if (name[0] == '#') {
         continue;
@@ -132,7 +132,7 @@ namespace usbguard
     }
   }
 
-  bool ConfigFilePrivate::checkNVPair(const String& name, const String& value) const
+  bool ConfigFilePrivate::checkNVPair(const std::string& name, const std::string& value) const
   {
     (void)value; /* TODO */
 
@@ -152,3 +152,5 @@ namespace usbguard
     return false;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

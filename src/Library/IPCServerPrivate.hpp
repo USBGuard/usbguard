@@ -97,10 +97,10 @@ namespace usbguard {
     bool matchACLByGID(gid_t gid, IPCServer::AccessControl * const ac_ptr) const;
     bool matchACLByName(uid_t uid, gid_t gid, IPCServer::AccessControl * const ac_ptr) const;
 
-    static String getNameFromUID(uid_t uid);
-    static String getNameFromGID(gid_t gid);
-    static std::vector<String> getGroupMemberNames(gid_t gid);
-    static std::vector<String> getGroupMemberNames(const std::string& groupname);
+    static std::string getNameFromUID(uid_t uid);
+    static std::string getNameFromGID(gid_t gid);
+    static std::vector<std::string> getGroupMemberNames(gid_t gid);
+    static std::vector<std::string> getGroupMemberNames(const std::string& groupname);
 
     static void qbIPCSendMessage(qb_ipcs_connection_t *qb_conn, const IPC::MessagePointer& message);
     static IPCServer::AccessControl::Section messageTypeNameToAccessControlSection(const std::string& name);
@@ -143,3 +143,5 @@ namespace usbguard {
     std::unordered_map<uint32_t, MessageHandler> _handlers;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

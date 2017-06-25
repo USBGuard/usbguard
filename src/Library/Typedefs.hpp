@@ -27,22 +27,6 @@
 #include <atomic>
 
 namespace usbguard {
-  /*
-   * Char string typedefs
-   */
-  typedef std::string String;
-  typedef std::vector<String> StringVector;
-  typedef std::list<String> StringList;
-  
-  template<typename key_type>
-  using StringMap = std::map<key_type, String>;
-
-  template<typename value_type>
-  using StringKeyMap = std::map<String, value_type>;
-
-  template<typename key_type>
-  using StringVectorMap = std::map<key_type, StringVector>;
-
   template<typename T>
   bool matches(const T& a, const T& b)
   {
@@ -50,63 +34,32 @@ namespace usbguard {
   }
 
   template<>
-  bool matches(const String& a, const String& b);
-
-  /*
-   * Smart Pointer typedefs and custom operations
-   */
-  template<typename pointer_type>
-  using Pointer = std::shared_ptr<pointer_type>;
-
-  template<typename pointer_type, typename deleter_type = std::default_delete<pointer_type> >
-  using UniquePointer = std::unique_ptr<pointer_type, deleter_type>;
-
-  template<typename pointer_type>
-  using PointerVector = std::vector<Pointer<pointer_type> >;
-
-  template<typename key_type, typename pointer_type>
-  using PointerMap = std::map<key_type, Pointer<pointer_type> >;
-
-  template<typename pointer_type>
-  using PointerPQueue = std::priority_queue<Pointer<pointer_type> >;
-
-  template<typename pointer_type, typename... Args>
-  static inline Pointer<pointer_type> makePointer(Args&&... args)
-  {
-    return std::make_shared<pointer_type>(std::forward<Args>(args)...);
-  }
-
-  template<typename pointer_type, typename... Args>
-  static inline UniquePointer<pointer_type> makeUniquePointer(Args&&... args)
-  {
-    return std::move(std::unique_ptr<pointer_type>(new pointer_type(std::forward<Args>(args)...)));
-  }
+  bool matches(const std::string& a, const std::string& b);
 
   namespace MapOp {
     template<typename map_type>
-    typename map_type::mapped_type findOne(const map_type& map, const typename map_type::key_type& key)
-    {
-      auto it = map.find(key);
-      if (it == map.end()) {
-	return typename map_type::mapped_type();
-      } else {
-	return it->second;
+      typename map_type::mapped_type findOne(const map_type& map, const typename map_type::key_type& key)
+      {
+        auto it = map.find(key);
+        if (it == map.end()) {
+          return typename map_type::mapped_type();
+        } else {
+          return it->second;
+        }
       }
-    }
   }
 
   namespace PointerMapOp {
     template<typename key_type, typename pointer_type>
-    Pointer<pointer_type> findOne(const PointerMap<key_type, pointer_type>& map,
-				  const key_type& key)
-    {
-      auto it = map.find(key);
-      if (it == map.end()) {
-	return Pointer<pointer_type>(nullptr);
-      } else {
-	return it->second;
+      std::shared_ptr<pointer_type> findOne(const std::map<key_type, std::shared_ptr<pointer_type>>& map, const key_type& key)
+      {
+        auto it = map.find(key);
+        if (it == map.end()) {
+          return std::shared_ptr<pointer_type>(nullptr);
+        } else {
+          return it->second;
+        }
       }
-    }
   }
 
   /*
@@ -143,3 +96,5 @@ namespace usbguard {
   #endif
   #endif
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

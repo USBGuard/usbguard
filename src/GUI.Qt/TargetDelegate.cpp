@@ -69,3 +69,5 @@ void TargetDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionVie
   (void)index;
   editor->setGeometry(option.rect);
 }
+
+/* vim: set ts=2 sw=2 et */

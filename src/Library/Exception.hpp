@@ -32,9 +32,9 @@ namespace usbguard
   class DLL_PUBLIC Exception : public std::exception
   {
     public:
-      Exception(const String& context,
-                const String& object,
-                const String& reason_val)
+      Exception(const std::string& context,
+                const std::string& object,
+                const std::string& reason_val)
         : _context(context),
           _object(object),
           _reason(reason_val)
@@ -48,37 +48,37 @@ namespace usbguard
       {
       }
 
-      const String& context() const noexcept
+      const std::string& context() const noexcept
       {
         return _context;
       }
 
-      const String& object() const noexcept
+      const std::string& object() const noexcept
       {
         return _object;
       }
 
-      const String& reason() const noexcept
+      const std::string& reason() const noexcept
       {
         return _reason;
       }
 
-      void setContext(const String& context)
+      void setContext(const std::string& context)
       {
         _context = context;
       }
       
-      void setObject(const String& object)
+      void setObject(const std::string& object)
       {
         _object = object;
       }
       
-      void setReason(const String& reason_val)
+      void setReason(const std::string& reason_val)
       {
         _reason = reason_val;
       }
 
-      virtual String message() const noexcept
+      virtual std::string message() const noexcept
       {
         try {
           return _context + ": " + (!_object.empty() ? _object + ": " : "") + _reason;
@@ -94,9 +94,9 @@ namespace usbguard
       }
 
     private:
-      String _context;
-      String _object;
-      String _reason;
+      std::string _context;
+      std::string _object;
+      std::string _reason;
   };
 
 #define USBGUARD_BUG(m) \
@@ -105,15 +105,15 @@ namespace usbguard
   class ErrnoException : public Exception
   {
     public:
-      ErrnoException(const String& context, const String& object, const int errno_value)
+      ErrnoException(const std::string& context, const std::string& object, const int errno_value)
         : Exception(context, object, ErrnoException::reasonFromErrno(errno_value))
       {
       }
     private:
-      static String reasonFromErrno(const int errno_value)
+      static std::string reasonFromErrno(const int errno_value)
       {
         char buffer[1024];
-        return String(strerror_r(errno_value, buffer, sizeof buffer));
+        return std::string(strerror_r(errno_value, buffer, sizeof buffer));
       }
   };
 
@@ -139,9 +139,9 @@ namespace usbguard
       {
       }
 
-      IPCException(const String& context,
-                   const String& object,
-                   const String& reason,
+      IPCException(const std::string& context,
+                   const std::string& object,
+                   const std::string& reason,
                    uint64_t message_id = 0)
         : Exception(context, object, reason),
           _message_id(message_id)
@@ -173,3 +173,5 @@ namespace usbguard
       uint64_t _message_id;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

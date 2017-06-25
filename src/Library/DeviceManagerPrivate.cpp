@@ -54,7 +54,7 @@ namespace usbguard {
     return _restore_controller_device_state;
   }
 
-  void DeviceManagerPrivate::insertDevice(Pointer<Device> device)
+  void DeviceManagerPrivate::insertDevice(std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get();
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
@@ -64,7 +64,7 @@ namespace usbguard {
     _device_map[id] = device;
   }
 
-  Pointer<Device> DeviceManagerPrivate::removeDevice(uint32_t id)
+  std::shared_ptr<Device> DeviceManagerPrivate::removeDevice(uint32_t id)
   {
     USBGUARD_LOG(Trace) << "entry: id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
@@ -72,16 +72,16 @@ namespace usbguard {
     if (it == _device_map.end()) {
       throw Exception("Device remove", "device id", "id doesn't exist");
     }
-    Pointer<Device> device = it->second;
+    std::shared_ptr<Device> device = it->second;
     _device_map.erase(it);
     USBGUARD_LOG(Trace) << "return: device_ptr=" << device.get();
     return device;
   }
 
-  PointerVector<Device> DeviceManagerPrivate::getDeviceList()
+  std::vector<std::shared_ptr<Device>> DeviceManagerPrivate::getDeviceList()
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
-    PointerVector<Device> devices;
+    std::vector<std::shared_ptr<Device>> devices;
 
     for (auto& map_entry : _device_map) {
       devices.push_back(map_entry.second);
@@ -90,7 +90,7 @@ namespace usbguard {
     return devices;
   }
 
-  Pointer<Device> DeviceManagerPrivate::getDevice(uint32_t id)
+  std::shared_ptr<Device> DeviceManagerPrivate::getDevice(uint32_t id)
   {
     USBGUARD_LOG(Trace) << "id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
@@ -102,16 +102,18 @@ namespace usbguard {
     }
   }
 
-  void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, Pointer<Device> device)
+  void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
                         << "device_ptr=" << device.get();
     _hooks.dmHookDeviceEvent(event, device);
   }
 
-  void DeviceManagerPrivate::DeviceException(const String& message)
+  void DeviceManagerPrivate::DeviceException(const std::string& message)
   {
     USBGUARD_LOG(Trace) << "message=" << message;
     _hooks.dmHookDeviceException(message);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

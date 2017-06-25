@@ -33,21 +33,20 @@ namespace usbguard {
     const RuleSetPrivate& operator=(const RuleSetPrivate& rhs);
     ~RuleSetPrivate();
 
-    void load(const String& path);
+    void load(const std::string& path);
     void load(std::istream& stream);
-    void save(const String& path) const;
+    void save(const std::string& path) const;
     void save(std::ostream& stream) const;
     void setDefaultTarget(Rule::Target target);
     Rule::Target getDefaultTarget() const;
-    void setDefaultAction(const String& action);
+    void setDefaultAction(const std::string& action);
     uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
     uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
-    Pointer<Rule> getRule(uint32_t id);
+    std::shared_ptr<Rule> getRule(uint32_t id);
     bool removeRule(uint32_t id);
-    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
-    PointerVector<const Rule> getRules();
-    Pointer<Rule> getTimedOutRule();
-    uint32_t assignID(Pointer<Rule> rule);
+    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
+    std::vector<std::shared_ptr<const Rule>> getRules();
+    uint32_t assignID(std::shared_ptr<Rule> rule);
     uint32_t assignID();
 
   private:
@@ -56,9 +55,10 @@ namespace usbguard {
     RuleSet& _p_instance;
     Interface * const _interface_ptr;
     Rule::Target _default_target;
-    String _default_action;
+    std::string _default_action;
     Atomic<uint32_t> _id_next;
-    PointerVector<Rule> _rules;
-    PointerPQueue<Rule> _rules_timed;
+    std::vector<std::shared_ptr<Rule>> _rules;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

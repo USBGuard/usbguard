@@ -85,3 +85,5 @@ namespace usbguard
     return d_pointer->listDevices(query);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

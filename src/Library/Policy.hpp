@@ -36,3 +36,5 @@ namespace usbguard
       static std::string eventTypeToString(EventType event);
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

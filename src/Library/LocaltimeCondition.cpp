@@ -26,11 +26,11 @@
 
 namespace usbguard
 {
-  LocaltimeCondition::LocaltimeCondition(const String& time_range, bool negated)
+  LocaltimeCondition::LocaltimeCondition(const std::string& time_range, bool negated)
     : RuleConditionBase("localtime", time_range, negated)
   {
-    String time_begin;
-    String time_end;
+    std::string time_begin;
+    std::string time_end;
     const size_t dash_pos = time_range.find('-');
 
     if (dash_pos == std::string::npos) {
@@ -106,7 +106,7 @@ namespace usbguard
     return tm_string;
   }
 
-  std::time_t LocaltimeCondition::stringToDaytime(const String& string)
+  std::time_t LocaltimeCondition::stringToDaytime(const std::string& string)
   {
     USBGUARD_LOG(Trace) << "string=" << string;
     struct ::tm tm = { };
@@ -123,3 +123,4 @@ namespace usbguard
   }
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */

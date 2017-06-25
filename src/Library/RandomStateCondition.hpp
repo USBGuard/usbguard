@@ -27,7 +27,7 @@ namespace usbguard
   class RandomStateCondition : public RuleConditionBase
   {
   public:
-    RandomStateCondition(const String& true_probability, bool negated = false);
+    RandomStateCondition(const std::string& true_probability, bool negated = false);
     RandomStateCondition(const RandomStateCondition& rhs);
     bool update(const Rule& rule);
     RuleConditionBase * clone() const;
@@ -39,3 +39,4 @@ namespace usbguard
   };
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */

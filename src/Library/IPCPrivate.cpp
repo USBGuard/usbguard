@@ -119,3 +119,5 @@ namespace usbguard
     header->set_id(id);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

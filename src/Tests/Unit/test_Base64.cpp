@@ -135,3 +135,4 @@ TEST_CASE("Base64", "[Utility]") {
   }
 }
 
+/* vim: set ts=2 sw=2 et */

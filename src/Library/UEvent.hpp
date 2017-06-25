@@ -29,18 +29,20 @@ namespace usbguard
     UEvent(UEvent&& rhs);
     UEvent& operator=(UEvent&& rhs);
 
-    static UEvent fromString(const String& uevent_string, bool attributes_only = false, bool trace = false);
+    static UEvent fromString(const std::string& uevent_string, bool attributes_only = false, bool trace = false);
 
     void clear();
-    void setAttribute(const String& name, const String& value);
-    String getAttribute(const String& name) const;
-    bool hasAttribute(const String& name) const;
+    void setAttribute(const std::string& name, const std::string& value);
+    std::string getAttribute(const std::string& name) const;
+    bool hasAttribute(const std::string& name) const;
     bool hasRequiredAttributes() const;
 
-    String getHeaderLine() const;
-    String toString(char separator = '\0') const;
+    std::string getHeaderLine() const;
+    std::string toString(char separator = '\0') const;
 
    private:
-    StringKeyMap<String> _attributes;
+    std::map<std::string,std::string> _attributes;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

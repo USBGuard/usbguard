@@ -40,7 +40,7 @@ namespace usbguard {
      * Load a ruleset from a file at `path'.
      * Internally, this opens an input file stream and calls load(std::istream& stream).
      */
-    void load(const String& path);
+    void load(const std::string& path);
 
     /**
      * Load a ruleset from an input stream.
@@ -54,7 +54,7 @@ namespace usbguard {
      * If a file exists at `path', it will be overwritten. Internally, this opens an output
      * stream and calls save(std::ostream& stream).
      */
-    void save(const String& path) const;
+    void save(const std::string& path) const;
 
     /**
      * Write the ruleset to an output stream.
@@ -78,7 +78,7 @@ namespace usbguard {
      * Set an implicit default action which will be used if there's no match for a device
      * rule.
      */
-    void setDefaultAction(const String& action);
+    void setDefaultAction(const std::string& action);
 
     /**
      * Assign a sequence number to a rule and append it to the rule set.
@@ -100,7 +100,7 @@ namespace usbguard {
      * Get a rule pointer to a rule with the specified sequence number.
      * Returns nullptr if no such rule exists.
      */
-    Pointer<Rule> getRule(uint32_t id);
+    std::shared_ptr<Rule> getRule(uint32_t id);
     
     /**
      * Remove a rule from the ruleset.
@@ -113,24 +113,24 @@ namespace usbguard {
      * If `from_id' isn't specified, the method searches from the beginning of the ruleset.
      * If no matching rule is found, nullptr is returned.
      */
-    Pointer<Rule> getFirstMatchingRule(Pointer<const Rule> device_rule, uint32_t from_id = 1) const;
+    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
 
     /**
      * Get all rules from the set.
      */
-    PointerVector<const Rule> getRules();
+    std::vector<std::shared_ptr<const Rule>> getRules();
 
     /**
      * Get the oldest rule that timed out and should be removed from the ruleset.
      * Returns nullptr if there are not timed out rules.
      */
-    Pointer<Rule> getTimedOutRule();
+    std::shared_ptr<Rule> getTimedOutRule();
 
     /**
      * Assign a unique sequence number to a rule.
      * Return the assigned sequence number.
      */
-    uint32_t assignID(Pointer<Rule> rule);
+    uint32_t assignID(std::shared_ptr<Rule> rule);
 
     /**
      * Generate a unique sequence number.
@@ -141,3 +141,5 @@ namespace usbguard {
     RuleSetPrivate* d_pointer;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

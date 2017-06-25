@@ -76,9 +76,9 @@ namespace usbguard
     }
   };
 
-  static const String stringValueFromRule(const String& value)
+  static const std::string stringValueFromRule(const std::string& value)
   {
-    const String string_raw(value.substr(1, value.size() - 2));
+    const std::string string_raw(value.substr(1, value.size() - 2));
     return Utility::unescapeString(string_raw);
   }
 
@@ -447,3 +447,5 @@ namespace usbguard
   };
   } /* namespace RuleParser */
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

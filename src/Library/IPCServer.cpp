@@ -29,7 +29,7 @@ namespace usbguard
       throw Exception("IPC access control", "name too long", name);
     }
 
-    const String valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+    const std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
     if (name.find_first_not_of(valid_chars) != std::string::npos) {
       throw Exception("IPC access control", "name contains invalid character(s)", name);
@@ -37,7 +37,7 @@ namespace usbguard
 
   }
 
-  static const std::vector<std::pair<String,IPCServer::AccessControl::Section>> section_ttable = {
+  static const std::vector<std::pair<std::string,IPCServer::AccessControl::Section>> section_ttable = {
     { "ALL", IPCServer::AccessControl::Section::ALL },
     { "Policy", IPCServer::AccessControl::Section::POLICY },
     { "Parameters", IPCServer::AccessControl::Section::PARAMETERS },
@@ -66,7 +66,7 @@ namespace usbguard
     throw std::runtime_error("Invalid AccessControl::Section value");
   }
 
-  static const std::vector<std::pair<String,IPCServer::AccessControl::Privilege>> privilege_ttable = {
+  static const std::vector<std::pair<std::string,IPCServer::AccessControl::Privilege>> privilege_ttable = {
     { "ALL", IPCServer::AccessControl::Privilege::ALL },
     { "modify", IPCServer::AccessControl::Privilege::MODIFY },
     { "list", IPCServer::AccessControl::Privilege::LIST },
@@ -169,18 +169,18 @@ namespace usbguard
       ++line_number;
       const size_t nv_separator = line.find_first_of("=");
 
-      if (nv_separator == String::npos) {
+      if (nv_separator == std::string::npos) {
         continue;
       }
 
-      const String section_string = trim(line.substr(0, nv_separator));
+      const std::string section_string = trim(line.substr(0, nv_separator));
       const Section section = sectionFromString(section_string);
 
-      const String privileges_string = line.substr(nv_separator + 1);
-      StringVector privilege_strings;
+      const std::string privileges_string = line.substr(nv_separator + 1);
+      std::vector<std::string> privilege_strings;
       tokenizeString(privileges_string, privilege_strings, " ,", /*trim_empty=*/true);
 
-      for (const String& privilege_string : privilege_strings) {
+      for (const std::string& privilege_string : privilege_strings) {
         const Privilege privilege = privilegeFromString(privilege_string);
         setPrivilege(section, privilege);
       }
@@ -301,3 +301,5 @@ namespace usbguard
     d_pointer->addAllowedGroupname(groupname, ac);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

@@ -47,18 +47,18 @@ namespace usbguard
       ApplyPolicy
     };
 
-    static DevicePolicyMethod devicePolicyMethodFromString(const String& policy_string);
+    static DevicePolicyMethod devicePolicyMethodFromString(const std::string& policy_string);
     static const std::string devicePolicyMethodToString(DevicePolicyMethod policy);
 
     Daemon();
     ~Daemon();
 
-    void loadConfiguration(const String& path);
-    void loadRules(const String& path);
-    void loadIPCAccessControlFiles(const String& path);
-    bool loadIPCAccessControlFile(const String& basename, const String& fullpath);
-    void checkIPCAccessControlName(const String& basename);
-    void parseIPCAccessControlFilename(const String& basename, String * const ptr_user, String * const ptr_group); 
+    void loadConfiguration(const std::string& path);
+    void loadRules(const std::string& path);
+    void loadIPCAccessControlFiles(const std::string& path);
+    bool loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath);
+    void checkIPCAccessControlName(const std::string& basename);
+    void parseIPCAccessControlFilename(const std::string& basename, std::string * const ptr_user, std::string * const ptr_group); 
 
     void setImplicitPolicyTarget(Rule::Target target);
     void setPresentDevicePolicyMethod(DevicePolicyMethod policy);
@@ -85,32 +85,32 @@ namespace usbguard
     const std::vector<Rule> listDevices(const std::string& query) override;
 
     /* Device manager hooks */
-    void dmHookDeviceEvent(DeviceManager::EventType event, Pointer<Device> device) override;
+    void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device) override;
     uint32_t dmHookAssignID() override;
-    void dmHookDeviceException(const String& message) override;
+    void dmHookDeviceException(const std::string& message) override;
 
 #define USBGUARD_IPCSERVER_DEFAULT_AC \
   IPCServer::AccessControl(IPCServer::AccessControl::Section::ALL, IPCServer::AccessControl::Privilege::ALL)
 
     void addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
-    void addIPCAllowedUID(const String& uid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedUID(const std::string& uid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
     void addIPCAllowedGID(gid_t gid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
-    void addIPCAllowedGID(const String& gid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
-    void addIPCAllowedUser(const String& user, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
-    void addIPCAllowedGroup(const String& group, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedGID(const std::string& gid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedUser(const std::string& user, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
+    void addIPCAllowedGroup(const std::string& group, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
 
   private:
-    void dmApplyDevicePolicy(Pointer<Device> device, Pointer<Rule> matched_rule);
-    Pointer<Rule> getInsertedDevicePolicyRule(Pointer<Device> device);
-    Pointer<Rule> getPresentDevicePolicyRule(Pointer<Device> device);
+    void dmApplyDevicePolicy(std::shared_ptr<Device> device, std::shared_ptr<Rule> matched_rule);
+    std::shared_ptr<Rule> getInsertedDevicePolicyRule(std::shared_ptr<Device> device);
+    std::shared_ptr<Rule> getPresentDevicePolicyRule(std::shared_ptr<Device> device);
 
-    Pointer<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
+    std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
     RuleSet _ruleset;
 
-    String _device_manager_backend;
-    Pointer<DeviceManager> _dm;
+    std::string _device_manager_backend;
+    std::shared_ptr<DeviceManager> _dm;
 
     std::atomic<Rule::Target> _implicit_policy_target;
     std::atomic<DevicePolicyMethod> _present_device_policy_method;
@@ -123,3 +123,5 @@ namespace usbguard
     AuditIdentity _audit_identity;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

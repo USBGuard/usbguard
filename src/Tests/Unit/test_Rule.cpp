@@ -43,7 +43,6 @@ TEST_CASE("Default constructed rule", "[Rule]") {
     REQUIRE(rule.attributeHash().empty());
     REQUIRE(rule.attributeViaPort().empty());
     REQUIRE(rule.attributeWithInterface().empty());
-    REQUIRE(rule.getTimeoutSeconds() == 0);
   }
 
   SECTION("is not valid") {
@@ -77,3 +76,5 @@ TEST_CASE("Target-only rule", "[RuleParser]") {
     REQUIRE(rule.toString() == "reject");
   }
 }
+
+/* vim: set ts=2 sw=2 et */

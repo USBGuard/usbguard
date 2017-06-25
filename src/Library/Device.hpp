@@ -37,15 +37,15 @@ namespace usbguard {
     DeviceManager& manager() const;
 
     std::mutex& refDeviceMutex();
-    Pointer<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true, bool match_rule = false);
-    String hashString(const String& value) const;
+    std::shared_ptr<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true, bool match_rule = false);
+    std::string hashString(const std::string& value) const;
     void initializeHash();
     void updateHash(const void * ptr, size_t size);
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
-    String finalizeHash();
-    const String& getHash() const;
+    std::string finalizeHash();
+    const std::string& getHash() const;
 
-    void setParentHash(const String& hash);
+    void setParentHash(const std::string& hash);
 
     void setID(uint32_t id);
     uint32_t getID() const;
@@ -56,17 +56,17 @@ namespace usbguard {
     void setTarget(Rule::Target target);
     Rule::Target getTarget() const;
 
-    void setName(const String& name);
-    const String& getName() const;
+    void setName(const std::string& name);
+    const std::string& getName() const;
 
     void setDeviceID(const USBDeviceID& device_id);
     const USBDeviceID& getDeviceID() const;
 
-    void setPort(const String& port);
-    const String& getPort() const;
+    void setPort(const std::string& port);
+    const std::string& getPort() const;
 
-    void setSerial(const String& serial_number);
-    const String& getSerial() const;
+    void setSerial(const std::string& serial_number);
+    const std::string& getSerial() const;
 
     std::vector<USBInterfaceType>& refMutableInterfaceTypes();
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
@@ -82,3 +82,5 @@ namespace usbguard {
     DevicePrivate *d_pointer;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

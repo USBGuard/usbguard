@@ -24,18 +24,20 @@ namespace usbguard {
   class DLL_PUBLIC ConfigFile
   {
   public:
-    ConfigFile(const StringVector& known_names = StringVector());
+    ConfigFile(const std::vector<std::string>& known_names = std::vector<std::string>());
     ~ConfigFile();
 
-    void open(const String& path);
+    void open(const std::string& path);
     void write();
     void close();
 
-    void setSettingValue(const String& name, String& value);
-    bool hasSettingValue(const String& name) const;
-    const String& getSettingValue(const String& name) const;
+    void setSettingValue(const std::string& name, std::string& value);
+    bool hasSettingValue(const std::string& name) const;
+    const std::string& getSettingValue(const std::string& name) const;
 
   private:
     ConfigFilePrivate* d_pointer;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

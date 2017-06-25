@@ -304,11 +304,9 @@ sbin_PROGRAMS=\
 usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
-	src/Daemon/Exceptions.hpp \
 	src/Daemon/main.cpp \
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
-	src/Common/CCBQueue.hpp \
 	src/Common/Utility.hpp \
 	src/Common/Utility.cpp
 
@@ -676,13 +674,7 @@ analyze-clang:
 	rm -rf "$(ANALYSIS_ROOT)"
 
 if MAINTAINER_MODE
-check-local: check-copyright
-
-check-copyright:
-	$(eval GIT_CLONE_ROOT:=$(shell mktemp -d -t usbguard-git-clone.XXXXXX))
-	git clone "$(abs_top_srcdir)" "$(GIT_CLONE_ROOT)" && \
-	  $(top_srcdir)/src/Tests/Packaging/files-without-copyright.sh "$(GIT_CLONE_ROOT)"
-	rm -rf "$(GIT_CLONE_ROOT)"
+check-local:
 else
 check-local:
 endif

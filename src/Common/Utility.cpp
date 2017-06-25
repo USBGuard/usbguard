@@ -77,7 +77,7 @@ namespace usbguard
     return;
   }
 
-  bool writePID(const String& filepath)
+  bool writePID(const std::string& filepath)
   {
     std::ofstream pidstream(filepath, std::ios_base::trunc);
     if (!pidstream) {
@@ -87,7 +87,7 @@ namespace usbguard
     return true;
   }
 
-  static void runCommandExecChild(const String& path, const std::vector<String>& args)
+  static void runCommandExecChild(const std::string& path, const std::vector<std::string>& args)
   {
     struct rlimit rlim;
 
@@ -147,20 +147,20 @@ namespace usbguard
 
   int runCommand(const char * const path, const char * const arg1, const int timeout_secs)
   {
-    std::vector<String> args;
+    std::vector<std::string> args;
     args.push_back(arg1);
     return runCommand(path, args, timeout_secs);
   }
 
   int runCommand(const char * const path, const char * const arg1, const char * const arg2, const int timeout_secs)
   {
-    std::vector<String> args;
+    std::vector<std::string> args;
     args.push_back(arg1);
     args.push_back(arg2);
     return runCommand(path, args, timeout_secs);
   }
 
-  int runCommand(const String& path, const std::vector<String>& args, const int timeout_secs)
+  int runCommand(const std::string& path, const std::vector<std::string>& args, const int timeout_secs)
   {
     int retval = 0, status = 0;
     bool timedout = false;
@@ -218,18 +218,18 @@ namespace usbguard
     return retval;
   }
 
-  String filenameFromPath(const String& filepath, const bool include_extension)
+  std::string filenameFromPath(const std::string& filepath, const bool include_extension)
   {
-    const String directory_separator = "/";
-    StringVector path_tokens;
+    const std::string directory_separator = "/";
+    std::vector<std::string> path_tokens;
 
     tokenizeString(filepath, path_tokens, directory_separator);
 
     if (path_tokens.size() == 0) {
-      return String();
+      return std::string();
     }
 
-    const String& filename = path_tokens.back();
+    const std::string& filename = path_tokens.back();
 
     if (include_extension) {
       return filename;
@@ -240,10 +240,10 @@ namespace usbguard
     return filename.substr(0, substr_to);
   }
 
-  String parentPath(const String& path)
+  std::string parentPath(const std::string& path)
   {
-    const String directory_separator = "/";
-    String parent_path(path);
+    const std::string directory_separator = "/";
+    std::string parent_path(path);
 
     // find first not '/' (from end)
     // find first '/' (from end)
@@ -256,7 +256,7 @@ namespace usbguard
      * Whole path consists only of '/'.
      */
     if (reverse_start_pos == std::string::npos) {
-      return String();
+      return std::string();
     }
 
     reverse_start_pos = \
@@ -266,7 +266,7 @@ namespace usbguard
      * No directory separator in the rest of the path.
      */
     if (reverse_start_pos == std::string::npos) {
-      return String();
+      return std::string();
     }
 
     reverse_start_pos = \
@@ -277,41 +277,41 @@ namespace usbguard
      * /foo/bar   => /foo
      * /foo/bar/  => /foo
      * /foo/bar// => /foo
-     * /foo       => String()
-     * /foo/      => String()
-     * /          => String()
-     * //foo      => String()
+     * /foo       => std::string()
+     * /foo/      => std::string()
+     * /          => std::string()
+     * //foo      => std::string()
      *
      */
     if (reverse_start_pos == std::string::npos) {
-      return String();
+      return std::string();
     }
 
     return path.substr(0, reverse_start_pos + 1);
   }
 
-  String trimRight(const String& s, const String& delimiters)
+  std::string trimRight(const std::string& s, const std::string& delimiters)
   {
     const size_t substr_to = s.find_last_not_of(delimiters);
     if (substr_to != std::string::npos) {
       return s.substr(0, substr_to + 1);
     }
     else {
-      return String();
+      return std::string();
     }
   }
 
-  String trimLeft(const String& s, const String& delimiters)
+  std::string trimLeft(const std::string& s, const std::string& delimiters)
   {
     const size_t substr_from = s.find_first_not_of(delimiters);
-    if (substr_from == String::npos) {
+    if (substr_from == std::string::npos) {
       return s;
     } else {
       return s.substr(substr_from);
     }
   }
 
-  String trim(const String& s, const String& delimiters)
+  std::string trim(const std::string& s, const std::string& delimiters)
   {
     return trimRight(trimLeft(s, delimiters), delimiters);
   }
@@ -323,20 +323,20 @@ namespace usbguard
    * an unsigned int.
    */
   template<>
-  String numberToString(const uint8_t number, const String& prefix, const int base, const int align, const char align_char)
+  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align, const char align_char)
   {
     const uint16_t n = static_cast<uint16_t>(number);
     return numberToString(n, prefix, base, align, align_char);
   }
 
   template<>
-  uint8_t stringToNumber(const String& s, const int base)
+  uint8_t stringToNumber(const std::string& s, const int base)
   {
     const unsigned int num = stringToNumber<unsigned int>(s, base);
     return (uint8_t)num;
   }
 
-  bool isNumericString(const String& s)
+  bool isNumericString(const std::string& s)
   {
     for (int c : s) {
       if (!isdigit(c)) {
@@ -346,10 +346,10 @@ namespace usbguard
     return true;
   }
 
-  int loadFiles(const String& directory,
-                std::function<String(const String&, const struct dirent *)> filter,
-                std::function<int(const String&, const String&)> loader,
-                std::function<bool(const std::pair<String, String>&, const std::pair<String, String>&)> sorter)
+  int loadFiles(const std::string& directory,
+                std::function<std::string(const std::string&, const struct dirent *)> filter,
+                std::function<int(const std::string&, const std::string&)> loader,
+                std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter)
   {
     DIR* dirobj = opendir(directory.c_str());
     int retval = 0;
@@ -358,7 +358,7 @@ namespace usbguard
       throw ErrnoException("loadFiles", directory, errno);
     }
     try {
-      std::vector<std::pair<String,String>> loadpaths;
+      std::vector<std::pair<std::string,std::string>> loadpaths;
       struct dirent *entry_ptr = nullptr;
       /*
        * readdir usage note: We rely on the fact that readdir should be thread-safe
@@ -367,14 +367,14 @@ namespace usbguard
        * readdir_r, is deprecated in newer versions of glibc.
        */
       while((entry_ptr = readdir(dirobj)) != nullptr) {
-        const String filename(entry_ptr->d_name);
+        const std::string filename(entry_ptr->d_name);
 
         if (filename == "." || filename == "..") {
           continue;
         }
 
-        String fullpath = directory + "/" + filename;
-        String loadpath = filter(fullpath, entry_ptr);
+        std::string fullpath = directory + "/" + filename;
+        std::string loadpath = filter(fullpath, entry_ptr);
 
         if (!loadpath.empty()) {
           loadpaths.emplace_back(std::make_pair(std::move(loadpath),std::move(fullpath)));
@@ -400,7 +400,7 @@ namespace usbguard
     return retval;
   }
 
-  String removePrefix(const String& prefix, const String& value)
+  std::string removePrefix(const std::string& prefix, const std::string& value)
   {
     if (value.compare(0, prefix.size(), prefix) == 0) {
       return value.substr(prefix.size());
@@ -410,7 +410,7 @@ namespace usbguard
     }
   }
 
-  String symlinkPath(const String& linkpath, struct stat *st_user)
+  std::string symlinkPath(const std::string& linkpath, struct stat *st_user)
   {
     struct stat st = { };
     struct stat *st_ptr = nullptr;
@@ -440,7 +440,7 @@ namespace usbguard
       throw Exception("symlinkPath", linkpath, "symlink value size out of range");
     }
 
-    String buffer(st_ptr->st_size, 0);
+    std::string buffer(st_ptr->st_size, 0);
     const ssize_t link_size = readlink(linkpath.c_str(), &buffer[0], buffer.capacity());
 
     if (link_size <= 0 || link_size > st_ptr->st_size) {
@@ -461,3 +461,5 @@ namespace usbguard
     }
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

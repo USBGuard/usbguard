@@ -237,7 +237,7 @@ namespace usbguard
       IPCServerPrivate* server = \
         static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
 
-      UniquePointer<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
+      std::unique_ptr<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
       const bool auth = server->qbIPCConnectionAllowed(uid, gid, access_control.get());
       qb_ipcs_context_set(conn, access_control.release());
 
@@ -587,7 +587,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
 
     bool matched = false;
-    const String uid_name = getNameFromUID(uid);
+    const std::string uid_name = getNameFromUID(uid);
     const bool check_uid_group_membership = !uid_name.empty();
 
     if (!uid_name.empty()) {
@@ -602,7 +602,7 @@ namespace usbguard
       }
     }
 
-    const String gid_name = getNameFromGID(gid);
+    const std::string gid_name = getNameFromGID(gid);
 
     if (!gid_name.empty()) {
       const auto& it = _allowed_groupnames.find(gid_name);
@@ -623,7 +623,7 @@ namespace usbguard
        */
       for (auto const& allowed_gid_entry : _allowed_gids) {
         const auto& allowed_gid = allowed_gid_entry.first;
-        const std::vector<String> group_members = getGroupMemberNames(allowed_gid);
+        const std::vector<std::string> group_members = getGroupMemberNames(allowed_gid);
 
         for (const auto& group_member : group_members) {
           if (group_member == uid_name) {
@@ -641,7 +641,7 @@ namespace usbguard
        */
       for (auto const& allowed_groupnames_entry : _allowed_groupnames) {
         const auto& allowed_groupname = allowed_groupnames_entry.first;
-        const std::vector<String> group_members = getGroupMemberNames(allowed_groupname);
+        const std::vector<std::string> group_members = getGroupMemberNames(allowed_groupname);
 
         for (const auto& group_member : group_members) {
           if (group_member == uid_name) {
@@ -665,87 +665,87 @@ namespace usbguard
     return matched;
   }
 
-  String IPCServerPrivate::getNameFromUID(uid_t uid)
+  std::string IPCServerPrivate::getNameFromUID(uid_t uid)
   {
-    String buffer(1024, 0);
+    std::string buffer(1024, 0);
     struct passwd pw = { };
     struct passwd *pwptr = nullptr;
 
     if (getpwuid_r(uid, &pw, &buffer[0], buffer.capacity(), &pwptr) != 0) {
       USBGUARD_LOG(Warning) << "Unable to lookup username for uid=" << uid << ": errno=" << errno;
-      return String();
+      return std::string();
     }
 
     if (pwptr == nullptr || pw.pw_name == nullptr) {
       USBGUARD_LOG(Info) << "No username associated with uid=" << uid;
-      return String();
+      return std::string();
     }
 
-    return String(pw.pw_name);
+    return std::string(pw.pw_name);
   }
 
-  String IPCServerPrivate::getNameFromGID(gid_t gid)
+  std::string IPCServerPrivate::getNameFromGID(gid_t gid)
   {
-    String buffer(4096, 0);
+    std::string buffer(4096, 0);
     struct group gr = { };
     struct group *grptr = nullptr;
 
     if (getgrgid_r(gid, &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
       USBGUARD_LOG(Warning) << "Unable to lookup groupname for gid=" << gid << ": errno=" << errno;
-      return String();
+      return std::string();
     }
 
     if (grptr == nullptr || gr.gr_name == nullptr) {
       USBGUARD_LOG(Info) << "No groupname associated with gid=" << gid;
-      return String();
+      return std::string();
     }
 
-    return String(gr.gr_name);
+    return std::string(gr.gr_name);
   }
 
-  std::vector<String> IPCServerPrivate::getGroupMemberNames(gid_t gid)
+  std::vector<std::string> IPCServerPrivate::getGroupMemberNames(gid_t gid)
   {
-    std::vector<String> names;
-    String buffer(4096, 0);
+    std::vector<std::string> names;
+    std::string buffer(4096, 0);
     struct group gr = { };
     struct group *grptr = nullptr;
 
     if (getgrgid_r(gid, &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
       USBGUARD_LOG(Warning) << "Unable to fetch group members for gid=" << gid << ": errno=" << errno;
-      return std::vector<String>();
+      return std::vector<std::string>();
     }
 
     if (grptr == nullptr || gr.gr_name == nullptr) {
       USBGUARD_LOG(Info) << "No group associated with gid=" << gid;
-      return std::vector<String>();
+      return std::vector<std::string>();
     }
 
     for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
-      names.emplace_back(String(gr.gr_mem[i]));
+      names.emplace_back(std::string(gr.gr_mem[i]));
     }
 
     return names;
   }
 
-  std::vector<String> IPCServerPrivate::getGroupMemberNames(const std::string& groupname)
+  std::vector<std::string> IPCServerPrivate::getGroupMemberNames(const std::string& groupname)
   {
-    std::vector<String> names;
-    String buffer(4096, 0);
+    std::vector<std::string> names;
+    std::string buffer(4096, 0);
     struct group gr = { };
     struct group *grptr = nullptr;
 
     if (getgrnam_r(groupname.c_str(), &gr, &buffer[0], buffer.capacity(), &grptr) != 0) {
       USBGUARD_LOG(Warning) << "Unable to fetch group member names for groupname=" << groupname << ": errno=" << errno;
-      return std::vector<String>();
+      return std::vector<std::string>();
     }
 
     if (grptr == nullptr || gr.gr_name == nullptr) {
       USBGUARD_LOG(Info) << "Can't find group with name=" << groupname;
-      return std::vector<String>();
+      return std::vector<std::string>();
     }
 
     for (size_t i = 0; gr.gr_mem[i] != nullptr; ++i) {
-      names.emplace_back(String(gr.gr_mem[i]));
+      names.emplace_back(std::string(gr.gr_mem[i]));
     }
 
     return names;
@@ -1055,3 +1055,5 @@ namespace usbguard
     _allowed_groupnames.emplace(groupname, ac);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

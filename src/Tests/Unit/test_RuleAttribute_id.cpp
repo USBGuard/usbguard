@@ -132,3 +132,5 @@ TEST_CASE("Match id attribute", "[Match]") {
     REQUIRE(rule.appliesTo(device_rule));
   }
 }
+
+/* vim: set ts=2 sw=2 et */

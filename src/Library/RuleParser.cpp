@@ -36,7 +36,7 @@
 
 namespace usbguard
 {
-  Rule parseRuleFromString(const String& rule_spec, const String& file, size_t line, bool trace)
+  Rule parseRuleFromString(const std::string& rule_spec, const std::string& file, size_t line, bool trace)
   {
     try {
       Rule rule;
@@ -79,3 +79,5 @@ namespace usbguard
     }
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

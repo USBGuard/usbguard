@@ -18,12 +18,13 @@
 //
 #include "Typedefs.hpp"
 
-namespace usbguard {
-
+namespace usbguard
+{
   template<>
-  bool matches(const String& a, const String& b)
+  bool matches(const std::string& a, const std::string& b)
   {
     return a == b;
   }
-
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

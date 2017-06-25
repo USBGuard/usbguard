@@ -27,14 +27,15 @@ namespace usbguard
   class RuleAppliedCondition : public RuleConditionBase
   {
   public:
-    RuleAppliedCondition(const String& elapsed_time, bool negated = false);
+    RuleAppliedCondition(const std::string& elapsed_time, bool negated = false);
     RuleAppliedCondition(const RuleAppliedCondition& rhs);
     bool update(const Rule& rule);
     RuleConditionBase * clone() const;
   protected:
-    static uint64_t stringToSeconds(const String& string);
+    static uint64_t stringToSeconds(const std::string& string);
   private:
     std::chrono::steady_clock::duration _elapsed_time;
   };
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */

@@ -145,24 +145,24 @@ namespace usbguard {
   {
   public:
     USBDeviceID();
-    USBDeviceID(const String& vendor_id, const String& product_id = String());
+    USBDeviceID(const std::string& vendor_id, const std::string& product_id = std::string());
     USBDeviceID(const USBDeviceID& rhs);
 
-    static void checkDeviceID(const String& vendor_id, const String& product_id);
+    static void checkDeviceID(const std::string& vendor_id, const std::string& product_id);
 
-    void setVendorID(const String& vendor_id);
-    void setProductID(const String& product_id);
+    void setVendorID(const std::string& vendor_id);
+    void setProductID(const std::string& product_id);
 
-    const String& getVendorID() const;
-    const String& getProductID() const;
+    const std::string& getVendorID() const;
+    const std::string& getProductID() const;
 
-    String toRuleString() const;
-    String toString() const;
+    std::string toRuleString() const;
+    std::string toString() const;
     bool isSubsetOf(const USBDeviceID& rhs) const;
 
   private:
-    String _vendor_id;
-    String _product_id;
+    std::string _vendor_id;
+    std::string _product_id;
   };
 
   namespace Predicates DLL_PUBLIC
@@ -187,9 +187,9 @@ namespace usbguard {
     bool operator==(const USBInterfaceType& rhs) const;
     bool appliesTo(const USBInterfaceType& rhs) const;
 
-    const String typeString() const;
-    const String toRuleString() const;
-    static const String typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
+    const std::string typeString() const;
+    const std::string toRuleString() const;
+    static const std::string typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
 
   private:
     uint8_t _bClass;
@@ -268,3 +268,5 @@ namespace usbguard {
  void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

@@ -56,7 +56,7 @@ namespace usbguard {
     const RulePrivate& operator=(const RulePrivate& rhs);
     ~RulePrivate();
 
-    bool appliesTo(Pointer<const Rule> rhs, bool parent_insensitive = false) const;
+    bool appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive = false) const;
     bool appliesTo(const Rule& rhs, bool parent_insensitive = false) const;
     bool appliesToWithConditions(const Rule& rhs, bool with_update = false);
     
@@ -78,30 +78,30 @@ namespace usbguard {
     const Rule::Attribute<USBDeviceID>& attributeDeviceID() const;
     Rule::Attribute<USBDeviceID>& attributeDeviceID();
 
-    void setSerial(const String& value);
-    const String& getSerial() const;
-    const Rule::Attribute<String>& attributeSerial() const;
-    Rule::Attribute<String>& attributeSerial();
+    void setSerial(const std::string& value);
+    const std::string& getSerial() const;
+    const Rule::Attribute<std::string>& attributeSerial() const;
+    Rule::Attribute<std::string>& attributeSerial();
 
-    void setName(const String& value);
-    const String& getName() const;
-    const Rule::Attribute<String>& attributeName() const;
-    Rule::Attribute<String>& attributeName();
+    void setName(const std::string& value);
+    const std::string& getName() const;
+    const Rule::Attribute<std::string>& attributeName() const;
+    Rule::Attribute<std::string>& attributeName();
 
-    void setHash(const String& value);
-    const String& getHash() const;
-    const Rule::Attribute<String>& attributeHash() const;
-    Rule::Attribute<String>& attributeHash();
+    void setHash(const std::string& value);
+    const std::string& getHash() const;
+    const Rule::Attribute<std::string>& attributeHash() const;
+    Rule::Attribute<std::string>& attributeHash();
 
-    void setParentHash(const String& value);
-    const String& getParentHash() const;
-    const Rule::Attribute<String>& attributeParentHash() const;
-    Rule::Attribute<String>& attributeParentHash();
+    void setParentHash(const std::string& value);
+    const std::string& getParentHash() const;
+    const Rule::Attribute<std::string>& attributeParentHash() const;
+    Rule::Attribute<std::string>& attributeParentHash();
 
-    void setViaPort(const String& value);
-    const String& getViaPort() const;
-    const Rule::Attribute<String>& attributeViaPort() const;
-    Rule::Attribute<String>& attributeViaPort();
+    void setViaPort(const std::string& value);
+    const std::string& getViaPort() const;
+    const Rule::Attribute<std::string>& attributeViaPort() const;
+    Rule::Attribute<std::string>& attributeViaPort();
 
     /*
      * Set/get for a single value isn't useful for the
@@ -115,17 +115,14 @@ namespace usbguard {
     const Rule::Attribute<RuleCondition>& attributeConditions() const;
     Rule::Attribute<RuleCondition>& attributeConditions();
 
-    void setTimeoutSeconds(uint32_t timeout_seconds);
-    uint32_t getTimeoutSeconds() const;
-
-    String toString(bool invalid = false) const;
+    std::string toString(bool invalid = false) const;
 
     MetaData& metadata();
     const MetaData& metadata() const;
     void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 
     /*** Static methods ***/
-    static Rule fromString(const String& rule_string);
+    static Rule fromString(const std::string& rule_string);
 
   private:
     //Rule& _p_instance;
@@ -133,14 +130,15 @@ namespace usbguard {
     uint32_t _rule_id;
     Rule::Target _target;
     Rule::Attribute<USBDeviceID> _device_id;
-    Rule::Attribute<String> _serial;
-    Rule::Attribute<String> _name;
-    Rule::Attribute<String> _hash;
-    Rule::Attribute<String> _parent_hash;
-    Rule::Attribute<String> _via_port;
+    Rule::Attribute<std::string> _serial;
+    Rule::Attribute<std::string> _name;
+    Rule::Attribute<std::string> _hash;
+    Rule::Attribute<std::string> _parent_hash;
+    Rule::Attribute<std::string> _via_port;
     Rule::Attribute<USBInterfaceType> _with_interface;
     Rule::Attribute<RuleCondition> _conditions;
     uint64_t _conditions_state;
-    uint32_t _timeout_seconds;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

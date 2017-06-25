@@ -744,3 +744,5 @@ void MainWindow::IPCDisconnected(bool exception_initiated, const usbguard::IPCEx
   (void)exception;
   emit uiDisconnected();
 }
+
+/* vim: set ts=2 sw=2 et */

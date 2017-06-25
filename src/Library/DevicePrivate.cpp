@@ -68,14 +68,14 @@ namespace usbguard {
     return _mutex;
   }
 
-  Pointer<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
+  std::shared_ptr<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     USBGUARD_LOG(Trace) << "entry: "
                         << " with_port=" << with_port
                         << " with_parent_hash=" << with_parent_hash
                         << " match_rule=" << match_rule;
 
-    Pointer<Rule> device_rule = makePointer<Rule>();
+    std::shared_ptr<Rule> device_rule = std::make_shared<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
 
     device_rule->setRuleID(_id);
@@ -117,7 +117,7 @@ namespace usbguard {
     return device_rule;
   }
 
-  String DevicePrivate::hashString(const String& value) const
+  std::string DevicePrivate::hashString(const std::string& value) const
   {
     Hash hash;
     hash.update(value);
@@ -128,8 +128,8 @@ namespace usbguard {
   {
     Hash hash;
 
-    const String vendor_id = _device_id.getVendorID();
-    const String product_id = _device_id.getProductID();
+    const std::string vendor_id = _device_id.getVendorID();
+    const std::string product_id = _device_id.getProductID();
 
     if (vendor_id.empty() || product_id.empty()) {
       throw Exception("Device hash initialization", numberToString(getID()), "vendor and/or product id values not available");
@@ -138,7 +138,7 @@ namespace usbguard {
     /*
      * Hash name, device id and serial number fields.
      */
-    for (const String& field : { _name, vendor_id, product_id, _serial_number }) {
+    for (const std::string& field : { _name, vendor_id, product_id, _serial_number }) {
       hash.update(field);
     }
 
@@ -167,13 +167,13 @@ namespace usbguard {
     _hash = std::move(hash);
   }
 
-  String DevicePrivate::finalizeHash()
+  std::string DevicePrivate::finalizeHash()
   {
     _hash_base64 = _hash.getBase64();
     return _hash_base64;
   }
 
-  const String& DevicePrivate::getHash() const
+  const std::string& DevicePrivate::getHash() const
   {
     if (_hash_base64.empty()) {
       throw USBGUARD_BUG("Accessing unfinalized device hash value");
@@ -181,7 +181,7 @@ namespace usbguard {
     return _hash_base64;
   }
 
-  void DevicePrivate::setParentHash(const String& hash)
+  void DevicePrivate::setParentHash(const std::string& hash)
   {
     _parent_hash = hash;
   }
@@ -216,7 +216,7 @@ namespace usbguard {
     return _target;
   }
 
-  void DevicePrivate::setName(const String& name)
+  void DevicePrivate::setName(const std::string& name)
   {
     if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
       throw Exception("DevicePrivate::setName", numberToString(getID()), "name string size out-of-range");
@@ -224,7 +224,7 @@ namespace usbguard {
     _name = name;
   }
 
-  const String& DevicePrivate::getName() const
+  const std::string& DevicePrivate::getName() const
   {
     return _name;
   }
@@ -239,7 +239,7 @@ namespace usbguard {
     return _device_id;
   }
 
-  void DevicePrivate::setPort(const String& port)
+  void DevicePrivate::setPort(const std::string& port)
   {
     if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
       throw std::runtime_error("device port string size out of range");
@@ -247,12 +247,12 @@ namespace usbguard {
     _port = port;
   }
 
-  const String& DevicePrivate::getPort() const
+  const std::string& DevicePrivate::getPort() const
   {
     return _port;
   }
 
-  void DevicePrivate::setSerial(const String& serial_number)
+  void DevicePrivate::setSerial(const std::string& serial_number)
   {
     if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
       throw std::runtime_error("device serial number string size out of range");
@@ -260,7 +260,7 @@ namespace usbguard {
     _serial_number = serial_number;
   }
 
-  const String& DevicePrivate::getSerial() const
+  const std::string& DevicePrivate::getSerial() const
   {
     return _serial_number;
   }
@@ -325,3 +325,5 @@ namespace usbguard {
     return;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

@@ -87,7 +87,7 @@ namespace usbguard
 #endif
   }
 
-  size_t Hash::update(const String& value)
+  size_t Hash::update(const std::string& value)
   {
     return update(value.c_str(), value.size());
   }
@@ -127,7 +127,7 @@ namespace usbguard
     return size_hashed;
   }
 
-  String Hash::getBase64()
+  std::string Hash::getBase64()
   {
 #if defined(USBGUARD_USE_LIBSODIUM)
     uint8_t hash_binary[crypto_hash_sha256_BYTES];
@@ -144,3 +144,5 @@ namespace usbguard
     return base64Encode(hash_buffer, hash_buflen);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

@@ -41,7 +41,7 @@ const char * const G_optstring = "dskKl:p:c:hWC";
 static void printUsage(std::ostream& stream, const char *arg0)
 {
   stream << std::endl;
-  stream << "Usage: " << filenameFromPath(String(arg0), true) << " [OPTIONS]" << std::endl;
+  stream << "Usage: " << filenameFromPath(std::string(arg0), true) << " [OPTIONS]" << std::endl;
   stream << std::endl;
   stream << "  -d         Enable debugging messages in the log." << std::endl;
   stream << "  -s         Log to syslog." << std::endl;
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
   bool log_file = false;
   bool use_seccomp_whitelist = false;
   bool drop_capabilities = false;
-  String log_file_path;
-  String pid_file;
-  String conf_file = "/etc/usbguard/usbguard-daemon.conf";
+  std::string log_file_path;
+  std::string pid_file;
+  std::string conf_file = "/etc/usbguard/usbguard-daemon.conf";
   int opt;
 
   while ((opt = getopt(argc, argv, G_optstring)) != -1) {
@@ -88,13 +88,13 @@ int main(int argc, char *argv[])
 	break;
       case 'l':
 	log_file = true;
-	log_file_path = String(optarg);
+	log_file_path = std::string(optarg);
 	break;
       case 'p':
-	pid_file = String(optarg);
+	pid_file = std::string(optarg);
 	break;
       case 'c':
-	conf_file = String(optarg);
+	conf_file = std::string(optarg);
 	break;
       case 'W':
 	use_seccomp_whitelist = true;
@@ -172,3 +172,5 @@ int main(int argc, char *argv[])
    return;
  }
 #endif
+
+/* vim: set ts=2 sw=2 et */

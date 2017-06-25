@@ -26,7 +26,7 @@ namespace usbguard
   class AllowedMatchesCondition : public RuleConditionBase
   {
   public:
-    AllowedMatchesCondition(const String& device_spec, bool negated = false);
+    AllowedMatchesCondition(const std::string& device_spec, bool negated = false);
     AllowedMatchesCondition(const AllowedMatchesCondition& rhs);
     void init(Interface * const interface_ptr);
     bool update(const Rule& rule);
@@ -37,3 +37,4 @@ namespace usbguard
   };
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */
