@@ -1055,3 +1055,5 @@ namespace usbguard
     _allowed_groupnames.emplace(groupname, ac);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

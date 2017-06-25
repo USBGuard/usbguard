@@ -20,3 +20,5 @@ namespace usbguard
 {
   int usbguard_get_parameter(int argc, char **argv);
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

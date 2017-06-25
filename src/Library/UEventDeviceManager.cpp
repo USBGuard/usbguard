@@ -940,3 +940,5 @@ namespace usbguard {
   }
 } /* namespace usbguard */
 #endif /* HAVE_UDEV */
+
+/* vim: set ts=2 sw=2 et */

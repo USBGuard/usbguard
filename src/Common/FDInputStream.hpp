@@ -48,3 +48,5 @@ namespace usbguard
 #error "Required header file ext/stdio_filebuf.h not available."
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

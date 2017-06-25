@@ -268,3 +268,5 @@ namespace usbguard {
  void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

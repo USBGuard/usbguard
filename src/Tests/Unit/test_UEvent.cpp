@@ -71,3 +71,5 @@ TEST_CASE("UEvent with required attributes", "[UEvent]") {
     REQUIRE_NOTHROW(uevent.toString());
   }
 }
+
+/* vim: set ts=2 sw=2 et */

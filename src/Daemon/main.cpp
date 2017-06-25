@@ -168,3 +168,5 @@ int main(int argc, char *argv[])
    return;
  }
 #endif
+
+/* vim: set ts=2 sw=2 et */

@@ -34,3 +34,5 @@ TEST_CASE("Regression: GitHub issue #113", "[regression]") {
   CHECK_NOTHROW(source_rule = Rule::fromString(source_rule_spec));
   REQUIRE(source_rule.appliesTo(target_rule));
 }
+
+/* vim: set ts=2 sw=2 et */

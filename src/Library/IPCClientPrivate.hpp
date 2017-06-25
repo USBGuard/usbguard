@@ -118,3 +118,5 @@ namespace usbguard {
     std::map<uint32_t, MessageHandler> _handlers;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

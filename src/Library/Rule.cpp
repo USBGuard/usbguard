@@ -344,3 +344,5 @@ namespace usbguard {
     throw std::runtime_error("Invalid set operator string");
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

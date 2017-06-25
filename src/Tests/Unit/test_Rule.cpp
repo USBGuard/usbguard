@@ -76,3 +76,5 @@ TEST_CASE("Target-only rule", "[RuleParser]") {
     REQUIRE(rule.toString() == "reject");
   }
 }
+
+/* vim: set ts=2 sw=2 et */

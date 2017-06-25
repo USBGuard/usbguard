@@ -28,3 +28,5 @@ namespace usbguard
     std::string quoteEscapeString(const std::string& value);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

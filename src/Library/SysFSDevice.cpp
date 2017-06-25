@@ -199,3 +199,5 @@ namespace usbguard
     _uevent = UEvent::fromString(uevent_string, /*attributes_only=*/true);
   }
 } /* namespace usbguard */ 
+
+/* vim: set ts=2 sw=2 et */

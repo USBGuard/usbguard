@@ -182,3 +182,5 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
 }
+
+/* vim: set ts=2 sw=2 et */

@@ -53,3 +53,5 @@ namespace usbguard
     Rule::Target _catchall_target;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

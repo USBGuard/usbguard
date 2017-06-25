@@ -75,3 +75,5 @@ namespace usbguard
 } /* namespace usbguard */
 
 #endif /* USBFW_EXCEPTIONS_HPP */
+
+/* vim: set ts=2 sw=2 et */

@@ -41,3 +41,4 @@ TEST_CASE("parentPath", "[Utility]") {
   REQUIRE(parentPath(std::string()) == std::string());
 }
 
+/* vim: set ts=2 sw=2 et */

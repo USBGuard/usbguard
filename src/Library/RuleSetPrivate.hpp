@@ -60,3 +60,5 @@ namespace usbguard {
     std::vector<std::shared_ptr<Rule>> _rules;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

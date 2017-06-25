@@ -103,3 +103,5 @@ namespace usbguard
 
   DLL_PUBLIC Rule parseRuleFromString(const std::string& rule_spec, const std::string& file = std::string(), size_t line = 0, bool trace = false);
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

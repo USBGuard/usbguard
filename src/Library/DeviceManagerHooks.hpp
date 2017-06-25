@@ -33,3 +33,5 @@ namespace usbguard
     virtual void dmHookDeviceException(const std::string& message) = 0;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

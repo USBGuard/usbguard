@@ -123,3 +123,5 @@ namespace usbguard
     AuditIdentity _audit_identity;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

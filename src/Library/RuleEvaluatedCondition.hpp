@@ -37,3 +37,5 @@ namespace usbguard
     std::chrono::steady_clock::duration _elapsed_time;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

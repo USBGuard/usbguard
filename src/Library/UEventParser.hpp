@@ -61,3 +61,5 @@ namespace usbguard
   void parseUEventFromFile(const std::string& uevent_path, UEvent& uevent, bool attributes_only = false, bool trace = false);
   void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool attributes_only = false, bool trace = false);
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

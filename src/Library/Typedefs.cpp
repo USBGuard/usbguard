@@ -26,3 +26,5 @@ namespace usbguard
     return a == b;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

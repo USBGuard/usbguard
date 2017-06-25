@@ -57,3 +57,5 @@ namespace usbguard {
     std::vector<std::string> _known_names;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

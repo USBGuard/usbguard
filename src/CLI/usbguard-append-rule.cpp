@@ -81,3 +81,5 @@ namespace usbguard
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

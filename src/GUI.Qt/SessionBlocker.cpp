@@ -29,3 +29,5 @@ void SessionBlocker::slotDisableSessionManagement(QSessionManager &sm)
 {
   sm.setRestartHint(QSessionManager::RestartNever);
 }
+
+/* vim: set ts=2 sw=2 et */

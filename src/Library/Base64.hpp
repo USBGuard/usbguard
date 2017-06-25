@@ -32,3 +32,4 @@ namespace usbguard
   std::string base64Decode(const char * const data, const size_t size);
 } /* namespace usbguard */
 
+/* vim: set ts=2 sw=2 et */

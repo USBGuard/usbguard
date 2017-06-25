@@ -140,3 +140,5 @@ namespace usbguard {
     uint64_t _conditions_state;
   };
 }
+
+/* vim: set ts=2 sw=2 et */

@@ -301,3 +301,5 @@ namespace usbguard
     d_pointer->addAllowedGroupname(groupname, ac);
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

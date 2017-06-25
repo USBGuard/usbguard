@@ -33,3 +33,5 @@ TEST_CASE("Regression: GitHub issue #37", "[regression]") {
     REQUIRE_THROWS(rule = Rule::fromString(invalid_rule_string));
   }
 }
+
+/* vim: set ts=2 sw=2 et */

@@ -513,3 +513,5 @@ namespace usbguard
                                     signal->rule_id());
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

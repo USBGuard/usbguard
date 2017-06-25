@@ -279,3 +279,5 @@ namespace usbguard
     return base64Decode(value.c_str(), value.size());
   }
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

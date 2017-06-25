@@ -175,3 +175,5 @@ std::shared_ptr<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceM
 #endif
   throw Exception("DeviceManager", "backend", "requested backend is not available");
 }
+
+/* vim: set ts=2 sw=2 et */

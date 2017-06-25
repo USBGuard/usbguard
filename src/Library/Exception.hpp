@@ -173,3 +173,5 @@ namespace usbguard
       uint64_t _message_id;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

@@ -44,3 +44,5 @@ namespace usbguard
     std::map<std::string,std::string> _attributes;
   };
 } /* namespace usbguard */
+
+/* vim: set ts=2 sw=2 et */

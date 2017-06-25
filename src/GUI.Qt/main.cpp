@@ -49,3 +49,5 @@ int main(int argc, char *argv[])
     a.setQuitOnLastWindowClosed(false);
     return a.exec();
 }
+
+/* vim: set ts=2 sw=2 et */

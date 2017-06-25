@@ -78,3 +78,5 @@ TEST_CASE("UEvent parsing", "[UEventParser]") {
   REQUIRE_NOTHROW(uevent.getHeaderLine());
   REQUIRE_NOTHROW(uevent.toString());
 }
+
+/* vim: set ts=2 sw=2 et */
