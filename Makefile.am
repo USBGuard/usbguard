@@ -304,11 +304,9 @@ sbin_PROGRAMS=\
 usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
-	src/Daemon/Exceptions.hpp \
 	src/Daemon/main.cpp \
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
-	src/Common/CCBQueue.hpp \
 	src/Common/Utility.hpp \
 	src/Common/Utility.cpp
 
