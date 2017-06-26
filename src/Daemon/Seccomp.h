@@ -16,6 +16,11 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
+
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -27,3 +32,5 @@ bool setupSeccompWhitelist(void);
 #ifdef __cplusplus
 }
 #endif
+
+/* vim: set ts=2 sw=2 et */

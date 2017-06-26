@@ -16,8 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#ifndef TARGETDELEGATE_H
-#define TARGETDELEGATE_H
+#pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include <QStyledItemDelegate>
 
@@ -34,4 +36,4 @@ public:
   void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
-#endif // TARGETDELEGATE_H
+/* vim: set ts=2 sw=2 et */

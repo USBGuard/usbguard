@@ -16,6 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
+
 #include "LocaltimeCondition.hpp"
 #include "RuleParser.hpp"
 #include "Common/Utility.hpp"

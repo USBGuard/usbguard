@@ -16,7 +16,9 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
+#endif
 
 #if defined(HAVE_UEVENT)
 #include "UEventDeviceManager.hpp"

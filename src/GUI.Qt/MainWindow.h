@@ -17,6 +17,9 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include "DeviceModel.h"
 #include "TargetDelegate.h"
@@ -132,3 +135,4 @@ private:
   TargetDelegate _target_delegate;
 };
 
+/* vim: set ts=2 sw=2 et */

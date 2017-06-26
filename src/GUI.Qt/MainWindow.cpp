@@ -15,6 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include "MainWindow.h"
 #pragma GCC diagnostic push

@@ -16,6 +16,10 @@
 //
 // Authors: Pino Toscano <toscano.pino@tiscali.it>
 //
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
+
 #include "SessionBlocker.h"
 
 SessionBlocker::SessionBlocker(QApplication& app) :

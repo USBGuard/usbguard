@@ -16,8 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#ifndef DEVICEMODEL_H
-#define DEVICEMODEL_H
+#pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include <QAbstractItemModel>
 #include <QList>
@@ -98,4 +100,4 @@ private:
   DeviceModelItem *_root_item;
 };
 
-#endif // DEVICEMODEL_H
+/* vim: set ts=2 sw=2 et */

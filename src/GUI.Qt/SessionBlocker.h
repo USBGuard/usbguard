@@ -17,6 +17,9 @@
 // Authors: Pino Toscano <toscano.pino@tiscali.it>
 //
 #pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include <QApplication>
 #include <QObject>
@@ -33,3 +36,4 @@ private slots:
   void slotDisableSessionManagement(QSessionManager &sm);
 };
 
+/* vim: set ts=2 sw=2 et */

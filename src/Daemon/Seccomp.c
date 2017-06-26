@@ -16,7 +16,9 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
+#endif
 
 #include "Seccomp.h"
 
@@ -169,3 +171,5 @@ bool setupSeccompWhitelist(void)
   return false;
 }
 #endif
+
+/* vim: set ts=2 sw=2 et */

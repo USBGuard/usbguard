@@ -16,6 +16,11 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
+
 namespace usbguard
 {
   int usbguard_list_rules(int argc, char **argv);
