@@ -2,6 +2,8 @@
 #
 # check-path-include: *.cpp
 # check-path-include: *.hpp
+# check-path-include: *.c
+# check-path-include: *.h
 # check-path-exclude: src/ThirdParty/*
 #
 SOURCE_FILEPATH="$1"
