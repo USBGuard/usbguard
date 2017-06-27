@@ -21,7 +21,10 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
+#include "usbguard/Typedefs.hpp"
+
+#include <map>
+#include <string>
 
 namespace usbguard
 {

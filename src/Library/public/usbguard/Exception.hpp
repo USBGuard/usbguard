@@ -17,18 +17,19 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
+#include "Typedefs.hpp"
 
 #include <stdexcept>
+#include <string>
+
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
-#include <cstring>
+
 #include <cerrno>
+#include <cstdint>
+#include <cstring>
 
 namespace usbguard
 {

@@ -21,10 +21,10 @@
 #endif
 
 #include "Audit.hpp"
+#include "Exception.hpp"
+#include "Logger.hpp"
 
 #include <Common/Utility.hpp>
-#include <Exception.hpp>
-#include <Logger.hpp>
 
 namespace usbguard
 {

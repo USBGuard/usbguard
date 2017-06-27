@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 Red Hat, Inc.
+// Copyright (C) 2015 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,23 +20,15 @@
 #include <build-config.h>
 #endif
 
-#include "Policy.hpp"
-#include "Exception.hpp"
+#include "usbguard/DeviceManagerHooks.hpp"
 
 namespace usbguard
 {
-  std::string Policy::eventTypeToString(Policy::EventType event)
+  void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
-    switch(event) {
-      case Policy::EventType::Insert:
-        return "Insert";
-      case Policy::EventType::Update:
-        return "Update";
-      case Policy::EventType::Remove:
-        return "Remove";
-      default:
-        throw USBGUARD_BUG("unknown Policy::EventType value");
-    }
+    (void)event;
+    (void)device;
+    /* NOOP */
   }
 } /* namespace usbguard */
 

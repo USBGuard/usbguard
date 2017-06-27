@@ -20,10 +20,11 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
+
 #include <map>
 #include <iostream>
-#include <Logger.hpp>
-#include <Exception.hpp>
 
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE

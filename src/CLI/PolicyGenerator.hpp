@@ -20,10 +20,10 @@
 #include <build-config.h>
 #endif
 
-#include <Rule.hpp>
-#include <RuleSet.hpp>
-#include <DeviceManager.hpp>
-#include <DeviceManagerHooks.hpp>
+#include "usbguard/Rule.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/DeviceManager.hpp"
+#include "usbguard/DeviceManagerHooks.hpp"
 
 namespace usbguard
 {

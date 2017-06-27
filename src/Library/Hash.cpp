@@ -22,8 +22,9 @@
 
 #include "Hash.hpp"
 #include "Base64.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Exception.hpp"
 
 namespace usbguard
 {

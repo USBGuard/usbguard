@@ -17,17 +17,22 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
-#include <Interface.hpp>
-#include <Rule.hpp>
-#include <DeviceManager.hpp>
+#include "DeviceManager.hpp"
+#include "Interface.hpp"
+#include "Rule.hpp"
+#include "Typedefs.hpp"
 
+#include <istream>
+#include <ostream>
+#include <string>
 #include <unordered_map>
+
+#include <cstddef>
 #include <cstdint>
+
+#include <unistd.h>
+#include <sys/types.h>
 
 namespace usbguard
 {

@@ -21,11 +21,13 @@
 #endif
 
 #include "DevicePrivate.hpp"
-#include "DeviceManager.hpp"
-#include "Logger.hpp"
 #include "Hash.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/DeviceManager.hpp"
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
+
 #include <mutex>
 
 namespace usbguard {

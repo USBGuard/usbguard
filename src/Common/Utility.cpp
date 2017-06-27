@@ -20,22 +20,24 @@
 #include <build-config.h>
 #endif
 
-#include <Logger.hpp>
+#include "usbguard/Logger.hpp"
+
 #include "Common/Utility.hpp"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <ctype.h>
-#include <alloca.h>
 #include <fstream>
 #include <algorithm>
+
+#include <alloca.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 namespace usbguard
 {

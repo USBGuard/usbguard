@@ -21,9 +21,12 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include <cstddef>
+#include "usbguard/Typedefs.hpp"
+
 #include <istream>
+#include <string>
+
+#include <cstddef>
 
 #if defined(USBGUARD_USE_LIBSODIUM)
 #include <sodium.h>

@@ -21,9 +21,12 @@
 #endif
 
 #include "RuleEvaluatedCondition.hpp"
-#include "RuleParser.hpp"
 #include "RulePrivate.hpp"
+
+#include "usbguard/RuleParser.hpp"
+
 #include <string>
+
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #include <ctime>

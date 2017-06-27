@@ -17,26 +17,30 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
+#include "Typedefs.hpp"
+
 #include <string>
+#include <vector>
 
-namespace usbguard
-{
-  class DLL_PUBLIC Policy
+namespace usbguard {
+  class ConfigFilePrivate;
+  class DLL_PUBLIC ConfigFile
   {
-    public:
-      enum class EventType
-      {
-        Insert = 1,
-        Update = 2,
-        Remove = 3,
-      };
+  public:
+    ConfigFile(const std::vector<std::string>& known_names = std::vector<std::string>());
+    ~ConfigFile();
 
-      static std::string eventTypeToString(EventType event);
+    void open(const std::string& path);
+    void write();
+    void close();
+
+    void setSettingValue(const std::string& name, std::string& value);
+    bool hasSettingValue(const std::string& name) const;
+    const std::string& getSettingValue(const std::string& name) const;
+
+  private:
+    ConfigFilePrivate* d_pointer;
   };
 } /* namespace usbguard */
 

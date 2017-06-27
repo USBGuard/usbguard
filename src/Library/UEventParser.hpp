@@ -21,7 +21,8 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
+#include "usbguard/Typedefs.hpp"
+
 #include <pegtl.hh>
 
 using namespace pegtl;

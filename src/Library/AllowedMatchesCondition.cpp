@@ -21,9 +21,10 @@
 #endif
 
 #include "AllowedMatchesCondition.hpp"
-#include "RuleParser.hpp"
-#include "Logger.hpp"
-#include <Interface.hpp>
+
+#include "usbguard/Interface.hpp"
+#include "usbguard/Logger.hpp"
+#include "usbguard/RuleParser.hpp"
 
 namespace usbguard
 {

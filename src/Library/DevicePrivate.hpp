@@ -21,13 +21,19 @@
 #include <build-config.h>
 #endif
 
-#include <Device.hpp>
-#include <Typedefs.hpp>
-#include <Rule.hpp>
-#include <USB.hpp>
-#include <Hash.hpp>
-#include <mutex>
+#include "Hash.hpp"
+
+#include "usbguard/Device.hpp"
+#include "usbguard/Rule.hpp"
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/USB.hpp"
+
 #include <istream>
+#include <mutex>
+#include <string>
+#include <vector>
+
+#include <cstdint>
 
 namespace usbguard {
   class DevicePrivate

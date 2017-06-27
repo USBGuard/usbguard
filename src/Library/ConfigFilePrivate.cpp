@@ -22,8 +22,14 @@
 
 #include "ConfigFilePrivate.hpp"
 #include "Common/Utility.hpp"
-#include "Logger.hpp"
+
+#include "usbguard/Logger.hpp"
+
 #include <stdexcept>
+#include <vector>
+#include <string>
+
+#include <cstddef>
 
 namespace usbguard
 {

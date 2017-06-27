@@ -17,16 +17,13 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Rule.hpp>
-#include <Device.hpp>
-#include <Policy.hpp>
-#include <DeviceManager.hpp>
-#include <Typedefs.hpp>
-#include <Logger.hpp>
+#include "Device.hpp"
+#include "DeviceManager.hpp"
+#include "Logger.hpp"
+#include "Policy.hpp"
+#include "Rule.hpp"
+#include "Typedefs.hpp"
 
 #include <string>
 #include <memory>

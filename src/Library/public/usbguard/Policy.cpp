@@ -16,19 +16,28 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#pragma once
 #ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include <string>
+#include "usbguard/Policy.hpp"
+#include "usbguard/Exception.hpp"
 
 namespace usbguard
 {
-  DLL_PUBLIC std::string getDaemonConfigPath();
-  DLL_PUBLIC std::string getIPCAccessControlFilesPath();
-  DLL_PUBLIC std::string getIPCAccessControlFileBasename(const std::string& name, bool is_group);
+  std::string Policy::eventTypeToString(Policy::EventType event)
+  {
+    switch(event) {
+      case Policy::EventType::Insert:
+        return "Insert";
+      case Policy::EventType::Update:
+        return "Update";
+      case Policy::EventType::Remove:
+        return "Remove";
+      default:
+        throw USBGUARD_BUG("unknown Policy::EventType value");
+    }
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -24,7 +24,9 @@
 #pragma GCC diagnostic ignored "-Wswitch-default"
 #include "MainWindow.ui.h"
 #include "DeviceDialog.h"
-#include <Logger.hpp>
+
+#include "usbguard/Logger.hpp"
+
 #include <QString>
 #include <QSystemTrayIcon>
 #include <QTimer>

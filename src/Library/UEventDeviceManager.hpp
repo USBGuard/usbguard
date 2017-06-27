@@ -23,18 +23,18 @@
 
 #if defined(HAVE_UEVENT)
 
-#include "Typedefs.hpp"
 #include "Common/Thread.hpp"
-
-#include "DeviceManager.hpp"
-#include "Device.hpp"
-#include "Rule.hpp"
 #include "SysFSDevice.hpp"
-#include "USB.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/DeviceManager.hpp"
+#include "usbguard/Device.hpp"
+#include "usbguard/Rule.hpp"
+#include "usbguard/USB.hpp"
 
 #include <condition_variable>
-
 #include <istream>
+
 #include <sys/stat.h>
 #include <dirent.h>
 

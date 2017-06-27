@@ -22,7 +22,8 @@
 
 #include "UEvent.hpp"
 #include "UEventParser.hpp"
-#include "Logger.hpp"
+
+#include "usbguard/Logger.hpp"
 
 namespace usbguard
 {

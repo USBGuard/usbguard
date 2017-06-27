@@ -17,8 +17,9 @@
 ## Authors: Daniel Kopecek <dkopecek@redhat.com>
 ##
 AM_CPPFLAGS=\
-	-I$(top_srcdir)/src\
-	-I$(top_srcdir)/src/Library\
+	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/Library \
+	-I$(top_srcdir)/src/Library/public \
 	@catch_CFLAGS@ 
 
 EXTRA_DIST=\

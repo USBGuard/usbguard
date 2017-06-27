@@ -21,12 +21,12 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/IPCClient.hpp"
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-register"
 #include <gio/gio.h>
 #pragma clang diagnostic pop
-
-#include "IPCClient.hpp"
 
 namespace usbguard
 {

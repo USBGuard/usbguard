@@ -21,7 +21,9 @@
 #include <build-config.h>
 #endif
 
+#include "Utility.hpp"
 #include "Common/Utility.hpp"
+
 #include <pegtl.hh>
 
 namespace usbguard

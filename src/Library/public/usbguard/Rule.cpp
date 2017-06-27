@@ -21,7 +21,7 @@
 #endif
 
 #include "RulePrivate.hpp"
-#include "Common/Utility.hpp"
+#include "Utility.hpp"
 
 namespace usbguard {
   template<>

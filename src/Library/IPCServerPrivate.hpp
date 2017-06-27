@@ -21,10 +21,16 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "IPCServer.hpp"
 #include "IPCPrivate.hpp"
 #include "Common/Thread.hpp"
+
+#include "Devices.pb.h"
+#include "Policy.pb.h"
+#include "Exception.pb.h"
+#include "Parameter.pb.h"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/IPCServer.hpp"
 
 #include <map>
 #include <mutex>
@@ -32,11 +38,6 @@
 
 #include <qb/qbipcs.h>
 #include <qb/qbloop.h>
-
-#include "Devices.pb.h"
-#include "Policy.pb.h"
-#include "Exception.pb.h"
-#include "Parameter.pb.h"
 
 namespace usbguard {
   class IPCServerPrivate

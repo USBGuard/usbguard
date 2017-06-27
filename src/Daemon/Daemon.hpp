@@ -21,17 +21,17 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "ConfigFile.hpp"
-#include "IPCServer.hpp"
-#include "RuleSet.hpp"
-#include "Rule.hpp"
-#include "Device.hpp"
-#include "DeviceManager.hpp"
-#include "DeviceManagerHooks.hpp"
-#include "Audit.hpp"
-
 #include "Common/Thread.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/ConfigFile.hpp"
+#include "usbguard/IPCServer.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/Rule.hpp"
+#include "usbguard/Device.hpp"
+#include "usbguard/DeviceManager.hpp"
+#include "usbguard/DeviceManagerHooks.hpp"
+#include "usbguard/Audit.hpp"
 
 #include <mutex>
 #include <atomic>

@@ -23,7 +23,8 @@
 #include "usbguard.hpp"
 #include "usbguard-set-parameter.hpp"
 
-#include <IPCClient.hpp>
+#include "usbguard/IPCClient.hpp"
+
 #include <iostream>
 
 namespace usbguard

@@ -21,20 +21,22 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "Exception.hpp"
-#include <string>
-#include <vector>
-#include <sstream>
-#include <regex>
-#include <iomanip>
-#include <sys/types.h>
-#include <dirent.h>
-#include <iostream>
+#include "usbguard/Exception.hpp"
+#include "usbguard/Typedefs.hpp"
+
 #include <functional>
-#include <unistd.h>
-#include <sys/stat.h>
+#include <iomanip>
+#include <iostream>
+#include <regex>
+#include <sstream>
+#include <string>
 #include <utility>
+#include <vector>
+
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace usbguard
 {

@@ -20,15 +20,17 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/Rule.hpp"
+#include "usbguard/RuleParser.hpp"
+
 #include <iostream>
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
 #include <cstring>
 #include <fstream>
+
 #include <getopt.h>
-#include "Rule.hpp"
-#include "RuleParser.hpp"
 
 static const char *options_short = "hft";
 

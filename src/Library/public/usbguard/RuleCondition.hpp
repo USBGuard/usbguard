@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
 #include "Typedefs.hpp"
+
+#include <string>
+#include <memory>
 
 namespace usbguard
 {
   class Interface;
   class Rule;
-  class RuleConditionBase
+  class DLL_PUBLIC RuleConditionBase
   {
   public:
     RuleConditionBase(const std::string& identifier, const std::string& parameter, bool negated = false);
@@ -57,7 +57,7 @@ namespace usbguard
     const bool _negated;
   };
 
-  class RuleCondition
+  class DLL_PUBLIC RuleCondition
   {
     public:
       RuleCondition();
@@ -68,21 +68,10 @@ namespace usbguard
       RuleCondition& operator=(const RuleCondition& rhs);
       RuleCondition& operator=(RuleCondition&& rhs);
 
-      RuleConditionBase* operator->()
-      {
-        return _condition.get();
-      }
+      RuleConditionBase* operator->();
+      RuleConditionBase& operator*();
 
-      RuleConditionBase& operator*()
-      {
-        return *_condition.get();
-      }
-
-      std::string toRuleString() const
-      {
-        return _condition->toRuleString();
-      }
-
+      std::string toRuleString() const;
     private:
       std::unique_ptr<RuleConditionBase> _condition;
   };

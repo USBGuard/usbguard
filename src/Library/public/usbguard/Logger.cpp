@@ -20,9 +20,10 @@
 #include <build-config.h>
 #endif
 
-#include "Logger.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
 
 #include <iostream>
 #include <fstream>

@@ -22,8 +22,10 @@
 
 #include "usbguard.hpp"
 #include "usbguard-read-descriptor.hpp"
-#include <USB.hpp>
-#include <Exception.hpp>
+
+#include "usbguard/USB.hpp"
+#include "usbguard/Exception.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <cstdio>

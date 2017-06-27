@@ -23,7 +23,8 @@
 #include "DeviceDialog.h"
 #include "DeviceDialog.ui.h"
 
-#include <Logger.hpp>
+#include "usbguard/Logger.hpp"
+
 #include <QStyle>
 #include <QDesktopWidget>
 

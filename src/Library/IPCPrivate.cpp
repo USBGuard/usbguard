@@ -21,11 +21,12 @@
 #endif
 
 #include "IPCPrivate.hpp"
-#include "Logger.hpp"
 
-#include <Devices.pb.h>
-#include <Exception.pb.h>
-#include <Policy.pb.h>
+#include "Devices.pb.h"
+#include "Exception.pb.h"
+#include "Policy.pb.h"
+
+#include "usbguard/Logger.hpp"
 
 #include <vector>
 #include <utility>

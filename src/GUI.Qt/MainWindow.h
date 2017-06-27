@@ -24,11 +24,12 @@
 #include "DeviceModel.h"
 #include "TargetDelegate.h"
 
+#include "usbguard/IPCClient.hpp"
+
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QTimer>
 #include <QSettings>
-#include <IPCClient.hpp>
 
 namespace Ui {
 class MainWindow;

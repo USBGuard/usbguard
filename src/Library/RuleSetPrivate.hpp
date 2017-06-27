@@ -21,8 +21,9 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "RuleSet.hpp"
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/RuleSet.hpp"
+
 #include <istream>
 #include <ostream>
 #include <mutex>

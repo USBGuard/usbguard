@@ -21,7 +21,8 @@
 #endif
 
 #include "FixedStateCondition.hpp"
-#include "RuleParser.hpp"
+
+#include "usbguard/RuleParser.hpp"
 
 namespace usbguard
 {

@@ -21,8 +21,6 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "IPCClient.hpp"
 #include "IPCPrivate.hpp"
 #include "Common/Thread.hpp"
 
@@ -30,6 +28,9 @@
 #include "Devices.pb.h"
 #include "Exception.pb.h"
 #include "Parameter.pb.h"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/IPCClient.hpp"
 
 #include <map>
 #include <mutex>

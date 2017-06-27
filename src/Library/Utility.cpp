@@ -20,9 +20,11 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
 #include "Utility.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Typedefs.hpp"
+
 #include <locale>
 
 namespace usbguard

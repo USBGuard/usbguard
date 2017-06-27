@@ -21,7 +21,9 @@
 #endif
 
 #include "RandomStateCondition.hpp"
-#include "RuleParser.hpp"
+
+#include "usbguard/RuleParser.hpp"
+
 #include <string>
 
 namespace usbguard

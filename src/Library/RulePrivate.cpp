@@ -21,9 +21,10 @@
 #endif
 
 #include "RulePrivate.hpp"
-#include "RuleParser.hpp"
-#include "Logger.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/RuleParser.hpp"
+#include "usbguard/Logger.hpp"
 
 namespace usbguard {
   RulePrivate::RulePrivate(Rule& p_instance)

@@ -21,9 +21,9 @@
 #include <build-config.h>
 #endif
 
-#include "Exception.hpp"
-#include "Typedefs.hpp"
-#include "IPCServer.hpp"
+#include "usbguard/Exception.hpp"
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/IPCServer.hpp"
 
 #include <memory>
 #include <google/protobuf/message.h>

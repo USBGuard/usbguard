@@ -20,11 +20,13 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
 #include "RulePrivate.hpp"
-#include "RuleParser.hpp"
-#include "Exception.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/RuleParser.hpp"
+#include "usbguard/Exception.hpp"
+
 #include <fstream>
 
 namespace usbguard {

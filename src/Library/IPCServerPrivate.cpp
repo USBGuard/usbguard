@@ -22,9 +22,10 @@
 
 #include "IPCServerPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "Logger.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
 
 #include <sys/poll.h>
 #include <sys/eventfd.h>

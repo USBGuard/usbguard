@@ -20,14 +20,15 @@
 #include <build-config.h>
 #endif
 
-#include <iostream>
-#include <DeviceManager.hpp>
-#include <unistd.h>
-
 #include "usbguard.hpp"
 #include "usbguard-generate-policy.hpp"
 #include "PolicyGenerator.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/DeviceManager.hpp"
+
+#include <iostream>
+#include <unistd.h>
 
 namespace usbguard
 {

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,18 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
-#include <RuleSet.hpp>
-#include <Device.hpp>
+#include "Device.hpp"
+#include "Rule.hpp"
+#include "RuleSet.hpp"
+#include "Typedefs.hpp"
+
+#include <memory>
 #include <mutex>
+#include <string>
+#include <vector>
+
+#include <cstdint>
 
 namespace usbguard {
   class DeviceManagerHooks;

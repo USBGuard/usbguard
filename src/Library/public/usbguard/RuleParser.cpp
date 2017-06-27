@@ -23,12 +23,12 @@
 #include "RuleParser.hpp"
 #include "RuleParser/Grammar.hpp"
 #include "RuleParser/Actions.hpp"
-
-#include "Typedefs.hpp"
 #include "RulePrivate.hpp"
-#include "USB.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/USB.hpp"
+#include "usbguard/Logger.hpp"
 #include "Common/Utility.hpp"
-#include "Logger.hpp"
 
 #include <cstddef>
 #include <stdexcept>

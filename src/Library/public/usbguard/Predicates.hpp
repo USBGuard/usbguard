@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2016 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,19 +16,25 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
+#pragma once
 
-#include <DeviceManagerHooks.hpp>
+#include "Logger.hpp"
+#include "Typedefs.hpp"
 
 namespace usbguard
 {
-  void DeviceManagerHooks::dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
+  namespace Predicates DLL_PUBLIC
   {
-    (void)event;
-    (void)device;
-    /* NOOP */
+    /*
+     * Return true if the source set is a subset of the
+     * target set. Otherwise return false.
+     */
+    template<typename T>
+    bool isSubsetOf(const T& source, const T& target)
+    {
+      USBGUARD_LOG(Trace) << "generic isSubsetOf";
+      return source == target;
+    }
   }
 } /* namespace usbguard */
 

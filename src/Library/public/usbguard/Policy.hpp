@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,28 +17,25 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
 #include "Typedefs.hpp"
-#include <Logger.hpp>
+
+#include <string>
 
 namespace usbguard
 {
-  namespace Predicates DLL_PUBLIC
+  class DLL_PUBLIC Policy
   {
-    /*
-     * Return true if the source set is a subset of the
-     * target set. Otherwise return false.
-     */
-    template<typename T>
-    bool isSubsetOf(const T& source, const T& target)
-    {
-      USBGUARD_LOG(Trace) << "generic isSubsetOf";
-      return source == target;
-    }
-  }
+    public:
+      enum class EventType
+      {
+        Insert = 1,
+        Update = 2,
+        Remove = 3,
+      };
+
+      static std::string eventTypeToString(EventType event);
+  };
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

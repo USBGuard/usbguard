@@ -21,11 +21,11 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/Logger.hpp"
+
 #include <cstddef>
 #include <cstdlib>
 #include <getopt.h>
-
-#include "Logger.hpp"
 
 namespace usbguard
 {

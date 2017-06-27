@@ -22,8 +22,9 @@
 
 #include "UEventParser.hpp"
 #include "UEvent.hpp"
-#include "Logger.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Logger.hpp"
 
 #include <fstream>
 #include <pegtl/trace.hh>

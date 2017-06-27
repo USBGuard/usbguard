@@ -23,7 +23,8 @@
 #include "usbguard.hpp"
 #include "usbguard-reject-device.hpp"
 
-#include <IPCClient.hpp>
+#include "usbguard/IPCClient.hpp"
+
 #include <iostream>
 
 namespace usbguard

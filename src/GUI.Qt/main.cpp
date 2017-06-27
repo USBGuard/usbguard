@@ -22,7 +22,9 @@
 
 #include "MainWindow.h"
 #include "SessionBlocker.h"
-#include <Logger.hpp>
+
+#include "usbguard/Logger.hpp"
+
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>

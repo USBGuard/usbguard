@@ -21,7 +21,7 @@
 #include <build-config.h>
 #endif
 
-#include <IPCClient.hpp>
+#include "usbguard/IPCClient.hpp"
 
 namespace usbguard
 {

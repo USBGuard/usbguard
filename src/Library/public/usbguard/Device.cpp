@@ -20,7 +20,6 @@
 #include <build-config.h>
 #endif
 
-#include <Device.hpp>
 #include "DevicePrivate.hpp"
 
 namespace usbguard {

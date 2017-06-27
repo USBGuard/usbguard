@@ -21,9 +21,10 @@
 #endif
 
 #include "SysFSDevice.hpp"
-#include "Logger.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE

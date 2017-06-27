@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,9 +20,10 @@
 #include <build-config.h>
 #endif
 
-#include "RuleCondition.hpp"
-#include "Rule.hpp"
-#include "Logger.hpp"
+#include "usbguard/RuleCondition.hpp"
+
+#include "usbguard/Rule.hpp"
+#include "usbguard/Logger.hpp"
 
 #include <unordered_map>
 #include <functional>
@@ -224,6 +225,21 @@ namespace usbguard
   {
     _condition = std::move(rhs._condition);
     return *this;
+  }
+
+  RuleConditionBase* RuleCondition::operator->()
+  {
+    return _condition.get();
+  }
+
+  RuleConditionBase& RuleCondition::operator*()
+  {
+    return *_condition.get();
+  }
+
+  std::string RuleCondition::toRuleString() const
+  {
+    return _condition->toRuleString();
   }
 } /* namespace usbguard */
 

@@ -16,8 +16,9 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include "usbguard/IPCServer.hpp"
+
 #include <catch.hpp>
-#include <IPCServer.hpp>
 #include <sstream>
 
 using namespace usbguard;

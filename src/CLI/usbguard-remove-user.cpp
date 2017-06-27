@@ -22,9 +22,12 @@
 
 #include "usbguard.hpp"
 #include "usbguard-remove-user.hpp"
-#include <USBGuard.hpp>
-#include <IPCServer.hpp>
+
+#include "usbguard/USBGuard.hpp"
+#include "usbguard/IPCServer.hpp"
+
 #include <iostream>
+
 #include <unistd.h>
 
 namespace usbguard

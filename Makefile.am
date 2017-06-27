@@ -138,7 +138,7 @@ man1_MANS=\
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/Library
+	-I$(top_srcdir)/src/Library/public
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libusbguard.pc
@@ -150,6 +150,7 @@ libusbguard_la_CPPFLAGS=\
 	-fPIC \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
+	-I$(top_srcdir)/src/Library/public \
 	-I$(top_builddir)/src/Library/IPC \
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
@@ -196,94 +197,94 @@ CLEANFILES+=\
 	$(nodist_libusbguard_la_SOURCES)
 
 libusbguard_la_SOURCES=\
-	src/Common/Thread.hpp \
 	src/Common/ByteOrder.hpp \
-	src/Common/Utility.hpp \
-	src/Common/Utility.cpp \
 	src/Common/FDInputStream.hpp \
-	src/Library/ConfigFile.cpp \
+	src/Common/Thread.hpp \
+	src/Common/Utility.cpp \
+	src/Common/Utility.hpp \
+	src/Library/AllowedMatchesCondition.cpp \
+	src/Library/AllowedMatchesCondition.hpp \
+	src/Library/Base64.cpp \
+	src/Library/Base64.hpp \
 	src/Library/ConfigFilePrivate.cpp \
 	src/Library/ConfigFilePrivate.hpp \
-	src/Library/IPCPrivate.hpp \
-	src/Library/IPCPrivate.cpp \
-	src/Library/IPCClient.cpp \
-	src/Library/IPCClientPrivate.hpp \
-	src/Library/IPCClientPrivate.cpp \
-	src/Library/IPCServer.cpp \
-	src/Library/IPCServerPrivate.hpp \
-	src/Library/IPCServerPrivate.cpp \
-	src/Library/USB.cpp \
-	src/Library/Rule.cpp \
-	src/Library/RuleParser.cpp \
-	src/Library/RuleParser.hpp \
-	src/Library/RuleParser/Grammar.hpp \
-	src/Library/RuleParser/Actions.hpp \
-	src/Library/RulePrivate.cpp \
-	src/Library/RulePrivate.hpp \
-	src/Library/RuleSet.cpp \
-	src/Library/RuleSetPrivate.cpp \
-	src/Library/RuleSetPrivate.hpp \
-	src/Library/Typedefs.cpp \
-	src/Library/DeviceManagerHooks.cpp \
-	src/Library/Device.cpp \
-	src/Library/DevicePrivate.hpp \
-	src/Library/DevicePrivate.cpp \
-	src/Library/DeviceManager.cpp \
-	src/Library/DeviceManagerPrivate.hpp \
 	src/Library/DeviceManagerPrivate.cpp \
-	src/Library/Logger.cpp \
-	src/Library/Init.cpp \
-	src/Library/RuleCondition.hpp \
-	src/Library/RuleCondition.cpp \
-	src/Library/AllowedMatchesCondition.hpp \
-	src/Library/AllowedMatchesCondition.cpp \
-	src/Library/FixedStateCondition.hpp \
+	src/Library/DeviceManagerPrivate.hpp \
+	src/Library/DevicePrivate.cpp \
+	src/Library/DevicePrivate.hpp \
 	src/Library/FixedStateCondition.cpp \
-	src/Library/RandomStateCondition.hpp \
-	src/Library/RandomStateCondition.cpp \
-	src/Library/LocaltimeCondition.hpp \
+	src/Library/FixedStateCondition.hpp \
+	src/Library/Hash.cpp \
+	src/Library/Hash.hpp \
+	src/Library/IPCClientPrivate.cpp \
+	src/Library/IPCClientPrivate.hpp \
+	src/Library/IPCPrivate.cpp \
+	src/Library/IPCPrivate.hpp \
+	src/Library/IPCServerPrivate.cpp \
+	src/Library/IPCServerPrivate.hpp \
+	src/Library/Init.cpp \
 	src/Library/LocaltimeCondition.cpp \
+	src/Library/LocaltimeCondition.hpp \
+	src/Library/RandomStateCondition.cpp \
+	src/Library/RandomStateCondition.hpp \
 	src/Library/RuleAppliedCondition.cpp \
 	src/Library/RuleAppliedCondition.hpp \
 	src/Library/RuleEvaluatedCondition.cpp \
 	src/Library/RuleEvaluatedCondition.hpp \
-	src/Library/Utility.cpp \
-	src/Library/Base64.cpp \
-	src/Library/Base64.hpp \
-	src/Library/Hash.cpp \
-	src/Library/Hash.hpp \
-	src/Library/UEvent.hpp \
-	src/Library/UEvent.cpp \
-	src/Library/UEventParser.hpp \
-	src/Library/UEventParser.cpp \
-	src/Library/UEventDeviceManager.hpp \
-	src/Library/UEventDeviceManager.cpp \
-	src/Library/SysFSDevice.hpp \
+	src/Library/RuleParser/Actions.hpp \
+	src/Library/RuleParser/Grammar.hpp \
+	src/Library/RulePrivate.cpp \
+	src/Library/RulePrivate.hpp \
+	src/Library/RuleSetPrivate.cpp \
+	src/Library/RuleSetPrivate.hpp \
 	src/Library/SysFSDevice.cpp \
-	src/Library/USBGuard.cpp \
-	src/Library/Policy.cpp \
-	src/Library/Audit.cpp \
-	src/Library/Audit.hpp
+	src/Library/SysFSDevice.hpp \
+	src/Library/UEvent.cpp \
+	src/Library/UEvent.hpp \
+	src/Library/UEventDeviceManager.cpp \
+	src/Library/UEventDeviceManager.hpp \
+	src/Library/UEventParser.cpp \
+	src/Library/UEventParser.hpp \
+	src/Library/Utility.cpp \
+	src/Library/Utility.hpp \
+	src/Library/public/usbguard/Audit.cpp \
+	src/Library/public/usbguard/Audit.hpp \
+	src/Library/public/usbguard/ConfigFile.cpp \
+	src/Library/public/usbguard/Device.cpp \
+	src/Library/public/usbguard/DeviceManager.cpp \
+	src/Library/public/usbguard/DeviceManagerHooks.cpp \
+	src/Library/public/usbguard/IPCClient.cpp \
+	src/Library/public/usbguard/IPCServer.cpp \
+	src/Library/public/usbguard/Logger.cpp \
+	src/Library/public/usbguard/Policy.cpp \
+	src/Library/public/usbguard/Rule.cpp \
+	src/Library/public/usbguard/RuleCondition.cpp \
+	src/Library/public/usbguard/RuleParser.cpp \
+	src/Library/public/usbguard/RuleParser.hpp \
+	src/Library/public/usbguard/RuleSet.cpp \
+	src/Library/public/usbguard/Typedefs.cpp \
+	src/Library/public/usbguard/USB.cpp \
+	src/Library/public/usbguard/USBGuard.cpp
 
 pkginclude_HEADERS=\
-	src/Library/ConfigFile.hpp \
-	src/Library/Interface.hpp \
-	src/Library/IPCClient.hpp \
-	src/Library/IPCServer.hpp \
-	src/Library/USB.hpp \
-	src/Library/Rule.hpp \
-	src/Library/RuleSet.hpp \
-	src/Library/Typedefs.hpp \
-	src/Library/DeviceManagerHooks.hpp \
-	src/Library/Device.hpp \
-	src/Library/DeviceManager.hpp \
-	src/Library/Logger.hpp \
-	src/Library/Predicates.hpp \
-	src/Library/Utility.hpp \
-	src/Library/Exception.hpp \
-	src/Library/USBGuard.hpp \
-	src/Library/Policy.hpp \
-	src/Library/Audit.hpp
+	src/Library/public/usbguard/Audit.hpp \
+	src/Library/public/usbguard/ConfigFile.hpp \
+	src/Library/public/usbguard/Device.hpp \
+	src/Library/public/usbguard/DeviceManager.hpp \
+	src/Library/public/usbguard/DeviceManagerHooks.hpp \
+	src/Library/public/usbguard/Exception.hpp \
+	src/Library/public/usbguard/IPCClient.hpp \
+	src/Library/public/usbguard/IPCServer.hpp \
+	src/Library/public/usbguard/Interface.hpp \
+	src/Library/public/usbguard/Logger.hpp \
+	src/Library/public/usbguard/Policy.hpp \
+	src/Library/public/usbguard/Predicates.hpp \
+	src/Library/public/usbguard/Rule.hpp \
+	src/Library/public/usbguard/RuleCondition.hpp \
+	src/Library/public/usbguard/RuleSet.hpp \
+	src/Library/public/usbguard/Typedefs.hpp \
+	src/Library/public/usbguard/USB.hpp \
+	src/Library/public/usbguard/USBGuard.hpp
 
 # Workaround for generated protobuf code mishaps
 #```

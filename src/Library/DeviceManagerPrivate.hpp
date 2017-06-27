@@ -21,10 +21,13 @@
 #include <build-config.h>
 #endif
 
-#include <DeviceManager.hpp>
-#include <Typedefs.hpp>
-#include <RuleSet.hpp>
-#include <Device.hpp>
+#include "usbguard/Device.hpp"
+#include "usbguard/DeviceManager.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/Typedefs.hpp"
+
+#include <map>
+#include <memory>
 #include <mutex>
 
 namespace usbguard {

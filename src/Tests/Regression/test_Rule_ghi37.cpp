@@ -16,8 +16,9 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#include "usbguard/Rule.hpp"
+
 #include <catch.hpp>
-#include <Rule.hpp>
 
 using namespace usbguard;
 

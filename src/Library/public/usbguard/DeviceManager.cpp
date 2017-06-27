@@ -20,10 +20,10 @@
 #include <build-config.h>
 #endif
 
-#include <DeviceManager.hpp>
-#include <DeviceManagerHooks.hpp>
-#include <Exception.hpp>
 #include "DeviceManagerPrivate.hpp"
+
+#include "usbguard/DeviceManagerHooks.hpp"
+#include "usbguard/Exception.hpp"
 
 namespace usbguard {
   uint32_t DeviceManager::eventTypeToInteger(DeviceManager::EventType event)

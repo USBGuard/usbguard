@@ -21,10 +21,13 @@
 #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "RuleCondition.hpp"
-#include "Rule.hpp"
+#include "usbguard/RuleCondition.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/Rule.hpp"
+
 #include <chrono>
+#include <string>
 
 namespace usbguard
 {

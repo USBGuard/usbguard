@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,24 +17,16 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
-#include <Device.hpp>
-#include <DeviceManager.hpp>
-#include <cstdint>
+#include "Typedefs.hpp"
+
+#include <string>
 
 namespace usbguard
 {
-  class DLL_PUBLIC DeviceManagerHooks
-  {
-  public:
-    virtual void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device);
-    virtual uint32_t dmHookAssignID() = 0;
-    virtual void dmHookDeviceException(const std::string& message) = 0;
-  };
+  DLL_PUBLIC std::string getDaemonConfigPath();
+  DLL_PUBLIC std::string getIPCAccessControlFilesPath();
+  DLL_PUBLIC std::string getIPCAccessControlFileBasename(const std::string& name, bool is_group);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

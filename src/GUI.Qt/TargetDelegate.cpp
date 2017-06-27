@@ -22,8 +22,10 @@
 
 #include "TargetDelegate.h"
 #include "DeviceModel.h"
+
+#include "usbguard/Rule.hpp"
+
 #include <QComboBox>
-#include <Rule.hpp>
 
 TargetDelegate::TargetDelegate(QObject *parent)
   : QStyledItemDelegate(parent)

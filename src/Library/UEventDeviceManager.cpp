@@ -24,12 +24,13 @@
 #include "UEventDeviceManager.hpp"
 #include "UEventParser.hpp"
 #include "SysFSDevice.hpp"
-#include "Logger.hpp"
-#include "Exception.hpp"
-#include "USB.hpp"
 #include "Base64.hpp"
 #include "Common/FDInputStream.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
+#include "usbguard/USB.hpp"
 
 #include <stdexcept>
 #include <fstream>

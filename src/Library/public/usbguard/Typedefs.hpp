@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,17 +17,9 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <string.h>
-#include <vector>
-#include <list>
-#include <map>
-#include <memory>
-#include <queue>
 #include <atomic>
+#include <string>
 
 namespace usbguard {
   template<typename T>
@@ -38,32 +30,6 @@ namespace usbguard {
 
   template<>
   bool matches(const std::string& a, const std::string& b);
-
-  namespace MapOp {
-    template<typename map_type>
-      typename map_type::mapped_type findOne(const map_type& map, const typename map_type::key_type& key)
-      {
-        auto it = map.find(key);
-        if (it == map.end()) {
-          return typename map_type::mapped_type();
-        } else {
-          return it->second;
-        }
-      }
-  }
-
-  namespace PointerMapOp {
-    template<typename key_type, typename pointer_type>
-      std::shared_ptr<pointer_type> findOne(const std::map<key_type, std::shared_ptr<pointer_type>>& map, const key_type& key)
-      {
-        auto it = map.find(key);
-        if (it == map.end()) {
-          return std::shared_ptr<pointer_type>(nullptr);
-        } else {
-          return it->second;
-        }
-      }
-  }
 
   /*
    * Atomic

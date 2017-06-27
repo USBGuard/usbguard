@@ -17,14 +17,16 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
-#include <Rule.hpp>
+#include "Rule.hpp"
+#include "Typedefs.hpp"
+
 #include <istream>
 #include <ostream>
+#include <string>
+#include <memory>
+
+#include <cstdint>
 
 namespace usbguard {
   class RuleSetPrivate;

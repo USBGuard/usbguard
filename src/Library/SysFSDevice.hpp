@@ -22,7 +22,10 @@
 #endif
 
 #include "UEvent.hpp"
-#include "Typedefs.hpp"
+
+#include "usbguard/Typedefs.hpp"
+
+#include <string>
 
 namespace usbguard
 {

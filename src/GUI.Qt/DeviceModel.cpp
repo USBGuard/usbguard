@@ -21,7 +21,9 @@
 #endif
 
 #include "DeviceModel.h"
-#include <Logger.hpp>
+
+#include "usbguard/Logger.hpp"
+
 #include <iostream>
 #include <QVector>
 #include <QCoreApplication>

@@ -21,8 +21,10 @@
 #include <build-config.h>
 #endif
 
-#include "Rule.hpp"
-#include "RuleCondition.hpp"
+#include "usbguard/RuleCondition.hpp"
+
+#include "usbguard/Rule.hpp"
+
 #include <chrono>
 
 namespace usbguard {

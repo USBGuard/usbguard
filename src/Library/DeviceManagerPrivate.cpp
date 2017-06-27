@@ -21,9 +21,10 @@
 #endif
 
 #include "DeviceManagerPrivate.hpp"
-#include <DeviceManagerHooks.hpp>
-#include "Exception.hpp"
-#include "Logger.hpp"
+
+#include "usbguard/DeviceManagerHooks.hpp"
+#include "usbguard/Exception.hpp"
+#include "usbguard/Logger.hpp"
 
 namespace usbguard {
   DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks)

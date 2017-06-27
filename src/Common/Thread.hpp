@@ -21,7 +21,7 @@
 #include <build-config.h>
 #endif
 
-#include "Logger.hpp"
+#include "usbguard/Logger.hpp"
 
 #include <thread>
 #include <atomic>

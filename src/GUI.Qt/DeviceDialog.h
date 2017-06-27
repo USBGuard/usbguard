@@ -21,10 +21,11 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/USB.hpp"
+#include "usbguard/Rule.hpp"
+
 #include <QDialog>
 #include <QTimer>
-#include <USB.hpp>
-#include <Rule.hpp>
 
 namespace Ui {
 class DeviceDialog;

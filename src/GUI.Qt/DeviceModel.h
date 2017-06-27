@@ -21,11 +21,12 @@
 #include <build-config.h>
 #endif
 
+#include "usbguard/Rule.hpp"
+
 #include <QAbstractItemModel>
 #include <QList>
 #include <QVariant>
 #include <QMap>
-#include <Rule.hpp>
 
 class DeviceModelItem
 {

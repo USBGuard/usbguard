@@ -20,15 +20,16 @@
 #include <build-config.h>
 #endif
 
-#include <Typedefs.hpp>
-
-#include "Logger.hpp"
 #include "Daemon.hpp"
-#include "Exception.hpp"
 #include "Common/Utility.hpp"
 #include "Seccomp.h"
 
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/Logger.hpp"
+#include "usbguard/Exception.hpp"
+
 #include <iostream>
+
 #include <getopt.h>
 
 #if defined(HAVE_LIBCAPNG)

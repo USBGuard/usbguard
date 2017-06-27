@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,30 +17,24 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
 
-#include <Typedefs.hpp>
+#include "Device.hpp"
+#include "DeviceManager.hpp"
+#include "Typedefs.hpp"
 
-namespace usbguard {
-  class ConfigFilePrivate;
-  class DLL_PUBLIC ConfigFile
+#include <memory>
+#include <string>
+
+#include <cstdint>
+
+namespace usbguard
+{
+  class DLL_PUBLIC DeviceManagerHooks
   {
   public:
-    ConfigFile(const std::vector<std::string>& known_names = std::vector<std::string>());
-    ~ConfigFile();
-
-    void open(const std::string& path);
-    void write();
-    void close();
-
-    void setSettingValue(const std::string& name, std::string& value);
-    bool hasSettingValue(const std::string& name) const;
-    const std::string& getSettingValue(const std::string& name) const;
-
-  private:
-    ConfigFilePrivate* d_pointer;
+    virtual void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device);
+    virtual uint32_t dmHookAssignID() = 0;
+    virtual void dmHookDeviceException(const std::string& message) = 0;
   };
 } /* namespace usbguard */
 

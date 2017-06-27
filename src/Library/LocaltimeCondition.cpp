@@ -21,8 +21,10 @@
 #endif
 
 #include "LocaltimeCondition.hpp"
-#include "RuleParser.hpp"
 #include "Common/Utility.hpp"
+
+#include "usbguard/RuleParser.hpp"
+
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
 #include <ctime>

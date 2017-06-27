@@ -21,8 +21,12 @@
 #include <build-config.h>
 #endif
 
-#include "ConfigFile.hpp"
+#include "usbguard/ConfigFile.hpp"
+
 #include <fstream>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace usbguard {
   class ConfigFilePrivate

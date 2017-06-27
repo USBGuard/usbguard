@@ -23,7 +23,10 @@
 #include "IPCServerPrivate.hpp"
 #include "Common/Utility.hpp"
 
+#include "usbguard/Exception.hpp"
+
 #include <sstream>
+#include <utility>
 
 namespace usbguard
 {

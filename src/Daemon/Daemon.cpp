@@ -21,12 +21,11 @@
 #endif
 
 #include "Daemon.hpp"
-#include "Logger.hpp"
 #include "Common/Utility.hpp"
-#include "IPCPrivate.hpp"
-#include "RulePrivate.hpp"
-#include "RuleParser.hpp"
-#include "Audit.hpp"
+
+#include "usbguard/Logger.hpp"
+#include "usbguard/RuleParser.hpp"
+#include "usbguard/Audit.hpp"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -38,7 +37,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #include <grp.h>
 #include <pwd.h>
 

@@ -22,7 +22,8 @@
 
 #include "IPCClientPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "Logger.hpp"
+
+#include "usbguard/Logger.hpp"
 
 #include <stdint.h>
 #include <unistd.h>
