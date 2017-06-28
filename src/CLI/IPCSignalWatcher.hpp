@@ -28,6 +28,10 @@ namespace usbguard
   class IPCSignalWatcher : public IPCClient
   {
   public:
+    ~IPCSignalWatcher();
+
+    void setExecutable(const std::string& path);
+
     void IPCConnected() override;
     void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
@@ -41,6 +45,18 @@ namespace usbguard
                              Rule::Target target_new,
                              const std::string& device_rule,
                              uint32_t rule_id) override;
+  private:
+    void openExecutable(const std::string& path);
+    void closeExecutable();
+    bool hasOpenExecutable() const;
+
+    void runExecutable(const std::map<std::string,std::string>& environment);
+    static char ** createExecutableEnvironment(const std::map<std::string,std::string>& environment);
+    static void destroyExecutableEnvironment(char ** const envp);
+    static char *cstrCopy(const char *c_str);
+
+    std::string _exec_path;
+    int _exec_path_fd {-1};
   };
 } /* namespace usbguard */
 

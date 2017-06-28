@@ -167,6 +167,15 @@ Watch the IPC interface events and print them to stdout.
 
 Available options:
 
+**-w**, **--wait**
+:   Wait for IPC connection to become available.
+
+**-o**, **--once**
+:   Wait only when starting, if needed. Exit when the connection is lost.
+
+**-e**, **--exec** <*path*>
+:   Run an executable file located at *path* for every event. Pass event data to the process via environment variables.
+
 **-h**, **--help**
 :   Show help.
 

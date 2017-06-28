@@ -29,12 +29,13 @@
 
 namespace usbguard
 {
-  static const char *options_short = "woh";
+  static const char *options_short = "wohe:";
 
   static const struct ::option options_long[] = {
     { "wait", no_argument, nullptr, 'w' },
     { "once", no_argument, nullptr, 'o' },
     { "help", no_argument, nullptr, 'h' },
+    { "exec", required_argument, nullptr, 'e' },
     { nullptr, 0, nullptr, 0 }
   };
 
@@ -43,9 +44,11 @@ namespace usbguard
     stream << " Usage: " << usbguard_arg0 << " watch [OPTIONS]" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
-    stream << "  -w, --wait  Wait for IPC connection to become available." << std::endl;
-    stream << "  -o, --once  Wait only when starting, if needed. Exit when the connection is lost." << std::endl;
-    stream << "  -h, --help  Show this help." << std::endl;
+    stream << "  -w, --wait         Wait for IPC connection to become available." << std::endl;
+    stream << "  -o, --once         Wait only when starting, if needed. Exit when the connection is lost." << std::endl;
+    stream << "  -e, --exec <path>  Run an executable file located at <path> for every event. Pass event" << std::endl;
+    stream << "                     data to the process via environment variables." << std::endl;
+    stream << "  -h, --help         Show this help." << std::endl;
     stream << std::endl;
   }
 
@@ -54,6 +57,7 @@ namespace usbguard
     int opt = 0;
     bool do_wait = false;
     bool wait_once = false;
+    std::string exec_path;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
       switch(opt) {
@@ -66,6 +70,9 @@ namespace usbguard
         case 'h':
           showHelp(std::cout);
           return EXIT_SUCCESS;
+        case 'e':
+          exec_path = std::string(optarg);
+          break;
         case '?':
           showHelp(std::cerr);
         default:
@@ -74,6 +81,10 @@ namespace usbguard
     }
 
     IPCSignalWatcher watcher;
+
+    if (!exec_path.empty()) {
+      watcher.setExecutable(exec_path);
+    }
 
     bool connect_waiting = false;
     std::string connect_last_exception;

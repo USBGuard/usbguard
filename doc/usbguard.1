@@ -217,6 +217,23 @@ Watch the IPC interface events and print them to stdout.
 .PP
 Available options:
 .TP
+.B \f[B]\-w\f[], \f[B]\-\-wait\f[]
+Wait for IPC connection to become available.
+.RS
+.RE
+.TP
+.B \f[B]\-o\f[], \f[B]\-\-once\f[]
+Wait only when starting, if needed.
+Exit when the connection is lost.
+.RS
+.RE
+.TP
+.B \f[B]\-e\f[], \f[B]\-\-exec\f[] <\f[I]path\f[]>
+Run an executable file located at \f[I]path\f[] for every event.
+Pass event data to the process via environment variables.
+.RS
+.RE
+.TP
 .B \f[B]\-h\f[], \f[B]\-\-help\f[]
 Show help.
 .RS
