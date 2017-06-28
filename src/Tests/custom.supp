@@ -1,3 +1,7 @@
+#
+# No Copyright
+# This file has been released into the public domain.
+#
 {
   <glib-supp-00>
   Memcheck:Leak
