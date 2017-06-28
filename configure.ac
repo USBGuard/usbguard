@@ -597,13 +597,15 @@ if test -z "$ASPELL"; then
 fi
 
 #
-# Maintainer mode.
+# Full test suite mode.
 #
-# Runs several additional taks for certain make targets (e.g. tests)
+# Runs all available test when enabled. Some tests make assumption about
+# the environment they run in, so they might fail when these assumptions
+# are not met.
 #
-AC_ARG_ENABLE([maintainer-mode],
-              [AS_HELP_STRING([--enable-maintainer-mode], [Enable maintainer mode (default=no)])],
-              [maintainer_mode=$enableval], [maintainer_mode=no])
+AC_ARG_ENABLE([full-test-suite],
+              [AS_HELP_STRING([--enable-full-test-suite], [Run the full test suite (default=no)])],
+              [full_test_suite=$enableval], [full_test_suite=no])
 
 # Checks for header files.
 AC_LANG_PUSH([C++])
@@ -713,8 +715,8 @@ AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
-AM_CONDITIONAL([MAINTAINER_MODE], [test "x$maintainer_mode" = xyes])
-AM_CONDITIONAL([BASH_COMPLETION_ENABLED],[test "x$bash_completion" != "xno"])
+AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
+AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
 CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"
@@ -744,7 +746,7 @@ echo
 echo "    Build Configuration Summary    "
 echo "==================================="
 echo
-echo " Maintainer mode: $maintainer_mode"
+echo " Run full test suite: $full_test_suite"
 echo
 echo "## Libraries"
 echo
@@ -768,7 +770,8 @@ echo "   Bash completion dir: $BASH_COMPLETION_DIR"
 echo
 echo "## Compilation Flags"
 echo
-echo " Debug Mode: $debug"
+echo "Debug Build: $debug"
+echo "       DEFS: $DEFS"
 echo "   CXXFLAGS: $CXXFLAGS"
 echo "     CFLAGS: $CFLAGS"
 echo "   CPPFLAGS: $CPPFLAGS"

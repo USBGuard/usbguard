@@ -60,13 +60,17 @@ TESTS_ENVIRONMENT=\
 TESTS=\
 	test-unit \
 	test-regression \
-	Source/check-driver.sh \
 	USB/test-descriptor-parser.sh \
-	Rules/test-rules.sh \
+	Rules/test-rules.sh
+
+if FULL_TEST_SUITE_ENABLED
+TESTS+=\
+	Source/check-driver.sh \
 	UseCase/000_executable.sh \
 	UseCase/001_cli_policy.sh \
 	UseCase/002_cli_devices.sh \
 	UseCase/003_cli_devices_dummy.sh
+endif
 
 check_PROGRAMS=\
 	test-unit \

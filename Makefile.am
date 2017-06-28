@@ -674,8 +674,3 @@ analyze-clang:
 	  make -j$(JOBS)
 	rm -rf "$(ANALYSIS_ROOT)"
 
-if MAINTAINER_MODE
-check-local:
-else
-check-local:
-endif
