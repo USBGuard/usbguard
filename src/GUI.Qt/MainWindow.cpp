@@ -49,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     _settings("USBGuard", "usbguard-applet-qt"),
-    _device_model(this)
+    _device_model(this),
+    _event_listener()
 {
   /*
    * Seed the pseudo-random generator. We use it for
@@ -276,8 +277,7 @@ void MainWindow::notifyDevicePresenceChanged(usbguard::DeviceManager::EventType 
 {
   QString title;
   bool show_notification = true;
-  QSystemTrayIcon::MessageIcon notification_icon = \
-    QSystemTrayIcon::Information;
+  Notification::Urgency urgency = Notification::Urgency::Information;
 
   switch (event) {
     case usbguard::DeviceManager::EventType::Insert:
@@ -300,7 +300,7 @@ void MainWindow::notifyDevicePresenceChanged(usbguard::DeviceManager::EventType 
       return;
   }
 
-  notify(title, notification_icon, device_rule, show_notification);
+  notify(title, urgency, device_rule, show_notification);
 }
 
 void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, quint32 rule_id)
@@ -308,8 +308,8 @@ void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, qu
   (void)rule_id;
   QString title;
   bool show_notification = true;
-  QSystemTrayIcon::MessageIcon notification_icon = \
-    QSystemTrayIcon::Information;
+
+  Notification::Urgency urgency = Notification::Urgency::Information;
 
   switch (device_rule.getTarget()) {
     case usbguard::Rule::Target::Allow:
@@ -319,12 +319,12 @@ void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, qu
     case usbguard::Rule::Target::Block:
       title = tr("USB Device Blocked");
       show_notification = ui->notify_blocked->isChecked();
-      notification_icon = QSystemTrayIcon::Warning;
+      urgency = Notification::Urgency::Warning;
       break;
     case usbguard::Rule::Target::Reject:
       title = tr("USB Device Rejected");
       show_notification = ui->notify_rejected->isChecked();
-      notification_icon = QSystemTrayIcon::Warning;
+      urgency = Notification::Urgency::Warning;
 
       if (windowState() & Qt::WindowMinimized) {
         startFlashing();
@@ -339,10 +339,10 @@ void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, qu
       return;
   }
 
-  notify(title, notification_icon, device_rule, show_notification);
+  notify(title, urgency, device_rule, show_notification);
 }
 
-void MainWindow::notify(const QString& title, QSystemTrayIcon::MessageIcon icon, const usbguard::Rule& device_rule, bool show_notification)
+void MainWindow::notify(const QString& title, Notification::Urgency urgency, const usbguard::Rule& device_rule, bool show_notification)
 {
   const QString usb_id = QString::fromStdString(device_rule.getDeviceID().toString());
   const QString name = QString::fromStdString(device_rule.getName());
@@ -354,19 +354,8 @@ void MainWindow::notify(const QString& title, QSystemTrayIcon::MessageIcon icon,
   showMessage(message_body);
 
   if (show_notification) {
-    const QString notification_body = \
-      QString("USB ID: %1\n"
-              "Name: %2\n"
-              "Port: %3\n")
-              .arg(usb_id).arg(name).arg(port);
-
-    showNotification(icon, title, notification_body);
+    _event_listener.notify(title, device_rule, urgency);
   }
-}
-
-void MainWindow::showNotification(QSystemTrayIcon::MessageIcon icon, const QString& title, const QString& message)
-{
-  systray->showMessage(title, message, icon);
 }
 
 void MainWindow::notifyIPCConnected()
@@ -374,7 +363,7 @@ void MainWindow::notifyIPCConnected()
   const QString title = tr("IPC Connection Established");
 
   if (ui->notify_ipc->isChecked()) {
-    showNotification(QSystemTrayIcon::Information, title, "");
+    _event_listener.notify(title, "", Notification::Urgency::Information);
   }
   showMessage(title, /*alert=*/false, /*statusbar=*/true);
 }
@@ -384,7 +373,7 @@ void MainWindow::notifyIPCDisconnected()
   const QString title = tr("IPC Connection Lost");
 
   if (ui->notify_ipc->isChecked()) {
-    showNotification(QSystemTrayIcon::Warning, title, "");
+    _event_listener.notify(title, "", Notification::Urgency::Warning);
   }
   showMessage(title, /*alert=*/true, /*statusbar=*/true);
 }

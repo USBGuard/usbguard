@@ -342,7 +342,7 @@ AC_ARG_WITH([gui-qt],
 #
 # Check for Qt 5.x
 #
-PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
+PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0 Qt5DBus >= 5.0],
   [
     export QT_SELECT=5
     AC_CHECK_PROGS(QT5MOC, [moc-qt5 moc])

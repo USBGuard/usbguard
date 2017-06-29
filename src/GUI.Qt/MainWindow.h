@@ -23,6 +23,7 @@
 
 #include "DeviceModel.h"
 #include "TargetDelegate.h"
+#include "notifications/DBusNotifier.h"
 
 #include "usbguard/IPCClient.hpp"
 
@@ -30,6 +31,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QSettings>
+
 
 namespace Ui {
 class MainWindow;
@@ -65,7 +67,6 @@ protected slots:
 
   void showDeviceDialog(quint32 id, const usbguard::Rule& device_rule);
   void showMessage(const QString &message, bool alert = false, bool statusbar = false);
-  void showNotification(QSystemTrayIcon::MessageIcon icon, const QString& title, const QString& message);
 
   void handleDevicePresenceChange(quint32 id,
                                   usbguard::DeviceManager::EventType event,
@@ -82,7 +83,7 @@ protected slots:
   void notifyIPCDisconnected();
   void notifyDevicePresenceChanged(usbguard::DeviceManager::EventType event, const usbguard::Rule& device_rule);
   void notifyDevicePolicyChanged(const usbguard::Rule& device_rule, quint32 rule_id);
-  void notify(const QString& title, QSystemTrayIcon::MessageIcon icon, const usbguard::Rule& device_rule, bool show_notification);
+  void notify(const QString& title, Notification::Urgency urgency, const usbguard::Rule& device_rule, bool show_notification);
 
   void allowDevice(quint32 id, bool permanent);
   void blockDevice(quint32 id, bool permanent);
@@ -134,6 +135,8 @@ private:
   QSettings _settings;
   DeviceModel _device_model;
   TargetDelegate _target_delegate;
+
+  DBusNotifier _event_listener;
 };
 
 /* vim: set ts=2 sw=2 et */

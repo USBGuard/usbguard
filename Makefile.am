@@ -530,7 +530,10 @@ usbguard_applet_qt_SOURCES_BASE=\
 	src/GUI.Qt/SessionBlocker.cpp \
 	src/GUI.Qt/SessionBlocker.h \
 	src/GUI.Qt/TargetDelegate.cpp \
-	src/GUI.Qt/TargetDelegate.h
+	src/GUI.Qt/TargetDelegate.h \
+	src/GUI.Qt/notifications/AbstractNotifier.h \
+	src/GUI.Qt/notifications/DBusNotifier.cpp \
+	src/GUI.Qt/notifications/DbusNotifier.h
 
 EXTRA_DIST+=\
 	src/GUI.Qt/DeviceDialog.ui \
