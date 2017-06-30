@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.7.1 - <unrelased>
+
+### Added
+- CLI: usbguard watch command now includes an -e <path> option to run an executable
+  for every received event. Event data are passed to the executable via environment
+  variables.
+- usbguard-daemon: added "-K" option which can disable logging to console.
+- Added zsh autocompletion support
+
+### Removed
+
+### Changed
+- Qt Applet: disabled session management
+- usbguard-daemon console logging output is enabled by default now.   Previously,
+  the -k option had to be passed to enable the output.
+- Replaced --enable-maintainer-mode configure option with --enable-full-test-suite
+  option. When the new option is not used during the configure phase, only a basic
+  set of test is run during the make check phase.
+
 ## 0.7.0 - 2017-04-12
 ### Added
 - Added InsertedDevicePolicy configuration option to control the policy
