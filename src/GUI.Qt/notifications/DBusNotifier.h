@@ -1,6 +1,7 @@
 #include "AbstractNotifier.h"
 
 #include <QDBusInterface>
+#include <QMutex>
 
 
 /**
@@ -10,23 +11,33 @@
   https://developer.gnome.org/notification-spec/.
 */
 class DBusNotifier: AbstractNotifier {
+  Q_OBJECT
 public:
   /**
     Create a new DBus notifier
   */
-  DBusNotifier();
+  explicit DBusNotifier(QObject *parent);
 
-  void notify(const QString title, const QString body, const Notification::Urgency urgency, const uint32_t id = 0);
+  void notify(const QString title, const QString body, const Notification::Urgency urgency);
   void notify(const QString& title, const usbguard::Rule& device_rule, const Notification::Urgency urgency);
 
 private:
   // connection to the DBus interface
-  QDBusInterface *dbus_interface;
-  // map of currently displayed notifications
-  QMap<std::string, uint32_t> current_notifications;
-  // next available UID for the notifications
-  uint32_t nextAvailableId = 0;
+  QDBusInterface dbus_interface;
 
-  // get the next available id for a notification.
-  uint32_t getNextId();
+  // map of devices to currently displayed notifications
+  QMap<std::string, uint> device_to_notification;
+
+  // map of currently displayed notifications to devices
+  QMap<uint, std::string> notification_to_device;
+
+  // mutex to protect modification of both maps due to asynchrony with slots
+  QMutex lock;
+
+  // internal version of notification to handle ids that DBus notifications implement.
+  uint _notify(const QString title, const QString body, const Notification::Urgency urgency, uint id = 0);
+
+private slots:
+  // slot for when a notification is closed, to do some cleaning on the server
+  void notificationClosedSlot(uint id);
 };

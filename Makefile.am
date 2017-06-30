@@ -569,7 +569,8 @@ CLEANFILES +=\
 	$(top_builddir)/src/GUI.Qt/usbguard.qrc \
 	$(top_builddir)/src/GUI.Qt/DeviceModel.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/SessionBlocker.moc.cpp \
-	$(top_builddir)/src/GUI.Qt/TargetDelegate.moc.cpp
+	$(top_builddir)/src/GUI.Qt/TargetDelegate.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/notifications/DBusNotifier.moc.cpp
 
 nodist_usbguard_applet_qt_SOURCES=\
 	$(usbguard_applet_qt_SOURCES_BASE) \
@@ -578,7 +579,8 @@ nodist_usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt/usbguard.qrc.cpp \
 	src/GUI.Qt/DeviceModel.moc.cpp \
 	src/GUI.Qt/SessionBlocker.moc.cpp \
-	src/GUI.Qt/TargetDelegate.moc.cpp
+	src/GUI.Qt/TargetDelegate.moc.cpp \
+    src/GUI.Qt/notifications/DBusNotifier.moc.cpp
 
 usbguard_applet_qt_LDADD=\
 	$(top_builddir)/libusbguard.la \

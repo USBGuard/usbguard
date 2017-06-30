@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     _settings("USBGuard", "usbguard-applet-qt"),
     _device_model(this),
-    _event_listener()
+    _event_listener(this)
 {
   /*
    * Seed the pseudo-random generator. We use it for

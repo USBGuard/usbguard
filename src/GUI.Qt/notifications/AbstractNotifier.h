@@ -19,7 +19,7 @@ public:
   /**
     Create a new Abstract notifier
   */
-  AbstractNotifier() {};
+  explicit AbstractNotifier(QObject* parent): QObject(parent) {};
 
   /**
     Send a basic notification.
@@ -27,11 +27,8 @@ public:
     @param title The title of the notification.
     @param body The body of the notification..
     @param urgency The urgency level of the notification
-    @param id Optional id to give to the notification. Some backend will map 
-              the notification by id and will allow overriding a previous notification
-              if the id match.
   */
-  virtual void notify(const QString title, const QString body, const Notification::Urgency urgency, const uint32_t id) = 0;
+  virtual void notify(const QString title, const QString body, const Notification::Urgency urgency) = 0;
 
   /**
     Send a notification about a device change.

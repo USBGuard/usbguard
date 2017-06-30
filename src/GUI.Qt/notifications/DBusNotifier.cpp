@@ -1,86 +1,103 @@
 #include "DBusNotifier.h"
 
-#include <iostream>
 #include <QtCore/QCoreApplication>
 #include <QtDBus/QtDBus>
 #include <QDBusReply>
+#include <QApplication>
+#include <QDBusMessage>
 
-
-DBusNotifier::DBusNotifier() : AbstractNotifier()
+DBusNotifier::DBusNotifier(QObject *parent) :
+  AbstractNotifier(parent),
+  dbus_interface("org.freedesktop.Notifications", "/org/freedesktop/Notifications", "org.freedesktop.Notifications")
 {
-  QDBusConnection bus = QDBusConnection::sessionBus();
-
-  dbus_interface = new QDBusInterface("org.freedesktop.Notifications", "/org/freedesktop/Notifications", "org.freedesktop.Notifications", bus, this);
-  if (!bus.isConnected()) {
-    fprintf(stderr, "Cannot connect to the D-Bus session bus.\n"
-                    "To start it, run:\n"
-                    "\teval `dbus-launch --auto-syntax`\n");
-    exit(1);
+  if (!QDBusConnection::sessionBus().isConnected()) {
+    qFatal("Cannot connect to the D-Bus session bus.\n"
+           "To start it, run:\n"
+           "\teval `dbus-launch --auto-syntax`");
   }
+
+  // TODO: This seems to never fail. We should investigate
+  QDBusConnection::sessionBus().connect("org.freedesktop.Notifications",
+                                        "/org/freedesktop/Notifications",
+                                        "org.freedesktop.Notifications",
+                                        "NotificationClosed",
+                                        this,
+                                        SLOT(notificationClosedSlot(uint)));
 }
 
+void DBusNotifier::notify(QString title, QString body, Notification::Urgency urgency)
+{
+  _notify(title, body, urgency);
+}
 
-void DBusNotifier::notify(const QString &title, const usbguard::Rule& device_rule, const Notification::Urgency urgency)
+void DBusNotifier::notify(const QString &title, const usbguard::Rule &device_rule, const Notification::Urgency urgency)
 {
   const std::string device_id = device_rule.getDeviceID().toString();
-  uint32_t id;
-
-  QMap<std::string, uint32_t>::const_iterator it = current_notifications.find(device_id);
-
-  if (it == current_notifications.end()) {
-    id = getNextId();
-    current_notifications.insert(device_id, id);
-  } else {
-    id = it.value();
-  }
 
   const QString usb_id = QString::fromStdString(device_rule.getDeviceID().toString());
   const QString name = QString::fromStdString(device_rule.getName());
   const QString port = QString::fromStdString(device_rule.getViaPort());
 
   const QString body =
-  QString("USB ID: %1\n"
-          "Name: %2\n"
-          "Port: %3\n")
-    .arg(usb_id)
-    .arg(name)
-    .arg(port);
+      QString("USB ID: %1\n"
+              "Name: %2\n"
+              "Port: %3\n")
+          .arg(usb_id)
+          .arg(name)
+          .arg(port);
 
-  notify(title, body, urgency, id);
+  lock.lock();
+  const QMap<std::string, uint>::const_iterator it = device_to_notification.find(device_id);
+
+  if (it == device_to_notification.end()) {
+    const uint new_id = _notify(title, body, urgency);
+    device_to_notification.insert(device_id, new_id);
+    notification_to_device.insert(new_id, device_id);
+  }
+  else {
+    _notify(title, body, urgency, it.value());
+  }
+  lock.unlock();
 }
 
-
-void DBusNotifier::notify(QString title, QString body, Notification::Urgency urgency, uint32_t id)
+uint DBusNotifier::_notify(QString title, QString body, Notification::Urgency urgency, uint id)
 {
   QMap<QString, QVariant> hints;
-  int32_t timeout;
+  int timeout;
 
   switch (urgency) {
-    case Notification::Urgency::Warning:
-      hints.insert("urgency", 2);
-      timeout = 5000;
-      break;
-    case Notification::Urgency::Information:
-    default:
-      hints.insert("urgency", 1);
-      timeout = 2000;
+  case Notification::Urgency::Warning:
+    hints.insert("urgency", 2);
+    timeout = 5000;
+    break;
+  case Notification::Urgency::Information:
+  default:
+    hints.insert("urgency", 1);
+    timeout = 2000;
   }
 
-  dbus_interface->call("Notify",
-                       /* app name */ "usbguard",
-                       /* replace id */ id,
-                       /* icon path */ "usbguard-icon",
-                       /* title */ title,
-                       /* body */ body,
-                       /* actions */ QVariant(QList<QString>()),
-                       /* hints */ QVariant(hints),
-                       /* timeout */ timeout
-  );
+  QDBusMessage msg = dbus_interface.call("Notify",
+                                         /* app name */ "usbguard",
+                                         /* replace id */ id,
+                                         /* icon path */ "usbguard-icon",
+                                         /* title */ title,
+                                         /* body */ body,
+                                         /* actions */ QVariant(QList<QString>()),
+                                         /* hints */ QVariant(hints),
+                                         /* timeout */ timeout);
+
+  return msg.arguments().at(0).toUInt();
 }
 
-uint32_t DBusNotifier::getNextId()
+void DBusNotifier::notificationClosedSlot(uint notif_id)
 {
-  int i;
-  while ((i = nextAvailableId++) == 0) {}
-  return i;
+  lock.lock();
+  const QMap<uint, std::string>::iterator it = notification_to_device.find(notif_id);
+
+  if (it != notification_to_device.end()) {
+    device_to_notification.remove(it.value());
+    notification_to_device.erase(it);
+  }
+
+  lock.unlock();
 }
