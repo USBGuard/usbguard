@@ -531,9 +531,12 @@ usbguard_applet_qt_SOURCES_BASE=\
 	src/GUI.Qt/SessionBlocker.h \
 	src/GUI.Qt/TargetDelegate.cpp \
 	src/GUI.Qt/TargetDelegate.h \
+	GUI.Qt/backend/AbstractBackend.h \
+	src/GUI.Qt/backend/DBusBackend.cpp \
+	src/GUI.Qt/backend/DBusBackend.h \
 	src/GUI.Qt/notifications/AbstractNotifier.h \
 	src/GUI.Qt/notifications/DBusNotifier.cpp \
-	src/GUI.Qt/notifications/DbusNotifier.h
+	src/GUI.Qt/notifications/DBusNotifier.h
 
 EXTRA_DIST+=\
 	src/GUI.Qt/DeviceDialog.ui \
@@ -570,6 +573,8 @@ CLEANFILES +=\
 	$(top_builddir)/src/GUI.Qt/DeviceModel.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/SessionBlocker.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/TargetDelegate.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/backend/AbstractBackend.moc.cpp \
+	$(top_builddir)/src/GUI.Qt/backend/DBusBackend.moc.cpp \
 	$(top_builddir)/src/GUI.Qt/notifications/DBusNotifier.moc.cpp
 
 nodist_usbguard_applet_qt_SOURCES=\
@@ -580,6 +585,8 @@ nodist_usbguard_applet_qt_SOURCES=\
 	src/GUI.Qt/DeviceModel.moc.cpp \
 	src/GUI.Qt/SessionBlocker.moc.cpp \
 	src/GUI.Qt/TargetDelegate.moc.cpp \
+	src/GUI.Qt/backend/AbstractBackend.moc.cpp \
+	src/GUI.Qt/backend/DBusBackend.moc.cpp \
     src/GUI.Qt/notifications/DBusNotifier.moc.cpp
 
 usbguard_applet_qt_LDADD=\

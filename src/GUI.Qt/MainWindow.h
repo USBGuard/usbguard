@@ -24,6 +24,7 @@
 #include "DeviceModel.h"
 #include "TargetDelegate.h"
 #include "notifications/DBusNotifier.h"
+#include "backend/DBusBackend.h"
 
 #include "usbguard/IPCClient.hpp"
 
@@ -136,7 +137,8 @@ private:
   DeviceModel _device_model;
   TargetDelegate _target_delegate;
 
-  DBusNotifier _event_listener;
+  DBusNotifier _notifier;
+  DBusBackend _backend;
 };
 
 /* vim: set ts=2 sw=2 et */

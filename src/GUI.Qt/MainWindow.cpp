@@ -50,7 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     _settings("USBGuard", "usbguard-applet-qt"),
     _device_model(this),
-    _event_listener(this)
+    _notifier(this),
+    _backend(this)
 {
   /*
    * Seed the pseudo-random generator. We use it for
@@ -86,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QObject::connect(&_ipc_timer, SIGNAL(timeout()),
                    this, SLOT(ipcTryConnect()));
 
-  QObject::connect(this, SIGNAL(uiDevicePresenceChanged(quint32, usbguard::DeviceManager::EventType, usbguard::Rule::Target,  const std::string&)),
+  QObject::connect(&_backend, SIGNAL(uiDevicePresenceChange(quint32, usbguard::DeviceManager::EventType, usbguard::Rule::Target, const std::string&)),
                    this, SLOT(handleDevicePresenceChange(quint32, usbguard::DeviceManager::EventType, usbguard::Rule::Target,  const std::string&)));
 
   QObject::connect(this, SIGNAL(uiDevicePolicyChanged(quint32, usbguard::Rule::Target, usbguard::Rule::Target, const std::string&, quint32)),
@@ -354,7 +355,7 @@ void MainWindow::notify(const QString& title, Notification::Urgency urgency, con
   showMessage(message_body);
 
   if (show_notification) {
-    _event_listener.notify(title, device_rule, urgency);
+    _notifier.notify(title, device_rule, urgency);
   }
 }
 
@@ -363,7 +364,7 @@ void MainWindow::notifyIPCConnected()
   const QString title = tr("IPC Connection Established");
 
   if (ui->notify_ipc->isChecked()) {
-    _event_listener.notify(title, "", Notification::Urgency::Information);
+    _notifier.notify(title, "", Notification::Urgency::Information);
   }
   showMessage(title, /*alert=*/false, /*statusbar=*/true);
 }
@@ -373,7 +374,7 @@ void MainWindow::notifyIPCDisconnected()
   const QString title = tr("IPC Connection Lost");
 
   if (ui->notify_ipc->isChecked()) {
-    _event_listener.notify(title, "", Notification::Urgency::Warning);
+    _notifier.notify(title, "", Notification::Urgency::Warning);
   }
   showMessage(title, /*alert=*/true, /*statusbar=*/true);
 }
