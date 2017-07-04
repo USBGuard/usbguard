@@ -16,3 +16,7 @@ stamp-h1
 *.l[oa]
 *.o
 
+
+# editor stuff
+.idea
+.vscode

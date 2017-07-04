@@ -531,7 +531,8 @@ usbguard_applet_qt_SOURCES_BASE=\
 	src/GUI.Qt/SessionBlocker.h \
 	src/GUI.Qt/TargetDelegate.cpp \
 	src/GUI.Qt/TargetDelegate.h \
-	GUI.Qt/backend/AbstractBackend.h \
+	src/GUI.Qt/backend/AbstractBackend.h \
+	src/GUI.Qt/backend/BackendException.h \
 	src/GUI.Qt/backend/DBusBackend.cpp \
 	src/GUI.Qt/backend/DBusBackend.h \
 	src/GUI.Qt/notifications/AbstractNotifier.h \

@@ -3,8 +3,36 @@
 #include <QtDBus/QtDBus>
 
 
+Q_DECLARE_METATYPE(usbguard::Rule)
+
+
+QDBusArgument &operator<<(QDBusArgument &argument, const usbguard::Rule &mystruct)
+{
+    argument.beginStructure();
+    argument << mystruct.getRuleID() << QString::fromStdString(mystruct.toString());
+    argument.endStructure();
+    return argument;
+}
+
+
+const QDBusArgument &operator>>(const QDBusArgument &argument, usbguard::Rule &mystruct)
+{
+  QString s;
+  uint t;
+    argument.beginStructure();
+    argument >> t >> s;
+    argument.endStructure();
+
+    mystruct = usbguard::Rule::fromString(s.toStdString());
+    mystruct.setRuleID(t);
+    return argument;
+}
+
+
+
 DBusBackend::DBusBackend(QObject *parent) :
-  AbstractBackend(parent)
+  AbstractBackend(parent),
+  dbus_interface("org.usbguard", "/org/usbguard", "org.usbguard.Devices", QDBusConnection::systemBus())
 {
   qDBusRegisterMetaType<QMap<QString, QString>>();
 
@@ -25,7 +53,7 @@ DBusBackend::DBusBackend(QObject *parent) :
 }
 
 
-void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, const QString device_rule_string, StringDict /*attributes*/)
+void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, const QString device_rule_string, Attributes /*attributes*/)
 {
   emit uiDevicePresenceChange(
     id,
@@ -33,4 +61,34 @@ void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, co
     static_cast<usbguard::Rule::Target>(target),
     device_rule_string.toStdString()
   );
+}
+
+
+const std::vector<usbguard::Rule> DBusBackend::listDevices(const QString query)
+{
+  QDBusMessage result = dbus_interface.call("listDevices", query);
+
+  switch (result.type()) {
+    case QDBusMessage::ReplyMessage: {
+      QDBusArgument devices = result.arguments()[0].value<QDBusArgument>();
+      QVector<usbguard::Rule> rules;
+
+      devices >> rules;
+      return rules.toStdVector();
+    }
+    case QDBusMessage::ErrorMessage:
+      throw usbguard::Exception("listDevices", result.errorName().toStdString(), result.errorMessage().toStdString());
+    case QDBusMessage::InvalidMessage:
+    case QDBusMessage::MethodCallMessage:
+    case QDBusMessage::SignalMessage:
+    default:
+      qFatal("Got a %d while calling DBusBackend::listDevices with error %s",
+             result.type(),
+             result.errorMessage().toStdString().c_str());
+  }
+}
+
+const char* DBusBackend::type() 
+{
+  return "DBus";
 }

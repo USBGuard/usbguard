@@ -607,21 +607,23 @@ void MainWindow::loadDeviceList()
   USBGUARD_LOG(Trace);
 
   try {
-    for (auto device_rule : IPCClient::listDevices()) {
+    for (auto device_rule : _backend.listDevices("match")) {
       if (!_device_model.containsDevice(device_rule.getRuleID())) {
         _device_model.insertDevice(device_rule);
       }
     }
     ui->device_view->expandAll();
   }
-  catch(const usbguard::IPCException& ex) {
-    showMessage(QString("IPC call failed: %1: %2")
+  catch(const usbguard::Exception& ex) {
+    showMessage(QString("%1 call failed: %2: %3")
+                .arg(_backend.type())
                 .arg("listDevices")
                 .arg(QString::fromStdString(ex.message())),
                 /*alert=*/true);
   }
   catch(const std::exception& ex) {
-    showMessage(QString("IPC call failed: %1: std::exception: %2")
+    showMessage(QString("%1 call failed: %2: std::exception: %3")
+                .arg(_backend.type())
                 .arg("listDevices")
                 .arg(QString::fromStdString(ex.what())),
                 /*alert=*/true);
@@ -711,12 +713,12 @@ void MainWindow::closeEvent(QCloseEvent* e)
   e->accept();
 }
 
-void MainWindow::DevicePresenceChanged(quint32 id,
-                                       usbguard::DeviceManager::EventType event,
-                                       usbguard::Rule::Target target,
-                                       const std::string& device_rule)
+// FIXME: remove this function. it is part of the old API
+void MainWindow::DevicePresenceChanged(quint32,
+                                       usbguard::DeviceManager::EventType,
+                                       usbguard::Rule::Target,
+                                       const std::string&)
 {
-  emit uiDevicePresenceChanged(id, event, target, device_rule);
 }
 
 void MainWindow::DevicePolicyChanged(quint32 id,
