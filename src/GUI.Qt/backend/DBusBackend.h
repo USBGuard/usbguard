@@ -43,9 +43,10 @@ public:
     @param parent Parent object in the Qt tree.
   */
   explicit DBusBackend(QObject *parent);
+  const char* type() override;
 
   const std::vector<usbguard::Rule> listDevices(const QString query) override;
-  const char* type() override;
+  void applyDevicePolicy(uint id, usbguard::Rule::Target target, bool permanent);
 
 private:
   /*

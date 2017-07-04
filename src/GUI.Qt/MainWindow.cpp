@@ -443,19 +443,13 @@ void MainWindow::allowDevice(quint32 id, bool permanent)
   USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
 
   try {
-    IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Allow, permanent);
+    _backend.applyDevicePolicy(id, usbguard::Rule::Target::Allow, permanent);
   }
-  catch(const usbguard::IPCException& ex) {
-    showMessage(QString("IPC call failed: %1: %2")
-                .arg("allowDevice")
-                .arg(QString::fromStdString(ex.message())),
-                /*alert=*/true);
+  catch(const usbguard::Exception& ex) {
+    notifyFailure("allowDevice", ex.message());
   }
   catch(const std::exception& ex) {
-    showMessage(QString("IPC call failed: %1: std::exception: %2")
-                .arg("allowDevice")
-                .arg(QString::fromStdString(ex.what())),
-                /*alert=*/true);
+    notifyFailure("allowDevice", ex.what());
   }
 }
 
@@ -464,19 +458,13 @@ void MainWindow::blockDevice(quint32 id, bool permanent)
   USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
 
   try {
-    IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Block, permanent);
+    _backend.applyDevicePolicy(id, usbguard::Rule::Target::Block, permanent);
   }
   catch(const usbguard::IPCException& ex) {
-    showMessage(QString("IPC call failed: %1: %2")
-                .arg("blockDevice")
-                .arg(QString::fromStdString(ex.message())),
-                /*alert=*/true);
+    notifyFailure("blockDevice", ex.message());
   }
   catch(const std::exception& ex) {
-    showMessage(QString("IPC call failed: %1: std::exception: %2")
-                .arg("blockDevice")
-                .arg(QString::fromStdString(ex.what())),
-                /*alert=*/true);
+    notifyFailure("blockDevice", ex.what());
   }
 }
 
@@ -485,19 +473,13 @@ void MainWindow::rejectDevice(quint32 id, bool permanent)
   USBGUARD_LOG(Trace) << "id=" << id << " permanent=" << permanent;
 
   try {
-    IPCClient::applyDevicePolicy(id, usbguard::Rule::Target::Reject, permanent);
+    _backend.applyDevicePolicy(id, usbguard::Rule::Target::Reject, permanent);
   }
   catch(const usbguard::IPCException& ex) {
-    showMessage(QString("IPC call failed: %1: %2")
-                .arg("rejectDevice")
-                .arg(QString::fromStdString(ex.message())),
-                /*alert=*/true);
+    notifyFailure("rejectDevice", ex.message());
   }
   catch(const std::exception& ex) {
-    showMessage(QString("IPC call failed: %1: std::exception: %2")
-                .arg("rejectDevice")
-                .arg(QString::fromStdString(ex.what())),
-                /*alert=*/true);
+    notifyFailure("rejectDevice", ex.what());
   }
 }
 
@@ -615,18 +597,10 @@ void MainWindow::loadDeviceList()
     ui->device_view->expandAll();
   }
   catch(const usbguard::Exception& ex) {
-    showMessage(QString("%1 call failed: %2: %3")
-                .arg(_backend.type())
-                .arg("listDevices")
-                .arg(QString::fromStdString(ex.message())),
-                /*alert=*/true);
+    notifyFailure("listDevices", ex.message());
   }
   catch(const std::exception& ex) {
-    showMessage(QString("%1 call failed: %2: std::exception: %3")
-                .arg(_backend.type())
-                .arg("listDevices")
-                .arg(QString::fromStdString(ex.what())),
-                /*alert=*/true);
+    notifyFailure("listDevices", ex.what());
   }
 }
 
@@ -741,5 +715,14 @@ void MainWindow::IPCDisconnected(bool exception_initiated, const usbguard::IPCEx
   (void)exception;
   emit uiDisconnected();
 }
+
+void MainWindow::notifyFailure(std::string function, std::string message) {
+  showMessage(QString("%1 call failed: %2: %3")
+              .arg(_backend.type())
+              .arg(QString::fromStdString(function))
+              .arg(QString::fromStdString(message)),
+              /*alert=*/true);
+}
+
 
 /* vim: set ts=2 sw=2 et */

@@ -137,6 +137,8 @@ private:
   DeviceModel _device_model;
   TargetDelegate _target_delegate;
 
+  void notifyFailure(std::string function, std::string message);
+
   DBusNotifier _notifier;
   DBusBackend _backend;
 };

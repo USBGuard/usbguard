@@ -52,6 +52,11 @@ DBusBackend::DBusBackend(QObject *parent) :
 
 }
 
+const char* DBusBackend::type()
+{
+  return "DBus";
+}
+
 
 void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, const QString device_rule_string, Attributes /*attributes*/)
 {
@@ -88,7 +93,24 @@ const std::vector<usbguard::Rule> DBusBackend::listDevices(const QString query)
   }
 }
 
-const char* DBusBackend::type() 
+void DBusBackend::applyDevicePolicy(uint id, usbguard::Rule::Target target, bool permanent)
 {
-  return "DBus";
+  QList<QVariant> args;
+  args << id << static_cast<uint>(target) << permanent;
+  QDBusMessage result = dbus_interface.call("applyDevicePolicy", id, static_cast<uint>(target), permanent);
+
+  switch (result.type()) {
+    case QDBusMessage::ReplyMessage:
+      break;
+    case QDBusMessage::ErrorMessage: {
+      throw usbguard::Exception("applyDevicePolicy", result.errorName().toStdString(), result.errorMessage().toStdString());
+    }
+    case QDBusMessage::InvalidMessage:
+    case QDBusMessage::MethodCallMessage:
+    case QDBusMessage::SignalMessage:
+    default:
+      qFatal("Got a %d while calling DBusBackend::applyDevicePolicy with error %s",
+             result.type(),
+             result.errorMessage().toStdString().c_str());
+  }
 }

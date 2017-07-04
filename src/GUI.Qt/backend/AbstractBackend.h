@@ -33,6 +33,15 @@ public:
   virtual const std::vector<usbguard::Rule> listDevices(const QString query) = 0;
 
   /*
+    Apply a given rule for the given device id.
+
+    @param id of the device for which to apply the rule.
+    @param target Target rule to apply.
+    @param permanent Whether this is a permanent rule change or not.
+  */
+  virtual void applyDevicePolicy(uint id, usbguard::Rule::Target target, bool permanent) = 0;
+
+  /*
     Type of the backend 
   */
   virtual const char* type() = 0;
