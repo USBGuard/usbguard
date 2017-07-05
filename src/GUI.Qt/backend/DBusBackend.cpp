@@ -48,8 +48,7 @@ DBusBackend::DBusBackend(QObject *parent) :
                                         "org.usbguard.Devices",
                                         "DevicePresenceChanged",
                                         this,
-                                        SLOT(devicePresenceChangedSlot(uint, uint, uint, QString, StringDict)));
-
+                                        SLOT(devicePresenceChangedSlot(uint, uint, uint, QString, Attributes)));
 }
 
 const char* DBusBackend::type()
