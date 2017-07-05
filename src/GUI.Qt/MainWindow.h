@@ -26,8 +26,6 @@
 #include "notifications/DBusNotifier.h"
 #include "backend/DBusBackend.h"
 
-#include "usbguard/IPCClient.hpp"
-
 #include <QSystemTrayIcon>
 #include <QMainWindow>
 #include <QTimer>
@@ -38,7 +36,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow, public usbguard::IPCClient
+class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
@@ -116,16 +114,16 @@ protected slots:
   void DevicePresenceChanged(quint32 id,
                              usbguard::DeviceManager::EventType event,
                              usbguard::Rule::Target target,
-                             const std::string& device_rule) override;
+                             const std::string& device_rule);
 
   void DevicePolicyChanged(quint32 id,
                            usbguard::Rule::Target target_old,
                            usbguard::Rule::Target target_new,
                            const std::string& device_rule,
-                           quint32 rule_id) override;
+                           quint32 rule_id);
 
-  void IPCConnected() override;
-  void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception) override;
+  void IPCConnected();
+  void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception);
 
 private:
   Ui::MainWindow *ui;

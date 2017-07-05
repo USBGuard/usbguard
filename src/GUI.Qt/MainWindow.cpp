@@ -90,13 +90,13 @@ MainWindow::MainWindow(QWidget *parent) :
   QObject::connect(&_backend, SIGNAL(uiDevicePresenceChange(quint32, usbguard::DeviceManager::EventType, usbguard::Rule::Target, const std::string&)),
                    this, SLOT(handleDevicePresenceChange(quint32, usbguard::DeviceManager::EventType, usbguard::Rule::Target,  const std::string&)));
 
-  QObject::connect(this, SIGNAL(uiDevicePolicyChanged(quint32, usbguard::Rule::Target, usbguard::Rule::Target, const std::string&, quint32)),
+  QObject::connect(&_backend, SIGNAL(uiDevicePolicyChanged(quint32, usbguard::Rule::Target, usbguard::Rule::Target, const std::string&, quint32)),
                    this, SLOT(handleDevicePolicyChange(quint32, usbguard::Rule::Target, usbguard::Rule::Target, const std::string&, quint32)));
 
-  QObject::connect(this, SIGNAL(uiConnected()),
+  QObject::connect(&_backend, SIGNAL(backendConnected()),
                    this, SLOT(handleIPCConnect()));
 
-  QObject::connect(this, SIGNAL(uiDisconnected()),
+  QObject::connect(&_backend, SIGNAL(backendDisconnected()),
                    this, SLOT(handleIPCDisconnect()));
 
   /*
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   _ipc_timer.setInterval(1000);
   _ipc_timer.start();
-  ui->statusBar->showMessage(tr("Inactive. No IPC connection."));
+  ui->statusBar->showMessage(tr("Inactive. No %1 connection.").arg(_backend.type()));
 
   new QShortcut(QKeySequence(Qt::Key_Escape, Qt::Key_Escape), this, SLOT(showMinimized()));
 }
@@ -163,7 +163,7 @@ void MainWindow::switchVisibilityState(QSystemTrayIcon::ActivationReason reason)
 
 MainWindow::~MainWindow()
 {
-  IPCClient::disconnect();
+  _backend.disconnect();
   delete ui;
 }
 
@@ -361,7 +361,7 @@ void MainWindow::notify(const QString& title, Notification::Urgency urgency, con
 
 void MainWindow::notifyIPCConnected()
 {
-  const QString title = tr("IPC Connection Established");
+  const QString title = tr("%1 Connection Established").arg(_backend.type());
 
   if (ui->notify_ipc->isChecked()) {
     _notifier.notify(title, "", Notification::Urgency::Information);
@@ -371,7 +371,7 @@ void MainWindow::notifyIPCConnected()
 
 void MainWindow::notifyIPCDisconnected()
 {
-  const QString title = tr("IPC Connection Lost");
+  const QString title = tr("%1 Connection Lost").arg(_backend.type());
 
   if (ui->notify_ipc->isChecked()) {
     _notifier.notify(title, "", Notification::Urgency::Warning);
@@ -390,7 +390,7 @@ void MainWindow::stopFlashing()
 {
   _flash_state = false;
   _flash_timer.stop();
-  if (IPCClient::isConnected()) {
+  if (_backend.isConnected()) {
     systray->setIcon(QIcon(":/usbguard-icon.svg"));
   }
   else {
@@ -407,7 +407,7 @@ void MainWindow::flashStep()
     _flash_state = false;
   }
   else {
-    if (IPCClient::isConnected()) {
+    if (_backend.isConnected()) {
       systray->setIcon(QIcon(":/usbguard-icon.svg"));
     }
     else {
@@ -424,7 +424,7 @@ void MainWindow::ipcTryConnect()
   USBGUARD_LOG(Trace);
 
   try {
-    IPCClient::connect();
+    _backend.connect();
   }
   catch(const usbguard::Exception& ex) {
     showMessage(QString("Connection failed: %1")
@@ -497,7 +497,7 @@ void MainWindow::handleIPCConnect()
 void MainWindow::handleIPCDisconnect()
 {
   USBGUARD_LOG(Trace);
-  IPCClient::wait();
+
   _ipc_timer.start();
   notifyIPCDisconnected();
   systray->setIcon(QIcon(":/usbguard-icon-inactive.svg"));

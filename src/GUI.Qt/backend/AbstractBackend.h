@@ -42,21 +42,61 @@ public:
   virtual void applyDevicePolicy(uint id, usbguard::Rule::Target target, bool permanent) = 0;
 
   /*
+    Connect to the backend.
+  */
+  virtual void connect() {};
+
+  /*
+    Disconnect from the backend.
+  */
+  virtual void disconnect() {};
+
+  /*
+    Get whether a connection to the backend is done or not.
+  */
+  virtual bool isConnected() = 0;
+
+  /*
     Type of the backend 
   */
   virtual const char* type() = 0;
 
 signals:
   /*
+    Signal sent when a successful connection to the backend is made.
+  */
+  void backendConnected();
+
+  /*
+    Signal sent when the connection to the backend is lost.
+  */
+  void backendDisconnected();
+
+  /*
     Signal emitted when a device appears or disappears.
 
     @param id Id of the device.
     @param event Type of the event that happened.
     @param target Related device information.
-    @param device_rule rule that was applied for the given device.
+    @param device_rule_string Rule concerning the current device encoded as a string.
   */
   void uiDevicePresenceChange(quint32 id,
                               usbguard::DeviceManager::EventType event,
                               usbguard::Rule::Target target,
-                              const std::string& device_rule);
+                              const std::string& device_rule_string);
+
+  /*
+    Signal emitted when a policy for a device changes.
+
+    @param id Id of the device.
+    @param target_old Old target for the device.
+    @param target_new New target for the device.
+    @param device_rule_string Rule concerning the current device encoded as a string.
+    @param rule_id Id of the rule applied to the device.
+  */
+  void uiDevicePolicyChanged(quint32 id,
+                             usbguard::Rule::Target target_old,
+                             usbguard::Rule::Target target_new,
+                             const std::string& device_rule_string,
+                             quint32 rule_id);
 };

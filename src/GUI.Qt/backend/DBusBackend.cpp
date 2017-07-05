@@ -1,6 +1,7 @@
 #include "DBusBackend.h"
 
 #include <QtDBus/QtDBus>
+#include <unistd.h>
 
 
 Q_DECLARE_METATYPE(usbguard::Rule)
@@ -8,10 +9,10 @@ Q_DECLARE_METATYPE(usbguard::Rule)
 
 QDBusArgument &operator<<(QDBusArgument &argument, const usbguard::Rule &mystruct)
 {
-    argument.beginStructure();
-    argument << mystruct.getRuleID() << QString::fromStdString(mystruct.toString());
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument << mystruct.getRuleID() << QString::fromStdString(mystruct.toString());
+  argument.endStructure();
+  return argument;
 }
 
 
@@ -19,41 +20,73 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, usbguard::Rule &m
 {
   QString s;
   uint t;
-    argument.beginStructure();
-    argument >> t >> s;
-    argument.endStructure();
+  argument.beginStructure();
+  argument >> t >> s;
+  argument.endStructure();
 
-    mystruct = usbguard::Rule::fromString(s.toStdString());
-    mystruct.setRuleID(t);
-    return argument;
+  mystruct = usbguard::Rule::fromString(s.toStdString());
+  mystruct.setRuleID(t);
+  return argument;
 }
-
 
 
 DBusBackend::DBusBackend(QObject *parent) :
   AbstractBackend(parent),
-  dbus_interface("org.usbguard", "/org/usbguard", "org.usbguard.Devices", QDBusConnection::systemBus())
+  dbus_interface("org.usbguard", "/org/usbguard", "org.usbguard.Devices", QDBusConnection::systemBus()),
+  watcher("org.usbguard", QDBusConnection::systemBus(), QDBusServiceWatcher::WatchForOwnerChange, this),
+  setup(false)
 {
   qDBusRegisterMetaType<QMap<QString, QString>>();
 
-  if (!QDBusConnection::sessionBus().isConnected()) {
-    qFatal("Cannot connect to the D-Bus session bus.\n"
-           "To start it, run:\n"
-           "\teval `dbus-launch --auto-syntax`");
-  }
+  QObject::connect(&watcher, SIGNAL(serviceRegistered(const QString &)),
+                   this, SLOT(_DBusServiceRegisteredSlot(const QString &)));
 
-  // FIXME: handle errors
-  const bool connected = QDBusConnection::systemBus().connect("org.usbguard",
-                                        "/org/usbguard/Devices",
-                                        "org.usbguard.Devices",
-                                        "DevicePresenceChanged",
-                                        this,
-                                        SLOT(devicePresenceChangedSlot(uint, uint, uint, QString, Attributes)));
+  QObject::connect(&watcher, SIGNAL(serviceUnregistered(const QString &)),
+                   this, SLOT(_DBusServiceUnRegisteredSlot(const QString &)));
+
+  const bool presenceConnected = QDBusConnection::systemBus().connect(
+    "org.usbguard",
+    "/org/usbguard/Devices",
+    "org.usbguard.Devices",
+    "DevicePresenceChanged",
+    this,
+    SLOT(devicePresenceChangedSlot(uint, uint, uint, QString, Attributes)));
+
+  const bool policyConnected = QDBusConnection::systemBus().connect(
+    "org.usbguard",
+    "/org/usbguard/Devices",
+    "org.usbguard.Devices",
+    "DevicePolicyChanged",
+    this,
+    SLOT(devicePolicyChangedSlot(uint, uint, uint, QString, uint)));
+
+  connected = presenceConnected && policyConnected;
 }
+
 
 const char* DBusBackend::type()
 {
   return "DBus";
+}
+
+
+bool DBusBackend::isConnected()
+{
+  return connected;
+}
+
+
+void DBusBackend::connect() {
+  if (!setup) {
+    if (!QDBusConnection::sessionBus().isConnected()) {
+      qFatal("Cannot connect to the D-Bus session bus.\n"
+            "To start it, run:\n"
+            "\teval `dbus-launch --auto-syntax`");
+    }
+
+    setup = true;
+    _DBusServiceRegisteredSlot("");
+  }
 }
 
 
@@ -64,6 +97,17 @@ void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, co
     static_cast<usbguard::DeviceManager::EventType>(event),
     static_cast<usbguard::Rule::Target>(target),
     device_rule_string.toStdString()
+  );
+}
+
+
+void DBusBackend::devicePolicyChangedSlot(uint id, uint target_old, uint target_new, QString device_rule_string, uint rule_id) {
+  emit uiDevicePolicyChanged(
+    id,
+    static_cast<usbguard::Rule::Target>(target_old),
+    static_cast<usbguard::Rule::Target>(target_new),
+    device_rule_string.toStdString(),
+    rule_id
   );
 }
 
@@ -81,7 +125,7 @@ const std::vector<usbguard::Rule> DBusBackend::listDevices(const QString query)
       return rules.toStdVector();
     }
     case QDBusMessage::ErrorMessage:
-      throw usbguard::Exception("listDevices", result.errorName().toStdString(), result.errorMessage().toStdString());
+      throw usbguard::Exception("DBusBackend::listDevices", result.errorName().toStdString(), result.errorMessage().toStdString());
     case QDBusMessage::InvalidMessage:
     case QDBusMessage::MethodCallMessage:
     case QDBusMessage::SignalMessage:
@@ -91,6 +135,7 @@ const std::vector<usbguard::Rule> DBusBackend::listDevices(const QString query)
              result.errorMessage().toStdString().c_str());
   }
 }
+
 
 void DBusBackend::applyDevicePolicy(uint id, usbguard::Rule::Target target, bool permanent)
 {
@@ -102,7 +147,7 @@ void DBusBackend::applyDevicePolicy(uint id, usbguard::Rule::Target target, bool
     case QDBusMessage::ReplyMessage:
       break;
     case QDBusMessage::ErrorMessage: {
-      throw usbguard::Exception("applyDevicePolicy", result.errorName().toStdString(), result.errorMessage().toStdString());
+      throw usbguard::Exception("DBusBackend::applyDevicePolicy", result.errorName().toStdString(), result.errorMessage().toStdString());
     }
     case QDBusMessage::InvalidMessage:
     case QDBusMessage::MethodCallMessage:
@@ -112,4 +157,17 @@ void DBusBackend::applyDevicePolicy(uint id, usbguard::Rule::Target target, bool
              result.type(),
              result.errorMessage().toStdString().c_str());
   }
+}
+
+
+void DBusBackend::_DBusServiceRegisteredSlot(const QString &) {
+  // FIXME: this is a workaround because the dbus backend might
+  // not be connected to the daemon yet if we start it after the applet.
+  usleep(2000000);
+  emit backendConnected();
+}
+
+
+void DBusBackend::_DBusServiceUnRegisteredSlot(const QString &) {
+  emit backendDisconnected();
 }
