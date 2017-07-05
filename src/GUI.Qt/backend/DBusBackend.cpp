@@ -92,7 +92,7 @@ void DBusBackend::connect() {
 
 void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, const QString device_rule_string, Attributes /*attributes*/)
 {
-  emit uiDevicePresenceChange(
+  emit devicePresenceChange(
     id,
     static_cast<usbguard::DeviceManager::EventType>(event),
     static_cast<usbguard::Rule::Target>(target),
@@ -102,7 +102,7 @@ void DBusBackend::devicePresenceChangedSlot(uint id, uint event, uint target, co
 
 
 void DBusBackend::devicePolicyChangedSlot(uint id, uint target_old, uint target_new, QString device_rule_string, uint rule_id) {
-  emit uiDevicePolicyChanged(
+  emit devicePolicyChanged(
     id,
     static_cast<usbguard::Rule::Target>(target_old),
     static_cast<usbguard::Rule::Target>(target_new),

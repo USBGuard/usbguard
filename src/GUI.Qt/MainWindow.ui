@@ -219,9 +219,9 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QCheckBox" name="notify_ipc">
+             <widget class="QCheckBox" name="notify_backend">
               <property name="text">
-               <string>IPC status</string>
+               <string>Backend status</string>
               </property>
              </widget>
             </item>

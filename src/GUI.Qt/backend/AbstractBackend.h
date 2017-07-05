@@ -80,10 +80,10 @@ signals:
     @param target Related device information.
     @param device_rule_string Rule concerning the current device encoded as a string.
   */
-  void uiDevicePresenceChange(quint32 id,
-                              usbguard::DeviceManager::EventType event,
-                              usbguard::Rule::Target target,
-                              const std::string& device_rule_string);
+  void devicePresenceChange(quint32 id,
+                            usbguard::DeviceManager::EventType event,
+                            usbguard::Rule::Target target,
+                            const std::string& device_rule_string);
 
   /*
     Signal emitted when a policy for a device changes.
@@ -94,9 +94,9 @@ signals:
     @param device_rule_string Rule concerning the current device encoded as a string.
     @param rule_id Id of the rule applied to the device.
   */
-  void uiDevicePolicyChanged(quint32 id,
-                             usbguard::Rule::Target target_old,
-                             usbguard::Rule::Target target_new,
-                             const std::string& device_rule_string,
-                             quint32 rule_id);
+  void devicePolicyChanged(quint32 id,
+                           usbguard::Rule::Target target_old,
+                           usbguard::Rule::Target target_new,
+                           const std::string& device_rule_string,
+                           quint32 rule_id);
 };

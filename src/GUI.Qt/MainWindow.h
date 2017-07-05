@@ -45,24 +45,13 @@ public:
   ~MainWindow();
 
 signals:
-  void uiDevicePresenceChanged(quint32 id,
-                               usbguard::DeviceManager::EventType event,
-                               usbguard::Rule::Target target,
-                               const std::string& device_rule);
-
-  void uiDevicePolicyChanged(quint32 id,
-                             usbguard::Rule::Target target_old,
-                             usbguard::Rule::Target target_new,
-                             const std::string& device_rule,
-                             quint32 rule_id);
-
   void uiConnected();
   void uiDisconnected();
 
 protected slots:
   void switchVisibilityState(QSystemTrayIcon::ActivationReason reason);
   void flashStep();
-  void ipcTryConnect();
+  void backendTryConnect();
 
   void showDeviceDialog(quint32 id, const usbguard::Rule& device_rule);
   void showMessage(const QString &message, bool alert = false, bool statusbar = false);
@@ -78,8 +67,8 @@ protected slots:
                                 const std::string& device_rule,
                                 quint32 rule_id);
 
-  void notifyIPCConnected();
-  void notifyIPCDisconnected();
+  void notifyBackendConnected();
+  void notifyBackendDisconnected();
   void notifyDevicePresenceChanged(usbguard::DeviceManager::EventType event, const usbguard::Rule& device_rule);
   void notifyDevicePolicyChanged(const usbguard::Rule& device_rule, quint32 rule_id);
   void notify(const QString& title, Notification::Urgency urgency, const usbguard::Rule& device_rule, bool show_notification);
@@ -88,8 +77,8 @@ protected slots:
   void blockDevice(quint32 id, bool permanent);
   void rejectDevice(quint32 id, bool permanent);
 
-  void handleIPCConnect();
-  void handleIPCDisconnect();
+  void handleBackendConnect();
+  void handleBackendDisconnect();
 
   void handleDeviceInsert(quint32 id, const usbguard::Rule& device_rule);
   void handleDeviceRemove(quint32 id, const usbguard::Rule& device_rule);
@@ -111,26 +100,12 @@ protected slots:
   void startFlashing();
   void stopFlashing();
 
-  void DevicePresenceChanged(quint32 id,
-                             usbguard::DeviceManager::EventType event,
-                             usbguard::Rule::Target target,
-                             const std::string& device_rule);
-
-  void DevicePolicyChanged(quint32 id,
-                           usbguard::Rule::Target target_old,
-                           usbguard::Rule::Target target_new,
-                           const std::string& device_rule,
-                           quint32 rule_id);
-
-  void IPCConnected();
-  void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception);
-
 private:
   Ui::MainWindow *ui;
   QSystemTrayIcon *systray;
   QTimer _flash_timer;
   bool _flash_state;
-  QTimer _ipc_timer;
+  QTimer _backend_timer;
   QSettings _settings;
   DeviceModel _device_model;
   TargetDelegate _target_delegate;
