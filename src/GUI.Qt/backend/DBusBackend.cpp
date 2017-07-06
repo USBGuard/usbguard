@@ -44,7 +44,7 @@ DBusBackend::DBusBackend(QObject *parent) :
   QObject::connect(&watcher, SIGNAL(serviceUnregistered(const QString &)),
                    this, SLOT(_DBusServiceUnRegisteredSlot(const QString &)));
 
-  const bool presenceConnected = QDBusConnection::systemBus().connect(
+  QDBusConnection::systemBus().connect(
     "org.usbguard",
     "/org/usbguard/Devices",
     "org.usbguard.Devices",
@@ -52,15 +52,13 @@ DBusBackend::DBusBackend(QObject *parent) :
     this,
     SLOT(devicePresenceChangedSlot(uint, uint, uint, QString, Attributes)));
 
-  const bool policyConnected = QDBusConnection::systemBus().connect(
+  QDBusConnection::systemBus().connect(
     "org.usbguard",
     "/org/usbguard/Devices",
     "org.usbguard.Devices",
     "DevicePolicyChanged",
     this,
     SLOT(devicePolicyChangedSlot(uint, uint, uint, QString, uint)));
-
-  connected = presenceConnected && policyConnected;
 }
 
 
@@ -72,7 +70,7 @@ const char* DBusBackend::type()
 
 bool DBusBackend::isConnected()
 {
-  return connected;
+  return dbus_interface.isValid();
 }
 
 
@@ -85,7 +83,10 @@ void DBusBackend::connect() {
     }
 
     setup = true;
-    _DBusServiceRegisteredSlot("");
+
+    if (isConnected()) {
+      _DBusServiceRegisteredSlot("");
+    }
   }
 }
 

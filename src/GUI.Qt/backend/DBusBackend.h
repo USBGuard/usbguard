@@ -58,7 +58,6 @@ private:
   QDBusInterface dbus_interface;
   QDBusServiceWatcher watcher;
   bool setup;
-  bool connected;
 
 private slots:
   /*
