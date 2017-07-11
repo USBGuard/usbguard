@@ -105,6 +105,9 @@ List the rule set (policy) used by the USBGuard daemon.
 
 Available options:
 
+**-d**, **--show-devices**
+:   Show all devices which are affected by the specific rule.
+
 **-h**, **--help**
 :   Show help.
 
