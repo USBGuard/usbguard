@@ -84,7 +84,7 @@ EOF
 cat > "$policy_path" <<EOF
 EOF
 
-schedule "${USBGUARD_DAEMON} -d -k -c $config_path" :service
+schedule "${USBGUARD_DAEMON} -d -k -P -c $config_path" :service
 schedule "test_cli_policy"
 execute 60
 

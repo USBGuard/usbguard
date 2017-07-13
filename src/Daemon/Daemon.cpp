@@ -119,16 +119,60 @@ namespace usbguard
     _config.close();
   }
 
-  void Daemon::loadConfiguration(const std::string& path)
+  int Daemon::checkPermissions(const std::string& path,
+                               const mode_t permissions)
+  {
+    struct stat file_stat;
+
+    // from all enabled permissions we subtract the permissions we want to check
+    // after this operation variable permission_bad contains the complement of 
+    // permissions we want to check.
+    mode_t permission_bad { ( S_IRWXU | S_IRWXG | S_IRWXO ) - permissions };
+
+    if(!stat(path.c_str(), &file_stat)) {
+      if (S_ISREG(file_stat.st_mode)) {
+
+        // this comparison inspect if file has the wanted permissions and if
+        // the file does not contain the unwanted permissions.
+        if (  !( file_stat.st_mode & permissions ) ||
+               ( file_stat.st_mode & permission_bad)
+           )
+        {
+          USBGUARD_LOG(Error) << "Policy leaks are possible with this permissions!";
+          throw Exception("Check permissions", path, "Policy leaks possible");
+        }
+        else {
+          USBGUARD_LOG(Info) << "File has correct permissions.";
+        }
+      }
+      else {
+        USBGUARD_LOG(Error) << "ERROR: File is not a regular file.";
+        throw Exception("Check permissions", path, "File not exists");
+      }
+    }
+    else {
+      USBGUARD_LOG(Error) << "ERROR: obtaining file permissions! Errno: " << errno;
+      throw ErrnoException("Check permissions", path, errno);
+    }
+
+    return 0;
+  }
+
+  void Daemon::loadConfiguration(const std::string& path, const bool check_permissions)
   {
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
+
+    if(check_permissions) {
+      checkPermissions(path, (S_IRUSR | S_IWUSR));
+    }
+
     _config.open(path);
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
       const std::string& rule_file = _config.getSettingValue("RuleFile");
       try {
-	loadRules(rule_file);
+	loadRules(rule_file, check_permissions);
       }
       catch(const RuleParserError& ex) {
         throw Exception("Configuration", rule_file, ex.hint());
@@ -250,9 +294,14 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const std::string& path)
+  void Daemon::loadRules(const std::string& path, const bool check_permissions)
   {
     USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
+
+    if(check_permissions) {
+      checkPermissions(path, (S_IRUSR | S_IWUSR));
+    }
+
     _ruleset.load(path);
   }
 
