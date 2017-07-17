@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Authors: Daniel Kopecek <dkopecek@redhat.com>
+// Authors: Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -22,41 +22,40 @@
 #endif
 
 #include "usbguard/Typedefs.hpp"
-#include "usbguard/RuleSet.hpp"
+#include "usbguard/Rule.hpp"
 
 #include <istream>
 #include <ostream>
 #include <mutex>
 
 namespace usbguard {
-  class RuleSetPrivate
+  class Interface;
+  class DLL_PUBLIC RuleSet
   {
   public:
-    RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr);
-    RuleSetPrivate(RuleSet& p_instance, const RuleSetPrivate& rhs);
-    const RuleSetPrivate& operator=(const RuleSetPrivate& rhs);
-    ~RuleSetPrivate();
 
-    void load(const std::string& path);
-    void load(std::istream& stream);
-    void save(const std::string& path) const;
-    void save(std::ostream& stream) const;
-    void setDefaultTarget(Rule::Target target);
-    Rule::Target getDefaultTarget() const;
-    void setDefaultAction(const std::string& action);
-    uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
-    uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
-    std::shared_ptr<Rule> getRule(uint32_t id);
-    bool removeRule(uint32_t id);
-    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
-    std::vector<std::shared_ptr<const Rule>> getRules();
-    uint32_t assignID(std::shared_ptr<Rule> rule);
-    uint32_t assignID();
+    RuleSet(Interface * const interface_ptr);
+    RuleSet(const RuleSet& rhs);
+    const RuleSet& operator=(const RuleSet& rhs);
 
-  private:
+    virtual void load() = 0;
+    virtual void save() = 0;
+
+    virtual void setDefaultTarget(Rule::Target target);
+    virtual Rule::Target getDefaultTarget() const;
+    virtual void setDefaultAction(const std::string& action);
+    virtual uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
+    virtual uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
+    virtual std::shared_ptr<Rule> getRule(uint32_t id);
+    virtual bool removeRule(uint32_t id);
+    virtual std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
+    virtual std::vector<std::shared_ptr<const Rule>> getRules();
+    virtual uint32_t assignID(std::shared_ptr<Rule> rule);
+    virtual uint32_t assignID();
+
+  protected:
     mutable std::mutex _io_mutex; /* mutex for load/save */
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
-    RuleSet& _p_instance;
     Interface * const _interface_ptr;
     Rule::Target _default_target;
     std::string _default_action;

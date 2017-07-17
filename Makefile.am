@@ -225,6 +225,12 @@ libusbguard_la_SOURCES=\
 	src/Library/Init.cpp \
 	src/Library/LocaltimeCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
+	src/Library/RuleSet.cpp \
+	src/Library/RuleSet.hpp \
+	src/Library/FileRuleSet.cpp \
+	src/Library/FileRuleSet.hpp \
+	src/Library/Policy.cpp \
+	src/Library/Policy.hpp \
 	src/Library/RandomStateCondition.cpp \
 	src/Library/RandomStateCondition.hpp \
 	src/Library/RuleAppliedCondition.cpp \
@@ -235,8 +241,6 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleParser/Grammar.hpp \
 	src/Library/RulePrivate.cpp \
 	src/Library/RulePrivate.hpp \
-	src/Library/RuleSetPrivate.cpp \
-	src/Library/RuleSetPrivate.hpp \
 	src/Library/SysFSDevice.cpp \
 	src/Library/SysFSDevice.hpp \
 	src/Library/UEvent.cpp \
@@ -256,12 +260,10 @@ libusbguard_la_SOURCES=\
 	src/Library/public/usbguard/IPCClient.cpp \
 	src/Library/public/usbguard/IPCServer.cpp \
 	src/Library/public/usbguard/Logger.cpp \
-	src/Library/public/usbguard/Policy.cpp \
 	src/Library/public/usbguard/Rule.cpp \
 	src/Library/public/usbguard/RuleCondition.cpp \
 	src/Library/public/usbguard/RuleParser.cpp \
 	src/Library/public/usbguard/RuleParser.hpp \
-	src/Library/public/usbguard/RuleSet.cpp \
 	src/Library/public/usbguard/Typedefs.cpp \
 	src/Library/public/usbguard/USB.cpp \
 	src/Library/public/usbguard/USBGuard.cpp
@@ -277,11 +279,9 @@ pkginclude_HEADERS=\
 	src/Library/public/usbguard/IPCServer.hpp \
 	src/Library/public/usbguard/Interface.hpp \
 	src/Library/public/usbguard/Logger.hpp \
-	src/Library/public/usbguard/Policy.hpp \
 	src/Library/public/usbguard/Predicates.hpp \
 	src/Library/public/usbguard/Rule.hpp \
 	src/Library/public/usbguard/RuleCondition.hpp \
-	src/Library/public/usbguard/RuleSet.hpp \
 	src/Library/public/usbguard/Typedefs.hpp \
 	src/Library/public/usbguard/USB.hpp \
 	src/Library/public/usbguard/USBGuard.hpp

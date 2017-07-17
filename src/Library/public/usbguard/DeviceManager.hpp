@@ -20,7 +20,7 @@
 
 #include "Device.hpp"
 #include "Rule.hpp"
-#include "RuleSet.hpp"
+#include "../RuleSet.hpp"
 #include "Typedefs.hpp"
 
 #include <memory>

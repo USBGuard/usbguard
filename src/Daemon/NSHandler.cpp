@@ -16,6 +16,10 @@
 //
 // Authors: Radovan Sroka <dkopecek@redhat.com>
 //
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -23,16 +27,18 @@
 #include <cctype>
 
 #include "NSHandler.hpp"
+#include "../FileRuleSet.hpp"
+
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
-#include "usbguard/RuleSet.hpp"
 
 namespace usbguard {
 
   NSHandler::NSHandler()
       :   _prop_name("usbguard"),
           _nsswitch_path("/etc/nsswitch.conf"),
-          _possible_values({"files", "ldap", "sss"})
+          _possible_values({"files", "ldap", "sss"}),
+          _rulesPath("")
   {
       _num_possible_values = _possible_values.size();
       _source = SourceType::LOCAL;
@@ -50,8 +56,15 @@ namespace usbguard {
 
   std::shared_ptr<RuleSet> NSHandler::getRuleSet(Interface * const interface_ptr)
   {
-    std::shared_ptr<RuleSet> ptr(new RuleSet(interface_ptr));
-    return ptr;
+    auto rule_set = std::make_shared<FileRuleSet>(interface_ptr);
+    rule_set->setRulePath(_rulesPath);
+
+    return std::dynamic_pointer_cast<RuleSet>(rule_set);
+  }
+
+  void NSHandler::setRulesPath(const std::string& path)
+  {
+    _rulesPath = path;
   }
 
   void NSHandler::parseNSSwitch()
@@ -75,12 +88,13 @@ namespace usbguard {
         //pegtl::string_input<> in( line, _nsswitch_path + ":" + std::to_string(line_number) ); --> new pegtl
 
         try {
-          pegtl::parse_string< usbguard::NSSwitchParser::grammar, usbguard::NSSwitchParser::action >( line, _nsswitch_path + ":" + std::to_string(line_number), parsed );
+          pegtl::parse_string< usbguard::NSSwitchParser::grammar, usbguard::NSSwitchParser::action >
+                                ( line, _nsswitch_path + ":" + std::to_string(line_number), parsed );
           //pegtl::parse< usbguard::NSSwitchParser::grammar, usbguard::NSSwitchParser::action >( in, parsed ); --> new pegtl
         } catch (pegtl::parse_error &e) {
           USBGUARD_LOG(Debug) << "--- Parsing line: " << line_number << "---";
-          USBGUARD_LOG(Debug) << e.what();
-          USBGUARD_LOG(Debug) << "--- --- ---";
+          USBGUARD_LOG(Debug) << line;
+          USBGUARD_LOG(Debug) << "--- Nothing to do ---" << std::endl;
           continue;
         }
       }
@@ -115,3 +129,5 @@ namespace usbguard {
     nss.close();
   }
 }
+
+/* vim: set ts=2 sw=2 et */

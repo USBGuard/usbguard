@@ -18,13 +18,16 @@
 //          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
-#include "Typedefs.hpp"
+#include "usbguard/Typedefs.hpp"
 
 #include <string>
 #include <vector>
 
-#include "RuleSet.hpp"
+#include "../RuleSet.hpp"
 
 namespace usbguard
 {

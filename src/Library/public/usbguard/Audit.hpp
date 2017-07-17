@@ -18,10 +18,11 @@
 //
 #pragma once
 
+#include "../Policy.hpp"
+
 #include "Device.hpp"
 #include "DeviceManager.hpp"
 #include "Logger.hpp"
-#include "Policy.hpp"
 #include "Rule.hpp"
 #include "Typedefs.hpp"
 

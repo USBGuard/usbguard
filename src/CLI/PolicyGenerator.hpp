@@ -21,9 +21,10 @@
 #endif
 
 #include "usbguard/Rule.hpp"
-#include "usbguard/RuleSet.hpp"
 #include "usbguard/DeviceManager.hpp"
 #include "usbguard/DeviceManagerHooks.hpp"
+
+#include "../FileRuleSet.hpp"
 
 namespace usbguard
 {
@@ -39,14 +40,14 @@ namespace usbguard
     void setExplicitCatchAllRule(bool state, Rule::Target target = Rule::Target::Block);
 
     void generate();
-    const RuleSet& refRuleSet() const;
+    const std::shared_ptr<FileRuleSet> refRuleSet() const;
 
     void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device) override;
     uint32_t dmHookAssignID() override;
     void dmHookDeviceException(const std::string& message) override;
 
   private:
-    RuleSet _ruleset;
+    std::shared_ptr<FileRuleSet> _ruleset;
     std::shared_ptr<DeviceManager> _dm;
 
     bool _with_hash;

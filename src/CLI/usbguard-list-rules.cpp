@@ -62,9 +62,9 @@ namespace usbguard
     }
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    RuleSet ruleset = ipc.listRules();
+    auto ruleset = ipc.listRules();
 
-    for (auto rule : ruleset.getRules()) {
+    for (auto rule : ruleset->getRules()) {
       std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
     }
 
