@@ -17,13 +17,15 @@
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
-
+#ifdef HAVE_BUILD_CONFIG_H
+#include <build-config.h>
+#endif
 
 #include <string>
 #include <vector>
 
 #include "usbguard/Typedefs.hpp"
-#include "usbguard/RuleSet.hpp"
+#include "../RuleSet.hpp"
 
 #include <pegtl.hh>
 
@@ -77,6 +79,7 @@ namespace usbguard {
 
       NSHandler();
 
+      void setRulesPath(const std::string& path);
       std::shared_ptr<RuleSet> getRuleSet(Interface * const interface_ptr);
       void parseNSSwitch();
 
@@ -91,6 +94,8 @@ namespace usbguard {
 
       SourceType _source;
 
-
+      std::string _rulesPath;
     };
 }
+
+/* vim: set ts=2 sw=2 et */

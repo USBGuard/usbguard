@@ -113,8 +113,10 @@ namespace usbguard
     generator.setExplicitCatchAllRule(with_catchall,
       Rule::targetFromString(catchall_target));
     generator.generate();
-    const RuleSet& ruleset = generator.refRuleSet();
-    ruleset.save(std::cout);
+
+    auto ruleset = generator.refRuleSet();
+    ruleset->save(std::cout);
+
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */

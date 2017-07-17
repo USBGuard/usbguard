@@ -20,7 +20,7 @@
 
 #include "DeviceManager.hpp"
 #include "Rule.hpp"
-#include "RuleSet.hpp"
+#include "../RuleSet.hpp"
 #include "Typedefs.hpp"
 #include "USB.hpp"
 
@@ -45,7 +45,7 @@ namespace usbguard
 
     virtual void removeRule(uint32_t id) = 0;
 
-    virtual const RuleSet listRules(const std::string& query) = 0;
+    virtual const std::shared_ptr<RuleSet> listRules(const std::string& query) = 0;
 
     virtual uint32_t applyDevicePolicy(uint32_t id,
       Rule::Target target,

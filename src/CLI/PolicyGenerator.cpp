@@ -26,8 +26,8 @@ namespace usbguard
 {
 
   PolicyGenerator::PolicyGenerator()
-    : _ruleset(nullptr)
   {
+    _ruleset = std::make_shared<FileRuleSet>(nullptr);
     _with_hash = true;
     _hash_only = false;
     _port_specific = false;
@@ -66,11 +66,11 @@ namespace usbguard
     if (_with_catchall) {
       Rule catchall_rule;
       catchall_rule.setTarget(_catchall_target);
-      _ruleset.appendRule(catchall_rule);
+      _ruleset->appendRule(catchall_rule);
     }
   }
 
-  const RuleSet& PolicyGenerator::refRuleSet() const
+  const std::shared_ptr<FileRuleSet> PolicyGenerator::refRuleSet() const
   {
     return _ruleset;
   }
@@ -123,13 +123,13 @@ namespace usbguard
     }
 
     rule->setTarget(Rule::Target::Allow);
-    _ruleset.appendRule(*rule);
+    _ruleset->appendRule(*rule);
   }
 
 
   uint32_t PolicyGenerator::dmHookAssignID()
   {
-    return _ruleset.assignID();
+    return _ruleset->assignID();
   }
 
   void PolicyGenerator::dmHookDeviceException(const std::string& message)
