@@ -26,12 +26,12 @@
 #include "Common/Thread.hpp"
 
 #include "NSHandler.hpp"
+#include "../RuleSet.hpp"
+#include "../Policy.hpp"
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/ConfigFile.hpp"
 #include "usbguard/IPCServer.hpp"
-#include "usbguard/Policy.hpp"
-#include "usbguard/RuleSet.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/Device.hpp"
 #include "usbguard/DeviceManager.hpp"
@@ -90,7 +90,7 @@ namespace usbguard
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) override;
     void removeRule(uint32_t id) override;
-    const RuleSet listRules(const std::string& query) override;
+    const std::shared_ptr<RuleSet> listRules(const std::string& query) override;
 
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) override;
     const std::vector<Rule> listDevices(const std::string& query) override;

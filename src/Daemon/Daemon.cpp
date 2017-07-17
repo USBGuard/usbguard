@@ -352,8 +352,9 @@ namespace usbguard
       checkPermissions(path, (S_IRUSR | S_IWUSR));
     }
 
+    _nss.setRulesPath(path);
     auto ruleset = _nss.getRuleSet(this);
-    ruleset->load(path);
+    ruleset->load();
     _policy.setRuleSet(ruleset);
   }
 
@@ -616,7 +617,7 @@ namespace usbguard
 
     const uint32_t id = _policy.upsertRule(match_rule, new_rule, parent_insensitive);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -657,7 +658,7 @@ namespace usbguard
 
     const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -670,14 +671,14 @@ namespace usbguard
     
     _policy.removeRule(id);
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.getRuleSet()->save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
   }
 
-  const RuleSet Daemon::listRules(const std::string& query)
+  const std::shared_ptr<RuleSet> Daemon::listRules(const std::string& query)
   {
     USBGUARD_LOG(Trace) << "entry: query=" << query; 
-    return (*_policy.getRuleSet());
+    return _policy.getRuleSet();
   }
 
   uint32_t Daemon::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)

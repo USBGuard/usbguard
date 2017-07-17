@@ -21,9 +21,10 @@
   #include <build-config.h>
 #endif
 
+#include "../RuleSet.hpp"
+
 #include "usbguard/Device.hpp"
 #include "usbguard/DeviceManager.hpp"
-#include "usbguard/RuleSet.hpp"
 #include "usbguard/Typedefs.hpp"
 
 #include <map>

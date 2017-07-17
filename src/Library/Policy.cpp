@@ -21,7 +21,7 @@
   #include <build-config.h>
 #endif
 
-#include "usbguard/Policy.hpp"
+#include "Policy.hpp"
 #include "usbguard/Exception.hpp"
 
 namespace usbguard

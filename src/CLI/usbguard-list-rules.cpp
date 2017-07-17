@@ -71,7 +71,7 @@ namespace usbguard
     }
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    RuleSet ruleset = ipc.listRules();
+    auto ruleset = ipc.listRules();
 
     // if true, devices which are affected by rule are printed on stdout.
     if (!show_devices) {
