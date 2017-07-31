@@ -88,7 +88,7 @@ if [ $? -ne 0 ]; then
   exit 77
 fi
 
-schedule "${USBGUARD_DAEMON} -d -k -c $config_path" :service:sudo
+schedule "${USBGUARD_DAEMON} -d -P -k -c $config_path" :service:sudo
 schedule "test_cli_devices"
 execute 60
 retval=$?
