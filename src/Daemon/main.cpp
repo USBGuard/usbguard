@@ -39,7 +39,7 @@ static void setupCapabilities(void);
 
 using namespace usbguard;
 
-const char * const G_optstring = "dskKl:p:c:hWC";
+const char * const G_optstring = "dskKl:p:c:hWCP";
 
 static void printUsage(std::ostream& stream, const char *arg0)
 {
@@ -53,6 +53,7 @@ static void printUsage(std::ostream& stream, const char *arg0)
   stream << "  -l <path>  Log to a file at `path'." << std::endl;
   stream << "  -p <path>  Write PID to a file at `path'." << std::endl;
   stream << "  -c <path>  Load configuration from a file at `path'." << std::endl;
+  stream << "  -P         Disable permissions check on conf and policy files" << std::endl;
   stream << "             (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
   stream << "  -C         Drop capabilities to limit privileges of the process." << std::endl;
   stream << "  -W         Use a seccomp whitelist to limit available syscalls to the process." << std::endl;
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
   bool log_file = false;
   bool use_seccomp_whitelist = false;
   bool drop_capabilities = false;
+  bool check_permissions = true;
   std::string log_file_path;
   std::string pid_file;
   std::string conf_file = "/etc/usbguard/usbguard-daemon.conf";
@@ -96,6 +98,10 @@ int main(int argc, char *argv[])
       case 'p':
 	pid_file = std::string(optarg);
 	break;
+      case 'P':
+  USBGUARD_LOG(Warning) << "PERMISSIONS CHECK ON POLICY FILE ARE TURNED OFF!";
+  check_permissions = false;
+  break;
       case 'c':
 	conf_file = std::string(optarg);
 	break;
@@ -146,7 +152,7 @@ int main(int argc, char *argv[])
   try {
     usbguard::Daemon daemon;
     if (!conf_file.empty()) {
-      daemon.loadConfiguration(conf_file);
+      daemon.loadConfiguration(conf_file, check_permissions);
     }
     daemon.run();
     ret = EXIT_SUCCESS;
