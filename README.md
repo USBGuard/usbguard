@@ -15,6 +15,7 @@
     - [Fedora Linux, RHEL or CentOS](#fedora-linux-rhel-or-centos)
     - [Gentoo](#gentoo)
     - [Arch Linux](#arch-linux)
+    - [Debian](#debian)
     - [Usage](#usage)
   - [Rule Language](#rule-language)
     - [Targets](#targets)
@@ -127,6 +128,10 @@ For Gentoo you can use the [stuge overlay](https://github.com/das-labor/labor-ov
 For Arch Linux there are two packages in AUR:
 - regular releases: [usbguard](https://aur.archlinux.org/packages/usbguard/)
 - latest commit: [usbguard-git](https://aur.archlinux.org/packages/usbguard-git/)
+
+### Debian
+
+For Debian, a package is available in the stable distribution: [usbguard](https://packages.debian.org/stable/utils/usbguard).
 
 ### Usage
 
