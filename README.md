@@ -16,6 +16,9 @@
     - [Gentoo](#gentoo)
     - [Arch Linux](#arch-linux)
     - [Debian](#debian)
+    - [Ubuntu](#ubuntu)
+      - [16.04 (LTS)](#1604-lts)
+      - [16.10](#1610)
     - [Usage](#usage)
   - [Rule Language](#rule-language)
     - [Targets](#targets)
@@ -132,6 +135,31 @@ For Arch Linux there are two packages in AUR:
 ### Debian
 
 For Debian, a package is available in the stable distribution: [usbguard](https://packages.debian.org/stable/utils/usbguard).
+
+### Ubuntu
+
+#### 16.04 (LTS)
+
+There is no package for Ubuntu 16.04 (Xenial), so you need to compile it:
+
+```bash
+sudo apt install libgcrypt11-dev protobuf-compiler libprotobuf-dev libdbus-1-dev libdbus-glib-1-dev \
+                 libpolkit-gobject-1-dev libqt4-dev libseccomp-dev xsltproc libtool libqb-dev \
+                 libxml2-utils dh-autoreconf
+
+git clone https://github.com/dkopecek/usbguard
+cd usbguard
+
+./autogen.sh
+./configure --prefix=/usr --sysconfdir=/etc --with-bundled-catch --with-bundled-pegtl \
+            --with-crypto-library=gcrypt --with-gui-qt=qt4 --enable-systemd
+make
+sudo make install
+```
+
+#### 16.10
+
+For Ubuntu 16.10 (Yakkety), a package is available: [usbguard](https://packages.ubuntu.com/yakkety/usbguard).
 
 ### Usage
 
