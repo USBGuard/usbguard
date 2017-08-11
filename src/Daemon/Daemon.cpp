@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Jiri Vymazal   <jvymazal@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
@@ -39,6 +40,7 @@
 #include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
+#include <stdio.h>
 
 namespace usbguard
 {
@@ -69,6 +71,8 @@ namespace usbguard
     { "keep", Daemon::DevicePolicyMethod::Keep },
     { "apply-policy", Daemon::DevicePolicyMethod::ApplyPolicy }
   };
+
+  static int pid_fd = -1;
 
   Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const std::string& policy_string)
   {
@@ -451,6 +455,10 @@ namespace usbguard
       }
     } while(!exit_loop);
 
+    if (pid_fd != -1) {
+        lockf(pid_fd, F_ULOCK, 0);
+        close(pid_fd);
+    }
     IPCServer::stop();
     _dm->stop();
     USBGUARD_LOG(Trace) << "Leaving main loop.";
@@ -458,6 +466,64 @@ namespace usbguard
 
   void Daemon::quit()
   {
+  }
+
+  void Daemon::daemonize(const std::string &pid_file)
+  {
+      pid_t pid = 0;
+      int fd;
+
+      pid = fork();
+      if (pid < 0) {
+          USBGUARD_LOG(Error) << "Fork failed with " << pid << ", exiting.";
+          exit(EXIT_FAILURE);
+      }
+      if (pid > 0) {
+          exit(EXIT_SUCCESS);
+      }
+
+      /* Now we are forked */
+      if (setsid() < 0) {
+          exit(EXIT_FAILURE);
+      }
+      signal(SIGCHLD, SIG_IGN);
+
+
+      pid = fork();
+      if (pid < 0) {
+          USBGUARD_LOG(Error) << "Fork failed with " << pid << ", exiting.";
+          exit(EXIT_FAILURE);
+      }
+      if (pid > 0) {
+          exit(EXIT_SUCCESS);
+      }
+
+      /* Now we are forked 2nd time */
+      umask(0);
+      chdir("/");
+      for (fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--) {
+              close(fd);
+      }
+      stdin = fopen("/dev/null", "r");
+      stdout = fopen("/dev/null", "w+");
+      stderr = fopen("/dev/null", "w+");
+
+      pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640);
+      if (pid_fd < 0) {
+          USBGUARD_LOG(Error) << "Could not open PID file, exiting.";
+          exit(EXIT_FAILURE);
+      }
+      if (lockf(pid_fd, F_TLOCK, 0) < 0) {
+          USBGUARD_LOG(Error) << "Could not lock PID file, exiting.";
+          exit(EXIT_FAILURE);
+      }
+      pid = getpid();
+      char pid_str[16]; /* enough for maximum PID in string form */
+      int len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid));
+      if (len < 1) {
+          exit(EXIT_FAILURE);
+      }
+      write(pid_fd, pid_str, len);
   }
 
   uint32_t Daemon::assignID()

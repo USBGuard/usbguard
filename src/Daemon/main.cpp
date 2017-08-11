@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Jiri Vymazal   <jvymazal@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
@@ -37,9 +38,13 @@
 static void setupCapabilities(void);
 #endif
 
+#ifndef PID_FILE
+#define PID_FILE "/var/run/usbguard.pid"
+#endif
+
 using namespace usbguard;
 
-const char * const G_optstring = "dskKl:p:c:hWCP";
+const char * const G_optstring = "dfskKl:p:c:hWCP";
 
 static void printUsage(std::ostream& stream, const char *arg0)
 {
@@ -47,6 +52,7 @@ static void printUsage(std::ostream& stream, const char *arg0)
   stream << "Usage: " << filenameFromPath(std::string(arg0), true) << " [OPTIONS]" << std::endl;
   stream << std::endl;
   stream << "  -d         Enable debugging messages in the log." << std::endl;
+  stream << "  -f         Enable classical deamon forking behavior." << std::endl;
   stream << "  -s         Log to syslog." << std::endl;
   stream << "  -k         Log to console." << std::endl;
   stream << "  -K         Disable Logging to console." << std::endl;
@@ -71,8 +77,9 @@ int main(int argc, char *argv[])
   bool use_seccomp_whitelist = false;
   bool drop_capabilities = false;
   bool check_permissions = true;
+  bool daemonize = false;
   std::string log_file_path;
-  std::string pid_file;
+  std::string pid_file = PID_FILE;
   std::string conf_file = "/etc/usbguard/usbguard-daemon.conf";
   int opt;
 
@@ -82,6 +89,9 @@ int main(int argc, char *argv[])
       case 'd':
 	debug_mode = true;
 	break;
+      case 'f':
+    daemonize = true;
+    break;
       case 's':
 	log_syslog = true;
 	break;
@@ -153,6 +163,9 @@ int main(int argc, char *argv[])
     usbguard::Daemon daemon;
     if (!conf_file.empty()) {
       daemon.loadConfiguration(conf_file, check_permissions);
+    }
+    if (daemonize) {
+        daemon.daemonize(pid_file);
     }
     daemon.run();
     ret = EXIT_SUCCESS;
