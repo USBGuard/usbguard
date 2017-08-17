@@ -5,6 +5,7 @@ Documentation=man:usbguard-daemon(8)
 
 [Service]
 Type=forking
+Pidfile=/var/run/usbguard.pid
 ExecStart=%sbindir%/usbguard-daemon -f -k -c %sysconfdir%/usbguard/usbguard-daemon.conf
 Restart=on-failure
 

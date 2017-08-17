@@ -41,25 +41,6 @@
 namespace usbguard
 {
   /**
-   * Create a background process.
-   *
-   * Performs the following actions:
-   * 1) fork a new process (parent process exists with 0)
-   * 2) chdir to /
-   * 3) creates a new process session
-   * 4) resets umask
-   * 5) closes all file descriptors
-   * 6) Reinitialize logging for the child
-   */
-  void daemonize(void);
-
-  /**
-   * Writes the current PID to a file at filepath.
-   * Returns true on success, otherwise returns false.
-   */
-  bool writePID(const std::string& filepath);
-
-  /**
    * Wrappers for the __builtin_expect function.
    */
 #if defined(__GNUC__)

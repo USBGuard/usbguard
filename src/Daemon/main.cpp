@@ -52,7 +52,7 @@ static void printUsage(std::ostream& stream, const char *arg0)
   stream << "Usage: " << filenameFromPath(std::string(arg0), true) << " [OPTIONS]" << std::endl;
   stream << std::endl;
   stream << "  -d         Enable debugging messages in the log." << std::endl;
-  stream << "  -f         Enable classical deamon forking behavior." << std::endl;
+  stream << "  -f         Enable classical daemon forking behavior." << std::endl;
   stream << "  -s         Log to syslog." << std::endl;
   stream << "  -k         Log to console." << std::endl;
   stream << "  -K         Disable Logging to console." << std::endl;

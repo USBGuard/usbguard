@@ -42,56 +42,6 @@
 namespace usbguard
 {
 
-  void daemonize()
-  {
-    const ::pid_t pid = fork();
-
-    switch(pid) {
-    case  0: /* child */
-      break;
-    case -1: /* error */
-      ::exit(EXIT_FAILURE);
-    default: /* parent */
-      ::exit(EXIT_SUCCESS);
-    }
-    //
-    // Decouple from parent environment
-    // - chdir to /
-    // - create new process session
-    // - reset umask
-    // - cleanup file descriptors
-    // - ???
-    // - consider using libdaemon
-    //
-    if (::chdir("/") != 0) {
-      ::exit(EXIT_FAILURE);
-    }
-    const ::pid_t sid = ::setsid();
-    if (sid != 0) {
-      ::exit(EXIT_FAILURE);
-    }
-    ::umask(::umask(077)|022);
-    struct rlimit rlim;
-    if (::getrlimit(RLIMIT_NOFILE, &rlim) != 0) {
-      ::exit(EXIT_FAILURE);
-    }
-    const int maxfd = (rlim.rlim_max == RLIM_INFINITY ? 1024 : rlim.rlim_max);
-    for (int fd = 0; fd < maxfd; ++fd) {
-      ::close(fd);
-    }
-    return;
-  }
-
-  bool writePID(const std::string& filepath)
-  {
-    std::ofstream pidstream(filepath, std::ios_base::trunc);
-    if (!pidstream) {
-      return false;
-    }
-    pidstream << numberToString(getpid()) << std::endl;
-    return true;
-  }
-
   static void runCommandExecChild(const std::string& path, const std::vector<std::string>& args)
   {
     struct rlimit rlim;

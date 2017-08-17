@@ -72,7 +72,7 @@ namespace usbguard
     { "apply-policy", Daemon::DevicePolicyMethod::ApplyPolicy }
   };
 
-  static int pid_fd = -1;
+  static int Daemon::pid_fd = -1;
 
   Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const std::string& policy_string)
   {
@@ -473,57 +473,36 @@ namespace usbguard
       pid_t pid = 0;
       int fd;
 
-      pid = fork();
-      if (pid < 0) {
-          USBGUARD_LOG(Error) << "Fork failed with " << pid << ", exiting.";
-          exit(EXIT_FAILURE);
-      }
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
           exit(EXIT_SUCCESS);
       }
 
       /* Now we are forked */
-      if (setsid() < 0) {
-          exit(EXIT_FAILURE);
-      }
+      USBGUARD_SYSCALL_THROW("Daemonize", setsid() < 0);
       signal(SIGCHLD, SIG_IGN);
 
 
-      pid = fork();
-      if (pid < 0) {
-          USBGUARD_LOG(Error) << "Fork failed with " << pid << ", exiting.";
-          exit(EXIT_FAILURE);
-      }
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
           exit(EXIT_SUCCESS);
       }
 
       /* Now we are forked 2nd time */
-      umask(0);
+      umask(0047);  /* no need for world-accessible or executable files */ 
       chdir("/");
-      for (fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--) {
-              close(fd);
-      }
+      /* We do not need to close all fds because there is only logging open at this point */
       stdin = fopen("/dev/null", "r");
       stdout = fopen("/dev/null", "w+");
       stderr = fopen("/dev/null", "w+");
 
-      pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640);
-      if (pid_fd < 0) {
-          USBGUARD_LOG(Error) << "Could not open PID file, exiting.";
-          exit(EXIT_FAILURE);
-      }
-      if (lockf(pid_fd, F_TLOCK, 0) < 0) {
-          USBGUARD_LOG(Error) << "Could not lock PID file, exiting.";
-          exit(EXIT_FAILURE);
-      }
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
+      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
       pid = getpid();
       char pid_str[16]; /* enough for maximum PID in string form */
-      int len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid));
-      if (len < 1) {
-          exit(EXIT_FAILURE);
-      }
-      write(pid_fd, pid_str, len);
+      int len;
+      USBGUARD_SYSCALL_THROW("Daemonize", (len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid))) < 1);
+      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str, len) < 1);
   }
 
   uint32_t Daemon::assignID()
