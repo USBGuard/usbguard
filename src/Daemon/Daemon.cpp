@@ -72,8 +72,6 @@ namespace usbguard
     { "apply-policy", Daemon::DevicePolicyMethod::ApplyPolicy }
   };
 
-  static int Daemon::pid_fd = -1;
-
   Daemon::DevicePolicyMethod Daemon::devicePolicyMethodFromString(const std::string& policy_string)
   {
     for (auto device_policy_method_string : device_policy_method_strings) {
@@ -468,10 +466,11 @@ namespace usbguard
   {
   }
 
+  pid_t Daemon::pid_fd = -1;
+
   void Daemon::daemonize(const std::string &pid_file)
   {
       pid_t pid = 0;
-      int fd;
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
