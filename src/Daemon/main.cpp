@@ -165,7 +165,11 @@ int main(int argc, char *argv[])
       daemon.loadConfiguration(conf_file, check_permissions);
     }
     if (daemonize) {
-        daemon.daemonize(pid_file);
+      if (log_console && !log_syslog && !log_file) {
+        USBGUARD_LOG(Warning) << "You have selected to fork and log only to \
+            console, nothing will be logged after forking!";
+      }
+      daemon.daemonize(pid_file);
     }
     daemon.run();
     ret = EXIT_SUCCESS;

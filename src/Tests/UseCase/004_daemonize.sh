@@ -27,22 +27,29 @@ export USBGUARD_TESTLIB_TMPDIR="$(mktemp -d --tmpdir usbguard-test.XXXXXX)"
 
 export config_path="${USBGUARD_TESTLIB_TMPDIR}/daemon.conf"
 export pidfile_path="${USBGUARD_TESTLIB_TMPDIR}/usbguard.pid"
+export logfile="${USBGUARD_TESTLIB_TMPDIR}/daemon.log"
 
 function test_cli_daemonize()
 {
-  sleep 10
+  sleep 5
 
-  if [ -f $pidfile_path ] then
+  if [ ! -f "$pidfile_path" ]; then
     echo "Test error: PID file for usbguard not present"
     exit 1
   fi
 
-  if [ (pgrep usbguard) == (cat $pidfile_path) ]; then
+  if [ ! `pgrep usbguard` == `cat $pidfile_path` ]; then
     echo "Test error: PID of usbguard daemon not present in PID file"
     exit 1
   fi
 }
 
-schedule "${USBGUARD_DAEMON} -f -p $pidfile_path -d -k -P -c $config_path" :service
+cat > "$config_path" <<EOF
+EOF
+
+schedule "${USBGUARD_DAEMON} -f -p $pidfile_path -d -P -l $logfile -c $config_path" :service
 schedule "test_cli_daemonize"
-execute
+execute 20
+retval=$?
+cat $pidfile_path | xargs kill -9
+exit $retval

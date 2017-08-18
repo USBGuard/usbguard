@@ -70,7 +70,8 @@ TESTS+=\
 	UseCase/000_executable.sh \
 	UseCase/001_cli_policy.sh \
 	UseCase/002_cli_devices.sh \
-	UseCase/003_cli_devices_dummy.sh
+	UseCase/003_cli_devices_dummy.sh \
+	UseCase/004_daemonize.sh
 endif
 
 check_PROGRAMS=\

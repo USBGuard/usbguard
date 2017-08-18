@@ -470,11 +470,14 @@ namespace usbguard
 
   void Daemon::daemonize(const std::string &pid_file)
   {
+      USBGUARD_LOG(Trace) << "Starting daemonization";
+
       pid_t pid = 0;
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
-          exit(EXIT_SUCCESS);
+        usleep(2500); /* We need to die AFTER pidfile is written to... */
+        exit(EXIT_SUCCESS);
       }
 
       /* Now we are forked */
@@ -484,16 +487,18 @@ namespace usbguard
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
-          exit(EXIT_SUCCESS);
+        exit(EXIT_SUCCESS);
       }
 
       /* Now we are forked 2nd time */
       umask(0047);  /* no need for world-accessible or executable files */ 
       chdir("/");
+      const int std_fds[] = {STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
       /* We do not need to close all fds because there is only logging open at this point */
-      stdin = fopen("/dev/null", "r");
-      stdout = fopen("/dev/null", "w+");
-      stderr = fopen("/dev/null", "w+");
+      for (auto fd : std_fds) {
+        close(fd);
+        fd = open("/dev/null", O_RDWR);
+      }
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
       USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
@@ -501,7 +506,7 @@ namespace usbguard
       char pid_str[16]; /* enough for maximum PID in string form */
       int len;
       USBGUARD_SYSCALL_THROW("Daemonize", (len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid))) < 1);
-      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str, len) < 1);
+      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str, len) < len);
   }
 
   uint32_t Daemon::assignID()
