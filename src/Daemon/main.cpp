@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 	debug_mode = true;
 	break;
       case 'f':
-    daemonize = true;
-    break;
+        daemonize = true;
+        break;
       case 's':
 	log_syslog = true;
 	break;
