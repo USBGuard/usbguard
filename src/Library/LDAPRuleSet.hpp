@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,32 +25,22 @@
 #include "usbguard/Rule.hpp"
 #include "RuleSet.hpp"
 
-#include <istream>
-#include <ostream>
-#include <mutex>
+#include "LDAPHandler.hpp"
 
 namespace usbguard
 {
   class Interface;
-  class DLL_PUBLIC FileRuleSet : public RuleSetAbstract
+  class DLL_PUBLIC LDAPRuleSet : public RuleSetAbstract
   {
   public:
-    FileRuleSet(Interface* const interface_ptr, std::string const path);
-    FileRuleSet(const FileRuleSet& rhs);
-    const FileRuleSet& operator=(const FileRuleSet& rhs);
+    LDAPRuleSet(Interface* const interface_ptr, std::shared_ptr<LDAPHandler> ldap);
+    LDAPRuleSet(const LDAPRuleSet& rhs);
+    const LDAPRuleSet& operator=(const LDAPRuleSet& rhs);
 
     void load() override;
     void save() override;
-
-    void load(const std::string& path);
-    void load(std::istream& stream);
-    void save(const std::string& path) const;
-    void save(std::ostream& stream) const;
-
-    void setRulesPath(const std::string& path);
-
   private:
-    std::string _rulesPath;
+    std::shared_ptr<LDAPHandler> LDAP;
   };
 } /* namespace usbguard */
 

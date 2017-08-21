@@ -33,9 +33,13 @@
 namespace usbguard
 {
 
-  RuleSet::RuleSet(Interface * const interface_ptr)
+  RuleSet::RuleSet(Interface* const interface_ptr)
     : _interface_ptr(interface_ptr)
   {
+    clearWritable();
+    _default_target = Rule::Target::Block;
+    _default_action = std::string();
+    _id_next = Rule::RootID + 1;
   }
 
   RuleSet::RuleSet(const RuleSet& rhs)
@@ -218,6 +222,47 @@ namespace usbguard
   uint32_t RuleSet::assignID()
   {
     return _id_next++;
+  }
+
+  void RuleSet::setWritable()
+  {
+    _writable = true;
+  }
+
+  void RuleSet::clearWritable()
+  {
+    _writable = false;
+  }
+
+  bool RuleSet::isWritable()
+  {
+    return _writable;
+  }
+
+  void RuleSet::load()
+  {
+    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be loaded";
+  }
+
+  void RuleSet::save()
+  {
+    if (!isWritable()) {
+      USBGUARD_LOG(Info) << "RuleSet is not writable";
+      return;
+    }
+
+    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be saved";
+  }
+
+  void RuleSet::serialize(std::ostream& stream) const
+  {
+    std::unique_lock<std::mutex> io_lock(_io_mutex);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
+    for (auto const& rule : _rules) {
+      std::string rule_string = rule->toString();
+      stream << rule_string << std::endl;
+    }
   }
 } /* namespace usbguard */
 

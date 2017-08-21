@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -24,7 +25,7 @@
 #include "usbguard/DeviceManager.hpp"
 #include "usbguard/DeviceManagerHooks.hpp"
 
-#include "../FileRuleSet.hpp"
+#include "../RuleSet.hpp"
 
 namespace usbguard
 {
@@ -40,14 +41,14 @@ namespace usbguard
     void setExplicitCatchAllRule(bool state, Rule::Target target = Rule::Target::Block);
 
     void generate();
-    const std::shared_ptr<FileRuleSet> refRuleSet() const;
+    const std::shared_ptr<RuleSet> refRuleSet() const;
 
     void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device) override;
     uint32_t dmHookAssignID() override;
     void dmHookDeviceException(const std::string& message) override;
 
   private:
-    std::shared_ptr<FileRuleSet> _ruleset;
+    std::shared_ptr<RuleSet> _ruleset;
     std::shared_ptr<DeviceManager> _dm;
 
     bool _with_hash;

@@ -1,0 +1,75 @@
+attributetype ( 1.3.6.1.4.1.15955.9.1.1
+  NAME 'RuleType'
+  DESC 'Hostname for USBGuard host'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.2
+  NAME 'USBGuardHost'
+  DESC 'Hostname for USBGuard host'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.3
+  NAME 'DeviceID'
+  DESC 'USB device ID'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.4
+  NAME 'DeviceSerial'
+  DESC 'USB device Serial'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.5
+  NAME 'DeviceName'
+  DESC 'USB device Name'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.6
+  NAME 'DeviceHash'
+  DESC 'USB device hash'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.7
+  NAME 'DeviceParentHash'
+  DESC 'USB device ParentHash'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.8
+  NAME 'DeviceViaPort'
+  DESC 'USB device ViaPort'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.9
+  NAME 'DeviceWithInterface'
+  DESC 'USB device With-Interface'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.15955.9.1.10
+  NAME 'RuleCondition'
+  DESC 'Condition'
+  EQUALITY caseExactIA5Match
+  SUBSTR caseExactIA5SubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+objectclass ( 1.3.6.1.4.1.15955.9.1.1 NAME 'USBGuardPolicy' SUP top STRUCTURAL
+  DESC 'USBGuard Policy'
+  MUST ( cn $ RuleType )
+  MAY  ( USBGuardHost $ DeviceID $ DeviceSerial $ DeviceName $ DeviceHash $ DeviceParentHash $ DeviceViaPort $ DeviceWithInterface $ RuleCondition $ description )
+  )
