@@ -494,7 +494,8 @@ namespace usbguard
       umask(0047);  /* no need for world-accessible or executable files */ 
       chdir("/");
       const int std_fds[] = {STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
-      int fd_null = open("/dev/null", O_RDWR);
+      int fd_null;
+      USBGUARD_SYSCALL_THROW("Daemonize", (fd_null = open("/dev/null", O_RDWR)) < 0);
       /* We do not need to close all fds because there is only logging open at this point */
       for (auto fd : std_fds) {
         USBGUARD_SYSCALL_THROW("Daemonize", close(fd));
