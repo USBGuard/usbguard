@@ -473,17 +473,27 @@ namespace usbguard
       USBGUARD_LOG(Trace) << "Starting daemonization";
 
       pid_t pid = 0;
+      pid_t original_pid = getpid();
 
+      sigset_t mask;
+      sigemptyset(&mask);
+      sigaddset(&mask, SIGUSR1);
+      sigprocmask(SIG_BLOCK, &mask, NULL);
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
-        usleep(2500); /* We need to die AFTER pidfile is written to... */
+        const struct timespec timeout {5,0};
+	siginfo_t info;
+	const int signum = sigtimedwait(&mask, &info, &timeout);
+	if (signum != SIGUSR1 || info.si_signo != SIGUSR1 || info.si_errno) {
+          throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
+	}
+        USBGUARD_LOG(Trace) << "Finished daemonization";
         exit(EXIT_SUCCESS);
       }
 
       /* Now we are forked */
       USBGUARD_SYSCALL_THROW("Daemonize", setsid() < 0);
       signal(SIGCHLD, SIG_IGN);
-
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
@@ -509,6 +519,7 @@ namespace usbguard
       int len;
       USBGUARD_SYSCALL_THROW("Daemonize", (len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid))) < 1);
       USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str, len) < len);
+      kill(original_pid, SIGUSR1);
   }
 
   uint32_t Daemon::assignID()

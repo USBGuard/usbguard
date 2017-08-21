@@ -38,8 +38,8 @@
 static void setupCapabilities(void);
 #endif
 
-#ifndef PID_FILE
-#define PID_FILE "/var/run/usbguard.pid"
+#ifndef USBGUARD_PID_FILE
+#define USBGUARD_PID_FILE "/var/run/usbguard.pid"
 #endif
 
 using namespace usbguard;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   bool check_permissions = true;
   bool daemonize = false;
   std::string log_file_path;
-  std::string pid_file = PID_FILE;
+  std::string pid_file = USBGUARD_PID_FILE;
   std::string conf_file = "/etc/usbguard/usbguard-daemon.conf";
   int opt;
 
