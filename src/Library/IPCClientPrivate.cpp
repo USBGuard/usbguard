@@ -23,7 +23,7 @@
 
 #include "IPCClientPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "FileRuleSet.hpp"
+#include "RuleSet.hpp"
 
 #include "usbguard/Logger.hpp"
 
@@ -239,7 +239,7 @@ namespace usbguard
 
     qb_ipcc_sendv(_qb_conn, iov, 2);
 
-    /* 
+    /*
      * Unlock the return value map so that the message
      * processing handler aren't blocked.
      */
@@ -410,7 +410,7 @@ namespace usbguard
     const Rule::Target default_target = \
       Rule::targetFromInteger(message_in->response().default_target());
 
-    auto rule_set = std::make_shared<FileRuleSet>(&_p_instance);
+    auto rule_set = std::make_shared<RuleSet>(&_p_instance);
     rule_set->setDefaultTarget(default_target);
 
     for (auto rule_message : message_in->response().rules()) {

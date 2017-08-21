@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include <string>
@@ -27,11 +27,15 @@
 #include "usbguard/Typedefs.hpp"
 #include "../RuleSet.hpp"
 
+#include "../LDAPHandler.hpp"
+
 #include <pegtl.hh>
 
-namespace usbguard {
+namespace usbguard
+{
 
-  namespace NSSwitchParser {
+  namespace NSSwitchParser
+  {
 
     struct blanked
       : pegtl::star< pegtl::blank > {};
@@ -50,52 +54,59 @@ namespace usbguard {
       : pegtl::nothing< Rule > {};
 
     template<>
-    struct action< value >
-    {
-       template < typename Input >
-       static void apply(const Input & in, std::string & str )
-       {
-          std::locale loc;
-          str = in.string();
-          for (unsigned i = 0; i < str.length(); ++i)
-          {
-             str[i] = std::tolower(str[i], loc);
-          }
-       }
+    struct action< value > {
+      template < typename Input >
+      static void apply(const Input& in, std::string& str )
+      {
+        str = in.string();
+
+        for (unsigned i = 0; i < str.length(); ++i) {
+          str[i] = std::tolower(str[i], std::locale::classic());
+        }
+      }
     };
   }
 
   class Interface;
   class DLL_PUBLIC NSHandler
-    {
-      public:
+  {
+  public:
 
-        enum class SourceType
-        {
-          LOCAL,
-          LDAP,
-          SSSD
-        };
-
-      NSHandler();
-
-      void setRulesPath(const std::string& path);
-      std::shared_ptr<RuleSet> getRuleSet(Interface * const interface_ptr);
-      void parseNSSwitch();
-
-      void setNSSwitchPath(const std::string& path);
-      void setPropertyName(const std::string& name);
-
-    private:
-      std::string _prop_name;
-      std::string _nsswitch_path;
-      unsigned _num_possible_values;
-      std::vector<std::string> _possible_values;
-
-      SourceType _source;
-
-      std::string _rulesPath;
+    enum class SourceType {
+      LOCAL,
+      LDAP,
+      SSSD
     };
-}
+
+    NSHandler();
+    ~NSHandler();
+
+    void setRulesPath(const std::string& path);
+    std::shared_ptr<RuleSet> getRuleSet(Interface* const interface_ptr);
+    void parseNSSwitch();
+
+    void setNSSwitchPath(const std::string& path);
+    void setPropertyName(const std::string& name);
+
+    std::string getSourceInfo();
+
+  private:
+    std::shared_ptr<RuleSet> generateMEMRuleSet(Interface* const interface_ptr);
+    std::shared_ptr<RuleSet> generateLOCAL(Interface* const interface_ptr);
+    std::shared_ptr<RuleSet> generateLDAP(Interface* const interface_ptr);
+    std::shared_ptr<RuleSet> generateSSSD(Interface* const interface_ptr);
+
+    std::string _prop_name;
+    std::string _nsswitch_path;
+    unsigned _num_possible_values;
+    std::vector<std::string> _possible_values;
+
+    SourceType _source;
+
+    std::string _rulesPath;
+
+    std::shared_ptr<LDAPHandler> _ldap;
+  };
+} /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -15,9 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "PolicyGenerator.hpp"
@@ -27,7 +28,7 @@ namespace usbguard
 
   PolicyGenerator::PolicyGenerator()
   {
-    _ruleset = std::make_shared<FileRuleSet>(nullptr);
+    _ruleset = std::make_shared<RuleSet>(nullptr);
     _with_hash = true;
     _hash_only = false;
     _port_specific = false;
@@ -70,7 +71,7 @@ namespace usbguard
     }
   }
 
-  const std::shared_ptr<FileRuleSet> PolicyGenerator::refRuleSet() const
+  const std::shared_ptr<RuleSet> PolicyGenerator::refRuleSet() const
   {
     return _ruleset;
   }
@@ -91,6 +92,7 @@ namespace usbguard
     }
 
     bool port_specific = _port_specific;
+
     /*
      * If the the global "port specific" flag isn't
      * set, check the "no iSerial port specific" flag

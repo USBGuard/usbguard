@@ -132,21 +132,9 @@ namespace usbguard
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
       const std::string& rule_file = _config.getSettingValue("RuleFile");
-      try {
-        loadRules(rule_file);
-      }
-      catch(const RuleParserError& ex) {
-        throw Exception("Configuration", rule_file, ex.hint());
-      }
-      catch(const std::exception& ex) {
-        throw Exception("Configuration", rule_file, ex.what());
-      }
-      catch(...) {
-        throw Exception("Configuration", rule_file, "unknown exception");
-      }
-    } else {
-      USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
+      _nss.setRulesPath(rule_file);
     }
+    loadRules();
 
     /* ImplicitPolicyTarget */
     if (_config.hasSettingValue("ImplicitPolicyTarget")) {
@@ -178,7 +166,7 @@ namespace usbguard
 
     /* IPCAllowedUsers */
     if (_config.hasSettingValue("IPCAllowedUsers")) {
-      const std::string users_value = _config.getSettingValue("IPCAllowedUsers"); 
+      const std::string users_value = _config.getSettingValue("IPCAllowedUsers");
       std::vector<std::string> users;
       tokenizeString(users_value, users, " ", /*trim_empty=*/true);
       USBGUARD_LOG(Debug) << "Setting IPCAllowedUsers to { " << users_value << " }";
@@ -190,7 +178,7 @@ namespace usbguard
 
     /* IPCAllowedGroups */
     if (_config.hasSettingValue("IPCAllowedGroups")) {
-      const std::string groups_value =_config.getSettingValue("IPCAllowedGroups"); 
+      const std::string groups_value =_config.getSettingValue("IPCAllowedGroups");
       std::vector<std::string> groups;
       tokenizeString(groups_value, groups, " ", /*trim_empty=*/true);
       USBGUARD_LOG(Debug) << "Setting IPCAllowedGroups to { " << groups_value << " }";
@@ -255,13 +243,25 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const std::string& path)
+  void Daemon::loadRules()
   {
-    USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
+    USBGUARD_LOG(Info) << "Loading RuleSet";
 
-    _nss.setRulesPath(path);
     auto ruleset = _nss.getRuleSet(this);
-    ruleset->load();
+
+    try {
+        ruleset->load();
+    }
+    catch(const RuleParserError& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
+    }
+    catch(const std::exception& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.what());
+    }
+    catch(...) {
+      throw Exception("Rules", _nss.getSourceInfo(), "unknown exception");
+    }
+
     _policy.setRuleSet(ruleset);
   }
 
@@ -374,7 +374,7 @@ namespace usbguard
   void Daemon::run()
   {
     USBGUARD_LOG(Trace) << "Entering main loop";
-   
+
     _dm->start();
     _dm->scan();
     IPCServer::start();
@@ -504,7 +504,7 @@ namespace usbguard
 
   const std::shared_ptr<RuleSet> Daemon::listRules(const std::string& query)
   {
-    USBGUARD_LOG(Trace) << "entry: query=" << query; 
+    USBGUARD_LOG(Trace) << "entry: query=" << query;
     return _policy.getRuleSet();
   }
 
@@ -590,7 +590,7 @@ namespace usbguard
                              matched_rule->getTarget());
 
     const bool target_changed = target_old != device_post->getTarget();
- 
+
     if (target_changed || matched_rule->getRuleID() == Rule::ImplicitID) {
       if (target_changed) {
         USBGUARD_LOG(Debug) << "Device target changed:"
@@ -781,7 +781,7 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "match_spec=" << match_spec;
 
     /* Generate new device rule */
-    std::shared_ptr<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash); 
+    std::shared_ptr<Rule> device_rule = device->getDeviceRule(with_port, with_parent_hash);
     device_rule->setTarget(target);
     const std::string rule_spec = device_rule->toString();
 

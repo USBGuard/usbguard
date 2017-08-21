@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,36 +21,34 @@
   #include <build-config.h>
 #endif
 
-#include "usbguard/Typedefs.hpp"
-#include "usbguard/Rule.hpp"
-#include "RuleSet.hpp"
+#include <vector>
+#include <map>
 
-#include <istream>
-#include <ostream>
-#include <mutex>
+#include <usbguard/Rule.hpp>
+#include "../RuleSet.hpp"
 
 namespace usbguard
 {
-  class Interface;
-  class DLL_PUBLIC FileRuleSet : public RuleSetAbstract
+class DLL_PUBLIC LDAPUtil
   {
   public:
-    FileRuleSet(Interface* const interface_ptr, std::string const path);
-    FileRuleSet(const FileRuleSet& rhs);
-    const FileRuleSet& operator=(const FileRuleSet& rhs);
+    enum class LDAP_KEY_INDEX {
+        RuleType = 0,
+        USBGuardHost,
+        DeviceID,
+        DeviceSerial,
+        DeviceName,
+        DeviceHash,
+        DeviceParentHash,
+        DeviceViaPort,
+        DeviceWithInterface,
+        RuleCondition
+      };
+    static std::vector<std::string> _ldap_keys;
+    static std::vector<std::string> _rule_keys;
 
-    void load() override;
-    void save() override;
-
-    void load(const std::string& path);
-    void load(std::istream& stream);
-    void save(const std::string& path) const;
-    void save(std::ostream& stream) const;
-
-    void setRulesPath(const std::string& path);
-
-  private:
-    std::string _rulesPath;
+    static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string> &values, bool invalid);
+    static void serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream, std::map<std::string, std::string> &values);
   };
 } /* namespace usbguard */
 

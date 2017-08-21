@@ -61,11 +61,11 @@ namespace usbguard
     ~Daemon();
 
     void loadConfiguration(const std::string& path);
-    void loadRules(const std::string& path);
+    void loadRules();
     void loadIPCAccessControlFiles(const std::string& path);
     bool loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath);
     void checkIPCAccessControlName(const std::string& basename);
-    void parseIPCAccessControlFilename(const std::string& basename, std::string * const ptr_user, std::string * const ptr_group); 
+    void parseIPCAccessControlFilename(const std::string& basename, std::string * const ptr_user, std::string * const ptr_group);
 
     void setImplicitPolicyTarget(Rule::Target target);
     void setPresentDevicePolicyMethod(DevicePolicyMethod policy);

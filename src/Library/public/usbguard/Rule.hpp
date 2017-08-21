@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 
@@ -142,6 +143,11 @@ namespace usbguard {
         {
           _values.clear();
           _set_operator = SetOperator::Equals;
+        }
+
+        std::string getName() const
+        {
+            return _name;
         }
 
         const ValueType& get() const
@@ -469,7 +475,7 @@ namespace usbguard {
 
     RulePrivate* internal();
     const RulePrivate* internal() const;
-    
+
     /*** Static methods ***/
     static Rule fromString(const std::string& rule_string);
 
