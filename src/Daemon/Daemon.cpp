@@ -181,24 +181,9 @@ namespace usbguard
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
-      const std::string& rule_file = _config.getSettingValue("RuleFile");
-
-      try {
-        loadRules(rule_file, check_permissions);
-      }
-      catch (const RuleParserError& ex) {
-        throw Exception("Configuration", rule_file, ex.hint());
-      }
-      catch (const std::exception& ex) {
-        throw Exception("Configuration", rule_file, ex.what());
-      }
-      catch (...) {
-        throw Exception("Configuration", rule_file, "unknown exception");
-      }
+      _nss.setRulesPath(rule_file);
     }
-    else {
-      USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
-    }
+    loadRules(check_permissions);
 
     /* ImplicitPolicyTarget */
     if (_config.hasSettingValue("ImplicitPolicyTarget")) {
@@ -344,17 +329,29 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const std::string& path, const bool check_permissions)
+  void Daemon::loadRules(const bool check_permissions)
   {
-    USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
+    USBGUARD_LOG(Info) << "Loading RuleSet";
 
     if (check_permissions) {
       checkPermissions(path, (S_IRUSR | S_IWUSR));
     }
 
-    _nss.setRulesPath(path);
     auto ruleset = _nss.getRuleSet(this);
-    ruleset->load();
+
+    try {
+        ruleset->load();
+    }
+    catch(const RuleParserError& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
+    }
+    catch(const std::exception& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.what());
+    }
+    catch(...) {
+      throw Exception("Rules", _nss.getSourceInfo(), "unknown exception");
+    }
+
     _policy.setRuleSet(ruleset);
   }
 
@@ -677,7 +674,7 @@ namespace usbguard
 
   const std::shared_ptr<RuleSet> Daemon::listRules(const std::string& query)
   {
-    USBGUARD_LOG(Trace) << "entry: query=" << query; 
+    USBGUARD_LOG(Trace) << "entry: query=" << query;
     return _policy.getRuleSet();
   }
 

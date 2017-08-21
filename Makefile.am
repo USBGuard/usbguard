@@ -158,6 +158,7 @@ libusbguard_la_LDFLAGS=\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 
 libusbguard_la_LIBADD=\
+  @ldap_LIBS@ \
 	@qb_LIBS@ \
 	@protobuf_LIBS@ \
 	@crypto_LIBS@ \
@@ -198,6 +199,8 @@ libusbguard_la_SOURCES=\
 	src/Common/Thread.hpp \
 	src/Common/Utility.cpp \
 	src/Common/Utility.hpp \
+  src/Common/LDAPUtil.cpp \
+  src/Common/LDAPUtil.hpp \
 	src/Library/AllowedMatchesCondition.cpp \
 	src/Library/AllowedMatchesCondition.hpp \
 	src/Library/Base64.cpp \
@@ -219,6 +222,10 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCServerPrivate.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/Init.cpp \
+	src/Library/LDAPHandler.cpp \
+	src/Library/LDAPHandler.hpp \
+	src/Library/LDAPRuleSet.cpp \
+	src/Library/LDAPRuleSet.hpp \
 	src/Library/LocaltimeCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
 	src/Library/RuleSet.cpp \

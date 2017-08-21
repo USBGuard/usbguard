@@ -28,40 +28,62 @@
 #include <ostream>
 #include <mutex>
 
-namespace usbguard {
+namespace usbguard
+{
   class Interface;
   class DLL_PUBLIC RuleSet
   {
   public:
 
-    RuleSet(Interface * const interface_ptr);
+    RuleSet(Interface* const interface_ptr);
     RuleSet(const RuleSet& rhs);
     const RuleSet& operator=(const RuleSet& rhs);
 
-    virtual void load() = 0;
-    virtual void save() = 0;
+    virtual void load();
+    virtual void save();
 
-    virtual void setDefaultTarget(Rule::Target target);
-    virtual Rule::Target getDefaultTarget() const;
-    virtual void setDefaultAction(const std::string& action);
-    virtual uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
-    virtual uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
-    virtual std::shared_ptr<Rule> getRule(uint32_t id);
-    virtual bool removeRule(uint32_t id);
-    virtual std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
-    virtual std::vector<std::shared_ptr<const Rule>> getRules();
-    virtual uint32_t assignID(std::shared_ptr<Rule> rule);
-    virtual uint32_t assignID();
+    void serialize(std::ostream& stream) const;
+
+    void setDefaultTarget(Rule::Target target);
+    Rule::Target getDefaultTarget() const;
+    void setDefaultAction(const std::string& action);
+    uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
+    uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
+    std::shared_ptr<Rule> getRule(uint32_t id);
+    bool removeRule(uint32_t id);
+    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
+    std::vector<std::shared_ptr<const Rule>> getRules();
+    uint32_t assignID(std::shared_ptr<Rule> rule);
+    uint32_t assignID();
+
+    void setWritable();
+    void clearWritable();
+    bool isWritable();
 
   protected:
     mutable std::mutex _io_mutex; /* mutex for load/save */
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
-    Interface * const _interface_ptr;
+
+    bool _writable;
+
+    Interface* const _interface_ptr;
     Rule::Target _default_target;
     std::string _default_action;
     Atomic<uint32_t> _id_next;
     std::vector<std::shared_ptr<Rule>> _rules;
   };
-}
+
+  class RuleSetAbstract : public RuleSet
+  {
+  public:
+    RuleSetAbstract(Interface* const interface_ptr)
+      : RuleSet(interface_ptr) {};
+    RuleSetAbstract(const RuleSetAbstract& rhs)
+      : RuleSet(rhs._interface_ptr) {};
+
+    virtual void load() = 0;
+    virtual void save() = 0;
+  };
+} /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

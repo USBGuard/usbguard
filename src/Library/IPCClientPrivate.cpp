@@ -23,7 +23,7 @@
 
 #include "IPCClientPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "FileRuleSet.hpp"
+#include "RuleSet.hpp"
 
 #include "usbguard/Logger.hpp"
 

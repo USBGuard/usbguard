@@ -167,6 +167,10 @@ libqb_summary="system-wide; $qb_CFLAGS $qb_LIBS"],
 )
 
 #
+# ldap library
+#
+AC_SUBST(ldap_LIBS, [-lldap])
+#
 # sodium library
 #
 PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
@@ -429,7 +433,7 @@ esac
 AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
 if test "x$with_dbus" = xyes; then
   #
-  # Check for required D-Bus modules 
+  # Check for required D-Bus modules
   #
   PKG_CHECK_MODULES([dbus], [dbus-1 dbus-glib-1 >= 0.100 gio-2.0],
   [AC_DEFINE([HAVE_DBUS], [1], [Required GLib DBus API available])
@@ -783,4 +787,3 @@ echo "    LDFLAGS: $LDFLAGS"
 echo " ASAN_FLAGS: $ASAN_FLAGS"
 echo " TSAN_FLAGS: $TSAN_FLAGS"
 echo
-
