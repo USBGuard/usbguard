@@ -494,7 +494,7 @@ namespace usbguard
           if (signum == -1 && errno == EAGAIN) {
             break; /* timed out */
 	  }
-          timeout.tv_sec -= difftime(time(NULL), start); /* avoid potentially endless loop */
+          timeout.tv_sec = 5 - difftime(time(NULL), start); /* avoid potentially endless loop */
           continue;
         } while(true);
         throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
