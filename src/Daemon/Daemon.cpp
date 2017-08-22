@@ -114,6 +114,8 @@ namespace usbguard
 
     _device_rules_with_port = false;
     _restore_controller_device_state = false;
+
+    pid_fd = -1;
   }
 
   Daemon::~Daemon()
@@ -465,8 +467,6 @@ namespace usbguard
   void Daemon::quit()
   {
   }
-
-  pid_t Daemon::pid_fd = -1;
 
   void Daemon::daemonize(const std::string &pid_file)
   {

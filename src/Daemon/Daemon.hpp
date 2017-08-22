@@ -57,8 +57,6 @@ namespace usbguard
     Daemon();
     ~Daemon();
 
-    static int pid_fd;
-
     int checkPermissions(const std::string& path, const mode_t permissions);
     void loadConfiguration(const std::string& path, const bool check_permissions);
     void loadRules(const std::string& path, const bool check_permissions);
@@ -117,6 +115,8 @@ namespace usbguard
 
     ConfigFile _config;
     RuleSet _ruleset;
+
+    int pid_fd;
 
     std::string _device_manager_backend;
     std::shared_ptr<DeviceManager> _dm;
