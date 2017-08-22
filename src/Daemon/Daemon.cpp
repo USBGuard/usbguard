@@ -519,6 +519,7 @@ namespace usbguard
         USBGUARD_SYSCALL_THROW("Daemonize", close(fd));
         USBGUARD_SYSCALL_THROW("Daemonize", (dup2(fd_null, fd)) < 0);
       }
+      close(fd_null);
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
       USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
