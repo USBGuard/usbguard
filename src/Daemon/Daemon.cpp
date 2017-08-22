@@ -481,14 +481,23 @@ namespace usbguard
       sigprocmask(SIG_BLOCK, &mask, NULL);
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
-        const struct timespec timeout {5,0};
-	siginfo_t info;
-	const int signum = sigtimedwait(&mask, &info, &timeout);
-	if (signum != SIGUSR1 || info.si_signo != SIGUSR1 || info.si_errno) {
-          throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
-	}
-        USBGUARD_LOG(Trace) << "Finished daemonization";
-        exit(EXIT_SUCCESS);
+        struct timespec timeout {5,0};
+        const time_t start = time(NULL);
+	int signum;
+        siginfo_t info;
+        do {
+          signum = sigtimedwait(&mask, &info, &timeout);
+          if (signum == SIGUSR1 && info.si_signo == SIGUSR1) {
+            USBGUARD_LOG(Trace) << "Finished daemonization";
+            exit(EXIT_SUCCESS);
+          }
+          if (signum == -1 && errno == EAGAIN) {
+            break; /* timed out */
+	  }
+          timeout.tv_sec -= difftime(time(NULL), start); /* avoid potentially endless loop */
+          continue;
+        } while(true);
+        throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
       }
 
       /* Now we are forked */
