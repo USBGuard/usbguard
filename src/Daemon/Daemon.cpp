@@ -42,7 +42,6 @@
 #include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
-#include <stdio.h>
 
 namespace usbguard
 {
@@ -525,11 +524,8 @@ namespace usbguard
 
       USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
       USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
-      pid = getpid();
-      char pid_str[16]; /* enough for maximum PID in string form */
-      int len;
-      USBGUARD_SYSCALL_THROW("Daemonize", (len = snprintf(pid_str, 16, "%lld", static_cast<long long int>(pid))) < 1);
-      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str, len) < len);
+      std::string pid_str = std::to_string(getpid());
+      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str.c_str(), pid_str.size()) < static_cast<int>(pid_str.size()));
       kill(original_pid, SIGUSR1);
   }
 
