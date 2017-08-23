@@ -513,7 +513,7 @@ namespace usbguard
       /* Now we are forked 2nd time */
       umask(0047);  /* no need for world-accessible or executable files */ 
       chdir("/");
-      const std::array<int,3> std_fds {STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
+      const std::array<int,3> std_fds = {STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
       int fd_null;
       USBGUARD_SYSCALL_THROW("Daemonize", (fd_null = open("/dev/null", O_RDWR)) < 0);
       /* We do not need to close all fds because there is only logging open at this point */
