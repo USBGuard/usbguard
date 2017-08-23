@@ -488,7 +488,7 @@ namespace usbguard
         siginfo_t info;
         do {
           const int signum = sigtimedwait(&mask, &info, &timeout);
-          if (signum == SIGUSR1 && info.si_signo == SIGUSR1) {
+          if (signum == SIGUSR1 && info.si_signo == SIGUSR1 && info.si_pid == pid) {
             USBGUARD_LOG(Trace) << "Finished daemonization";
             exit(EXIT_SUCCESS);
           }
@@ -504,9 +504,20 @@ namespace usbguard
       USBGUARD_SYSCALL_THROW("Daemonize", setsid() < 0);
       signal(SIGCHLD, SIG_IGN);
 
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
+      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
       USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
       if (pid > 0) {
-        exit(EXIT_SUCCESS);
+        try {      
+          std::string pid_str = std::to_string(pid);
+          USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str.c_str(), pid_str.size()) != static_cast<ssize_t>(pid_str.size()));
+          kill(original_pid, SIGUSR1);
+          exit(EXIT_SUCCESS);
+        }
+        catch(...) {
+          kill(pid, SIGKILL);
+          throw;
+        }
       }
 
       /* Now we are forked 2nd time */
@@ -522,11 +533,7 @@ namespace usbguard
       }
       close(fd_null);
 
-      USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
-      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
-      std::string pid_str = std::to_string(getpid());
-      USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str.c_str(), pid_str.size()) != static_cast<ssize_t>(pid_str.size()));
-      kill(original_pid, SIGUSR1);
+      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_LOCK, 0)) < 0);
   }
 
   uint32_t Daemon::assignID()
