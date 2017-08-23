@@ -676,7 +676,7 @@ analyze-clang:
 	rm -rf "$(ANALYSIS_ROOT)"
 
 #
-# overriding check target to enable "make check" to preform build as well
+# overriding 'check' target to enable "make check" to perform build as well
 #
 check: all
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
