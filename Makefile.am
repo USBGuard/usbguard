@@ -15,6 +15,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 ## Authors: Daniel Kopecek <dkopecek@redhat.com>
+##          Jiri Vymazal   <jvymazal@redhat.com>
 ##
 SUBDIRS=src/Tests/
 
@@ -674,3 +675,8 @@ analyze-clang:
 	  make -j$(JOBS)
 	rm -rf "$(ANALYSIS_ROOT)"
 
+#
+# overriding 'check' target to enable "make check" to perform build as well
+#
+check: all
+	$(MAKE) $(AM_MAKEFLAGS) check-recursive

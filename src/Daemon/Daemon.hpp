@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Jiri Vymazal   <jvymazal@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -56,7 +57,6 @@ namespace usbguard
     Daemon();
     ~Daemon();
 
-
     int checkPermissions(const std::string& path, const mode_t permissions);
     void loadConfiguration(const std::string& path, const bool check_permissions);
     void loadRules(const std::string& path, const bool check_permissions);
@@ -74,6 +74,8 @@ namespace usbguard
     void run();
     /* Stop the daemon */
     void quit();
+    /* Handle process daemonization */
+    void daemonize(const std::string& pid_file);
 
     uint32_t assignID();
     uint32_t upsertRule(const std::string& match_spec, const std::string& rule_spec, bool parent_insensitive = false);
@@ -113,6 +115,8 @@ namespace usbguard
 
     ConfigFile _config;
     RuleSet _ruleset;
+
+    int pid_fd;
 
     std::string _device_manager_backend;
     std::shared_ptr<DeviceManager> _dm;

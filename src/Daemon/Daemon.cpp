@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Jiri Vymazal   <jvymazal@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
 #include <build-config.h>
@@ -26,6 +27,8 @@
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleParser.hpp"
 #include "usbguard/Audit.hpp"
+
+#include <array>
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -112,6 +115,8 @@ namespace usbguard
 
     _device_rules_with_port = false;
     _restore_controller_device_state = false;
+
+    pid_fd = -1;
   }
 
   Daemon::~Daemon()
@@ -451,6 +456,10 @@ namespace usbguard
       }
     } while(!exit_loop);
 
+    if (pid_fd != -1) {
+        lockf(pid_fd, F_ULOCK, 0);
+        close(pid_fd);
+    }
     IPCServer::stop();
     _dm->stop();
     USBGUARD_LOG(Trace) << "Leaving main loop.";
@@ -458,6 +467,73 @@ namespace usbguard
 
   void Daemon::quit()
   {
+  }
+
+  void Daemon::daemonize(const std::string &pid_file)
+  {
+      USBGUARD_LOG(Trace) << "Starting daemonization";
+
+      pid_t pid = 0;
+      pid_t original_pid = getpid();
+
+      sigset_t mask;
+      sigemptyset(&mask);
+      sigaddset(&mask, SIGUSR1);
+      sigprocmask(SIG_BLOCK, &mask, nullptr);
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
+      if (pid > 0) {
+        constexpr int timeout_val = 5;
+        struct timespec timeout {timeout_val,0};
+        const time_t start = time(nullptr);
+        siginfo_t info;
+        do {
+          const int signum = sigtimedwait(&mask, &info, &timeout);
+          if (signum == SIGUSR1 && info.si_signo == SIGUSR1 && info.si_pid == pid) {
+            USBGUARD_LOG(Trace) << "Finished daemonization";
+            exit(EXIT_SUCCESS);
+          }
+          if (signum == -1 && errno == EAGAIN) {
+            break; /* timed out */
+          }
+          timeout.tv_sec = timeout_val - difftime(time(nullptr), start); /* avoid potentially endless loop */
+        } while(true);
+        throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
+      }
+
+      /* Now we are forked */
+      USBGUARD_SYSCALL_THROW("Daemonize", setsid() < 0);
+      signal(SIGCHLD, SIG_IGN);
+
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid_fd = open(pid_file.c_str(), O_RDWR|O_CREAT, 0640)) < 0);
+      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_TLOCK, 0)) < 0);
+      USBGUARD_SYSCALL_THROW("Daemonize", (pid = fork()) < 0);
+      if (pid > 0) {
+        try {      
+          std::string pid_str = std::to_string(pid);
+          USBGUARD_SYSCALL_THROW("Daemonize", write(pid_fd, pid_str.c_str(), pid_str.size()) != static_cast<ssize_t>(pid_str.size()));
+          kill(original_pid, SIGUSR1);
+          exit(EXIT_SUCCESS);
+        }
+        catch(...) {
+          kill(pid, SIGKILL);
+          throw;
+        }
+      }
+
+      /* Now we are forked 2nd time */
+      umask(0047);  /* no need for world-accessible or executable files */ 
+      chdir("/");
+      const std::array<int,3> std_fds {{STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO}};
+      int fd_null;
+      USBGUARD_SYSCALL_THROW("Daemonize", (fd_null = open("/dev/null", O_RDWR)) < 0);
+      /* We do not need to close all fds because there is only logging open at this point */
+      for (auto fd : std_fds) {
+        USBGUARD_SYSCALL_THROW("Daemonize", close(fd));
+        USBGUARD_SYSCALL_THROW("Daemonize", (dup2(fd_null, fd)) < 0);
+      }
+      close(fd_null);
+
+      USBGUARD_SYSCALL_THROW("Daemonize", (lockf(pid_fd, F_LOCK, 0)) < 0);
   }
 
   uint32_t Daemon::assignID()

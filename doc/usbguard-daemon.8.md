@@ -19,6 +19,9 @@ The **usbguard-daemon** is the main component of the USBGuard software framework
 **-d**
 :   Enable debugging messages in the log.
 
+**-f**
+:   Enable classical daemon behavior (fork at start, sysV compliant).
+
 **-s**
 :   Log to syslog.
 
@@ -32,7 +35,7 @@ The **usbguard-daemon** is the main component of the USBGuard software framework
 :   Log to a file at *path*.
 
 **-p** <*path*>
-:   Write PID to a file at *path*.
+:   Write PID to a file at *path* (default: */var/run/usbguard.pid*).
 
 **-c** <*path*>
 :   Load configuration from a file at *path* (default: */etc/usbguard/usbguard-daemon.conf*).

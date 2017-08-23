@@ -37,6 +37,7 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/UseCase/001_cli_policy.sh \
 	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \
 	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_dummy.sh \
+	$(top_srcdir)/src/Tests/UseCase/004_daemonize.sh \
 	$(top_srcdir)/src/Tests/UseCase/DummyDevices \
 	$(top_srcdir)/src/Tests/Source/check-driver.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/copyright.sh \
@@ -69,7 +70,8 @@ TESTS+=\
 	UseCase/000_executable.sh \
 	UseCase/001_cli_policy.sh \
 	UseCase/002_cli_devices.sh \
-	UseCase/003_cli_devices_dummy.sh
+	UseCase/003_cli_devices_dummy.sh \
+	UseCase/004_daemonize.sh
 endif
 
 check_PROGRAMS=\
