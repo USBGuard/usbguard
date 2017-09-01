@@ -171,7 +171,7 @@ namespace usbguard
       checkPermissions(path, (S_IRUSR | S_IWUSR));
     }
 
-    _config.open(path);
+    _config.open(path, /*readonly=*/true);
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
