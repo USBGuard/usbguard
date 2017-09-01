@@ -35,7 +35,7 @@ namespace usbguard {
     ConfigFilePrivate(ConfigFile& p_instance, const std::vector<std::string>& known_names);
     ~ConfigFilePrivate();
 
-    void open(const std::string& path);
+    void open(const std::string& path, bool readonly);
     void write();
     void close();
 
@@ -61,6 +61,7 @@ namespace usbguard {
     std::vector<std::string> _lines;
     std::map<std::string,NVPair> _settings;
     bool _dirty;
+    bool _readonly;
     std::vector<std::string> _known_names;
   };
 }

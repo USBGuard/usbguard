@@ -31,7 +31,7 @@ namespace usbguard {
     ConfigFile(const std::vector<std::string>& known_names = std::vector<std::string>());
     ~ConfigFile();
 
-    void open(const std::string& path);
+    void open(const std::string& path, bool readonly = false);
     void write();
     void close();
 

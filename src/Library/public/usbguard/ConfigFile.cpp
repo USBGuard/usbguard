@@ -34,9 +34,9 @@ namespace usbguard
     delete d_pointer;
   }
 
-  void ConfigFile::open(const std::string& path)
+  void ConfigFile::open(const std::string& path, bool readonly)
   {
-    d_pointer->open(path);
+    d_pointer->open(path, readonly);
   }
 
   void ConfigFile::write()

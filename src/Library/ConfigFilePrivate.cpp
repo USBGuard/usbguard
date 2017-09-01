@@ -39,23 +39,27 @@ namespace usbguard
   {
     (void)_p_instance;
     _dirty = false;
+    _readonly = false;
   }
 
   ConfigFilePrivate::~ConfigFilePrivate()
   {
-    if (_dirty && _stream) {
-      write();
-      _dirty = false;
-    }
+    close();
   }
 
-  void ConfigFilePrivate::open(const std::string& path)
+  void ConfigFilePrivate::open(const std::string& path, bool readonly)
   {
-    _stream.open(path, std::ios::in|std::ios::out);
+    _readonly = readonly;
+    if (_readonly) {
+      _stream.open(path, std::ios::in);
+    }
+    else {
+      _stream.open(path, std::ios::in|std::ios::out);
+    }
+
     if (!_stream.is_open()) {
       throw std::runtime_error("Can't open " + path);
     }
-    _dirty = false;
     parse();
   }
 
@@ -63,6 +67,10 @@ namespace usbguard
   {
     if (!_stream.is_open()) {
       throw std::runtime_error("BUG: ConfigFilePrivate::write: write() before open()");
+    }
+
+    if (_readonly) {
+      throw std::runtime_error("BUG: ConfigFilePrivate::write: not applicable in read-only mode");
     }
 
     if (_dirty) {
@@ -73,21 +81,28 @@ namespace usbguard
       }
     }
 
+    _stream.clear();
     _stream.seekp(0);
+
     for (auto const& line : _lines) {
       _stream << line << std::endl;
+      if (!_stream.good()) {
+        throw std::runtime_error("Failed to write configuration to disk");
+      }
     }
+
     _stream.flush();
     _dirty = false;
   }
 
   void ConfigFilePrivate::close()
   {
-    if (_dirty && _stream) {
-      write();
+    if (_stream) {
+      if (_dirty && !_readonly) {
+        write();
+      }
+      _stream.close();
     }
-    _dirty = false;
-    _stream.close();
   }
 
   const std::string& ConfigFilePrivate::getSettingValue(const std::string& name) const
