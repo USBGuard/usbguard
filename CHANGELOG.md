@@ -8,6 +8,7 @@
   variables.
 - usbguard-daemon: added "-K" option which can disable logging to console.
 - Added zsh autocompletion support
+- usbguard-daemon: added "-f" option which enabled double-fork daemonization procedure
 
 ### Removed
 
@@ -18,6 +19,7 @@
 - Replaced --enable-maintainer-mode configure option with --enable-full-test-suite
   option. When the new option is not used during the configure phase, only a basic
   set of test is run during the make check phase.
+- usbguard-daemon now opens it's configuration in read-only mode
 
 ## 0.7.0 - 2017-04-12
 ### Added
