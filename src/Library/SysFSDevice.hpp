@@ -42,6 +42,7 @@ namespace usbguard
       const std::string& getName() const;
       const UEvent& getUEvent() const;
       const std::string& getParentPath() const;
+      bool hasAttribute(const std::string& name) const;
       std::string readAttribute(const std::string& name, bool strip_last_null = false, bool optional = false) const;
       void setAttribute(const std::string& name, const std::string& value);
       int openAttribute(const std::string& name) const;

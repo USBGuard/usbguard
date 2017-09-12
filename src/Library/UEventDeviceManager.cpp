@@ -575,7 +575,12 @@ namespace usbguard {
     const std::string devtype = uevent.getAttribute("DEVTYPE");
     const std::string action = uevent.getAttribute("ACTION");
 
-    if (subsystem != "usb" || devtype != "usb_device") {
+    /*
+     * We don't care about the event if it's not from the "usb" subsystem.
+     * The device type attribute value is checked later based on the data
+     * read from the sysfs uevent file in the device directory.
+     */
+    if (subsystem != "usb") {
       USBGUARD_LOG(Debug) << "Ignoring non-USB device:" 
                           << " subsystem=" << subsystem
                           << " devtype=" << devtype
@@ -605,8 +610,13 @@ namespace usbguard {
           if (sysfs_device.getUEvent().hasAttribute("DEVTYPE")) {
             const std::string devtype = sysfs_device.getUEvent().getAttribute("DEVTYPE");
             if (devtype != "usb_device") {
-              USBGUARD_LOG(Warning) << sysfs_devpath << ": UEvent DEVTYPE mismatch."
-                << " Expected \"usb_device\", got \"" << devtype << "\"";
+              USBGUARD_LOG(Debug) << sysfs_devpath << ": UEvent DEVTYPE != usb_device. Ignoring event.";
+              return;
+            }
+          }
+          else {
+            if (!sysfs_device.hasAttribute("descriptors")) {
+              USBGUARD_LOG(Debug) << sysfs_devpath << ": UEvent doesn't refer to a device with a descriptors file. Ignoring event.";
               return;
             }
           }

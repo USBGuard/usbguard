@@ -119,6 +119,20 @@ namespace usbguard
     return _sysfs_parent_path;
   }
 
+  bool SysFSDevice::hasAttribute(const std::string& name) const
+  {
+    struct ::stat st;
+
+    if (::fstatat(_sysfs_dirfd, name.c_str(), &st, AT_SYMLINK_NOFOLLOW) != 0) {
+      if (errno == ENOENT) {
+        return false;
+      }
+      throw ErrnoException("SysFSDevice::hasAttribute", name, errno);
+    }
+
+    return S_ISREG(st.st_mode);
+  }
+
   int SysFSDevice::openAttribute(const std::string& name) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;

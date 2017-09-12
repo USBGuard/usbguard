@@ -1,3 +1,4 @@
+
 # Change Log
 
 ## 0.7.1 - <unrelased>
@@ -20,6 +21,7 @@
   option. When the new option is not used during the configure phase, only a basic
   set of test is run during the make check phase.
 - usbguard-daemon now opens it's configuration in read-only mode
+- Fixed UEventDeviceManager to work with Linux Kernel >= 4.13
 
 ## 0.7.0 - 2017-04-12
 ### Added
