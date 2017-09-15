@@ -155,6 +155,18 @@ IPCAccessControlFiles=%sysconfdir%/usbguard/IPCAccessControl.d/
 DeviceRulesWithPort=false
 
 #
+# USBGuard Audit events log backend
+#
+# One of:
+#
+# * FileAudit - Log audit events into a file specified by
+#               AuditFilePath setting (see below)
+# * LinuxAudit - Log audit events using the Linux Audit
+#                subsystem (using audit_log_user_message)
+#
+AuditBackend=FileAudit
+
+#
 # USBGuard audit events log file path.
 #
 AuditFilePath=%localstatedir%/log/usbguard/usbguard-audit.log

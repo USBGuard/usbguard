@@ -78,6 +78,7 @@ namespace usbguard {
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
 
     virtual bool isController() const = 0;
+    virtual std::string getSystemName() const = 0;
 
     void loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
     void loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);

@@ -230,6 +230,14 @@ AC_SUBST([crypto_LIBS])
 #
 # Check for optional libraries
 #
+PKG_CHECK_MODULES([audit], [audit >= 2.7.7],
+[AC_DEFINE([HAVE_LINUX_AUDIT], [1], [Linux Audit API available])
+AC_CHECK_DECLS([audit_encode_nv_string], [], [], [[#include<libaudit.h>]])
+libaudit_summary="system-wide; $audit_LIBS"],
+[AC_MSG_NOTICE([libaudit development files not found! Linux Audit support wille be turned OFF])
+libaudit_summary="not found"]
+)
+
 PKG_CHECK_MODULES([seccomp], [libseccomp >= 2.0.0],
 [AC_DEFINE([HAVE_SECCOMP], [1], [seccomp API usable])
 libseccomp_summary="system-wide; $seccomp_LIBS"],
@@ -752,6 +760,7 @@ echo "## Libraries"
 echo
 echo "      libqb: $libqb_summary"
 echo "     crypto: $crypto_summary"
+echo "   libaudit: $libaudit_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"

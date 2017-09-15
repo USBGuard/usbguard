@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,23 +16,32 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
-#endif
+#include "FileAuditBackend.hpp"
 
-#include "usbguard/Typedefs.hpp"
-
-#include <string>
+#include <Common/Utility.hpp>
 
 namespace usbguard
 {
-  namespace Utility
+  void FileAuditBackend::write(const AuditEvent& event)
   {
-    std::string escapeString(const std::string& value);
-    std::string unescapeString(const std::string& value);
-    std::string quoteEscapeString(const std::string& value);
-  }
-} /* namespace usbguard */
+    std::string message;
 
+    message.append("uid=");
+    message.append(numberToString(event.identity().uid()));
+    message.append(" ");
+
+    message.append("pid=");
+    message.append(numberToString(event.identity().pid()));
+    message.append(" ");
+
+    for (const auto& kv_pair : event.keys()) {
+      message.append(kv_pair.first);
+      message.append("='");
+      message.append(kv_pair.second);
+      message.append("' ");
+    }
+
+    USBGUARD_LOG(Audit) << message;
+  }
+}
 /* vim: set ts=2 sw=2 et */

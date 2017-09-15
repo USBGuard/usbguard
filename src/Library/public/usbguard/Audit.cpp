@@ -41,73 +41,120 @@ namespace usbguard
     _pid = pid;
   }
 
+  uid_t AuditIdentity::uid() const
+  {
+    return _uid;
+  }
+
+  pid_t AuditIdentity::pid() const
+  {
+    return _pid;
+  }
+
   std::string AuditIdentity::toString() const
   {
     std::string identity_string;
 
     identity_string.append("{ uid=");
-    identity_string.append(numberToString(_uid));
+    identity_string.append(numberToString(uid()));
     identity_string.append(" pid=");
-    identity_string.append(numberToString(_pid));
+    identity_string.append(numberToString(pid()));
     identity_string.append(" }");
 
     return identity_string;
   }
 
-  AuditEvent::AuditEvent(const AuditIdentity& identity)
-    : _confirmed(false),
-      _identity(identity)
+  AuditEvent::AuditEvent(const AuditIdentity& identity, std::shared_ptr<AuditBackend>& backend)
+    : _commited(false),
+      _identity(identity),
+      _backend(backend)
   {
-
   }
 
   AuditEvent::AuditEvent(AuditEvent&& event)
-    : _confirmed(event._confirmed),
+    : _commited(event._commited),
       _identity(std::move(event._identity)),
-      _message(std::move(event._message))
+      _backend(std::move(event._backend)),
+      _keys(std::move(event._keys))
   {
-    event.setConfirmed(true);
+    /*
+     * Mark the source event as commited so that
+     * when it gets destructed, it won't be commited
+     * to the backend.
+     */
+    event.setCommited(true);
   }
 
   AuditEvent::~AuditEvent()
   {
-    if (!_confirmed) {
+    /*
+     * If the event was not commited explicitly, assume
+     * that that the result is a failure.
+     */
+    if (!_commited) {
       failure();
     }
   }
 
-  void AuditEvent::confirm(const std::string& result)
+  void AuditEvent::commit(const std::string& result)
   {
-    USBGUARD_LOG(Audit) << "result=" << result \
-      << " identity=" << _identity.toString() \
-      << " " << _message;
-    setConfirmed(true);
+    setKey("result", result);
+    _backend->commit(*this);
+    setCommited(true);
   }
 
   void AuditEvent::success()
   {
-    confirm("SUCCESS");
+    commit("SUCCESS");
   }
 
   void AuditEvent::failure()
   {
-    confirm("FAILURE");
+    commit("FAILURE");
   }
 
-  void AuditEvent::setConfirmed(bool state)
+  const AuditIdentity& AuditEvent::identity() const
   {
-    _confirmed = state;
+    return _identity;
   }
 
-  std::string& AuditEvent::refMessage()
+  const AuditEvent::Keys& AuditEvent::keys() const
   {
-    return _message;
+    return _keys;
+  }
+
+  void AuditEvent::setCommited(bool state)
+  {
+    _commited = state;
+  }
+
+  void AuditEvent::setKey(const std::string& key, const std::string& value)
+  {
+    _keys.emplace(key, value);
+  }
+
+  AuditBackend::AuditBackend()
+  {
+  }
+
+  AuditBackend::~AuditBackend()
+  {
+  }
+
+  void AuditBackend::commit(const AuditEvent& event)
+  {
+    std::unique_lock<std::mutex> lock(_mutex);
+    write(event);
   }
 
   Audit::Audit(const AuditIdentity& identity)
     : _identity(identity)
   {
+  }
 
+  void Audit::setBackend(std::unique_ptr<AuditBackend> backend)
+  {
+    _backend = std::shared_ptr<AuditBackend>(std::move(backend));
   }
 
   AuditEvent Audit::policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event)
@@ -140,117 +187,75 @@ namespace usbguard
     return deviceEvent(_identity, new_device, old_device);
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event_type)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Policy.";
-    message += Policy::eventTypeToString(event);
+    event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(event_type));
+    event.setKey("rule.id", numberToString(rule->getRuleID()));
+    event.setKey("rule", rule->toString());
 
-    message += " rule.id=";
-    message += numberToString(rule->getRuleID());
-
-    message += " rule='";
-    message += rule->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 
   AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Policy.";
-    message += Policy::eventTypeToString(Policy::EventType::Update);
+    event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(Policy::EventType::Update));
+    event.setKey("rule.id", numberToString(old_rule->getRuleID()));
+    event.setKey("rule.old", old_rule->toString());
+    event.setKey("rule.new", new_rule->toString());
 
-    message += " rule.id=";
-    message += numberToString(old_rule->getRuleID());
-
-    message += " rule.old='";
-    message += old_rule->toString();
-    message += "'";
-    
-    message += " rule.new='";
-    message += new_rule->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event_type)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Policy.Device.";
-    message += Policy::eventTypeToString(event);
+    event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(event_type));
+    event.setKey("target", Rule::targetToString(device->getTarget()));
+    event.setKey("device.system_name", device->getSystemName());
+    event.setKey("device.rule", device->getDeviceRule()->toString());
 
-    message += " target=";
-    message += Rule::targetToString(device->getTarget());
-
-    message += " device='";
-    message += device->getDeviceRule()->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 
   AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Policy.Device.";
-    message += Policy::eventTypeToString(Policy::EventType::Update);
-    
-    message += " target.old=";
-    message += Rule::targetToString(old_target);
+    event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(Policy::EventType::Update));
+    event.setKey("target.old", Rule::targetToString(old_target));
+    event.setKey("target.new", Rule::targetToString(new_target));
+    event.setKey("device.system_name", device->getSystemName());
+    event.setKey("device.rule", device->getDeviceRule()->toString());
 
-    message += " target.new=";
-    message += Rule::targetToString(new_target);
-    
-    message += " device='";
-    message += device->getDeviceRule()->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event)
+  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event_type)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Device.";
-    message += DeviceManager::eventTypeToString(event);
+    event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(event_type));
+    event.setKey("device.system_name", device->getSystemName());
+    event.setKey("device.rule", device->getDeviceRule()->toString());
 
-    message += " device='";
-    message += device->getDeviceRule()->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 
   AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
   {
-    AuditEvent audit_event(identity);
-    auto& message = audit_event.refMessage();
+    AuditEvent event(identity, _backend);
 
-    message += "type=Device.";
-    message += DeviceManager::eventTypeToString(DeviceManager::EventType::Update);
-    
-    message += " device.old='";
-    message += old_device->getDeviceRule()->toString();
-    message += "'";
+    event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(DeviceManager::EventType::Update));
+    event.setKey("device.system_name", new_device->getSystemName());
+    event.setKey("device.rule.old", old_device->getDeviceRule()->toString());
+    event.setKey("device.rule.new", new_device->getDeviceRule()->toString());
 
-    message += " device.new='";
-    message += new_device->getDeviceRule()->toString();
-    message += "'";
-
-    return audit_event;
+    return event;
   }
 } /* namespace usbguard */
 

@@ -27,6 +27,8 @@
 
 #include <string>
 #include <memory>
+#include <mutex>
+#include <unordered_map>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -39,16 +41,24 @@ namespace usbguard
       AuditIdentity();
       AuditIdentity(uid_t uid, pid_t pid);
 
+      uid_t uid() const;
+      pid_t pid() const;
+
       std::string toString() const;
+
     private:
       uid_t _uid;
       pid_t _pid;
   };
 
+  class AuditBackend;
+
   class DLL_PUBLIC AuditEvent
   {
-      AuditEvent(const AuditIdentity& identity);
+      AuditEvent(const AuditIdentity& identity, std::shared_ptr<AuditBackend>& backend);
     public:
+      using Keys = std::unordered_map<std::string,std::string>;
+
       AuditEvent(AuditEvent&& event);
       AuditEvent(const AuditEvent& event) = delete;
       ~AuditEvent();
@@ -56,22 +66,42 @@ namespace usbguard
       void success();
       void failure();
 
-    private:
-      void confirm(const std::string& result);
-      void setConfirmed(bool state);
-      std::string& refMessage();
+      const AuditIdentity& identity() const;
+      const Keys& keys() const;
 
-      bool _confirmed;
+    private:
+      void commit(const std::string& result);
+      void setCommited(bool state);
+      void setKey(const std::string& key, const std::string& value);
+
+      bool _commited;
+      
       AuditIdentity _identity;
-      std::string _message;
+      std::shared_ptr<AuditBackend> _backend;
+      Keys _keys;
 
       friend class Audit;
+  };
+
+  class DLL_PUBLIC AuditBackend
+  {
+    public:
+      AuditBackend();
+      virtual ~AuditBackend();
+      
+      virtual void write(const AuditEvent& event) = 0;
+      void commit(const AuditEvent& event);
+
+    private:
+      std::mutex _mutex;
   };
 
   class DLL_PUBLIC Audit
   {
     public:
       Audit(const AuditIdentity& identity);
+
+      void setBackend(std::unique_ptr<AuditBackend> backend);
 
       AuditEvent policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event);
       AuditEvent policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
@@ -94,10 +124,10 @@ namespace usbguard
        *   - what: append, remove, update
        *   - update: old, new
        */
-      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event);
-      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
-      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event);
-      static AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
+      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event);
+      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
+      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event);
+      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
       /*
        * Audit device changes:
@@ -111,11 +141,12 @@ namespace usbguard
        *   - what: insert, remove, authorization target
        *   - change: old, new
        */
-      static AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event);
-      static AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
+      AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event);
+      AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
     private:
       AuditIdentity _identity;
+      std::shared_ptr<AuditBackend> _backend;
   };
 } /* namespace usbguard */
 

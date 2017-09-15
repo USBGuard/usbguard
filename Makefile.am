@@ -310,18 +310,24 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
 	src/Common/Utility.hpp \
-	src/Common/Utility.cpp
+	src/Common/Utility.cpp \
+	src/Daemon/FileAuditBackend.hpp \
+	src/Daemon/FileAuditBackend.cpp \
+	src/Daemon/LinuxAuditBackend.hpp \
+	src/Daemon/LinuxAuditBackend.cpp
 
 usbguard_daemon_CPPFLAGS=\
 	-fPIE \
 	$(AM_CPPFLAGS) \
 	@seccomp_CFLAGS@ \
-	@libcapng_CFLAGS@
+	@libcapng_CFLAGS@ \
+	@audit_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@seccomp_LIBS@ \
-	@libcapng_LIBS@
+	@libcapng_LIBS@ \
+	@audit_LIBS@
 
 EXTRA_DIST +=\
 	README.md \

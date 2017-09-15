@@ -365,6 +365,25 @@ namespace usbguard
     }
   }
 
+  bool hasSuffix(const std::string& value, const std::string& suffix)
+  {
+    if (suffix.size() > value.size()) {
+      return false;
+    }
+    const auto pos = value.size() - suffix.size();
+    const auto cmp = value.compare(pos, suffix.size(), suffix);
+    return cmp == 0;
+  }
+
+  bool hasPrefix(const std::string& value, const std::string& prefix)
+  {
+    if (prefix.size() > value.size()) {
+      return false;
+    }
+    const auto cmp = value.compare(0, prefix.size(), prefix);
+    return cmp == 0;
+  }
+
   std::string symlinkPath(const std::string& linkpath, struct stat *st_user)
   {
     struct stat st = { };

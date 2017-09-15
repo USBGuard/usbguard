@@ -185,6 +185,12 @@ namespace usbguard
   std::string removePrefix(const std::string& prefix, const std::string& value);
 
   /**
+   * Test whether a string value has a prefix/suffix.
+   */
+  bool hasSuffix(const std::string& value, const std::string& suffix);
+  bool hasPrefix(const std::string& value, const std::string& prefix);
+
+  /**
    * Read symlink destination.
    */
   std::string symlinkPath(const std::string& linkpath, struct stat *st_user = nullptr);

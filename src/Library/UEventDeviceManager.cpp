@@ -149,6 +149,11 @@ namespace usbguard {
     return hub_interface.appliesTo(getInterfaceTypes()[0]);
   }
 
+  std::string UEventDevice::getSystemName() const
+  {
+    return getSysPath();
+  }
+
   void UEventDevice::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     USBGUARD_LOG(Trace);

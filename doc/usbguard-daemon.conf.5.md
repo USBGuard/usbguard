@@ -45,6 +45,9 @@ The **usbguard-daemon.conf** file is loaded by the USBGuard daemon after it pars
 **DeviceRulesWithPort**=<*boolean*>
 :   Generate device specific rules including the "via-port" attribute.
 
+**AuditBackend**=<*backend*>
+:   USBGuard audit events log backend. Backend should be one of `FileAudit` or `LinuxAudit`.
+
 **AuditFilePath**=<*filepath*>
 :   USBGuard audit events log file path.
 

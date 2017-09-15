@@ -130,6 +130,7 @@ namespace usbguard
     bool _restore_controller_device_state;
 
     AuditIdentity _audit_identity;
+    Audit _audit;
   };
 } /* namespace usbguard */
 

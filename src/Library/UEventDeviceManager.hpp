@@ -49,6 +49,7 @@ namespace usbguard {
     SysFSDevice& sysfsDevice();
     const std::string& getSysPath() const;
     bool isController() const override;
+    std::string getSystemName() const override;
 
   private:
     void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;

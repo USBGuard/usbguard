@@ -22,6 +22,8 @@
 #endif
 
 #include "Daemon.hpp"
+#include "FileAuditBackend.hpp"
+#include "LinuxAuditBackend.hpp"
 #include "Common/Utility.hpp"
 
 #include "usbguard/Logger.hpp"
@@ -62,7 +64,8 @@ namespace usbguard
     "RestoreControllerDeviceState",
     "DeviceManagerBackend",
     "IPCAccessControlFiles",
-    "AuditFilePath"
+    "AuditFilePath",
+    "AuditBackend"
   };
 
   static const std::vector<std::pair<std::string,Daemon::DevicePolicyMethod> > device_policy_method_strings = {
@@ -95,7 +98,8 @@ namespace usbguard
 
   Daemon::Daemon()
     : _config(G_config_known_names),
-      _ruleset(this)
+      _ruleset(this),
+      _audit(_audit_identity)
   {
     sigset_t signal_set;
     sigfillset(&signal_set);
@@ -289,11 +293,48 @@ namespace usbguard
       loadIPCAccessControlFiles(value);
     }
 
-    /* AuditFilePath */
-    if (_config.hasSettingValue("AuditFilePath")) {
-      const std::string value = _config.getSettingValue("AuditFilePath");
-      USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
-      USBGUARD_LOGGER.setAuditFile(true, value);
+    /* AuditBackend */
+    if (_config.hasSettingValue("AuditBackend")) {
+      const std::string value = _config.getSettingValue("AuditBackend");
+      USBGUARD_LOG(Debug) << "Setting AuditBackend to " << value;
+
+      if (value == "LinuxAudit") {
+        std::unique_ptr<AuditBackend> backend(new LinuxAuditBackend());
+        _audit.setBackend(std::move(backend));
+      }
+      else if (value == "FileAudit") {
+        if (_config.hasSettingValue("AuditFilePath")) {
+          const std::string value = _config.getSettingValue("AuditFilePath");
+          USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
+          USBGUARD_LOGGER.setAuditFile(true, value);
+        }
+        else {
+          /* AuditFilePath value is required is AuditBackend is set to FileAudit */
+          throw Exception("Configuration", "AuditBackend", "AuditFilePath not set");
+        }
+
+        std::unique_ptr<AuditBackend> backend(new FileAuditBackend());
+        _audit.setBackend(std::move(backend));
+      }
+      else {
+        throw Exception("Configuration", "AuditBackend", "Invalid value");
+      }
+    }
+    else {
+      /*
+       * Left for backwards compatibility. If AuditBackend is NOT set, but
+       * AuditFilePath is, we set the backend to FileAudit automatically.
+       */
+
+      /* AuditFilePath */
+      if (_config.hasSettingValue("AuditFilePath")) {
+        const std::string value = _config.getSettingValue("AuditFilePath");
+        USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
+        USBGUARD_LOGGER.setAuditFile(true, value);
+
+        std::unique_ptr<AuditBackend> backend(new LinuxAuditBackend());
+        _audit.setBackend(std::move(backend));
+      }
     }
 
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
@@ -654,7 +695,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
                         << " device_ptr=" << device.get();
 
-    auto audit_event = Audit::deviceEvent(_audit_identity, device, event);
+    auto audit_event = _audit.deviceEvent(device, event);
 
     std::shared_ptr<const Rule> device_rule = \
       device->getDeviceRule(/*with_port*/true,
@@ -697,8 +738,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get()
                         << " matched_rule_ptr=" << matched_rule.get();
 
-    auto audit_event = Audit::policyEvent(_audit_identity,
-        device, device->getTarget(), matched_rule->getTarget());
+    auto audit_event = _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget());
 
     const Rule::Target target_old = device->getTarget();
     std::shared_ptr<Device> device_post = \
