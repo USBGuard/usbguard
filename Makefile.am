@@ -47,37 +47,31 @@ DISTCLEANFILES=\
 
 CLEANFILES=
 
-ROFF_PAGES=\
-	doc/usbguard.1.roff \
-	doc/usbguard-dbus.8.roff \
-	doc/usbguard-applet-qt.1.roff \
-	doc/usbguard-daemon.8.roff \
-	doc/usbguard-daemon.conf.5.roff \
-	doc/usbguard-rules.conf.5.roff
+man_ADOC_FILES=\
+	doc/man/usbguard.1.adoc \
+	doc/man/usbguard-dbus.8.adoc \
+	doc/man/usbguard-applet-qt.1.adoc \
+	doc/man/usbguard-daemon.8.adoc \
+	doc/man/usbguard-daemon.conf.5.adoc \
+	doc/man/usbguard-rules.conf.5.adoc
 
-MARKDOWN_PAGES=$(ROFF_PAGES:.roff=.md)
+man_ROFF_FILES=\
+	$(man_ADOC_FILES:.adoc=.roff)
 
 EXTRA_DIST+=\
-	$(ROFF_PAGES:.roff=) \
-	$(MARKDOWN_PAGES)
+	$(man_ADOC_FILES)
 
 BUILT_SOURCES+=\
-	$(ROFF_PAGES)
+	$(man_ROFF_FILES)
 
 CLEANFILES+=\
-	$(ROFF_PAGES) \
-        $(ROFF_PAGES:.roff=)
+	$(man_ROFF_FILES) \
+	$(man_ROFF_FILES:.roff=)
 
-if GENERATE_MANPAGES
-$(top_builddir)/%.roff: %.md
+$(top_builddir)/%.roff: %.adoc
 	$(MKDIR_P) $$(dirname $@)
-	$(PANDOC) -s -t man $^ -o $(top_builddir)/$@
+	$(ASCIIDOCTOR) -v -b manpage $^ -o $(top_builddir)/$@
 	$(INSTALL) -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
-else
-$(top_builddir)/%.roff: %.md
-	$(INSTALL) -D -m 644 $(^:.md=) $(top_builddir)/$@
-	$(INSTALL) -D -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
-endif
 
 install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
 uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus
@@ -129,14 +123,14 @@ uninstall-systemd-service:
 endif
 
 man8_MANS=\
-	$(top_builddir)/doc/usbguard-daemon.8
+	$(top_builddir)/doc/man/usbguard-daemon.8
 
 man5_MANS=\
-	$(top_builddir)/doc/usbguard-daemon.conf.5 \
-	$(top_builddir)/doc/usbguard-rules.conf.5
+	$(top_builddir)/doc/man/usbguard-daemon.conf.5 \
+	$(top_builddir)/doc/man/usbguard-rules.conf.5
 
 man1_MANS=\
-	$(top_builddir)/doc/usbguard.1
+	$(top_builddir)/doc/man/usbguard.1
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -331,7 +325,7 @@ usbguard_daemon_LDADD=\
 	@audit_LIBS@
 
 EXTRA_DIST +=\
-	README.md \
+	README.adoc \
 	src/ThirdParty/Catch \
 	src/ThirdParty/PEGTL
 
@@ -406,7 +400,7 @@ if DBUS_ENABLED
 sbin_PROGRAMS+= usbguard-dbus
 
 man8_MANS+=\
-	$(top_builddir)/doc/usbguard-dbus.8
+	$(top_builddir)/doc/man/usbguard-dbus.8
 
 BUILT_SOURCES+=\
 	src/DBus/DBusInterface.xml.cstr \
@@ -558,7 +552,7 @@ appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt/resources/usbguard-icon.svg
 
 man1_MANS +=\
-	$(top_builddir)/doc/usbguard-applet-qt.1
+	$(top_builddir)/doc/man/usbguard-applet-qt.1
 
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \

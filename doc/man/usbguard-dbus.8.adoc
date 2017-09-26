@@ -1,0 +1,38 @@
+usbguard-dbus(8)
+================
+:doctype: manpage
+
+
+== NAME
+usbguard-dbus - USBGuard D-Bus interface service
+
+
+[[synopsis]]
+== SYNOPSIS
+*usbguard-dbus* ['OPTIONS']
+
+
+[[description]]
+== DESCRIPTION
+The usbguard-dbus component exposes a D-Bus interface to a running instance of *usbguard-daemon(8)*.
+
+
+[[options]]
+== OPTIONS
+*-s, --system*::
+    Listen on the system bus.
+
+*-S, --session*::
+    Listen on the session bus.
+
+*-h, --help*::
+    Show the help/usage screen.
+
+
+[[see-also]]
+== SEE ALSO
+<<usbguard.1.adoc#name, usbguard(1)>>,
+<<usbguard-applet-qt.1.adoc#name, usbguard-applet-qt(1)>>
+
+
+include::footer.adoc[]

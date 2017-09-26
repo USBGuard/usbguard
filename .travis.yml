@@ -63,12 +63,6 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          packages: ['pandoc']
-      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-pegtl DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-catch"
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
           packages: ['qtbase5-dev', 'qt5-default', 'qtbase5-dev-tools', 'libqt5svg5-dev', 'qttools5-dev-tools']
       env: CONFIGURE_ARGS=--with-gui-qt=qt5
     - os: linux
@@ -86,8 +80,8 @@ before_install:
 - sudo apt-get install -y aspell aspell-en
 - sudo apt-get install -y libprotobuf-dev protobuf-compiler
 - sudo apt-get install -y valgrind
-- sudo apt-get install -y realpath
-- gem install coveralls-lcov
+- sudo gem install asciidoctor
+- sudo gem install coveralls-lcov
 - curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netix.dl.sourceforge.net/project/astyle/astyle/astyle%203.0.1/astyle_3.0.1_linux.tar.gz'
 install:
 - pushd .

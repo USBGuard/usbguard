@@ -581,17 +581,12 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
-# Check whether the pandoc utility is present.
+# Require asciidoctor.
 #
-# If pandoc is not present, manpages won't be
-# generated from source and their pre-generated
-# version will be used instead.
-#
-AC_CHECK_PROGS(PANDOC, [pandoc])
-if test -z "$PANDOC"; then
-  AC_MSG_WARN([Unable to find manpage generator (pandoc). Installation will use pre-generated files.])
+AC_CHECK_PROGS(ASCIIDOCTOR, [asciidoctor])
+if test -z "$ASCIIDOCTOR"; then
+  AC_MSG_FAILURE([Unable to find documentation generator (asciidoctor)])
 fi
-AM_CONDITIONAL([GENERATE_MANPAGES], [test -n "$PANDOC"])
 
 #
 # Check whether the aspell utility is present.
