@@ -8,10 +8,14 @@
   for every received event. Event data are passed to the executable via environment
   variables.
 - usbguard-daemon: added "-K" option which can disable logging to console.
-- Added zsh autocompletion support
-- usbguard-daemon: added "-f" option which enabled double-fork daemonization procedure
+- Added zsh autocompletion support.
+- usbguard-daemon: added "-f" option which enabled double-fork daemonization procedure.
+- Added AuditBackend usbguard-daemon configuration option for selecting audit log backend.
+- Linux Audit support via new LinuxAudit backend.
+- Added missing RuleCondition.hpp header file to the public API headers.
 
 ### Removed
+- Removed Utility.hpp header file from public API headers
 
 ### Changed
 - Qt Applet: disabled session management
@@ -22,6 +26,7 @@
   set of test is run during the make check phase.
 - usbguard-daemon now opens it's configuration in read-only mode
 - Fixed UEventDeviceManager to work with Linux Kernel >= 4.13
+- Refactored audit logging to support different audit log backends
 
 ## 0.7.0 - 2017-04-12
 ### Added
