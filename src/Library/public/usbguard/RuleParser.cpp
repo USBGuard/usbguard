@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "RuleParser.hpp"
@@ -43,25 +43,28 @@ namespace usbguard
     try {
       Rule rule;
 #if HAVE_PEGTL_LTE_1_3_1
+
       if (!trace) {
         pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
       }
       else {
         pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
       }
+
 #else
+
       if (!trace) {
         pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
       }
       else {
         pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
       }
+
 #endif
       return rule;
     }
-    catch(const pegtl::parse_error& ex) {
+    catch (const pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
-
       error.setHint(ex.what());
 #if HAVE_PEGTL_LTE_1_3_1
       error.setOffset(ex.positions[0].column);
@@ -75,8 +78,7 @@ namespace usbguard
 
       throw error;
     }
-    catch(const std::exception& ex) {
-
+    catch (const std::exception& ex) {
       throw;
     }
   }

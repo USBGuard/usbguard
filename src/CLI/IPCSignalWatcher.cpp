@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "IPCSignalWatcher.hpp"
@@ -45,6 +45,7 @@ namespace usbguard
     if (hasOpenExecutable()) {
       closeExecutable();
     }
+
     openExecutable(path);
   }
 
@@ -53,10 +54,9 @@ namespace usbguard
     std::cout << "[IPC] Connected" << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string,std::string> env = {
+      const std::map<std::string, std::string> env = {
         { "USBGUARD_IPC_SIGNAL", "IPC.Connected" }
       };
-
       runExecutable(env);
     }
   }
@@ -64,49 +64,49 @@ namespace usbguard
   void IPCSignalWatcher::IPCDisconnected(bool exception_initiated, const IPCException& exception)
   {
     std::cout << "[IPC] Disconnected: exception_initiated=" << exception_initiated;
+
     if (exception_initiated) {
       std::cout << " message=" << exception.message();
     }
+
     std::cout << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string,std::string> env = {
+      const std::map<std::string, std::string> env = {
         { "USBGUARD_IPC_SIGNAL", "IPC.Disconnected" },
         { "USBGUARD_MESSAGE", exception_initiated ? exception.message() : "" }
       };
-
       runExecutable(env);
     }
   }
 
   void IPCSignalWatcher::DevicePresenceChanged(uint32_t id,
-                                               DeviceManager::EventType event,
-                                               Rule::Target target,
-                                               const std::string& device_rule)
+    DeviceManager::EventType event,
+    Rule::Target target,
+    const std::string& device_rule)
   {
     std::cout << "[device] PresenceChanged: id=" << id << std::endl;
     std::cout << " event=" << DeviceManager::eventTypeToString(event) << std::endl;
     std::cout << " target=" << Rule::targetToString(target) << std::endl;
     std::cout << " device_rule=" << device_rule << std::endl;
-  
+
     if (hasOpenExecutable()) {
-      const std::map<std::string,std::string> env = {
+      const std::map<std::string, std::string> env = {
         { "USBGUARD_IPC_SIGNAL", "Device.PresenceChanged" },
         { "USBGUARD_DEVICE_ID", std::to_string(id) },
         { "USBGUARD_DEVICE_EVENT", DeviceManager::eventTypeToString(event) },
         { "USBGUARD_DEVICE_TARGET", Rule::targetToString(target) },
         { "USBGUARD_DEVICE_RULE", device_rule }
       };
-
       runExecutable(env);
     }
   }
 
   void IPCSignalWatcher::DevicePolicyChanged(uint32_t id,
-                                             Rule::Target target_old,
-                                             Rule::Target target_new,
-                                             const std::string& device_rule,
-                                             uint32_t rule_id)
+    Rule::Target target_old,
+    Rule::Target target_new,
+    const std::string& device_rule,
+    uint32_t rule_id)
   {
     std::cout << "[device] PolicyChanged: id=" << id << std::endl;
     std::cout << " target_old=" << Rule::targetToString(target_old) << std::endl;
@@ -115,7 +115,7 @@ namespace usbguard
     std::cout << " rule_id=" << rule_id << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string,std::string> env = {
+      const std::map<std::string, std::string> env = {
         { "USBGUARD_IPC_SIGNAL", "Device.PolicyChanged" },
         { "USBGUARD_DEVICE_ID", std::to_string(id) },
         { "USBGUARD_DEVICE_TARGET_OLD", Rule::targetToString(target_old) },
@@ -123,7 +123,6 @@ namespace usbguard
         { "USBGUARD_DEVICE_RULE", device_rule },
         { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) }
       };
-
       runExecutable(env);
     }
   }
@@ -163,7 +162,7 @@ namespace usbguard
     return (_exec_path_fd >= 0);
   }
 
-  void IPCSignalWatcher::runExecutable(const std::map<std::string,std::string>& environment)
+  void IPCSignalWatcher::runExecutable(const std::map<std::string, std::string>& environment)
   {
     /*
      * Fork child process, that will fork again and exec.
@@ -216,21 +215,20 @@ namespace usbguard
     if (pid_fork2 == (::pid_t)-1) {
       ::_exit(errno);
     }
+
     if (pid_fork2 > 0) {
       ::_exit(0);
     }
 
-    char * const exec_argv[] = { &_exec_path[0], nullptr };
-    char ** const exec_envp = createExecutableEnvironment(environment);
-
+    char* const exec_argv[] = { &_exec_path[0], nullptr };
+    char** const exec_envp = createExecutableEnvironment(environment);
     (void)::fexecve(_exec_path_fd, exec_argv, exec_envp);
     const int saved_errno = errno;
-
     destroyExecutableEnvironment(exec_envp);
     _exit(saved_errno);
   }
 
-  char ** IPCSignalWatcher::createExecutableEnvironment(const std::map<std::string,std::string>& environment)
+  char** IPCSignalWatcher::createExecutableEnvironment(const std::map<std::string, std::string>& environment)
   {
     size_t environ_size = 0;
 
@@ -240,7 +238,7 @@ namespace usbguard
       }
     }
 
-    char ** envp = new char* [environ_size + environment.size() + 1];
+    char** envp = new char* [environ_size + environment.size() + 1];
     size_t i = 0;
 
     for (; i < environ_size; ++i) {
@@ -249,46 +247,44 @@ namespace usbguard
 
     for (const auto& map_entry : environment) {
       std::string environ_value;
-
       environ_value.append(map_entry.first);
       environ_value.append("=");
       environ_value.append(map_entry.second);
-
       envp[i++] = cstrCopy(environ_value.c_str());
     }
 
     envp[i] = nullptr;
-
     return envp;
   }
 
-  void IPCSignalWatcher::destroyExecutableEnvironment(char ** const envp)
+  void IPCSignalWatcher::destroyExecutableEnvironment(char** const envp)
   {
     if (envp != nullptr) {
-      char ** envp_current = envp;
+      char** envp_current = envp;
+
       while (envp_current[0] != nullptr) {
         delete [] envp_current[0];
         ++envp_current;
       }
+
       delete [] envp;
     }
   }
 
-  char *IPCSignalWatcher::cstrCopy(const char *c_str)
+  char* IPCSignalWatcher::cstrCopy(const char* c_str)
   {
     if (c_str == nullptr) {
       return nullptr;
     }
 
     const auto c_str_len = ::strlen(c_str);
-    char *c_str_copy = new char [c_str_len + 1];
+    char* c_str_copy = new char [c_str_len + 1];
     /*
      * new throws std::bad_alloc on failure, no need
      * to check the pointer.
      */
     ::memcpy(c_str_copy, c_str, c_str_len);
     c_str_copy[c_str_len] = '\0';
-
     return c_str_copy;
   }
 } /* namespace usbguard */

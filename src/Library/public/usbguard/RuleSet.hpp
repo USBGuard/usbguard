@@ -28,7 +28,8 @@
 
 #include <cstdint>
 
-namespace usbguard {
+namespace usbguard
+{
   class RuleSetPrivate;
   class Interface;
   class DLL_PUBLIC RuleSet
@@ -37,7 +38,7 @@ namespace usbguard {
     /**
      * Construct an empty ruleset.
      */
-    RuleSet(Interface * const interface_ptr);
+    RuleSet(Interface* const interface_ptr);
     RuleSet(const RuleSet& rhs);
     const RuleSet& operator=(const RuleSet& rhs);
     ~RuleSet();
@@ -107,7 +108,7 @@ namespace usbguard {
      * Returns nullptr if no such rule exists.
      */
     std::shared_ptr<Rule> getRule(uint32_t id);
-    
+
     /**
      * Remove a rule from the ruleset.
      * The method returns true if a rule was removed and false otherwise.

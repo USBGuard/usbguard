@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "LocaltimeCondition.hpp"
@@ -26,8 +26,8 @@
 #include "usbguard/RuleParser.hpp"
 
 #ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#include <ctime>
+  #define _XOPEN_SOURCE
+  #include <ctime>
 #endif
 
 namespace usbguard
@@ -74,20 +74,18 @@ namespace usbguard
     (void)rule;
     const auto tp_now = std::chrono::system_clock::now();
     const auto daytime = std::chrono::system_clock::to_time_t(tp_now) % 86400;
-
     USBGUARD_LOG(Trace) << "daytime=" << daytime
-                        << " daytime_begin=" << _daytime_begin
-                        << " daytime_end=" << _daytime_end;
-
+      << " daytime_begin=" << _daytime_begin
+      << " daytime_end=" << _daytime_end;
     return (daytime >= _daytime_begin && daytime <= _daytime_end);
   }
 
-  RuleConditionBase * LocaltimeCondition::clone() const
+  RuleConditionBase* LocaltimeCondition::clone() const
   {
     return new LocaltimeCondition(*this);
   }
 
-  std::string LocaltimeCondition::tmToString(const struct tm * const tm)
+  std::string LocaltimeCondition::tmToString(const struct tm* const tm)
   {
     std::string tm_string;
     tm_string.append("{ tm.tm_sec=");
@@ -124,7 +122,6 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "tm=" << tmToString(&tm);
-
     return tm.tm_sec + 60*tm.tm_min + 60*60*tm.tm_hour;
   }
 } /* namespace usbguard */

@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "AllowedMatchesCondition.hpp"
@@ -42,25 +42,24 @@ namespace usbguard
     _interface_ptr = rhs._interface_ptr;
   }
 
-  void AllowedMatchesCondition::init(Interface * const interface_ptr)
+  void AllowedMatchesCondition::init(Interface* const interface_ptr)
   {
-
     _interface_ptr = interface_ptr;
   }
 
   bool AllowedMatchesCondition::update(const Rule& rule)
   {
     (void)rule;
-    if (_interface_ptr == nullptr) {
 
+    if (_interface_ptr == nullptr) {
       return false;
     }
-    auto devices = _interface_ptr->listDevices(_device_match_rule.toString());
 
+    auto devices = _interface_ptr->listDevices(_device_match_rule.toString());
     return !devices.empty();
   }
 
-  RuleConditionBase * AllowedMatchesCondition::clone() const
+  RuleConditionBase* AllowedMatchesCondition::clone() const
   {
     return new AllowedMatchesCondition(*this);
   }

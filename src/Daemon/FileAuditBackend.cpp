@@ -16,6 +16,10 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
+#ifdef HAVE_BUILD_CONFIG_H
+  #include <build-config.h>
+#endif
+
 #include "FileAuditBackend.hpp"
 
 #include <Common/Utility.hpp>
@@ -25,11 +29,9 @@ namespace usbguard
   void FileAuditBackend::write(const AuditEvent& event)
   {
     std::string message;
-
     message.append("uid=");
     message.append(numberToString(event.identity().uid()));
     message.append(" ");
-
     message.append("pid=");
     message.append(numberToString(event.identity().pid()));
     message.append(" ");

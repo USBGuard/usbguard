@@ -41,33 +41,33 @@ namespace usbguard
 
     /* Methods */
     virtual uint32_t appendRule(const std::string& rule_spec,
-				uint32_t parent_id) = 0;
+      uint32_t parent_id) = 0;
 
     virtual void removeRule(uint32_t id) = 0;
 
     virtual const RuleSet listRules(const std::string& query) = 0;
 
     virtual uint32_t applyDevicePolicy(uint32_t id,
-                                   Rule::Target target,
-                                   bool permanent) = 0;
+      Rule::Target target,
+      bool permanent) = 0;
 
     virtual const std::vector<Rule> listDevices(const std::string& query) = 0;
 
     /* Signals */
     virtual void DevicePresenceChanged(uint32_t id,
-                                       DeviceManager::EventType event,
-                                       Rule::Target target,
-                                       const std::string& device_rule) = 0;
+      DeviceManager::EventType event,
+      Rule::Target target,
+      const std::string& device_rule) = 0;
 
     virtual void DevicePolicyChanged(uint32_t id,
-                                     Rule::Target target_old,
-                                     Rule::Target target_new,
-                                     const std::string& device_rule,
-                                     uint32_t rule_id) = 0;
+      Rule::Target target_old,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id) = 0;
 
     virtual void ExceptionMessage(const std::string& context,
-                                  const std::string& object,
-                                  const std::string& reason) = 0;
+      const std::string& object,
+      const std::string& reason) = 0;
   };
 } /* namespace usbguard */
 

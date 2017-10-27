@@ -17,12 +17,13 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DevicePrivate.hpp"
 
-namespace usbguard {
+namespace usbguard
+{
   Device::Device(DeviceManager& manager)
   {
     d_pointer = new DevicePrivate(*this, manager);
@@ -39,7 +40,7 @@ namespace usbguard {
     d_pointer = new DevicePrivate(*this, *rhs.d_pointer);
   }
 
-  const Device& Device::operator=(const Device &rhs)
+  const Device& Device::operator=(const Device& rhs)
   {
     DevicePrivate* n_pointer = new DevicePrivate(*this, *rhs.d_pointer);
     delete d_pointer;
@@ -72,7 +73,7 @@ namespace usbguard {
     d_pointer->initializeHash();
   }
 
-  void Device::updateHash(const void * const ptr, const size_t size)
+  void Device::updateHash(const void* const ptr, const size_t size)
   {
     d_pointer->updateHash(ptr, size);
   }

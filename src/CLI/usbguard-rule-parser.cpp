@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Rule.hpp"
@@ -25,14 +25,14 @@
 
 #include <iostream>
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+  #define _GNU_SOURCE
 #endif
 #include <cstring>
 #include <fstream>
 
 #include <getopt.h>
 
-static const char *options_short = "hft";
+static const char* options_short = "hft";
 
 static const struct ::option options_long[] = {
   { "help", no_argument, nullptr, 'h' },
@@ -41,7 +41,7 @@ static const struct ::option options_long[] = {
   { nullptr, 0, nullptr, 0 }
 };
 
-static void showHelp(std::ostream& stream, const char *usbguard_arg0)
+static void showHelp(std::ostream& stream, const char* usbguard_arg0)
 {
   stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS] <rule_spec>" << std::endl;
   stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS] -f <file>" << std::endl;
@@ -53,28 +53,31 @@ static void showHelp(std::ostream& stream, const char *usbguard_arg0)
   stream << std::endl;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  const char *usbguard_arg0 = argv[0];
+  const char* usbguard_arg0 = argv[0];
   bool trace = false;
   bool from_file = false;
   int opt = 0;
 
   while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-    switch(opt) {
-      case 'h':
-        showHelp(std::cout, usbguard_arg0);
-        return EXIT_SUCCESS;
-      case 'f':
-        from_file = true;
-        break;
-      case 't':
-        trace = true;
-        break;
-      case '?':
-      default:
-        showHelp(std::cout, usbguard_arg0);
-        return EXIT_FAILURE;
+    switch (opt) {
+    case 'h':
+      showHelp(std::cout, usbguard_arg0);
+      return EXIT_SUCCESS;
+
+    case 'f':
+      from_file = true;
+      break;
+
+    case 't':
+      trace = true;
+      break;
+
+    case '?':
+    default:
+      showHelp(std::cout, usbguard_arg0);
+      return EXIT_FAILURE;
     }
   }
 
@@ -97,14 +100,17 @@ int main(int argc, char **argv)
       while (stream.good()) {
         rule_spec.clear();
         std::getline(stream, rule_spec);
+
         if (rule_spec.empty()) {
           break;
         }
+
         ++line;
         std::cout << "INPUT: " << rule_spec << std::endl;
         const usbguard::Rule rule = usbguard::parseRuleFromString(rule_spec, rule_file, line, trace);
         std::cout << "OUTPUT: " << rule.toString() << std::endl;
       }
+
       return EXIT_SUCCESS;
     }
     else {
@@ -113,9 +119,9 @@ int main(int argc, char **argv)
       const usbguard::Rule rule = usbguard::parseRuleFromString(rule_spec, "<argv>", 0, trace);
       std::cout << "OUTPUT: " << rule.toString() << std::endl;
       return EXIT_SUCCESS;
-     }
+    }
   }
-  catch(const usbguard::RuleParserError& ex) {
+  catch (const usbguard::RuleParserError& ex) {
     std::cerr << "! ERROR: " << ex.what() << std::endl;
     std::cerr << "!!  " << rule_spec << std::endl;
     std::cerr << "!!  ";
@@ -123,12 +129,13 @@ int main(int argc, char **argv)
     std::cerr << "^-- " << ex.hint() << std::endl;
     std::cerr.width(1);
   }
-  catch(const std::exception& ex) {
+  catch (const std::exception& ex) {
     std::cerr << "! EXCEPTION: " << ex.what() << std::endl;
   }
-  catch(...) {
+  catch (...) {
     std::cerr << "! EXCEPTION: Unknown" << std::endl;
   }
+
   return EXIT_FAILURE;
 }
 

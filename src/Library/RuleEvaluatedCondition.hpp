@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/RuleCondition.hpp"
@@ -36,7 +36,7 @@ namespace usbguard
     RuleEvaluatedCondition(const std::string& elapsed_time, bool negated = false);
     RuleEvaluatedCondition(const RuleEvaluatedCondition& rhs);
     bool update(const Rule& rule);
-    RuleConditionBase * clone() const;
+    RuleConditionBase* clone() const;
   protected:
     static uint64_t stringToSeconds(const std::string& string);
   private:

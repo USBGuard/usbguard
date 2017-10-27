@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "RandomStateCondition.hpp"
@@ -50,7 +50,7 @@ namespace usbguard
     return _rng_dist(_rng_gen);
   }
 
-  RuleConditionBase * RandomStateCondition::clone() const
+  RuleConditionBase* RandomStateCondition::clone() const
   {
     return new RandomStateCondition(*this);
   }

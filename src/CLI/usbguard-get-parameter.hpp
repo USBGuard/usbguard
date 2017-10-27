@@ -18,12 +18,12 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 namespace usbguard
 {
-  int usbguard_get_parameter(int argc, char **argv);
+  int usbguard_get_parameter(int argc, char** argv);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

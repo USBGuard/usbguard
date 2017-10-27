@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "IPCServerPrivate.hpp"
@@ -41,10 +41,9 @@ namespace usbguard
     if (name.find_first_not_of(valid_chars) != std::string::npos) {
       throw Exception("IPC access control", "name contains invalid character(s)", name);
     }
-
   }
 
-  static const std::vector<std::pair<std::string,IPCServer::AccessControl::Section>> section_ttable = {
+  static const std::vector<std::pair<std::string, IPCServer::AccessControl::Section>> section_ttable = {
     { "ALL", IPCServer::AccessControl::Section::ALL },
     { "Policy", IPCServer::AccessControl::Section::POLICY },
     { "Parameters", IPCServer::AccessControl::Section::PARAMETERS },
@@ -60,6 +59,7 @@ namespace usbguard
         return ttable_entry.second;
       }
     }
+
     throw std::runtime_error("Invalid AccessControl::Section string");
   }
 
@@ -70,10 +70,11 @@ namespace usbguard
         return ttable_entry.first;
       }
     }
+
     throw std::runtime_error("Invalid AccessControl::Section value");
   }
 
-  static const std::vector<std::pair<std::string,IPCServer::AccessControl::Privilege>> privilege_ttable = {
+  static const std::vector<std::pair<std::string, IPCServer::AccessControl::Privilege>> privilege_ttable = {
     { "ALL", IPCServer::AccessControl::Privilege::ALL },
     { "modify", IPCServer::AccessControl::Privilege::MODIFY },
     { "list", IPCServer::AccessControl::Privilege::LIST },
@@ -88,6 +89,7 @@ namespace usbguard
         return ttable_entry.second;
       }
     }
+
     throw std::runtime_error("Invalid AccessControl::Section string");
   }
 
@@ -98,6 +100,7 @@ namespace usbguard
         return ttable_entry.first;
       }
     }
+
     throw std::runtime_error("Invalid AccessControl::Privilege value");
   }
 
@@ -112,7 +115,8 @@ namespace usbguard
     load(ss);
   }
 
-  IPCServer::AccessControl::AccessControl(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
+  IPCServer::AccessControl::AccessControl(IPCServer::AccessControl::Section section,
+    IPCServer::AccessControl::Privilege privilege)
   {
     setPrivilege(section, privilege);
   }
@@ -128,7 +132,8 @@ namespace usbguard
     return *this;
   }
 
-  bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege) const
+  bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section,
+    IPCServer::AccessControl::Privilege privilege) const
   {
     if (section == Section::ALL || section == Section::NONE) {
       throw USBGUARD_BUG("Cannot test against ALL, NONE sections");
@@ -143,17 +148,20 @@ namespace usbguard
     return (it->second & static_cast<uint8_t>(privilege)) == static_cast<uint8_t>(privilege);
   }
 
-  void IPCServer::AccessControl::setPrivilege(IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
+  void IPCServer::AccessControl::setPrivilege(IPCServer::AccessControl::Section section,
+    IPCServer::AccessControl::Privilege privilege)
   {
     if (section == Section::NONE) {
       throw USBGUARD_BUG("Cannot set privileges for NONE section");
     }
+
     if (section == Section::ALL) {
       for (const auto& value : {
-            Section::POLICY,
-            Section::PARAMETERS,
-            Section::EXCEPTIONS,
-            Section::DEVICES }) {
+      Section::POLICY,
+              Section::PARAMETERS,
+              Section::EXCEPTIONS,
+              Section::DEVICES
+    }) {
         _access_control[value] |= static_cast<uint8_t>(privilege);
       }
     }
@@ -182,7 +190,6 @@ namespace usbguard
 
       const std::string section_string = trim(line.substr(0, nv_separator));
       const Section section = sectionFromString(section_string);
-
       const std::string privileges_string = line.substr(nv_separator + 1);
       std::vector<std::string> privilege_strings;
       tokenizeString(privileges_string, privilege_strings, " ,", /*trim_empty=*/true);
@@ -199,20 +206,20 @@ namespace usbguard
     std::string access_control_string;
 
     for (auto const& section : {
-          Section::DEVICES,
-          Section::POLICY,
-          Section::PARAMETERS,
-          Section::EXCEPTIONS
-          }) {
+    Section::DEVICES,
+            Section::POLICY,
+            Section::PARAMETERS,
+            Section::EXCEPTIONS
+  }) {
       bool section_is_empty = true;
       std::string section_string = sectionToString(section);
       section_string.append("=");
 
       for (auto const& privilege : {
-            Privilege::LIST,
-            Privilege::MODIFY,
-            Privilege::LISTEN
-          }) {
+      Privilege::LIST,
+                Privilege::MODIFY,
+                Privilege::LISTEN
+    }) {
         if (hasPrivilege(section, privilege)) {
           const std::string privilege_string = privilegeToString(privilege);
           section_string.append(privilege_string);
@@ -227,7 +234,6 @@ namespace usbguard
         access_control_string.append("\n");
       }
     }
-
     stream << access_control_string;
   }
 
@@ -265,25 +271,25 @@ namespace usbguard
   }
 
   void IPCServer::DevicePresenceChanged(uint32_t id,
-                                        DeviceManager::EventType event,
-                                        Rule::Target target,
-                                        const std::string& device_rule)
+    DeviceManager::EventType event,
+    Rule::Target target,
+    const std::string& device_rule)
   {
     d_pointer->DevicePresenceChanged(id, event, target, device_rule);
   }
 
   void IPCServer::DevicePolicyChanged(uint32_t id,
-                                      Rule::Target target_old,
-                                      Rule::Target target_new,
-                                      const std::string& device_rule,
-                                      uint32_t rule_id)
+    Rule::Target target_old,
+    Rule::Target target_new,
+    const std::string& device_rule,
+    uint32_t rule_id)
   {
     d_pointer->DevicePolicyChanged(id, target_old, target_new, device_rule, rule_id);
   }
 
   void IPCServer::ExceptionMessage(const std::string& context,
-                                   const std::string& object,
-                                   const std::string& reason)
+    const std::string& object,
+    const std::string& reason)
   {
     d_pointer->ExceptionMessage(context, object, reason);
   }

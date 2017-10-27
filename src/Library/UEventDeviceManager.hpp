@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #if defined(HAVE_UEVENT)
@@ -38,7 +38,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-namespace usbguard {
+namespace usbguard
+{
   class UEventDeviceManager;
 
   class UEventDevice : public Device, public USBDescriptorParserHooks
@@ -52,7 +53,8 @@ namespace usbguard {
     std::string getSystemName() const override;
 
   private:
-    void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;
+    void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+      USBDescriptor* descriptor_out) override;
     void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override;
     bool isLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
     void updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
@@ -61,7 +63,7 @@ namespace usbguard {
   };
 
 #if !defined(USBGUARD_SYSFS_ROOT)
-#define USBGUARD_SYSFS_ROOT "/sys"
+  #define USBGUARD_SYSFS_ROOT "/sys"
 #endif
 
   class UEventDeviceManager : public DeviceManager
@@ -90,14 +92,15 @@ namespace usbguard {
     int ueventDummyOpen();
     void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
 
-    bool knownSysPath(const std::string& syspath, uint32_t * id = nullptr) const;
+    bool knownSysPath(const std::string& syspath, uint32_t* id = nullptr) const;
     void learnSysPath(const std::string& syspath, uint32_t id = 0);
     void forgetSysPath(const std::string& syspath);
 
     void thread();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
-    static bool ueventEnumerateComparePath(const std::pair<std::string,std::string>& a, const std::pair<std::string,std::string>& b);
+    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
+      const std::pair<std::string, std::string>& b);
     int ueventEnumerateDevices();
     int ueventEnumerateDummyDevices();
 
@@ -114,7 +117,7 @@ namespace usbguard {
     Thread<UEventDeviceManager> _thread;
     int _uevent_fd;
     int _wakeup_fd;
-    std::map<std::string,uint32_t> _syspath_map;
+    std::map<std::string, uint32_t> _syspath_map;
     std::string _sysfs_root;
     bool _default_blocked_state;
     bool _enumeration_only_mode;

@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Logger.hpp"
@@ -74,6 +74,7 @@ namespace usbguard
     void stop(bool do_wait = true)
     {
       _stop_request = true;
+
       if (do_wait) {
         wait();
       }
@@ -82,13 +83,15 @@ namespace usbguard
     void wait()
     {
       if (_thread.joinable()) {
-	try {
-	  _thread.join();
-	} catch(const std::system_error& ex) {
+        try {
+          _thread.join();
+        }
+        catch (const std::system_error& ex) {
           USBGUARD_LOG(Error) << ex.what();
-	  throw;
-	}
+          throw;
+        }
       }
+
       _stop_request = false;
     }
 

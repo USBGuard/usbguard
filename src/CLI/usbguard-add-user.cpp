@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard.hpp"
@@ -33,7 +33,7 @@
 
 namespace usbguard
 {
-  static const char *options_short = "hugp:d:e:P:N";
+  static const char* options_short = "hugp:d:e:P:N";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
@@ -63,19 +63,17 @@ namespace usbguard
     stream << std::endl;
   }
 
-  static void createIPCAccessControlFile(const std::string& path, const std::string& name, bool is_group, const IPCServer::AccessControl& access_control)
+  static void createIPCAccessControlFile(const std::string& path, const std::string& name, bool is_group,
+    const IPCServer::AccessControl& access_control)
   {
     IPCServer::checkAccessControlName(name);
-
     const std::string basename = getIPCAccessControlFileBasename(name, is_group);
     const std::string separator = (path.at(path.size() - 1) == '/' ? "" : "/");
     const std::string filepath = path + separator + basename;
-
     /*
      * Ensure that only the owner can read/write the file.
      */
     umask(0177);
-
     std::ofstream access_control_stream(filepath);
 
     if (!access_control_stream.good()) {
@@ -83,48 +81,55 @@ namespace usbguard
     }
 
     access_control.save(access_control_stream);
-
     return;
   }
 
-  int usbguard_add_user(int argc, char *argv[])
+  int usbguard_add_user(int argc, char* argv[])
   {
     int opt = 0;
     bool opt_is_group = false;
     bool opt_no_root_check = false;
-
     IPCServer::AccessControl access_control;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-      switch(opt) {
-        case 'h':
-          showHelp(std::cout);
-          return EXIT_SUCCESS;
-        case 'u':
-          opt_is_group = false;
-          break;
-        case 'g':
-          opt_is_group = true;
-          break;
-        case 'p':
-          access_control.merge(std::string("Policy=").append(optarg));
-          break;
-        case 'd':
-          access_control.merge(std::string("Devices=").append(optarg));
-          break;
-        case 'e':
-          access_control.merge(std::string("Exceptions=").append(optarg));
-          break;
-        case 'P':
-          access_control.merge(std::string("Parameters=").append(optarg));
-          break;
-        case 'N':
-          opt_no_root_check = true;
-          break;
-        case '?':
-          showHelp(std::cerr);
-        default:
-          return EXIT_FAILURE;
+      switch (opt) {
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+
+      case 'u':
+        opt_is_group = false;
+        break;
+
+      case 'g':
+        opt_is_group = true;
+        break;
+
+      case 'p':
+        access_control.merge(std::string("Policy=").append(optarg));
+        break;
+
+      case 'd':
+        access_control.merge(std::string("Devices=").append(optarg));
+        break;
+
+      case 'e':
+        access_control.merge(std::string("Exceptions=").append(optarg));
+        break;
+
+      case 'P':
+        access_control.merge(std::string("Parameters=").append(optarg));
+        break;
+
+      case 'N':
+        opt_no_root_check = true;
+        break;
+
+      case '?':
+        showHelp(std::cerr);
+
+      default:
+        return EXIT_FAILURE;
       }
     }
 
@@ -145,9 +150,7 @@ namespace usbguard
 
     const std::string name(argv[0]);
     const std::string path(getIPCAccessControlFilesPath());
-
     createIPCAccessControlFile(path, name, opt_is_group, access_control);
-
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */

@@ -16,7 +16,7 @@ if [[ "$FIRST_IFDEF" != "#ifdef HAVE_BUILD_CONFIG_H" ]]; then
   echo "All source files should include build-config.h before any other file, add: "
   echo "--- snip ---"
   echo " #ifdef HAVE_BUILD_CONFIG_H"
-  echo " #include <build-config.h>"
+  echo "   #include <build-config.h>"
   echo " #endif"
   echo "--- snip ---"
   echo "to the beginning of the source file."

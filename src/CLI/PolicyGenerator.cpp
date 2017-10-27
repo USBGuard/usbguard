@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "PolicyGenerator.hpp"
@@ -26,7 +26,7 @@ namespace usbguard
 {
 
   PolicyGenerator::PolicyGenerator()
-   : _ruleset(nullptr)
+    : _ruleset(nullptr)
   {
     _with_hash = true;
     _hash_only = false;
@@ -91,6 +91,7 @@ namespace usbguard
     }
 
     bool port_specific = _port_specific;
+
     /*
      * If the the global "port specific" flag isn't
      * set, check the "no iSerial port specific" flag

@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Typedefs.hpp"
@@ -29,33 +29,33 @@
 #include <cstddef>
 
 #if defined(USBGUARD_USE_LIBSODIUM)
-#include <sodium.h>
+  #include <sodium.h>
 #elif defined(USBGUARD_USE_LIBGCRYPT)
-#include <gcrypt.h>
+  #include <gcrypt.h>
 #else
-#error "Don't know which crypto library to use."
+  #error "Don't know which crypto library to use."
 #endif
 
 namespace usbguard
 {
   class Hash
   {
-    public:
-      Hash();
-      Hash(const Hash& rhs);
-      Hash(Hash&& rhs);
-      Hash& operator=(Hash&& rhs);
-      ~Hash();
-      size_t update(const std::string& value);
-      size_t update(const void *ptr, size_t size);
-      size_t update(std::istream& stream);
-      std::string getBase64();
-    private:
+  public:
+    Hash();
+    Hash(const Hash& rhs);
+    Hash(Hash&& rhs);
+    Hash& operator=(Hash&& rhs);
+    ~Hash();
+    size_t update(const std::string& value);
+    size_t update(const void* ptr, size_t size);
+    size_t update(std::istream& stream);
+    std::string getBase64();
+  private:
 #if defined(USBGUARD_USE_LIBSODIUM)
-      crypto_hash_sha256_state _state;
+    crypto_hash_sha256_state _state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-      gcry_md_hd_t _state;
+    gcry_md_hd_t _state;
 #endif
   };
 } /* namespace usbguard */

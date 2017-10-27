@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Typedefs.hpp"
@@ -46,8 +46,8 @@ namespace usbguard
     std::string getHeaderLine() const;
     std::string toString(char separator = '\0') const;
 
-   private:
-    std::map<std::string,std::string> _attributes;
+  private:
+    std::map<std::string, std::string> _attributes;
   };
 } /* namespace usbguard */
 

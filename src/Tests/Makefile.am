@@ -45,7 +45,8 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.rws \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/private-with-build-config.sh \
-	$(top_srcdir)/src/Tests/Source/CheckScripts/public-without-build-config.sh
+	$(top_srcdir)/src/Tests/Source/CheckScripts/public-without-build-config.sh \
+	$(top_srcdir)/src/Tests/Source/CheckScripts/code-style.sh
 
 LOG_DRIVER=\
 	$(top_srcdir)/src/Tests/test-driver
@@ -53,6 +54,7 @@ LOG_DRIVER=\
 TESTS_ENVIRONMENT=\
 	builddir=$(top_builddir) \
 	srcdir=$(top_srcdir) \
+	abs_top_srcdir=$(abs_top_srcdir) \
 	USBGUARD_TESTLIB_BASH=$(top_srcdir)/src/Tests/bash-testlib.sh \
 	USBGUARD=$(top_builddir)/usbguard \
 	USBGUARD_DAEMON=$(top_builddir)/usbguard-daemon \

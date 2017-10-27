@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard.hpp"
@@ -29,7 +29,7 @@
 
 namespace usbguard
 {
-  static const char *options_short = "hd";
+  static const char* options_short = "hd";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
@@ -47,23 +47,26 @@ namespace usbguard
     stream << std::endl;
   }
 
-  int usbguard_list_rules(int argc, char *argv[])
+  int usbguard_list_rules(int argc, char* argv[])
   {
     bool show_devices = false;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-      switch(opt) {
-        case 'h':
-          showHelp(std::cout);
-          return EXIT_SUCCESS;
-        case 'd':
-          show_devices = true;
-          break;
-        case '?':
-          showHelp(std::cerr);
-        default:
-          return EXIT_FAILURE;
+      switch (opt) {
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+
+      case 'd':
+        show_devices = true;
+        break;
+
+      case '?':
+        showHelp(std::cerr);
+
+      default:
+        return EXIT_FAILURE;
       }
     }
 
@@ -71,7 +74,7 @@ namespace usbguard
     RuleSet ruleset = ipc.listRules();
 
     // if true, devices which are affected by rule are printed on stdout.
-    if(!show_devices) {
+    if (!show_devices) {
       for (auto rule : ruleset.getRules()) {
         std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
       }
@@ -79,7 +82,8 @@ namespace usbguard
     else {
       for (auto rule : ruleset.getRules()) {
         std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
-        for(auto device_rule : ipc.listDevices(rule->toString())) {
+
+        for (auto device_rule : ipc.listDevices(rule->toString())) {
           std::cout << "\t"<< device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
         }
       }

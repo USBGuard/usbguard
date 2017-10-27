@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/IPCClient.hpp"
@@ -36,24 +36,24 @@ namespace usbguard
     void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
     void DevicePresenceChanged(uint32_t id,
-                               DeviceManager::EventType event,
-                               Rule::Target target,
-                               const std::string& device_rule) override;
+      DeviceManager::EventType event,
+      Rule::Target target,
+      const std::string& device_rule) override;
 
     void DevicePolicyChanged(uint32_t id,
-                             Rule::Target target_old,
-                             Rule::Target target_new,
-                             const std::string& device_rule,
-                             uint32_t rule_id) override;
+      Rule::Target target_old,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id) override;
   private:
     void openExecutable(const std::string& path);
     void closeExecutable();
     bool hasOpenExecutable() const;
 
-    void runExecutable(const std::map<std::string,std::string>& environment);
-    static char ** createExecutableEnvironment(const std::map<std::string,std::string>& environment);
-    static void destroyExecutableEnvironment(char ** const envp);
-    static char *cstrCopy(const char *c_str);
+    void runExecutable(const std::map<std::string, std::string>& environment);
+    static char** createExecutableEnvironment(const std::map<std::string, std::string>& environment);
+    static void destroyExecutableEnvironment(char** const envp);
+    static char* cstrCopy(const char* c_str);
 
     std::string _exec_path;
     int _exec_path_fd {-1};

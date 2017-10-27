@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "USBGuard.hpp"
@@ -29,8 +29,8 @@
 #include <cstdlib>
 
 #ifndef USBGUARD_DAEMON_CONF_PATH
-# warning "Using hard-coded USBGUARD_DAEMON_CONF_PATH value"
-# define USBGUARD_DAEMON_CONF_PATH "/etc/usbguard/usbguard-daemon.conf"
+  # warning "Using hard-coded USBGUARD_DAEMON_CONF_PATH value"
+  #define USBGUARD_DAEMON_CONF_PATH "/etc/usbguard/usbguard-daemon.conf"
 #endif
 
 namespace usbguard
@@ -38,7 +38,7 @@ namespace usbguard
   std::string getDaemonConfigPath()
   {
     USBGUARD_LOG(Trace);
-    const char * const  envval = getenv("USBGUARD_DAEMON_CONF");
+    const char* const  envval = getenv("USBGUARD_DAEMON_CONF");
 
     if (envval != nullptr) {
       USBGUARD_LOG(Debug) << "Returning environment variable path: " << envval;
@@ -68,9 +68,11 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace) << "name=" << name << " is_group=" << is_group;
     std::string basename;
+
     if (is_group) {
       basename.append(":");
     }
+
     basename.append(name);
     return basename;
   }

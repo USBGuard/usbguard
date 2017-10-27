@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include <ext/stdio_filebuf.h>
@@ -30,21 +30,21 @@ namespace usbguard
 #if HAVE_EXT_STDIO_FILEBUF_H
   class FDInputStream : public std::ifstream
   {
-    public:
-      FDInputStream(int fd)
-        : _filebuf_ptr(new __gnu_cxx::stdio_filebuf<char>(fd, std::ios::in))
-      {
-        std::ios::rdbuf(_filebuf_ptr.get());
-      }
+  public:
+    FDInputStream(int fd)
+      : _filebuf_ptr(new __gnu_cxx::stdio_filebuf<char>(fd, std::ios::in))
+    {
+      std::ios::rdbuf(_filebuf_ptr.get());
+    }
 
-      FDInputStream(FDInputStream&& stream)
-        : _filebuf_ptr(std::move(stream._filebuf_ptr))
-      {
-        std::ios::rdbuf(_filebuf_ptr.get());
-      }
+    FDInputStream(FDInputStream&& stream)
+      : _filebuf_ptr(std::move(stream._filebuf_ptr))
+    {
+      std::ios::rdbuf(_filebuf_ptr.get());
+    }
 
-    private:
-      std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
+  private:
+    std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
   };
 #else
 #error "Required header file ext/stdio_filebuf.h not available."

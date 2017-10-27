@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/RuleCondition.hpp"
@@ -37,11 +37,11 @@ namespace usbguard
     LocaltimeCondition(const std::string& time_range, bool negated = false);
     LocaltimeCondition(const LocaltimeCondition& rhs);
     bool update(const Rule& rule);
-    RuleConditionBase * clone() const;
+    RuleConditionBase* clone() const;
 
   protected:
     static std::time_t stringToDaytime(const std::string& string);
-    static std::string tmToString(const struct ::tm * const tm);
+    static std::string tmToString(const struct ::tm* const tm);
 
   private:
     std::time_t _daytime_begin;

@@ -24,7 +24,7 @@
 #include <string>
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+  #define _GNU_SOURCE
 #endif
 
 #include <cerrno>
@@ -35,72 +35,72 @@ namespace usbguard
 {
   class DLL_PUBLIC Exception : public std::exception
   {
-    public:
-      Exception(const std::string& context,
-                const std::string& object,
-                const std::string& reason_val)
-        : _context(context),
-          _object(object),
-          _reason(reason_val)
-      {
-      }
+  public:
+    Exception(const std::string& context,
+      const std::string& object,
+      const std::string& reason_val)
+      : _context(context),
+        _object(object),
+        _reason(reason_val)
+    {
+    }
 
-      Exception(const Exception& rhs)
-        : _context(rhs._context),
-          _object(rhs._object),
-          _reason(rhs._reason)
-      {
-      }
+    Exception(const Exception& rhs)
+      : _context(rhs._context),
+        _object(rhs._object),
+        _reason(rhs._reason)
+    {
+    }
 
-      const std::string& context() const noexcept
-      {
-        return _context;
-      }
+    const std::string& context() const noexcept
+    {
+      return _context;
+    }
 
-      const std::string& object() const noexcept
-      {
-        return _object;
-      }
+    const std::string& object() const noexcept
+    {
+      return _object;
+    }
 
-      const std::string& reason() const noexcept
-      {
-        return _reason;
-      }
+    const std::string& reason() const noexcept
+    {
+      return _reason;
+    }
 
-      void setContext(const std::string& context)
-      {
-        _context = context;
-      }
-      
-      void setObject(const std::string& object)
-      {
-        _object = object;
-      }
-      
-      void setReason(const std::string& reason_val)
-      {
-        _reason = reason_val;
-      }
+    void setContext(const std::string& context)
+    {
+      _context = context;
+    }
 
-      virtual std::string message() const noexcept
-      {
-        try {
-          return _context + ": " + (!_object.empty() ? _object + ": " : "") + _reason;
-        }
-        catch(...) {
-          return "usbguard::Exception: exception^2";
-        }
-      }
+    void setObject(const std::string& object)
+    {
+      _object = object;
+    }
 
-      virtual const char * what() const noexcept
-      {
-        return "usbguard::Exception";
-      }
+    void setReason(const std::string& reason_val)
+    {
+      _reason = reason_val;
+    }
 
-    private:
-      std::string _context;
-      std::string _object;
-      std::string _reason;
+    virtual std::string message() const noexcept
+    {
+      try {
+        return _context + ": " + (!_object.empty() ? _object + ": " : "") + _reason;
+      }
+      catch (...) {
+        return "usbguard::Exception: exception^2";
+      }
+    }
+
+    virtual const char* what() const noexcept
+    {
+      return "usbguard::Exception";
+    }
+
+  private:
+    std::string _context;
+    std::string _object;
+    std::string _reason;
   };
 
 #define USBGUARD_BUG(m) \
@@ -108,17 +108,17 @@ namespace usbguard
 
   class ErrnoException : public Exception
   {
-    public:
-      ErrnoException(const std::string& context, const std::string& object, const int errno_value)
-        : Exception(context, object, ErrnoException::reasonFromErrno(errno_value))
-      {
-      }
-    private:
-      static std::string reasonFromErrno(const int errno_value)
-      {
-        char buffer[1024];
-        return std::string(strerror_r(errno_value, buffer, sizeof buffer));
-      }
+  public:
+    ErrnoException(const std::string& context, const std::string& object, const int errno_value)
+      : Exception(context, object, ErrnoException::reasonFromErrno(errno_value))
+    {
+    }
+  private:
+    static std::string reasonFromErrno(const int errno_value)
+    {
+      char buffer[1024];
+      return std::string(strerror_r(errno_value, buffer, sizeof buffer));
+    }
   };
 
 #define USBGUARD_SYSCALL_THROW(context, syscall_bool_expression) \
@@ -130,51 +130,51 @@ namespace usbguard
 
   class IPCException : public Exception
   {
-    public:
-      IPCException()
-        : Exception("", "", "")
-      {
-      }
+  public:
+    IPCException()
+      : Exception("", "", "")
+    {
+    }
 
-      IPCException(const Exception& exception,
-                   uint64_t message_id = 0)
-        : Exception(exception),
-          _message_id(message_id)
-      {
-      }
+    IPCException(const Exception& exception,
+      uint64_t message_id = 0)
+      : Exception(exception),
+        _message_id(message_id)
+    {
+    }
 
-      IPCException(const std::string& context,
-                   const std::string& object,
-                   const std::string& reason,
-                   uint64_t message_id = 0)
-        : Exception(context, object, reason),
-          _message_id(message_id)
-      {
-      }
+    IPCException(const std::string& context,
+      const std::string& object,
+      const std::string& reason,
+      uint64_t message_id = 0)
+      : Exception(context, object, reason),
+        _message_id(message_id)
+    {
+    }
 
-      IPCException(const IPCException& rhs)
-        : Exception(rhs),
-          _message_id(rhs._message_id)
-      {
-      }
+    IPCException(const IPCException& rhs)
+      : Exception(rhs),
+        _message_id(rhs._message_id)
+    {
+    }
 
-      bool hasMessageID() const noexcept
-      {
-        return _message_id != 0;
-      }
+    bool hasMessageID() const noexcept
+    {
+      return _message_id != 0;
+    }
 
-      uint64_t messageID() const noexcept
-      {
-        return _message_id;
-      }
+    uint64_t messageID() const noexcept
+    {
+      return _message_id;
+    }
 
-      void setMessageID(uint64_t message_id)
-      {
-        _message_id = message_id;
-      }
+    void setMessageID(uint64_t message_id)
+    {
+      _message_id = message_id;
+    }
 
-    private:
-      uint64_t _message_id;
+  private:
+    uint64_t _message_id;
   };
 } /* namespace usbguard */
 

@@ -22,21 +22,18 @@
 
 using namespace usbguard;
 
-TEST_CASE("Default constructed rule", "[Rule]") {
+TEST_CASE("Default constructed rule", "[Rule]")
+{
   Rule rule;
-
   SECTION("has default id") {
     REQUIRE(rule.getRuleID() == Rule::DefaultID);
   }
-
   SECTION("is implicit") {
     REQUIRE(rule.isImplicit());
   }
-
   SECTION("has invalid target") {
     REQUIRE(rule.getTarget() == Rule::Target::Invalid);
   }
-
   SECTION("has empty attributes") {
     REQUIRE(rule.attributeDeviceID().empty());
     REQUIRE(rule.attributeSerial().empty());
@@ -45,32 +42,28 @@ TEST_CASE("Default constructed rule", "[Rule]") {
     REQUIRE(rule.attributeViaPort().empty());
     REQUIRE(rule.attributeWithInterface().empty());
   }
-
   SECTION("is not valid") {
     REQUIRE_FALSE(rule);
   }
-
   SECTION("cannot be converted to a string form unless forced to") {
     REQUIRE_THROWS(rule.toString());
     REQUIRE_NOTHROW(rule.toString(/*invalid=*/true));
   }
 }
 
-TEST_CASE("Target-only rule", "[RuleParser]") {
+TEST_CASE("Target-only rule", "[RuleParser]")
+{
   Rule rule;
-
   SECTION("from/to string: allow") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow"));
     REQUIRE(rule.getTarget() == Rule::Target::Allow);
     REQUIRE(rule.toString() == "allow");
   }
-
   SECTION("from/to string: block") {
     REQUIRE_NOTHROW(rule = Rule::fromString("block"));
     REQUIRE(rule.getTarget() == Rule::Target::Block);
     REQUIRE(rule.toString() == "block");
   }
-
   SECTION("from/to string: reject") {
     REQUIRE_NOTHROW(rule = Rule::fromString("reject"));
     REQUIRE(rule.getTarget() == Rule::Target::Reject);

@@ -31,7 +31,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace usbguard {
+namespace usbguard
+{
   /*
    * Maximum lenght of a string that is read from a USB descriptor
    * Since the string descriptors have an 8-bit length field, the
@@ -75,20 +76,17 @@ namespace usbguard {
     AssociationInterface = USB_DESCRIPTOR_TYPE_ASSOCIATION_INTERFACE
   };
 
-  struct DLL_PUBLIC USBDescriptorHeader
-  {
+  struct DLL_PUBLIC USBDescriptorHeader {
     uint8_t bLength;
     uint8_t bDescriptorType;
   } __attribute__((packed));
 
-  struct DLL_PUBLIC USBDescriptor
-  {
+  struct DLL_PUBLIC USBDescriptor {
     struct USBDescriptorHeader bHeader;
     uint8_t bDescriptorData[256-sizeof(USBDescriptorHeader)];
   } __attribute__((packed));
 
-  struct DLL_PUBLIC USBDeviceDescriptor
-  {
+  struct DLL_PUBLIC USBDeviceDescriptor {
     struct USBDescriptorHeader bHeader;
     uint16_t bcdUSB;
     uint8_t bDeviceClass;
@@ -104,8 +102,7 @@ namespace usbguard {
     uint8_t bNumConfigurations;
   } __attribute__((packed));
 
-  struct DLL_PUBLIC USBConfigurationDescriptor
-  {
+  struct DLL_PUBLIC USBConfigurationDescriptor {
     struct USBDescriptorHeader bHeader;
     uint16_t wTotalLength;
     uint8_t bNumInterfaces;
@@ -115,9 +112,8 @@ namespace usbguard {
     uint8_t bMaxPower;
   } __attribute__((packed));
 
-  struct DLL_PUBLIC USBInterfaceDescriptor
-  {
-    struct USBDescriptorHeader bHeader; 
+  struct DLL_PUBLIC USBInterfaceDescriptor {
+    struct USBDescriptorHeader bHeader;
     uint8_t bInterfaceNumber;
     uint8_t bAlternateSetting;
     uint8_t bNumEndpoints;
@@ -127,8 +123,7 @@ namespace usbguard {
     uint8_t iInterface;
   } __attribute__((packed));
 
-  struct USBEndpointDescriptor
-  {
+  struct USBEndpointDescriptor {
     struct USBDescriptorHeader bHeader;
     uint8_t bEndpointAddress;
     uint8_t bmAttributes;
@@ -136,8 +131,7 @@ namespace usbguard {
     uint8_t bInterval;
   } __attribute__((packed));
 
-  struct USBAudioEndpointDescriptor
-  {
+  struct USBAudioEndpointDescriptor {
     struct USBDescriptorHeader bHeader;
     uint8_t bEndpointAddress;
     uint8_t bmAttributes;
@@ -214,9 +208,9 @@ namespace usbguard {
 
   class DLL_PUBLIC USBDescriptorParserHooks
   {
-    public:
-      virtual void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_in, USBDescriptor* descriptor_out);
-      virtual void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
+  public:
+    virtual void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_in, USBDescriptor* descriptor_out);
+    virtual void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
   };
 
   class DLL_PUBLIC USBDescriptorParser
@@ -257,21 +251,27 @@ namespace usbguard {
     /**
      * Returns a vector of (bDescriptorType, count) pairs.
      */
-    const std::vector<std::pair<uint8_t,size_t>> getDescriptorCounts() const;
+    const std::vector<std::pair<uint8_t, size_t>> getDescriptorCounts() const;
 
   private:
     USBDescriptorParserHooks& _hooks;
 
     std::unordered_map<uint8_t, std::vector<USBDescriptor>> _dstate_map; /**< Descriptor State Map */
     std::unordered_map<uint8_t, size_t> _count_map;
- };
+  };
 
- void DLL_PUBLIC USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
- void DLL_PUBLIC USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
- void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
- void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
- void DLL_PUBLIC USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
- void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */
 

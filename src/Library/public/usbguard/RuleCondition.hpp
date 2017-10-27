@@ -35,7 +35,7 @@ namespace usbguard
     RuleConditionBase(const RuleConditionBase& rhs);
     virtual ~RuleConditionBase();
 
-    virtual void init(Interface * const interface_ptr);
+    virtual void init(Interface* const interface_ptr);
     virtual void fini();
     virtual bool update(const Rule& rule) = 0;
     virtual RuleConditionBase* clone() const = 0;
@@ -59,21 +59,21 @@ namespace usbguard
 
   class DLL_PUBLIC RuleCondition
   {
-    public:
-      RuleCondition();
-      RuleCondition(const std::string& condition_string);
-      RuleCondition(const RuleCondition& rhs);
-      RuleCondition(RuleCondition&& rhs);
+  public:
+    RuleCondition();
+    RuleCondition(const std::string& condition_string);
+    RuleCondition(const RuleCondition& rhs);
+    RuleCondition(RuleCondition&& rhs);
 
-      RuleCondition& operator=(const RuleCondition& rhs);
-      RuleCondition& operator=(RuleCondition&& rhs);
+    RuleCondition& operator=(const RuleCondition& rhs);
+    RuleCondition& operator=(RuleCondition&& rhs);
 
-      RuleConditionBase* operator->();
-      RuleConditionBase& operator*();
+    RuleConditionBase* operator->();
+    RuleConditionBase& operator*();
 
-      std::string toRuleString() const;
-    private:
-      std::unique_ptr<RuleConditionBase> _condition;
+    std::string toRuleString() const;
+  private:
+    std::unique_ptr<RuleConditionBase> _condition;
   };
 } /*namespace usbguard */
 

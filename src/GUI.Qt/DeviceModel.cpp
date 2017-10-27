@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DeviceModel.h"
@@ -34,7 +34,7 @@ DeviceModelItem::DeviceModelItem()
   _requested_target = usbguard::Rule::Target::Invalid;
 }
 
-DeviceModelItem::DeviceModelItem(const usbguard::Rule &device_rule, DeviceModelItem *parent)
+DeviceModelItem::DeviceModelItem(const usbguard::Rule& device_rule, DeviceModelItem* parent)
 {
   _parent = parent;
   _device_rule = device_rule;
@@ -47,17 +47,17 @@ DeviceModelItem::~DeviceModelItem()
   qDeleteAll(_children);
 }
 
-void DeviceModelItem::appendChild(DeviceModelItem *child)
+void DeviceModelItem::appendChild(DeviceModelItem* child)
 {
   _children.append(child);
 }
 
-void DeviceModelItem::removeChild(DeviceModelItem *child)
+void DeviceModelItem::removeChild(DeviceModelItem* child)
 {
   (void)_children.takeAt(_children.indexOf(child));
 }
 
-DeviceModelItem *DeviceModelItem::child(int row)
+DeviceModelItem* DeviceModelItem::child(int row)
 {
   return _children.value(row);
 }
@@ -74,35 +74,43 @@ int DeviceModelItem::columnCount() const
 
 QVariant DeviceModelItem::data(int column)
 {
-  switch(column)
-  {
-    case 0:
-      return QVariant(_device_rule.getRuleID());
-    case 1:
-      return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
-    case 2:
-      return QVariant(QCoreApplication::translate("MainWindow",
-                                                  usbguard::Rule::targetToString(_requested_target).c_str()));
-    case 3:
-      return QVariant(QString::fromStdString(_device_rule.getDeviceID().toString()));
-    case 4:
-      return QVariant(QString::fromStdString(_device_rule.getName()));
-    case 5:
-      return QVariant(QString::fromStdString(_device_rule.getSerial()));
-    case 6:
-      return QVariant(QString::fromStdString(_device_rule.getViaPort()));
-    case 7:
-      {
-        QString interface_string;
-        for (auto interface : _device_rule.attributeWithInterface().values()) {
-          interface_string.append(QString::fromStdString(interface.toRuleString()));
-          interface_string.append(" ");
-        }
-        return QVariant(interface_string);
-      }
-    default:
-      return QVariant();
+  switch (column) {
+  case 0:
+    return QVariant(_device_rule.getRuleID());
+
+  case 1:
+    return QVariant(_requested_target != _device_rule.getTarget() ? QString('*') : QString());
+
+  case 2:
+    return QVariant(QCoreApplication::translate("MainWindow",
+          usbguard::Rule::targetToString(_requested_target).c_str()));
+
+  case 3:
+    return QVariant(QString::fromStdString(_device_rule.getDeviceID().toString()));
+
+  case 4:
+    return QVariant(QString::fromStdString(_device_rule.getName()));
+
+  case 5:
+    return QVariant(QString::fromStdString(_device_rule.getSerial()));
+
+  case 6:
+    return QVariant(QString::fromStdString(_device_rule.getViaPort()));
+
+  case 7: {
+    QString interface_string;
+
+    for (auto interface : _device_rule.attributeWithInterface().values()) {
+      interface_string.append(QString::fromStdString(interface.toRuleString()));
+      interface_string.append(" ");
     }
+
+    return QVariant(interface_string);
+  }
+
+  default:
+    return QVariant();
+  }
 }
 
 int DeviceModelItem::row() const
@@ -115,7 +123,7 @@ int DeviceModelItem::row() const
   }
 }
 
-DeviceModelItem *DeviceModelItem::parent()
+DeviceModelItem* DeviceModelItem::parent()
 {
   return _parent;
 }
@@ -151,7 +159,7 @@ quint32 DeviceModelItem::getDeviceID() const
   return _device_rule.getRuleID();
 }
 
-DeviceModel::DeviceModel(QObject *parent)
+DeviceModel::DeviceModel(QObject* parent)
   : QAbstractItemModel(parent)
 {
   _root_item = new DeviceModelItem();
@@ -168,70 +176,91 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
   if (orientation != Qt::Horizontal) {
     return QVariant();
   }
+
   if (role != Qt::DisplayRole && role != Qt::TextAlignmentRole) {
     return QVariant();
   }
-  switch(section)
-  {
-    case 0:
-      if (role == Qt::DisplayRole) {
-        return tr("ID");
-      }
-      else {
-        return Qt::AlignCenter;
-      }
-      break;
-    case 1:
-      if (role == Qt::DisplayRole) {
-        return tr(" M "); /* Modified flag */
-      }
-      if (role == Qt::TextAlignmentRole) {
-        return Qt::AlignCenter;
-      }
-      break;
-    case 2:
-      if (role == Qt::DisplayRole) {
-        return tr("Target");
-      }
-      if (role == Qt::TextAlignmentRole) {
-        return Qt::AlignCenter;
-      }
-      break;
-    case 3:
-      if (role == Qt::DisplayRole) {
-        return tr("USB ID");
-      }
-      if (role == Qt::TextAlignmentRole) {
-        return Qt::AlignCenter;
-      }
-      break;
-    case 4:
-      if (role == Qt::DisplayRole) {
-        return tr("Name");
-      }
-      break;
-    case 5:
-      if (role == Qt::DisplayRole) {
-        return tr("Serial");
-      }
-      break;
-    case 6:
-      if (role == Qt::DisplayRole) {
-        return tr("Port");
-      }
-      break;
-    case 7:
-      if (role == Qt::DisplayRole) {
-        return tr("Interfaces");
-      }
-      break;
-    default:
-      break;
+
+  switch (section) {
+  case 0:
+    if (role == Qt::DisplayRole) {
+      return tr("ID");
+    }
+    else {
+      return Qt::AlignCenter;
+    }
+
+    break;
+
+  case 1:
+    if (role == Qt::DisplayRole) {
+      return tr(" M "); /* Modified flag */
+    }
+
+    if (role == Qt::TextAlignmentRole) {
+      return Qt::AlignCenter;
+    }
+
+    break;
+
+  case 2:
+    if (role == Qt::DisplayRole) {
+      return tr("Target");
+    }
+
+    if (role == Qt::TextAlignmentRole) {
+      return Qt::AlignCenter;
+    }
+
+    break;
+
+  case 3:
+    if (role == Qt::DisplayRole) {
+      return tr("USB ID");
+    }
+
+    if (role == Qt::TextAlignmentRole) {
+      return Qt::AlignCenter;
+    }
+
+    break;
+
+  case 4:
+    if (role == Qt::DisplayRole) {
+      return tr("Name");
+    }
+
+    break;
+
+  case 5:
+    if (role == Qt::DisplayRole) {
+      return tr("Serial");
+    }
+
+    break;
+
+  case 6:
+    if (role == Qt::DisplayRole) {
+      return tr("Port");
+    }
+
+    break;
+
+  case 7:
+    if (role == Qt::DisplayRole) {
+      return tr("Interfaces");
+    }
+
+    break;
+
+  default:
+    break;
   }
+
   return QVariant();
 }
 
-QModelIndex DeviceModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex DeviceModel::index(int row, int column, const QModelIndex& parent) const
 {
   if (!hasIndex(row, column, parent)) {
     return QModelIndex();
@@ -256,7 +285,7 @@ QModelIndex DeviceModel::index(int row, int column, const QModelIndex &parent) c
   }
 }
 
-QModelIndex DeviceModel::parent(const QModelIndex &index) const
+QModelIndex DeviceModel::parent(const QModelIndex& index) const
 {
   if (!index.isValid()) {
     return QModelIndex();
@@ -273,7 +302,7 @@ QModelIndex DeviceModel::parent(const QModelIndex &index) const
   }
 }
 
-int DeviceModel::rowCount(const QModelIndex &parent) const
+int DeviceModel::rowCount(const QModelIndex& parent) const
 {
   if (parent.column() > 0) {
     return 0;
@@ -291,7 +320,7 @@ int DeviceModel::rowCount(const QModelIndex &parent) const
   return parent_item->childCount();
 }
 
-int DeviceModel::columnCount(const QModelIndex &parent) const
+int DeviceModel::columnCount(const QModelIndex& parent) const
 {
   if (!parent.isValid()) {
     return _root_item->columnCount();
@@ -301,27 +330,29 @@ int DeviceModel::columnCount(const QModelIndex &parent) const
   }
 }
 
-QVariant DeviceModel::data(const QModelIndex &index, int role) const
+QVariant DeviceModel::data(const QModelIndex& index, int role) const
 {
   if (!index.isValid()) {
     return QVariant();
   }
+
   if (role == Qt::TextAlignmentRole) {
     return headerData(index.column(), Qt::Horizontal, role);
   }
+
   if (role != Qt::DisplayRole) {
     return QVariant();
   }
 
   DeviceModelItem* item = static_cast<DeviceModelItem*>(index.internalPointer());
-
   return item->data(index.column());
 }
 
-Qt::ItemFlags DeviceModel::flags(const QModelIndex &index) const
+Qt::ItemFlags DeviceModel::flags(const QModelIndex& index) const
 {
-  if (!index.isValid())
+  if (!index.isValid()) {
     return Qt::NoItemFlags;
+  }
 
   if (index.column() == 2) {
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
@@ -331,20 +362,17 @@ Qt::ItemFlags DeviceModel::flags(const QModelIndex &index) const
   }
 }
 
-void DeviceModel::insertDevice(const usbguard::Rule &device_rule)
+void DeviceModel::insertDevice(const usbguard::Rule& device_rule)
 {
   USBGUARD_LOG(Trace) << "device_rule=" << device_rule.toString();
-
   const uint32_t device_id = device_rule.getRuleID();
   const QString device_hash = QString::fromStdString(device_rule.getHash());
   const QString parent_hash = QString::fromStdString(device_rule.getParentHash());
-
   DeviceModelItem* parent_item = _hash_map.value(parent_hash, _root_item);
   DeviceModelItem* child_item = new DeviceModelItem(device_rule, parent_item);
-
   layoutAboutToBeChanged();
   beginInsertRows(createIndex(parent_item->row(), 0, parent_item),
-                  parent_item->childCount(), parent_item->childCount());
+    parent_item->childCount(), parent_item->childCount());
   parent_item->appendChild(child_item);
   _hash_map.insert(device_hash, child_item);
   _id_map.insert(device_id, child_item);
@@ -355,8 +383,7 @@ void DeviceModel::insertDevice(const usbguard::Rule &device_rule)
 void DeviceModel::updateDeviceTarget(quint32 device_id, usbguard::Rule::Target target)
 {
   USBGUARD_LOG(Trace) << "device_id=" << device_id
-                      << " target=" << usbguard::Rule::targetToString(target);
-
+    << " target=" << usbguard::Rule::targetToString(target);
   DeviceModelItem* item = _id_map.value(device_id, nullptr);
 
   if (item == nullptr) {
@@ -366,28 +393,28 @@ void DeviceModel::updateDeviceTarget(quint32 device_id, usbguard::Rule::Target t
   if (item->getDeviceTarget() != target) {
     item->setDeviceTarget(target);
     emit dataChanged(createIndex(item->row(), 0, item),
-                     createIndex(item->row(), item->columnCount() - 1, item)
+      createIndex(item->row(), item->columnCount() - 1, item)
 #if defined(HAVE_QT5)
-                     ,QVector<int>() << Qt::DisplayRole);
+      , QVector<int>() << Qt::DisplayRole);
 #else
-                     );
+    );
 #endif
   }
 }
 
-void DeviceModel::updateRequestedTarget(DeviceModelItem *item, usbguard::Rule::Target target)
+void DeviceModel::updateRequestedTarget(DeviceModelItem* item, usbguard::Rule::Target target)
 {
   USBGUARD_LOG(Trace) << "item=" << item
-                      << " target=" << usbguard::Rule::targetToString(target);
+    << " target=" << usbguard::Rule::targetToString(target);
 
   if (item->getRequestedTarget() != target) {
     item->setRequestedTarget(target);
     emit dataChanged(createIndex(item->row(), 0, item),
-                     createIndex(item->row(), item->columnCount() - 1, item)
+      createIndex(item->row(), item->columnCount() - 1, item)
 #if defined(HAVE_QT5)
-                     ,QVector<int>() << Qt::DisplayRole);
+      , QVector<int>() << Qt::DisplayRole);
 #else
-                     );
+    );
 #endif
   }
 }
@@ -395,7 +422,6 @@ void DeviceModel::updateRequestedTarget(DeviceModelItem *item, usbguard::Rule::T
 void DeviceModel::removeDevice(quint32 device_id)
 {
   USBGUARD_LOG(Trace) << "device_id=" << device_id;
-
   DeviceModelItem* item = _id_map.value(device_id, nullptr);
 
   if (item == nullptr) {
@@ -406,9 +432,9 @@ void DeviceModel::removeDevice(quint32 device_id)
   }
 }
 
-void DeviceModel::removeDevice(DeviceModelItem* item, bool notify) {
+void DeviceModel::removeDevice(DeviceModelItem* item, bool notify)
+{
   USBGUARD_LOG(Trace) << "item=" << item << " notify=" << notify;
-
   DeviceModelItem* parent_item = item->parent();
 
   if (parent_item == nullptr) {
@@ -441,7 +467,7 @@ bool DeviceModel::containsDevice(quint32 device_id) const
   return _id_map.count(device_id) > 0;
 }
 
-QModelIndex DeviceModel::createRowEditIndex(const QModelIndex &index) const
+QModelIndex DeviceModel::createRowEditIndex(const QModelIndex& index) const
 {
   return createIndex(index.row(), 2, index.internalPointer());
 }
@@ -462,11 +488,12 @@ QMap<quint32, usbguard::Rule::Target> DeviceModel::getModifiedDevices() const
 void DeviceModel::clear()
 {
   USBGUARD_LOG(Trace);
-
   beginResetModel();
+
   while (_root_item->childCount() > 0) {
     removeDevice(_root_item->child(0), /*notify=*/false);
   }
+
   endResetModel();
 }
 

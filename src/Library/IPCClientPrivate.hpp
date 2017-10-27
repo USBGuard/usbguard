@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "IPCPrivate.hpp"
@@ -39,7 +39,8 @@
 #include <qb/qbipcc.h>
 #include <qb/qbloop.h>
 
-namespace usbguard {
+namespace usbguard
+{
   class IPCClientPrivate
   {
     using MessageHandler = IPC::MessageHandler<IPCClientPrivate>;
@@ -63,13 +64,13 @@ namespace usbguard {
 
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
     const std::vector<Rule> listDevices(const std::string& query);
-    
+
     void processReceiveEvent();
 
   private:
-    static int32_t qbPollWakeupFn(int32_t fd, int32_t revents, void *data);
-    static int32_t qbIPCMessageProcessFn(int32_t fd, int32_t revents, void *data);
- 
+    static int32_t qbPollWakeupFn(int32_t fd, int32_t revents, void* data);
+    static int32_t qbIPCMessageProcessFn(int32_t fd, int32_t revents, void* data);
+
     void destruct();
     void thread();
     void wakeup();
@@ -83,7 +84,7 @@ namespace usbguard {
       const uint32_t type_number = IPC::messageTypeNameToNumber(T::default_instance().GetTypeName());
       _handlers.emplace(type_number, MessageHandler::create<T>(*this, method));
     }
- 
+
     template<typename ProtobufType>
     std::unique_ptr<ProtobufType> qbIPCSendRecvMessage(ProtobufType& message_out)
     {
@@ -97,7 +98,7 @@ namespace usbguard {
     }
 
     IPC::MessagePointer qbIPCSendRecvMessage(IPC::MessageType& message);
- 
+
     std::string receive();
     void process(const std::string& buffer);
     void handleIPCPayload(uint32_t payload_type, const std::string& payload);
@@ -109,8 +110,8 @@ namespace usbguard {
 
     IPCClient& _p_instance;
 
-    qb_loop_t *_qb_loop;
-    qb_ipcc_connection_t *_qb_conn;
+    qb_loop_t* _qb_loop;
+    qb_ipcc_connection_t* _qb_conn;
     int _qb_fd;
 
     int _wakeup_fd;

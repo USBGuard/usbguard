@@ -26,15 +26,14 @@ namespace usbguard
 {
   class DLL_PUBLIC Policy
   {
-    public:
-      enum class EventType
-      {
-        Insert = 1,
-        Update = 2,
-        Remove = 3,
-      };
+  public:
+    enum class EventType {
+      Insert = 1,
+      Update = 2,
+      Remove = 3,
+    };
 
-      static std::string eventTypeToString(EventType event);
+    static std::string eventTypeToString(EventType event);
   };
 } /* namespace usbguard */
 

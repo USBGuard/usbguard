@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Typedefs.hpp"
@@ -34,7 +34,7 @@ namespace usbguard
     FixedStateCondition(bool state, bool negated = false);
     FixedStateCondition(const FixedStateCondition& rhs);
     bool update(const Rule& rule);
-    RuleConditionBase * clone() const;
+    RuleConditionBase* clone() const;
   private:
     const bool _state;
   };

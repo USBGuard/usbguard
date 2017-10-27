@@ -30,7 +30,8 @@
 
 #include <cstdint>
 
-namespace usbguard {
+namespace usbguard
+{
   class DeviceManagerHooks;
   class DeviceManagerPrivate;
   class DLL_PUBLIC DeviceManager
@@ -50,7 +51,7 @@ namespace usbguard {
     DeviceManager(DeviceManagerHooks& hooks);
     DeviceManager(const DeviceManager& rhs);
     const DeviceManager& operator=(const DeviceManager& rhs);
-    
+
     virtual ~DeviceManager();
 
     virtual void setDefaultBlockedState(bool state) = 0;
@@ -58,7 +59,7 @@ namespace usbguard {
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
-    
+
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;
 
@@ -81,7 +82,7 @@ namespace usbguard {
     static std::shared_ptr<DeviceManager> create(DeviceManagerHooks& hooks, const std::string& backend);
 
   private:
-    DeviceManagerPrivate *d_pointer;
+    DeviceManagerPrivate* d_pointer;
   };
 
 } /* namespace usbguard */

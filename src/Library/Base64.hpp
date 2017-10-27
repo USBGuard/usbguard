@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include <string>
@@ -29,11 +29,11 @@ namespace usbguard
   size_t base64DecodedSize(size_t encoded_size);
 
   std::string base64Encode(const std::string& value);
-  std::string base64Encode(const uint8_t *buffer, size_t buflen);
+  std::string base64Encode(const uint8_t* buffer, size_t buflen);
 
   std::string base64Decode(const std::string& value);
-  size_t base64Decode(const std::string& value, void *buffer, size_t buflen);
-  std::string base64Decode(const char * const data, const size_t size);
+  size_t base64Decode(const std::string& value, void* buffer, size_t buflen);
+  std::string base64Decode(const char* const data, const size_t size);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

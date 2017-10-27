@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #if defined(HAVE_UEVENT)
@@ -46,7 +46,8 @@
 #include <limits.h>
 #include <stdlib.h>
 
-namespace usbguard {
+namespace usbguard
+{
   UEventDevice::UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device)
     : Device(device_manager)
   {
@@ -64,7 +65,8 @@ namespace usbguard {
       setParentID(Rule::RootID);
       setParentHash(hashString(sysfs_parent_path));
     }
-    /* 
+
+    /*
      * Set name
      */
     setName(sysfs_device.readAttribute("product", /*strip_last_null=*/true, /*optional=*/true));
@@ -96,7 +98,7 @@ namespace usbguard {
     }
     else {
       /*
-       * Block the device if we get an unexpected value 
+       * Block the device if we get an unexpected value
        */
       setTarget(Rule::Target::Block);
     }
@@ -105,7 +107,6 @@ namespace usbguard {
      * Process USB descriptor data
      */
     FDInputStream descriptor_stream(sysfs_device.openAttribute("descriptors"));
-
     /* Find out the descriptor data stream size */
     size_t descriptor_expected_size = 0;
 
@@ -114,14 +115,14 @@ namespace usbguard {
     }
 
     initializeHash();
-
     USBDescriptorParser parser(*this);
+
     if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
-      throw Exception("UEventDevice", sysfs_device.getPath(), "USB descriptor parser processed less data than the size of a USB device descriptor");
+      throw Exception("UEventDevice", sysfs_device.getPath(),
+        "USB descriptor parser processed less data than the size of a USB device descriptor");
     }
 
     finalizeHash();
-
     /*
      * From now own we take ownership of the SysFSDevice instance.
      */
@@ -145,7 +146,6 @@ namespace usbguard {
     }
 
     const USBInterfaceType hub_interface("09:00:*");
-
     return hub_interface.appliesTo(getInterfaceTypes()[0]);
   }
 
@@ -154,10 +154,10 @@ namespace usbguard {
     return getSysPath();
   }
 
-  void UEventDevice::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
+  void UEventDevice::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
+    USBDescriptor* descriptor_out)
   {
     USBGUARD_LOG(Trace);
-
     USBDescriptorParserHooks::parseUSBDescriptor(parser, descriptor_raw, descriptor_out);
 
     if (isLinuxRootHubDeviceDescriptor(descriptor_out)) {
@@ -171,26 +171,30 @@ namespace usbguard {
   void UEventDevice::loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor)
   {
     const auto type = static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType);
- 
-    switch(type) {
-      case USBDescriptorType::Device:
-        loadDeviceDescriptor(parser, descriptor);
-        break;
-      case USBDescriptorType::Configuration:
-        loadConfigurationDescriptor(parser, descriptor);
-        break;
-      case USBDescriptorType::Interface:
-        loadInterfaceDescriptor(parser, descriptor);
-        break;
-      case USBDescriptorType::Endpoint:
-        loadEndpointDescriptor(parser, descriptor);
-        break;
-      case USBDescriptorType::AssociationInterface:
-      case USBDescriptorType::Unknown:
-      case USBDescriptorType::String:
-      default:
-        USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type
-                            << " size=" << descriptor->bHeader.bLength;
+
+    switch (type) {
+    case USBDescriptorType::Device:
+      loadDeviceDescriptor(parser, descriptor);
+      break;
+
+    case USBDescriptorType::Configuration:
+      loadConfigurationDescriptor(parser, descriptor);
+      break;
+
+    case USBDescriptorType::Interface:
+      loadInterfaceDescriptor(parser, descriptor);
+      break;
+
+    case USBDescriptorType::Endpoint:
+      loadEndpointDescriptor(parser, descriptor);
+      break;
+
+    case USBDescriptorType::AssociationInterface:
+    case USBDescriptorType::Unknown:
+    case USBDescriptorType::String:
+    default:
+      USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type
+        << " size=" << descriptor->bHeader.bLength;
     }
   }
 
@@ -202,17 +206,18 @@ namespace usbguard {
       return false;
     }
 
-    const USBDeviceDescriptor * const device_descriptor = \
+    const USBDeviceDescriptor* const device_descriptor = \
       reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
 
     if (device_descriptor->idVendor == 0x1d6b /* Linux Foundation */) {
       switch (device_descriptor->idProduct) {
-        case 0x0001: /* 1.1 root hub */
-        case 0x0002: /* 2.0 root hub */
-        case 0x0003: /* 3.0 root hub */
-          return true;
-        default:
-          return false;
+      case 0x0001: /* 1.1 root hub */
+      case 0x0002: /* 2.0 root hub */
+      case 0x0003: /* 3.0 root hub */
+        return true;
+
+      default:
+        return false;
       }
     }
 
@@ -222,7 +227,6 @@ namespace usbguard {
   void UEventDevice::updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* const descriptor)
   {
     USBGUARD_LOG(Trace);
-
     USBDeviceDescriptor descriptor_modified = *reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
     descriptor_modified.bcdDevice = 0;
     updateHash(&descriptor_modified, sizeof descriptor_modified);
@@ -243,9 +247,8 @@ namespace usbguard {
   {
     setDefaultBlockedState(/*state=*/true);
     setEnumerationOnlyMode(/*state=*/false);
-
     USBGUARD_SYSCALL_THROW("UEvent device manager",
-       (_wakeup_fd = eventfd(0, 0)) < 0);
+      (_wakeup_fd = eventfd(0, 0)) < 0);
 
     if (!_dummy_mode) {
       _uevent_fd = ueventOpen();
@@ -260,10 +263,13 @@ namespace usbguard {
     if (getRestoreControllerDeviceState()) {
       setDefaultBlockedState(/*state=*/false); // FIXME: Set to previous state
     }
+
     stop();
+
     if (_uevent_fd >= 0) {
       (void)close(_uevent_fd);
     }
+
     if (_wakeup_fd >= 0) {
       (void)close(_wakeup_fd);
     }
@@ -299,10 +305,9 @@ namespace usbguard {
   void UEventDeviceManager::scan()
   {
     USBGUARD_LOG(Trace);
-
     std::unique_lock<std::mutex> lock(_enumeration_mutex);
     Restorer<std::atomic<bool>, bool> \
-      r(_enumeration, /*transient=*/true, /*restored=*/false);
+    r(_enumeration, /*transient=*/true, /*restored=*/false);
 
     if (!_dummy_mode) {
       _enumeration_count = ueventEnumerateDevices();
@@ -324,7 +329,7 @@ namespace usbguard {
     const auto timeout = std::chrono::seconds(2 * _enumeration_count);
 
     if (!_enumeration_complete.wait_for(lock, timeout,
-          [&] { return (_enumeration_count > 0 ? false : true); })) {
+        [&] { return (_enumeration_count > 0 ? false : true); })) {
       throw Exception("UEventDeviceManager", "present devices", "enumeration timeout");
     }
   }
@@ -332,30 +337,24 @@ namespace usbguard {
   std::shared_ptr<Device> UEventDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
   {
     USBGUARD_LOG(Trace) << "id=" << id
-                        << " target=" << Rule::targetToString(target);
-
+      << " target=" << Rule::targetToString(target);
     std::shared_ptr<UEventDevice> device = std::static_pointer_cast<UEventDevice>(getDevice(id));
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
-
     sysfsApplyTarget(device->sysfsDevice(), target);
     device->setTarget(target);
- 
     return std::move(device);
   }
 
   int UEventDeviceManager::ueventOpen()
   {
     int socket_fd = -1;
-
     USBGUARD_SYSCALL_THROW("UEvent device manager",
       (socket_fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT)) < 0);
 
     try {
       const int optval = 1;
-
       USBGUARD_SYSCALL_THROW("UEvent device manager",
         setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
-
       /*
        * Set a 1MiB receive buffer on the netlink socket to avoid ENOBUFS error
        * in recvmsg.
@@ -363,16 +362,14 @@ namespace usbguard {
       const size_t rcvbuf_max = 1024 * 1024;
       USBGUARD_SYSCALL_THROW("UEvent device manager",
         setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_max, sizeof rcvbuf_max) != 0);
-
       struct sockaddr_nl sa = { };
       sa.nl_family = AF_NETLINK;
       sa.nl_pid = getpid();
       sa.nl_groups = -1;
-
       USBGUARD_SYSCALL_THROW("UEvent device manager",
         bind(socket_fd, reinterpret_cast<const sockaddr*>(&sa), sizeof sa) != 0);
     }
-    catch(...) {
+    catch (...) {
       (void)close(socket_fd);
       throw;
     }
@@ -383,24 +380,20 @@ namespace usbguard {
   int UEventDeviceManager::ueventDummyOpen()
   {
     int socket_fd = -1;
-
     USBGUARD_SYSCALL_THROW("UEvent device manager",
-        (socket_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0);
+      (socket_fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0);
 
     try {
       const int optval = 1;
-
       USBGUARD_SYSCALL_THROW("UEvent device manager",
-          setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
-
+        setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
       struct sockaddr_un sa = { };
       sa.sun_family = AF_UNIX;
       strcpy(sa.sun_path, "/tmp/usbguard-dummy.sock");
-
       USBGUARD_SYSCALL_THROW("UEvent device manager",
-          bind(socket_fd, reinterpret_cast<const sockaddr*>(&sa), sizeof sa) != 0);
+        bind(socket_fd, reinterpret_cast<const sockaddr*>(&sa), sizeof sa) != 0);
     }
-    catch(...) {
+    catch (...) {
       (void)close(socket_fd);
       throw;
     }
@@ -414,24 +407,27 @@ namespace usbguard {
     std::string value("0");
 
     switch (target) {
-      case Rule::Target::Allow:
-        name = "authorized";
-        value = "1";
-        break;
-      case Rule::Target::Block:
-        name = "authorized";
-        value = "0";
-        break;
-      case Rule::Target::Reject:
-        name = "remove";
-        value = "1";
-        break;
-      case Rule::Target::Match:
-      case Rule::Target::Device:
-      case Rule::Target::Unknown:
-      case Rule::Target::Invalid:
-      default:
-        throw std::runtime_error("Unknown rule target in applyDevicePolicy");
+    case Rule::Target::Allow:
+      name = "authorized";
+      value = "1";
+      break;
+
+    case Rule::Target::Block:
+      name = "authorized";
+      value = "0";
+      break;
+
+    case Rule::Target::Reject:
+      name = "remove";
+      value = "1";
+      break;
+
+    case Rule::Target::Match:
+    case Rule::Target::Device:
+    case Rule::Target::Unknown:
+    case Rule::Target::Invalid:
+    default:
+      throw std::runtime_error("Unknown rule target in applyDevicePolicy");
     }
 
     sysfs_device.setAttribute(name, value);
@@ -447,34 +443,36 @@ namespace usbguard {
 
       while (!_thread.stopRequested()) {
         struct timeval tv_timeout = { 5, 0 };
-
         FD_ZERO(&readset);
         FD_SET(_uevent_fd, &readset);
         FD_SET(_wakeup_fd, &readset);
 
-        switch (select(max_fd + 1, &readset, NULL, NULL, &tv_timeout))
-        {
-          case 1: /* uevent or wakeup */
-          case 2: /* uevent and wakeup */
-            if (FD_ISSET(_wakeup_fd, &readset)) {
-              USBGUARD_LOG(Debug) << "Wakeup event.";
-              continue;
-            }
-            if (FD_ISSET(_uevent_fd, &readset)) {
-              USBGUARD_LOG(Debug) << "UEvent read event."; 
-              ueventProcessRead();
-            }
-            break;
-          case 0: /* Timeout */
+        switch (select(max_fd + 1, &readset, NULL, NULL, &tv_timeout)) {
+        case 1: /* uevent or wakeup */
+        case 2: /* uevent and wakeup */
+          if (FD_ISSET(_wakeup_fd, &readset)) {
+            USBGUARD_LOG(Debug) << "Wakeup event.";
             continue;
-          case -1: /* Error */
-          default:
-            USBGUARD_LOG(Error) << "UEventDeviceManager thread: select failed: errno=" << errno;
-            _thread.stop();
+          }
+
+          if (FD_ISSET(_uevent_fd, &readset)) {
+            USBGUARD_LOG(Debug) << "UEvent read event.";
+            ueventProcessRead();
+          }
+
+          break;
+
+        case 0: /* Timeout */
+          continue;
+
+        case -1: /* Error */
+        default:
+          USBGUARD_LOG(Error) << "UEventDeviceManager thread: select failed: errno=" << errno;
+          _thread.stop();
         }
       } /* Thread main loop */
     }
-    catch(const Exception& ex) {
+    catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "UEventDeviceManager thread: " << ex.message();
     }
 
@@ -484,22 +482,17 @@ namespace usbguard {
   void UEventDeviceManager::ueventProcessRead()
   {
     std::string buffer(4096, 0);
-
     struct iovec iov[1];
-    iov[0].iov_base = (void *)&buffer[0];
+    iov[0].iov_base = (void*)&buffer[0];
     iov[0].iov_len = buffer.capacity();
-
     struct sockaddr_nl peer_sockaddr = { };
-
     union {
       struct cmsghdr header;
       uint8_t ucred[CMSG_SPACE(sizeof(struct ucred))];
     } cmsg_un;
-
     cmsg_un.header.cmsg_len = CMSG_LEN(sizeof(struct ucred));
     cmsg_un.header.cmsg_level = SOL_SOCKET;
     cmsg_un.header.cmsg_type = SCM_CREDENTIALS;
-
     struct msghdr msg_header = { };
     msg_header.msg_control = cmsg_un.ucred;
     msg_header.msg_controllen = sizeof cmsg_un.ucred;
@@ -507,55 +500,56 @@ namespace usbguard {
     msg_header.msg_iovlen = 1;
     msg_header.msg_name = &peer_sockaddr;
     msg_header.msg_namelen = sizeof peer_sockaddr;
-
     const int rc = recvmsg(_uevent_fd, &msg_header, MSG_DONTWAIT);
 
     if (rc <= 0) {
       const int saved_errno = errno;
+
       if (saved_errno == EAGAIN || saved_errno == EWOULDBLOCK) {
         USBGUARD_LOG(Warning) << "ueventProcessRead: "
-                              << "reading from uevent source would block thread execution";
+          << "reading from uevent source would block thread execution";
         return;
       }
       else {
         USBGUARD_LOG(Error) << "ueventProcessRead: "
-                            << "failed to read pending uevent: "
-                            << "rc=" << rc << " errno=" << saved_errno;
+          << "failed to read pending uevent: "
+          << "rc=" << rc << " errno=" << saved_errno;
         throw ErrnoException("UEvent device manager", "recvmsg", saved_errno);
       }
     }
 
     buffer.resize((size_t)rc);
-    
-    const struct cmsghdr * const cmsg_header = CMSG_FIRSTHDR(&msg_header);
+    const struct cmsghdr* const cmsg_header = CMSG_FIRSTHDR(&msg_header);
 
     if (cmsg_header == nullptr) {
       /* ignore */
       USBGUARD_LOG(Warning) << "ueventProcessRead: "
-                            << "received uevent without required control message: ignoring.";
-      return;
-    }
-    if (cmsg_header->cmsg_len != CMSG_LEN(sizeof(struct ucred))
-        || cmsg_header->cmsg_level != SOL_SOCKET
-        || cmsg_header->cmsg_type != SCM_CREDENTIALS) {
-      /* unexpected control message -- ignore */
-      USBGUARD_LOG(Warning) << "ueventProcessRead: "
-                            << "received uevent with an invalid control message: ignoring.";
+        << "received uevent without required control message: ignoring.";
       return;
     }
 
-    const struct ucred * const cmsg_ucred = \
-      reinterpret_cast<const struct ucred * const>(CMSG_DATA(cmsg_header));
+    if (cmsg_header->cmsg_len != CMSG_LEN(sizeof(struct ucred))
+      || cmsg_header->cmsg_level != SOL_SOCKET
+      || cmsg_header->cmsg_type != SCM_CREDENTIALS) {
+      /* unexpected control message -- ignore */
+      USBGUARD_LOG(Warning) << "ueventProcessRead: "
+        << "received uevent with an invalid control message: ignoring.";
+      return;
+    }
+
+    const struct ucred* const cmsg_ucred = \
+        reinterpret_cast<const struct ucred* const>(CMSG_DATA(cmsg_header));
 
     if (cmsg_ucred == nullptr) {
       /* missing ucred -- ignore */
       USBGUARD_LOG(Warning) << "ueventProcessRead: "
-                            << "received uevent without required SCM_CREDENTIALS data: ignoring.";
+        << "received uevent without required SCM_CREDENTIALS data: ignoring.";
       return;
     }
+
     if (cmsg_ucred->pid != 0 ||
-        cmsg_ucred->uid != 0 ||
-        cmsg_ucred->gid != 0) {
+      cmsg_ucred->uid != 0 ||
+      cmsg_ucred->gid != 0) {
       /* unknown origin -- ignore */
       USBGUARD_LOG(Debug) << "received uevent of unknown origin: ignoring.";
       return;
@@ -568,7 +562,7 @@ namespace usbguard {
       const UEvent uevent = UEvent::fromString(buffer, /*attributes_only=*/false, /*trace=*/false);
       ueventProcessUEvent(uevent);
     }
-    catch(...) {
+    catch (...) {
       USBGUARD_LOG(Warning) << "ueventProcessRead: received invalid uevent data";
       USBGUARD_LOG(Debug) << "ueventProcessRead: uevent_data=" << base64Encode(buffer);
     }
@@ -586,10 +580,10 @@ namespace usbguard {
      * read from the sysfs uevent file in the device directory.
      */
     if (subsystem != "usb") {
-      USBGUARD_LOG(Debug) << "Ignoring non-USB device:" 
-                          << " subsystem=" << subsystem
-                          << " devtype=" << devtype
-                          << " action=" << action;
+      USBGUARD_LOG(Debug) << "Ignoring non-USB device:"
+        << " subsystem=" << subsystem
+        << " devtype=" << devtype
+        << " action=" << action;
       return;
     }
 
@@ -601,7 +595,6 @@ namespace usbguard {
       if (action == "add" || action == "change") {
         uint32_t id = 0;
         const bool known_path = knownSysPath(sysfs_devpath, &id);
-
         lock.unlock();
 
         if (known_path && id > 0) {
@@ -609,11 +602,13 @@ namespace usbguard {
         }
         else {
           SysFSDevice sysfs_device(sysfs_devpath);
+
           /*
            * Do some additional sanity checking.
            */
           if (sysfs_device.getUEvent().hasAttribute("DEVTYPE")) {
             const std::string devtype = sysfs_device.getUEvent().getAttribute("DEVTYPE");
+
             if (devtype != "usb_device") {
               USBGUARD_LOG(Debug) << sysfs_devpath << ": UEvent DEVTYPE != usb_device. Ignoring event.";
               return;
@@ -627,10 +622,9 @@ namespace usbguard {
           }
 
           processDeviceInsertion(sysfs_device, /*signal_present=*/known_path);
-
           USBGUARD_LOG(Debug) << "Enumeration notify: sysfs_devpath=" << sysfs_devpath
-                              << " _enumeration=" << _enumeration
-                              << " known_path=" << known_path;
+            << " _enumeration=" << _enumeration
+            << " known_path=" << known_path;
 
           if (_enumeration && known_path) {
             --_enumeration_count;
@@ -647,18 +641,19 @@ namespace usbguard {
           << " action=" << action;
       }
     }
-    catch(const Exception& ex) {
+    catch (const Exception& ex) {
       USBGUARD_LOG(Warning) << "USB Device Exception: "
-                            << ex.message();
+        << ex.message();
       DeviceException(ex.message());
     }
-    catch(...) {
+    catch (...) {
       USBGUARD_LOG(Warning) << "USB Device Exception: unknown exception";
       DeviceException("unknown exception");
     }
   }
 
-  bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<std::string,std::string>& a, const std::pair<std::string,std::string>& b)
+  bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
+    const std::pair<std::string, std::string>& b)
   {
     const std::string base_a = filenameFromPath(a.second, /*include_extension=*/true);
     const std::string base_b = filenameFromPath(b.second, /*include_extension=*/true);
@@ -690,49 +685,48 @@ namespace usbguard {
   {
     USBGUARD_LOG(Trace);
     return loadFiles(_sysfs_root + "/bus/usb/devices",
-      UEventDeviceManager::ueventEnumerateFilterDevice,
-      [this](const std::string& devpath, const std::string& buspath)
-      {
-        return ueventEnumerateTriggerDevice(devpath, buspath);
-      },
-      UEventDeviceManager::ueventEnumerateComparePath);
+        UEventDeviceManager::ueventEnumerateFilterDevice,
+    [this](const std::string& devpath, const std::string& buspath) {
+      return ueventEnumerateTriggerDevice(devpath, buspath);
+    },
+    UEventDeviceManager::ueventEnumerateComparePath);
   }
 
   int UEventDeviceManager::ueventEnumerateDummyDevices()
   {
     USBGUARD_LOG(Trace);
     return loadFiles(_sysfs_root + "/bus/usb/devices",
-      UEventDeviceManager::ueventEnumerateFilterDevice,
-      [this](const std::string& devpath, const std::string& buspath)
-      {
-        (void)buspath;
-        UEvent uevent;
-        uevent.setAttribute("SUBSYSTEM", "usb");
-        uevent.setAttribute("DEVTYPE", "usb_device");
-        uevent.setAttribute("ACTION", "add");
-        uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, devpath));
-
-        std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(devpath.c_str(), nullptr));
-        const std::string syspath(realpath_cstr.get());
-        learnSysPath(syspath);
-
-        ueventProcessUEvent(uevent);
-        return 1;
-      },
-      UEventDeviceManager::ueventEnumerateComparePath);
+        UEventDeviceManager::ueventEnumerateFilterDevice,
+    [this](const std::string& devpath, const std::string& buspath) {
+      (void)buspath;
+      UEvent uevent;
+      uevent.setAttribute("SUBSYSTEM", "usb");
+      uevent.setAttribute("DEVTYPE", "usb_device");
+      uevent.setAttribute("ACTION", "add");
+      uevent.setAttribute("DEVPATH", removePrefix(_sysfs_root, devpath));
+      std::unique_ptr<char, FreeDeleter> realpath_cstr(::realpath(devpath.c_str(), nullptr));
+      const std::string syspath(realpath_cstr.get());
+      learnSysPath(syspath);
+      ueventProcessUEvent(uevent);
+      return 1;
+    },
+    UEventDeviceManager::ueventEnumerateComparePath);
   }
 
   std::string UEventDeviceManager::ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry)
   {
 #if defined(_DIRENT_HAVE_D_TYPE)
+
     if (direntry->d_type != DT_UNKNOWN) {
-      switch(direntry->d_type) {
-        case DT_LNK:
-          return symlinkPath(filepath);
-        case DT_DIR:
-          return filepath;
-        default:
-          return std::string();
+      switch (direntry->d_type) {
+      case DT_LNK:
+        return symlinkPath(filepath);
+
+      case DT_DIR:
+        return filepath;
+
+      default:
+        return std::string();
       }
     }
     else {
@@ -749,6 +743,7 @@ namespace usbguard {
         USBGUARD_LOG(Warning) << "lstat(" << filepath << "): errno=" << errno;
         return std::string();
       }
+
       if (S_ISLNK(st.st_mode)) {
         return symlinkPath(filepath, &st);
       }
@@ -758,8 +753,10 @@ namespace usbguard {
       else {
         return std::string();
       }
+
 #if defined(_DIRENT_HAVE_D_TYPE)
     }
+
 #endif
     /* UNREACHABLE */
     return std::string();
@@ -780,12 +777,13 @@ namespace usbguard {
         return 1;
       }
     }
-    catch(const Exception& ex) {
+    catch (const Exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.message();
     }
-    catch(const std::exception& ex) {
+    catch (const std::exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.what();
     }
+
     return 0;
   }
 
@@ -796,9 +794,7 @@ namespace usbguard {
     try {
       std::shared_ptr<UEventDevice> device = \
         std::static_pointer_cast<UEventDevice>(DeviceManager::getDevice(id));
-
       device->sysfsDevice().reload();
-
       /*
        * TODO: Check attribute state
        *  - authorized_default (in case of controller)
@@ -806,18 +802,19 @@ namespace usbguard {
       DeviceEvent(DeviceManager::EventType::Present, device);
       return;
     }
-    catch(const Exception& ex) {
+    catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "Present device exception: " << ex.message();
       DeviceException(ex.message());
     }
-    catch(const std::exception& ex) {
+    catch (const std::exception& ex) {
       USBGUARD_LOG(Error) << "Present device exception: " << ex.what();
       DeviceException(ex.what());
     }
-    catch(...) {
+    catch (...) {
       USBGUARD_LOG(Error) << "BUG: Unknown device exception.";
       DeviceException("BUG: Unknown device exception.");
     }
+
     /*
      * We don't reject the device here (as is done in processDeviceInsertion)
      * because the device was already connected to the system when USBGuard
@@ -837,6 +834,7 @@ namespace usbguard {
       }
 
       insertDevice(device);
+
       /*
        * Signal insertions as presence if device enumeration hasn't
        * completed yet.
@@ -847,17 +845,18 @@ namespace usbguard {
       else {
         DeviceEvent(DeviceManager::EventType::Insert, device);
       }
+
       return;
     }
-    catch(const Exception& ex) {
+    catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "Device insert exception: " << ex.message();
       DeviceException(ex.message());
     }
-    catch(const std::exception& ex) {
+    catch (const std::exception& ex) {
       USBGUARD_LOG(Error) << "Device insert exception: " << ex.what();
       DeviceException(ex.what());
     }
-    catch(...) {
+    catch (...) {
       USBGUARD_LOG(Error) << "BUG: Unknown device insert exception.";
       DeviceException("BUG: Unknown device insert exception.");
     }
@@ -868,6 +867,7 @@ namespace usbguard {
     if (_enumeration_only_mode) {
       return;
     }
+
     /*
      * Something went wrong and an exception was generated.
      * Either the device is malicious or the system lacks some
@@ -893,7 +893,8 @@ namespace usbguard {
     try {
       std::shared_ptr<Device> device = removeDevice(sysfs_devpath);
       DeviceEvent(DeviceManager::EventType::Remove, device);
-    } catch(...) {
+    }
+    catch (...) {
       /* Ignore for now */
       USBGUARD_LOG(Debug) << "Removal of an unknown device ignored.";
       return;
@@ -911,7 +912,6 @@ namespace usbguard {
 
     std::shared_ptr<Device> device = DeviceManager::removeDevice(getIDFromSysPath(syspath));
     _syspath_map.erase(syspath);
-
     return device;
   }
 
@@ -927,10 +927,9 @@ namespace usbguard {
     throw Exception("UEventDeviceManager", syspath, "unknown syspath");
   }
 
-  bool UEventDeviceManager::knownSysPath(const std::string& syspath, uint32_t * id_ptr) const
+  bool UEventDeviceManager::knownSysPath(const std::string& syspath, uint32_t* id_ptr) const
   {
     auto it = _syspath_map.find(syspath);
-
     uint32_t known_id = 0;
     bool known = false;
 

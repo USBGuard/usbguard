@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DevicePrivate.hpp"
@@ -30,7 +30,8 @@
 
 #include <mutex>
 
-namespace usbguard {
+namespace usbguard
+{
   DevicePrivate::DevicePrivate(Device& p_instance, DeviceManager& manager)
     : //_p_instance(p_instance),
       _manager(manager)
@@ -60,7 +61,6 @@ namespace usbguard {
     _port = rhs._port;
     _interface_types = rhs._interface_types;
     _hash_base64 = rhs._hash_base64;
-
     return *this;
   }
 
@@ -77,20 +77,20 @@ namespace usbguard {
   std::shared_ptr<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     USBGUARD_LOG(Trace) << "entry: "
-                        << " with_port=" << with_port
-                        << " with_parent_hash=" << with_parent_hash
-                        << " match_rule=" << match_rule;
-
+      << " with_port=" << with_port
+      << " with_parent_hash=" << with_parent_hash
+      << " match_rule=" << match_rule;
     std::shared_ptr<Rule> device_rule = std::make_shared<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
-
     device_rule->setRuleID(_id);
+
     if (match_rule) {
       device_rule->setTarget(Rule::Target::Match);
     }
     else {
       device_rule->setTarget(_target);
     }
+
     device_rule->setDeviceID(_device_id);
     device_rule->setSerial(_serial_number);
 
@@ -118,8 +118,7 @@ namespace usbguard {
     }
 
     USBGUARD_LOG(Trace) << "return:"
-                        << " device_rule=" << device_rule->toString();
-
+      << " device_rule=" << device_rule->toString();
     return device_rule;
   }
 
@@ -133,7 +132,6 @@ namespace usbguard {
   void DevicePrivate::initializeHash()
   {
     Hash hash;
-
     const std::string vendor_id = _device_id.getVendorID();
     const std::string product_id = _device_id.getProductID();
 
@@ -144,10 +142,11 @@ namespace usbguard {
     /*
      * Hash name, device id and serial number fields.
      */
-    for (const std::string& field : { _name, vendor_id, product_id, _serial_number }) {
+    for (const std::string& field : {
+    _name, vendor_id, product_id, _serial_number
+  }) {
       hash.update(field);
     }
-
     _hash = std::move(hash);
   }
 
@@ -162,7 +161,7 @@ namespace usbguard {
     _hash = std::move(hash);
   }
 
-  void DevicePrivate::updateHash(const void * const ptr, size_t size)
+  void DevicePrivate::updateHash(const void* const ptr, size_t size)
   {
     Hash hash(_hash);
 
@@ -184,6 +183,7 @@ namespace usbguard {
     if (_hash_base64.empty()) {
       throw USBGUARD_BUG("Accessing unfinalized device hash value");
     }
+
     return _hash_base64;
   }
 
@@ -227,6 +227,7 @@ namespace usbguard {
     if (name.size() > USB_GENERIC_STRING_MAX_LENGTH) {
       throw Exception("DevicePrivate::setName", numberToString(getID()), "name string size out-of-range");
     }
+
     _name = name;
   }
 
@@ -250,6 +251,7 @@ namespace usbguard {
     if (port.size() > USB_PORT_STRING_MAX_LENGTH) {
       throw std::runtime_error("device port string size out of range");
     }
+
     _port = port;
   }
 
@@ -263,6 +265,7 @@ namespace usbguard {
     if (serial_number.size() > USB_GENERIC_STRING_MAX_LENGTH) {
       throw std::runtime_error("device serial number string size out of range");
     }
+
     _serial_number = serial_number;
   }
 
@@ -284,9 +287,11 @@ namespace usbguard {
   void DevicePrivate::loadDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     (void)descriptor;
+
     if (parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
       throw std::runtime_error("Invalid descriptor data: multiple device descriptors for one device");
     }
+
     _interface_types.clear();
     return;
   }
@@ -294,16 +299,17 @@ namespace usbguard {
   void DevicePrivate::loadConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     (void)descriptor;
+
     if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_DEVICE)) {
       throw std::runtime_error("Invalid descriptor data: missing parent device descriptor while loading configuration");
     }
+
     /*
      * Clean the descriptor state. There shouldn't be any Interface or Endpoint
      * descriptors while loading.
      */
     parser->delDescriptor(USB_DESCRIPTOR_TYPE_INTERFACE);
     parser->delDescriptor(USB_DESCRIPTOR_TYPE_ENDPOINT);
-
     return;
   }
 
@@ -315,19 +321,20 @@ namespace usbguard {
 
     const USBInterfaceType interface_type(*reinterpret_cast<const USBInterfaceDescriptor*>(descriptor));
     _interface_types.push_back(interface_type);
-
     return;
   }
 
   void DevicePrivate::loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* const descriptor)
   {
     (void)descriptor;
+
     /*
      * WARNING: This method can receive USB descriptors of two sizes! (endpoint, audio endpoint)
      */
     if (!parser->haveDescriptor(USB_DESCRIPTOR_TYPE_INTERFACE)) {
       throw std::runtime_error("Invalid descriptor data: missing parent interface descriptor while loading endpoint");
     }
+
     return;
   }
 } /* namespace usbguard */

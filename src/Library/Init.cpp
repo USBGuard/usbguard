@@ -17,17 +17,17 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "IPCServerPrivate.hpp"
 #include "IPCClientPrivate.hpp"
 
 #if defined(USBGUARD_USE_LIBSODIUM)
-#include <sodium.h>
+  #include <sodium.h>
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-#include <gcrypt.h>
+  #include <gcrypt.h>
 #endif
 
 #include <stdexcept>
@@ -41,7 +41,6 @@ namespace usbguard
     LibraryInit()
     {
       std::setlocale(LC_NUMERIC, "C");
-
       /*
        * FIXME: Provide a mechanism to disable the crypto library
        * initialization as it might interfere with initialization
@@ -52,14 +51,18 @@ namespace usbguard
        *  gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P, 0);
        */
 #if defined(USBGUARD_USE_LIBSODIUM)
+
       if (sodium_init() == -1) {
-	throw std::runtime_error("Cannot initialize the sodium library");
+        throw std::runtime_error("Cannot initialize the sodium library");
       }
+
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
+
       if (!gcry_check_version(GCRYPT_VERSION)) {
         throw std::runtime_error("Cannot initialize the gcrypt library");
       }
+
       gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 #endif
     }

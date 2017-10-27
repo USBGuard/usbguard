@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Rule.hpp"
@@ -35,15 +35,15 @@ public:
   explicit DeviceModelItem(const usbguard::Rule& device_rule, DeviceModelItem* parent);
   ~DeviceModelItem();
 
-  void appendChild(DeviceModelItem *child);
-  void removeChild(DeviceModelItem *child);
+  void appendChild(DeviceModelItem* child);
+  void removeChild(DeviceModelItem* child);
 
-  DeviceModelItem *child(int row);
+  DeviceModelItem* child(int row);
   int childCount() const;
   int columnCount() const;
   QVariant data(int column);
   int row() const;
-  DeviceModelItem *parent();
+  DeviceModelItem* parent();
 
   QString getDeviceHash() const;
   quint32 getDeviceID() const;
@@ -55,7 +55,7 @@ public:
   void setDeviceTarget(usbguard::Rule::Target target);
 
 private:
-  QList<DeviceModelItem *> _children;
+  QList<DeviceModelItem*> _children;
   DeviceModelItem* _parent;
   usbguard::Rule _device_rule;
   usbguard::Rule::Target _requested_target;
@@ -66,19 +66,19 @@ class DeviceModel : public QAbstractItemModel
   Q_OBJECT
 
 public:
-  explicit DeviceModel(QObject *parent = 0);
+  explicit DeviceModel(QObject* parent = 0);
   ~DeviceModel();
 
   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
   QModelIndex index(int row, int column,
-                    const QModelIndex &parent = QModelIndex()) const override;
-  QModelIndex parent(const QModelIndex &index) const override;
+    const QModelIndex& parent = QModelIndex()) const override;
+  QModelIndex parent(const QModelIndex& index) const override;
 
-  int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-  int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+  int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+  int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-  QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+  QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
@@ -98,7 +98,7 @@ public:
 private:
   QMap<QString, DeviceModelItem*> _hash_map;
   QMap<uint32_t, DeviceModelItem*> _id_map;
-  DeviceModelItem *_root_item;
+  DeviceModelItem* _root_item;
 };
 
 /* vim: set ts=2 sw=2 et */

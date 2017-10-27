@@ -13,6 +13,7 @@
 - Added AuditBackend usbguard-daemon configuration option for selecting audit log backend.
 - Linux Audit support via new LinuxAudit backend.
 - Added missing RuleCondition.hpp header file to the public API headers.
+- Code Style specification via AStyle configuration file.
 
 ### Removed
 - Removed Utility.hpp header file from public API headers
@@ -27,6 +28,7 @@
 - usbguard-daemon now opens it's configuration in read-only mode
 - Fixed UEventDeviceManager to work with Linux Kernel >= 4.13
 - Refactored audit logging to support different audit log backends
+- Reformatted source code to conform to the code style.
 
 ## 0.7.0 - 2017-04-12
 ### Added

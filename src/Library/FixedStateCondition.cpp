@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "FixedStateCondition.hpp"
@@ -44,7 +44,7 @@ namespace usbguard
     return _state;
   }
 
-  RuleConditionBase * FixedStateCondition::clone() const
+  RuleConditionBase* FixedStateCondition::clone() const
   {
     return new FixedStateCondition(*this);
   }

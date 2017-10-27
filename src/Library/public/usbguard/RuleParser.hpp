@@ -32,7 +32,7 @@ namespace usbguard
   {
   public:
     RuleParserError(const std::string& rule_spec, const std::string& hint = "",
-                    const std::string& file = "", size_t error_line = 0, unsigned int error_offset = 0)
+      const std::string& file = "", size_t error_line = 0, unsigned int error_offset = 0)
       : _rule_spec(rule_spec),
         _hint(hint),
         _offset(error_offset),
@@ -58,7 +58,7 @@ namespace usbguard
       _offset = error_offset;
     }
 
-    const char *what() const noexcept
+    const char* what() const noexcept
     {
       return "RuleParserError";
     }
@@ -106,7 +106,8 @@ namespace usbguard
     size_t _line;
   };
 
-  DLL_PUBLIC Rule parseRuleFromString(const std::string& rule_spec, const std::string& file = std::string(), size_t line = 0, bool trace = false);
+  DLL_PUBLIC Rule parseRuleFromString(const std::string& rule_spec, const std::string& file = std::string(), size_t line = 0,
+    bool trace = false);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

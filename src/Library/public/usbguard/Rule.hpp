@@ -30,7 +30,8 @@
 #include <string>
 #include <vector>
 
-namespace usbguard {
+namespace usbguard
+{
   template<typename T>
   std::string toRuleString(T* const value)
   {
@@ -69,8 +70,7 @@ namespace usbguard {
     static uint32_t targetToInteger(Target target);
     static Target targetFromInteger(uint32_t target_integer);
 
-    enum class SetOperator
-    {
+    enum class SetOperator {
       AllOf,
       OneOf,
       NoneOf,
@@ -94,307 +94,323 @@ namespace usbguard {
     template<class ValueType>
     class Attribute
     {
-      public:
-        Attribute(const char * name)
-        {
-          _name = name;
-          _set_operator = SetOperator::Equals;
+    public:
+      Attribute(const char* name)
+      {
+        _name = name;
+        _set_operator = SetOperator::Equals;
+      }
+
+      Attribute(const Attribute<ValueType>& rhs)
+      {
+        _name = rhs._name;
+        _set_operator = rhs._set_operator;
+        _values = rhs._values;
+      }
+
+      void setSetOperator(SetOperator op)
+      {
+        _set_operator = op;
+      }
+
+      SetOperator setOperator() const
+      {
+        return _set_operator;
+      }
+
+      void append(ValueType&& value)
+      {
+        _values.emplace_back(std::move(value));
+      }
+
+      void append(const ValueType& value)
+      {
+        _values.push_back(value);
+      }
+
+      size_t count() const
+      {
+        return _values.size();
+      }
+
+      bool empty() const
+      {
+        return count() == 0;
+      }
+
+      void clear()
+      {
+        _values.clear();
+        _set_operator = SetOperator::Equals;
+      }
+
+      const ValueType& get() const
+      {
+        if (count() == 1) {
+          return _values[0];
+        }
+        else if (count() == 0) {
+          throw std::runtime_error("BUG: Accessing an empty attribute");
+        }
+        else {
+          throw std::runtime_error("BUG: Accessing a multivalued attribute using get()");
+        }
+      }
+
+      const ValueType& get(size_t index) const
+      {
+        return _values.at(index);
+      }
+
+      void set(ValueType&& value)
+      {
+        if (count() > 1) {
+          throw std::runtime_error("BUG: Setting single value for a multivalued attribute");
         }
 
-        Attribute(const Attribute<ValueType>& rhs)
-        {
-          _name = rhs._name;
-          _set_operator = rhs._set_operator;
-          _values = rhs._values;
+        if (count() == 0) {
+          append(value);
+        }
+        else {
+          _values[0] = std::move(value);
+        }
+      }
+
+      void set(const ValueType& value)
+      {
+        if (count() > 1) {
+          throw std::runtime_error("BUG: Setting single value for a multivalued attribute");
         }
 
-        void setSetOperator(SetOperator op)
-        {
-          _set_operator = op;
+        if (count() == 0) {
+          append(value);
         }
-
-        SetOperator setOperator() const
-        {
-          return _set_operator;
+        else {
+          _values[0] = value;
         }
+      }
 
-        void append(ValueType&& value)
-        {
-          _values.emplace_back(std::move(value));
+      void set(const std::vector<ValueType>& values, SetOperator op)
+      {
+        _values = values;
+        _set_operator = op;
+      }
+
+      bool appliesTo(const Attribute<ValueType>& target) const
+      {
+        USBGUARD_LOG(Trace) << "entry:"
+          << " source=" << this->toRuleString()
+          << " target=" << target.toRuleString();
+        bool applies = false;
+
+        /* Nothing applies to anything */
+        if (empty()) {
+          USBGUARD_LOG(Debug) << "empty source value, setting applies=true";
+          applies = true;
         }
+        else {
+          USBGUARD_LOG(Debug) << "set_operator=" << setOperatorToString(setOperator());
 
-        void append(const ValueType& value)
-        {
-          _values.push_back(value);
-        }
-
-        size_t count() const
-        {
-          return _values.size();
-        }
-
-        bool empty() const
-        {
-          return count() == 0;
-        }
-
-        void clear()
-        {
-          _values.clear();
-          _set_operator = SetOperator::Equals;
-        }
-
-        const ValueType& get() const
-        {
-          if (count() == 1) {
-            return _values[0];
-          }
-          else if (count() == 0) {
-            throw std::runtime_error("BUG: Accessing an empty attribute");
-          }
-          else {
-            throw std::runtime_error("BUG: Accessing a multivalued attribute using get()");
-          }
-        }
-
-        const ValueType& get(size_t index) const
-        {
-          return _values.at(index);
-        }
-
-        void set(ValueType&& value)
-        {
-          if (count() > 1) {
-            throw std::runtime_error("BUG: Setting single value for a multivalued attribute");
-          }
-          if (count() == 0) {
-            append(value);
-          }
-          else {
-            _values[0] = std::move(value);
-          }
-        }
-
-        void set(const ValueType& value)
-        {
-          if (count() > 1) {
-            throw std::runtime_error("BUG: Setting single value for a multivalued attribute");
-          }
-          if (count() == 0) {
-            append(value);
-          }
-          else {
-            _values[0] = value;
-          }
-        }
-
-        void set(const std::vector<ValueType>& values, SetOperator op)
-        {
-          _values = values;
-          _set_operator = op;
-        }
-
-        bool appliesTo(const Attribute<ValueType>& target) const
-        {
-          USBGUARD_LOG(Trace) << "entry:"
-                              << " source=" << this->toRuleString()
-                              << " target=" << target.toRuleString();
-
-          bool applies = false;
-
-          /* Nothing applies to anything */
-          if (empty()) {
-            USBGUARD_LOG(Debug) << "empty source value, setting applies=true";
+          switch (setOperator()) {
+          case SetOperator::Match:
             applies = true;
-          }
-          else {
-            USBGUARD_LOG(Debug) << "set_operator=" << setOperatorToString(setOperator());
-            switch(setOperator()) {
-              case SetOperator::Match:
-                applies = true;
-                break;
-              case SetOperator::AllOf:
-                applies = setSolveAllOf(_values, target._values);
-                break;
-              case SetOperator::OneOf:
-                applies = setSolveOneOf(_values, target._values);
-                break;
-              case SetOperator::NoneOf:
-                applies = setSolveNoneOf(_values, target._values);
-                break;
-              case SetOperator::Equals:
-                applies = setSolveEquals(_values, target._values);
-                break;
-              case SetOperator::EqualsOrdered:
-                applies = setSolveEqualsOrdered(_values, target._values);
-                break;
-              default:
-                throw USBGUARD_BUG("Invalid set operator value");
-            }
-          }
+            break;
 
-          USBGUARD_LOG(Trace) << "return:"
-                              << " applies=" << applies;
+          case SetOperator::AllOf:
+            applies = setSolveAllOf(_values, target._values);
+            break;
 
-          return applies;
+          case SetOperator::OneOf:
+            applies = setSolveOneOf(_values, target._values);
+            break;
+
+          case SetOperator::NoneOf:
+            applies = setSolveNoneOf(_values, target._values);
+            break;
+
+          case SetOperator::Equals:
+            applies = setSolveEquals(_values, target._values);
+            break;
+
+          case SetOperator::EqualsOrdered:
+            applies = setSolveEqualsOrdered(_values, target._values);
+            break;
+
+          default:
+            throw USBGUARD_BUG("Invalid set operator value");
+          }
         }
 
-        std::string toRuleString() const
-        {
-          std::string result;
+        USBGUARD_LOG(Trace) << "return:"
+          << " applies=" << applies;
+        return applies;
+      }
 
-          result.append(_name);
-          result.append(" ");
+      std::string toRuleString() const
+      {
+        std::string result;
+        result.append(_name);
+        result.append(" ");
+        const bool nondefault_op = setOperator() != SetOperator::Equals;
+        const bool multiset_form = count() > 1 || nondefault_op;
 
-          const bool nondefault_op = setOperator() != SetOperator::Equals;
-          const bool multiset_form = count() > 1 || nondefault_op;
-
-          if (multiset_form) {
-            if (nondefault_op) {
-              result.append(setOperatorToString(setOperator()));
-              result.append(" ");
-            }
-            result.append("{ ");
-          }
-
-          for(const auto& value : _values) {
-            result.append(usbguard::toRuleString(value));
+        if (multiset_form) {
+          if (nondefault_op) {
+            result.append(setOperatorToString(setOperator()));
             result.append(" ");
           }
 
-          if (multiset_form) {
-            result.append("}");
+          result.append("{ ");
+        }
+
+        for (const auto& value : _values) {
+          result.append(usbguard::toRuleString(value));
+          result.append(" ");
+        }
+
+        if (multiset_form) {
+          result.append("}");
+        }
+        else {
+          /*
+           * Remove the trailing space in case of a single
+           * valued attribute.
+           */
+          result.erase(result.end() - 1);
+        }
+
+        return result;
+      }
+
+      const std::vector<ValueType>& values() const
+      {
+        return _values;
+      }
+
+      std::vector<ValueType>& values()
+      {
+        return _values;
+      }
+
+    private:
+      /*
+       * All of the items in source set must match an item in the target set
+       */
+      bool setSolveAllOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
+
+        for (auto const& source_item : source_set) {
+          bool match = false;
+
+          for (auto const& target_item : target_set) {
+            if (Predicates::isSubsetOf(source_item, target_item)) {
+              match = true;
+              break;
+            }
           }
-          else {
-            /*
-             * Remove the trailing space in case of a single
-             * valued attribute.
-             */
-            result.erase(result.end() - 1);
+
+          if (!match) {
+            return false;
           }
-
-          return result;
         }
 
-        const std::vector<ValueType>& values() const
-        {
-          return _values;
+        return true;
+      }
+
+      /*
+       * At least one of the items in the source set must match an item in the target set
+       */
+      bool setSolveOneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
+
+        for (auto const& source_item : source_set) {
+          for (auto const& target_item : target_set) {
+            if (Predicates::isSubsetOf(source_item, target_item)) {
+              return true;
+            }
+          }
         }
 
-        std::vector<ValueType>& values()
-        {
-          return _values;
+        return false;
+      }
+
+      /*
+       * None of the the items in the rule set must match any item in the
+       * applies_to set
+       */
+      bool setSolveNoneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
+
+        for (auto const& source_item : source_set) {
+          for (auto const& target_item : target_set) {
+            if (Predicates::isSubsetOf(source_item, target_item)) {
+              return false;
+            }
+          }
         }
 
-      private:
-        /*
-         * All of the items in source set must match an item in the target set
-         */
-        bool setSolveAllOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
-        {
-          USBGUARD_LOG(Trace);
+        return true;
+      }
 
+      /*
+       * Every item in the rule set must match one item in the
+       * applies_to set and the sets have to have the same number
+       * of items
+       */
+      bool setSolveEquals(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
+
+        if (source_set.size() != target_set.size()) {
+          return false;
+        }
+        else {
           for (auto const& source_item : source_set) {
             bool match = false;
+
             for (auto const& target_item : target_set) {
               if (Predicates::isSubsetOf(source_item, target_item)) {
                 match = true;
                 break;
               }
             }
+
             if (!match) {
               return false;
             }
           }
+
           return true;
         }
+      }
 
-        /*
-         * At least one of the items in the source set must match an item in the target set
-         */
-        bool setSolveOneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
-        {
-          USBGUARD_LOG(Trace);
+      /*
+       * The sets are treated as arrays and they have to me equal
+       * (same number of items at the same positions)
+       */
+      bool setSolveEqualsOrdered(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
 
-          for (auto const& source_item : source_set) {
-            for (auto const& target_item : target_set) {
-              if (Predicates::isSubsetOf(source_item, target_item)) {
-                return true;
-              }
-            }
-          }
+        if (source_set.size() != target_set.size()) {
           return false;
         }
 
-        /*
-         * None of the the items in the rule set must match any item in the
-         * applies_to set
-         */
-        bool setSolveNoneOf(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
-        {
-          USBGUARD_LOG(Trace);
-
-          for (auto const& source_item : source_set) {
-            for (auto const& target_item : target_set) {
-              if (Predicates::isSubsetOf(source_item, target_item)) {
-                return false;
-              }
-            }
-          }
-          return true;
-        }
-
-        /*
-         * Every item in the rule set must match one item in the
-         * applies_to set and the sets have to have the same number
-         * of items
-         */
-        bool setSolveEquals(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
-        {
-          USBGUARD_LOG(Trace);
-
-          if (source_set.size() != target_set.size()) {
+        for (size_t i = 0; i < source_set.size(); ++i) {
+          if (!Predicates::isSubsetOf(source_set[i], target_set[i])) {
             return false;
           }
-          else {
-            for (auto const& source_item : source_set) {
-              bool match = false;
-              for (auto const& target_item : target_set) {
-                if (Predicates::isSubsetOf(source_item, target_item)) {
-                  match = true;
-                  break;
-                }
-              }
-              if (!match) {
-                return false;
-              }
-            }
-            return true;
-          }
         }
 
-        /*
-         * The sets are treated as arrays and they have to me equal
-         * (same number of items at the same positions)
-         */
-        bool setSolveEqualsOrdered(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
-        {
-          USBGUARD_LOG(Trace);
+        return false;
+      }
 
-          if (source_set.size() != target_set.size()) {
-            return false;
-          }
-          for (size_t i = 0; i < source_set.size(); ++i) {
-            if (!Predicates::isSubsetOf(source_set[i], target_set[i])) {
-              return false;
-            }
-          }
-          return false;
-        }
-
-        std::string _name;
-        SetOperator _set_operator;
-        std::vector<ValueType> _values;
+      std::string _name;
+      SetOperator _set_operator;
+      std::vector<ValueType> _values;
     };
 
     /**
@@ -469,7 +485,7 @@ namespace usbguard {
 
     RulePrivate* internal();
     const RulePrivate* internal() const;
-    
+
     /*** Static methods ***/
     static Rule fromString(const std::string& rule_string);
 

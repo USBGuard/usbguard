@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Exception.hpp"
@@ -45,75 +45,80 @@ namespace usbguard
 
     uint64_t getMessageHeaderID(const MessageType& message);
     void setMessageHeaderID(MessageType& message, uint64_t id);
- 
+
     template<class C>
     class MessageHandler
     {
-      public:
-        using HandlerType = void(C::*)(MessagePointer&, MessagePointer&);
+    public:
+      using HandlerType = void(C::*)(MessagePointer&, MessagePointer&);
 
-        MessageHandler(C& c, HandlerType method, const MessageType& factory, IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE, IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
-          : _instance(c),
-            _method(method),
-            _message_factory(factory),
-            _section(section),
-            _privilege(privilege)
-        {
+      MessageHandler(C& c, HandlerType method, const MessageType& factory,
+        IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE,
+        IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
+        : _instance(c),
+          _method(method),
+          _message_factory(factory),
+          _section(section),
+          _privilege(privilege)
+      {
+      }
+
+      MessageHandler(const MessageHandler& rhs)
+        : _instance(rhs._instance),
+          _method(rhs._method),
+          _message_factory(rhs._message_factory),
+          _section(rhs._section),
+          _privilege(rhs._privilege)
+      {
+      }
+
+      MessagePointer payloadToMessage(const std::string& payload)
+      {
+        MessagePointer message(_message_factory.New());
+        message->ParseFromString(payload);
+        return message;
+      }
+
+      void run(MessagePointer& message)
+      {
+        MessagePointer response;
+        run(message, response);
+      }
+
+      void run(MessagePointer& message, MessagePointer& response)
+      {
+        if (message->GetTypeName() != _message_factory.GetTypeName()) {
+          throw std::runtime_error("Incompatible message type passed to handler");
         }
 
-        MessageHandler(const MessageHandler& rhs)
-          : _instance(rhs._instance),
-            _method(rhs._method),
-            _message_factory(rhs._message_factory),
-            _section(rhs._section),
-            _privilege(rhs._privilege)
-        {
-        }
+        (_instance.*_method)(message, response);
+      }
 
-        MessagePointer payloadToMessage(const std::string& payload)
-        {
-          MessagePointer message(_message_factory.New());
-          message->ParseFromString(payload);
-          return message;
-        }
+      template<class ProtobufType>
+      static MessageHandler create(C& c, HandlerType method,
+        IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE,
+        IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
+      {
+        return MessageHandler(c, method, ProtobufType::default_instance(), section, privilege);
+      }
 
-        void run(MessagePointer& message)
-        {
-          MessagePointer response;
-          run(message, response);
-        }
- 
-        void run(MessagePointer& message, MessagePointer& response)
-        {
-          if (message->GetTypeName() != _message_factory.GetTypeName()) {
-            throw std::runtime_error("Incompatible message type passed to handler");
-          }
-          (_instance.*_method)(message, response);
-        }
+      IPCServer::AccessControl::Section section() const
+      {
+        return _section;
+      }
 
-        template<class ProtobufType>
-        static MessageHandler create(C& c, HandlerType method, IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE, IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
-        {
-          return MessageHandler(c, method, ProtobufType::default_instance(), section, privilege);
-        }
+      IPCServer::AccessControl::Privilege privilege() const
+      {
+        return _privilege;
+      }
 
-        IPCServer::AccessControl::Section section() const
-        {
-          return _section;
-        }
-
-        IPCServer::AccessControl::Privilege privilege() const
-        {
-          return _privilege;
-        }
-
-      private:
-        C& _instance;
-        HandlerType _method;
-        const MessageType& _message_factory;
-        IPCServer::AccessControl::Section _section;
-        IPCServer::AccessControl::Privilege _privilege;
-   };
+    private:
+      C& _instance;
+      HandlerType _method;
+      const MessageType& _message_factory;
+      IPCServer::AccessControl::Section _section;
+      IPCServer::AccessControl::Privilege _privilege;
+    };
   }
 } /* namespace usbguard */
 

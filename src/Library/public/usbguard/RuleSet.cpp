@@ -17,14 +17,15 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
 
-namespace usbguard {
-  RuleSet::RuleSet(Interface * const interface_ptr)
+namespace usbguard
+{
+  RuleSet::RuleSet(Interface* const interface_ptr)
   {
     d_pointer = new RuleSetPrivate(*this, interface_ptr);
   }
@@ -42,7 +43,7 @@ namespace usbguard {
 
   const RuleSet& RuleSet::operator=(const RuleSet& rhs)
   {
-    RuleSetPrivate * n_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
+    RuleSetPrivate* n_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
     delete d_pointer;
     d_pointer = n_pointer;
     return *this;

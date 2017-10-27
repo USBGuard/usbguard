@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Common/Utility.hpp"
@@ -35,7 +35,7 @@
 #include <sys/time.h>
 #include <syslog.h>
 #ifndef __STDC_FORMAT_MACROS
-#define __STDC_FORMAT_MACROS
+  #define __STDC_FORMAT_MACROS
 #endif
 #include <inttypes.h>
 
@@ -52,20 +52,26 @@ namespace usbguard
   const std::string LogStream::levelToString(Level level)
   {
     switch (level) {
-      case LogStream::Level::Audit:
-        return "(A)";
-      case LogStream::Level::Error:
-        return "(E)";
-      case LogStream::Level::Warning:
-        return "(W)";
-      case LogStream::Level::Info:
-        return "(i)";
-      case LogStream::Level::Debug:
-        return "(D)";
-      case LogStream::Level::Trace:
-        return "(T)";
-      default:
-        throw std::runtime_error("BUG: unknown LogStream level value");
+    case LogStream::Level::Audit:
+      return "(A)";
+
+    case LogStream::Level::Error:
+      return "(E)";
+
+    case LogStream::Level::Warning:
+      return "(W)";
+
+    case LogStream::Level::Info:
+      return "(i)";
+
+    case LogStream::Level::Debug:
+      return "(D)";
+
+    case LogStream::Level::Trace:
+      return "(T)";
+
+    default:
+      throw std::runtime_error("BUG: unknown LogStream level value");
     }
   }
 
@@ -109,160 +115,171 @@ namespace usbguard
    */
   class OStreamSink : public LogSink
   {
-    public:
-      OStreamSink(const std::string& name, std::ostream& stream)
-        : LogSink(name),
-          _ostream(stream)
-      {
+  public:
+    OStreamSink(const std::string& name, std::ostream& stream)
+      : LogSink(name),
+        _ostream(stream)
+    {
+    }
+
+    void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
+    {
+      _ostream << '[' << Logger::timestamp() << "] ";
+      _ostream << LogStream::levelToString(level) << " ";
+
+      if (level >= LogStream::Level::Debug) {
+        _ostream << LogStream::sourceToString(source) << ": ";
       }
 
-      void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
-      {
-        _ostream << '[' << Logger::timestamp() << "] ";
-        _ostream << LogStream::levelToString(level) << " ";
-        if (level >= LogStream::Level::Debug) {
-          _ostream << LogStream::sourceToString(source) << ": ";
-        }
-        _ostream << message;
-        _ostream << std::endl;
-      }
+      _ostream << message;
+      _ostream << std::endl;
+    }
 
-      ~OStreamSink()
-      {
-        _ostream.flush();
-      }
-    private:
-      std::ostream& _ostream;
+    ~OStreamSink()
+    {
+      _ostream.flush();
+    }
+  private:
+    std::ostream& _ostream;
   };
 
   class ConsoleSink : public OStreamSink
   {
-    public:
-      ConsoleSink()
-        : OStreamSink("console", std::clog)
-      {
-      }
+  public:
+    ConsoleSink()
+      : OStreamSink("console", std::clog)
+    {
+    }
   };
 
   class SyslogSink : public LogSink
   {
-    public:
-      SyslogSink(const std::string& ident)
-        : LogSink("syslog"),
-          _ident(ident)
-      {
-        openlog(_ident.c_str(), LOG_NDELAY|LOG_PID|LOG_CONS, LOG_DAEMON);
+  public:
+    SyslogSink(const std::string& ident)
+      : LogSink("syslog"),
+        _ident(ident)
+    {
+      openlog(_ident.c_str(), LOG_NDELAY|LOG_PID|LOG_CONS, LOG_DAEMON);
+    }
+
+    ~SyslogSink()
+    {
+      closelog();
+    }
+
+    int levelToPriority(const LogStream::Level level)
+    {
+      switch (level) {
+      case LogStream::Level::Audit:
+        return LOG_NOTICE;
+
+      case LogStream::Level::Error:
+        return LOG_ERR;
+
+      case LogStream::Level::Warning:
+        return LOG_WARNING;
+
+      case LogStream::Level::Info:
+        return LOG_INFO;
+
+      case LogStream::Level::Debug:
+      case LogStream::Level::Trace:
+        return LOG_DEBUG;
+
+      default:
+        throw USBGUARD_BUG("Invalid LogStream::Level value");
+      }
+    }
+
+    void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
+    {
+      std::string log_message;
+
+      if (level >= LogStream::Level::Debug) {
+        log_message.append(LogStream::sourceToString(source));
+        log_message.append(": ");
       }
 
-      ~SyslogSink()
-      {
-        closelog();
-      }
+      log_message.append(message);
+      syslog(levelToPriority(level), "%s", log_message.c_str());
+    }
 
-      int levelToPriority(const LogStream::Level level)
-      {
-        switch (level) {
-          case LogStream::Level::Audit:
-            return LOG_NOTICE;
-          case LogStream::Level::Error:
-            return LOG_ERR;
-          case LogStream::Level::Warning:
-            return LOG_WARNING;
-          case LogStream::Level::Info:
-            return LOG_INFO;
-          case LogStream::Level::Debug:
-          case LogStream::Level::Trace:
-            return LOG_DEBUG;
-          default:
-            throw USBGUARD_BUG("Invalid LogStream::Level value");
-        }
-      }
-
-      void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
-      {
-        std::string log_message;
-
-        if (level >= LogStream::Level::Debug) {
-          log_message.append(LogStream::sourceToString(source));
-          log_message.append(": ");
-        }
-        log_message.append(message);
-
-        syslog(levelToPriority(level), "%s", log_message.c_str());
-      }
-
-    private:
-      std::string _ident;
+  private:
+    std::string _ident;
   };
 
   class FileSink : public OStreamSink
   {
-    public:
-      FileSink(const std::string& filepath, bool append = true)
-        : OStreamSink("file", _stream)
-      {
-        _filepath = filepath;
-        _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
-      }
+  public:
+    FileSink(const std::string& filepath, bool append = true)
+      : OStreamSink("file", _stream)
+    {
+      _filepath = filepath;
+      _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
+    }
 
-      ~FileSink()
-      {
-        _stream.close();
-      }
-    private:
-      std::string _filepath;
-      std::ofstream _stream;
+    ~FileSink()
+    {
+      _stream.close();
+    }
+  private:
+    std::string _filepath;
+    std::ofstream _stream;
   };
 
   class AuditFileSink : public OStreamSink
   {
-    public:
-      AuditFileSink(const std::string& filepath)
-        : OStreamSink("auditfile", _stream)
-      {
-        _filepath = filepath;
-        const auto saved_umask = umask(0177);
-        try {
-          _stream.open(filepath, std::fstream::app);
-        }
-        catch(...) {
-          umask(saved_umask);
-          throw;
-        }
+  public:
+    AuditFileSink(const std::string& filepath)
+      : OStreamSink("auditfile", _stream)
+    {
+      _filepath = filepath;
+      const auto saved_umask = umask(0177);
+
+      try {
+        _stream.open(filepath, std::fstream::app);
+      }
+      catch (...) {
         umask(saved_umask);
+        throw;
       }
 
-      void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
-      {
-        /*
-         * AuditFileSink logs only Audit level messages.
-         */
-        if (level == LogStream::Level::Audit) {
-          OStreamSink::write(source, level, message);
-        }
+      umask(saved_umask);
+    }
+
+    void write(const LogStream::Source& source, LogStream::Level level, const std::string& message)
+    {
+      /*
+       * AuditFileSink logs only Audit level messages.
+       */
+      if (level == LogStream::Level::Audit) {
+        OStreamSink::write(source, level, message);
       }
-   
-      ~AuditFileSink()
-      {
-        _stream.close();
-      }
-    private:
-      std::string _filepath;
-      std::ofstream _stream;
+    }
+
+    ~AuditFileSink()
+    {
+      _stream.close();
+    }
+  private:
+    std::string _filepath;
+    std::ofstream _stream;
   };
 
   Logger::Logger()
     : _enabled(true),
       _level(LogStream::Level::Warning)
   {
-    const char * const envval = getenv("USBGUARD_DEBUG");
+    const char* const envval = getenv("USBGUARD_DEBUG");
+
     /*
      * If USBGUARD_DEBUG=1 is set in the current environment,
-     * set the debugging level to the highest level. 
+     * set the debugging level to the highest level.
      */
     if (envval != nullptr && strcmp(envval, "1") == 0) {
       _level = LogStream::Level::Trace;
     }
+
     setOutputConsole(true);
   }
 
@@ -291,6 +308,7 @@ namespace usbguard
   void Logger::setOutputConsole(const bool state)
   {
     auto L = lock();
+
     if (state == true) {
       std::unique_ptr<LogSink> sink(new ConsoleSink);
       addOutputSink_nolock(sink);
@@ -303,6 +321,7 @@ namespace usbguard
   void Logger::setOutputFile(bool state, const std::string& filepath, bool append)
   {
     auto L = lock();
+
     if (state == true) {
       std::unique_ptr<LogSink> sink(new FileSink(filepath, append));
       addOutputSink_nolock(sink);
@@ -315,6 +334,7 @@ namespace usbguard
   void Logger::setOutputSyslog(bool state, const std::string& ident)
   {
     auto L = lock();
+
     if (state == true) {
       std::unique_ptr<LogSink> sink(new SyslogSink(ident));
       addOutputSink_nolock(sink);
@@ -327,6 +347,7 @@ namespace usbguard
   void Logger::setAuditFile(bool state, const std::string& filepath)
   {
     auto L = lock();
+
     if (state == true) {
       std::unique_ptr<LogSink> sink(new AuditFileSink(filepath));
       addOutputSink_nolock(sink);
@@ -341,7 +362,7 @@ namespace usbguard
     auto L = lock();
     addOutputSink_nolock(sink);
   }
- 
+
   void Logger::addOutputSink_nolock(std::unique_ptr<LogSink>& sink)
   {
     _sinks.emplace(sink->name(), std::move(sink));
@@ -369,12 +390,14 @@ namespace usbguard
   void Logger::write(const LogStream::Source& source, const LogStream::Level level, const std::string& message)
   {
     auto L = lock();
+
     for (auto& kv_pair : _sinks) {
       auto& sink = kv_pair.second;
+
       try {
         sink->write(source, level, message);
       }
-      catch(const std::exception& ex) {
+      catch (const std::exception& ex) {
         std::cerr << "Warning: sink->write failed for " << sink->name() << " sink: " << ex.what() << std::endl;
       }
     }
@@ -398,8 +421,8 @@ namespace usbguard
      */
     char buffer[16];
     const int length = snprintf(buffer, sizeof buffer, "%.10" PRIu64 ".%03" PRIu64,
-                                (uint64_t)tv_now.tv_sec,
-                                (uint64_t)(tv_now.tv_usec / 1000));
+        (uint64_t)tv_now.tv_sec,
+        (uint64_t)(tv_now.tv_usec / 1000));
 
     if (length < 1 || static_cast<size_t>(length) > (sizeof buffer - 1)) {
       throw std::runtime_error("Failed to convert timestamp to string");

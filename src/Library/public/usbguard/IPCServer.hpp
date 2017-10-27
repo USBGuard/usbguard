@@ -44,53 +44,53 @@ namespace usbguard
 
     class AccessControl
     {
-      public:
-        enum class Section : uint8_t {
-          NONE = 0,
-          DEVICES = 1,
-          POLICY = 2,
-          PARAMETERS = 3,
-          EXCEPTIONS = 4,
-          ALL = 255
-        };
+    public:
+      enum class Section : uint8_t {
+        NONE = 0,
+        DEVICES = 1,
+        POLICY = 2,
+        PARAMETERS = 3,
+        EXCEPTIONS = 4,
+        ALL = 255
+      };
 
-        static Section sectionFromString(const std::string& section_string);
-        static std::string sectionToString(const Section section);
+      static Section sectionFromString(const std::string& section_string);
+      static std::string sectionToString(const Section section);
 
-        enum class Privilege : uint8_t {
-          NONE = 0x00,
-          LIST = 0x01,
-          MODIFY = 0x02,
-          LISTEN = 0x08,
-          ALL = 0xff
-        };
+      enum class Privilege : uint8_t {
+        NONE = 0x00,
+        LIST = 0x01,
+        MODIFY = 0x02,
+        LISTEN = 0x08,
+        ALL = 0xff
+      };
 
-        static Privilege privilegeFromString(const std::string& privilege_string);
-        static std::string privilegeToString(const Privilege privilege);
+      static Privilege privilegeFromString(const std::string& privilege_string);
+      static std::string privilegeToString(const Privilege privilege);
 
-        AccessControl();
-        AccessControl(const std::string& access_control_string);
-        AccessControl(Section section, Privilege privilege);
-        AccessControl(const AccessControl& rhs);
-        AccessControl& operator=(const AccessControl& rhs);
+      AccessControl();
+      AccessControl(const std::string& access_control_string);
+      AccessControl(Section section, Privilege privilege);
+      AccessControl(const AccessControl& rhs);
+      AccessControl& operator=(const AccessControl& rhs);
 
-        bool hasPrivilege(Section section, Privilege privilege) const;
-        void setPrivilege(Section section, Privilege privilege);
-        void clear();
-        void load(std::istream& stream);
-        void save(std::ostream& stream) const;
-        void merge(const AccessControl& rhs);
-        void merge(const std::string& access_control_string);
+      bool hasPrivilege(Section section, Privilege privilege) const;
+      void setPrivilege(Section section, Privilege privilege);
+      void clear();
+      void load(std::istream& stream);
+      void save(std::ostream& stream) const;
+      void merge(const AccessControl& rhs);
+      void merge(const std::string& access_control_string);
 
-      private:
-        struct SectionHash {
-          std::size_t operator()(Section value) const
-          {
-            return static_cast<std::size_t>(value);
-          }
-        };
+    private:
+      struct SectionHash {
+        std::size_t operator()(Section value) const
+        {
+          return static_cast<std::size_t>(value);
+        }
+      };
 
-        std::unordered_map<Section,uint8_t,SectionHash> _access_control;
+      std::unordered_map<Section, uint8_t, SectionHash> _access_control;
     };
 
     IPCServer();
@@ -100,19 +100,19 @@ namespace usbguard
     void stop();
 
     void DevicePresenceChanged(uint32_t id,
-                               DeviceManager::EventType event,
-                               Rule::Target target,
-                               const std::string& device_rule);
+      DeviceManager::EventType event,
+      Rule::Target target,
+      const std::string& device_rule);
 
     void DevicePolicyChanged(uint32_t id,
-                             Rule::Target target_old,
-                             Rule::Target target_new,
-                             const std::string& device_rule,
-                             uint32_t rule_id);
+      Rule::Target target_old,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id);
 
     void ExceptionMessage(const std::string& context,
-                          const std::string& object,
-                          const std::string& reason);
+      const std::string& object,
+      const std::string& reason);
 
     void addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac);
     void addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac);

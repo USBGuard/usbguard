@@ -25,7 +25,8 @@ EXTRA_DIST =\
 	usbguard-daemon.conf.in \
 	usbguard.service.in \
 	VERSION \
-	CHANGELOG.md
+	CHANGELOG.md \
+	src/astylerc
 
 BUILT_SOURCES=\
 	src/build-config.h

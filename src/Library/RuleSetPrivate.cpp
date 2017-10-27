@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "RuleSetPrivate.hpp"
@@ -29,9 +29,10 @@
 
 #include <fstream>
 
-namespace usbguard {
+namespace usbguard
+{
 
-  RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr)
+  RuleSetPrivate::RuleSetPrivate(RuleSet& p_instance, Interface* const interface_ptr)
     : _p_instance(p_instance),
       _interface_ptr(interface_ptr)
   {
@@ -64,9 +65,11 @@ namespace usbguard {
   void RuleSetPrivate::load(const std::string& path)
   {
     std::ifstream stream(path);
+
     if (!stream.is_open()) {
       throw ErrnoException("RuleSet loading", path, errno);
     }
+
     load(stream);
   }
 
@@ -80,18 +83,22 @@ namespace usbguard {
       ++line_number;
       std::getline(stream, line_string);
       const Rule rule = parseRuleFromString(line_string, "", line_number);
+
       if (rule) {
-	appendRule(rule);
+        appendRule(rule);
       }
-    } while(stream.good());
+    }
+    while (stream.good());
   }
 
   void RuleSetPrivate::save(const std::string& path) const
   {
     std::ofstream stream(path, std::fstream::trunc);
+
     if (!stream.is_open()) {
       throw ErrnoException("RuleSet saving", path, errno);
     }
+
     save(stream);
   }
 
@@ -159,14 +166,17 @@ namespace usbguard {
     }
     else {
       bool parent_found = false;
+
       for (auto it = _rules.begin(); it != _rules.end(); ++it) {
-	const Rule& rule = **it;
-	if (rule.getRuleID() == parent_id) {
-	  _rules.insert(it+1, rule_ptr);
-	  parent_found = true;
-	  break;
-	}
+        const Rule& rule = **it;
+
+        if (rule.getRuleID() == parent_id) {
+          _rules.insert(it+1, rule_ptr);
+          parent_found = true;
+          break;
+        }
       }
+
       if (!parent_found) {
         throw Exception("Rule set append", "rule", "Invalid parent ID");
       }
@@ -205,24 +215,29 @@ namespace usbguard {
   std::shared_ptr<Rule> RuleSetPrivate::getRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
+
     for (auto const& rule : _rules) {
       if (rule->getRuleID() == id) {
-	return rule;
+        return rule;
       }
     }
+
     throw Exception("Rule set lookup", "rule id", "id doesn't exist");
   }
 
   bool RuleSetPrivate::removeRule(uint32_t id)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
+
     for (auto it = _rules.begin(); it != _rules.end(); ++it) {
       auto const& rule_ptr = *it;
+
       if (rule_ptr->getRuleID() == id) {
         _rules.erase(it);
         return true;
       }
     }
+
     /* FIXME: Remove the rule from the priority queue too */
     throw Exception("Rule set remove", "rule id", "id doesn't exist");
   }
@@ -234,15 +249,13 @@ namespace usbguard {
 
     for (auto& rule_ptr : _rules) {
       if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
-	return rule_ptr;
+        return rule_ptr;
       }
     }
 
     std::shared_ptr<Rule> default_rule = std::make_shared<Rule>();
-
     default_rule->setRuleID(Rule::ImplicitID);
     default_rule->setTarget(_default_target);
-
     return default_rule;
   }
 

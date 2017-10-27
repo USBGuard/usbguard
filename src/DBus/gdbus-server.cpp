@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include <stdlib.h>
@@ -25,41 +25,42 @@
 #include <getopt.h>
 #include "DBusBridge.hpp"
 
-static usbguard::DBusBridge * dbus_bridge = nullptr;
-static GMainLoop * main_loop = nullptr;
-static GDBusNodeInfo *introspection_data = NULL;
+static usbguard::DBusBridge* dbus_bridge = nullptr;
+static GMainLoop* main_loop = nullptr;
+static GDBusNodeInfo* introspection_data = NULL;
 
 static const gchar introspection_xml[] =
 #include "DBusInterface.xml.cstr"
-;
+  ;
 static const unsigned int expected_interface_count = 3;
 
 static int global_ret = EXIT_SUCCESS;
 
 static void
-handle_method_call (GDBusConnection       *connection,
-                    const gchar           *sender,
-                    const gchar           *object_path,
-                    const gchar           *interface_name,
-                    const gchar           *method_name,
-                    GVariant              *parameters,
-                    GDBusMethodInvocation *invocation,
-                    gpointer               user_data)
+handle_method_call (GDBusConnection*       connection,
+  const gchar*           sender,
+  const gchar*           object_path,
+  const gchar*           interface_name,
+  const gchar*           method_name,
+  GVariant*              parameters,
+  GDBusMethodInvocation* invocation,
+  gpointer               user_data)
 {
   (void)connection;
   (void)sender;
   (void)object_path;
   (void)user_data;
+
   try {
     dbus_bridge->handleMethodCall(interface_name, method_name, parameters, invocation);
   }
-  catch(std::exception& ex) {
+  catch (std::exception& ex) {
     g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
-       G_DBUS_ERROR_FAILED, "Exception: %s", ex.what());
+      G_DBUS_ERROR_FAILED, "Exception: %s", ex.what());
   }
-  catch(...) {
+  catch (...) {
     g_dbus_method_invocation_return_error(invocation, G_DBUS_ERROR,
-       G_DBUS_ERROR_FAILED, "BUG: Unknown exception; method call failed for unknown reasons.");
+      G_DBUS_ERROR_FAILED, "BUG: Unknown exception; method call failed for unknown reasons.");
   }
 }
 
@@ -74,16 +75,17 @@ usbguard_ipc_try_connect(gpointer user_data)
     return FALSE;
   }
   else if (dbus_bridge->isConnected()) {
-   /* returning FALSE removes the function call from the main loop */
-   return FALSE;
+    /* returning FALSE removes the function call from the main loop */
+    return FALSE;
   }
   else {
     try {
       dbus_bridge->connect();
     }
-    catch(...) {
+    catch (...) {
       /* ignore exception */
     }
+
     return TRUE;
   }
 }
@@ -101,24 +103,21 @@ handle_usbguard_ipc_state(bool state)
   }
 }
 
-static const GDBusInterfaceVTable devices_interface_vtable =
-{
+static const GDBusInterfaceVTable devices_interface_vtable = {
   handle_method_call,
   nullptr,
   nullptr,
   {}
 };
 
-static const GDBusInterfaceVTable policy_interface_vtable =
-{
+static const GDBusInterfaceVTable policy_interface_vtable = {
   handle_method_call,
   nullptr,
   nullptr,
   {}
 };
 
-static const GDBusInterfaceVTable usbguard_interface_vtable =
-{
+static const GDBusInterfaceVTable usbguard_interface_vtable = {
   handle_method_call,
   nullptr,
   nullptr,
@@ -126,33 +125,33 @@ static const GDBusInterfaceVTable usbguard_interface_vtable =
 };
 
 static void
-on_bus_acquired (GDBusConnection *connection,
-                 const gchar     *name,
-                 gpointer         user_data)
+on_bus_acquired (GDBusConnection* connection,
+  const gchar*     name,
+  gpointer         user_data)
 {
   (void)name;
   (void)user_data;
   auto policy_rid = g_dbus_connection_register_object(connection,
-                                                      "/org/usbguard/Policy",
-                                                      introspection_data->interfaces[0],
-                                                      &policy_interface_vtable,
-                                                      /*user_data=*/dbus_bridge,
-                                                      /*user_data_free_func=*/nullptr,
-                                                      /*GError=*/nullptr);
+      "/org/usbguard/Policy",
+      introspection_data->interfaces[0],
+      &policy_interface_vtable,
+      /*user_data=*/dbus_bridge,
+      /*user_data_free_func=*/nullptr,
+      /*GError=*/nullptr);
   auto devices_rid = g_dbus_connection_register_object(connection,
-                                                      "/org/usbguard/Devices",
-                                                      introspection_data->interfaces[1],
-                                                      &devices_interface_vtable,
-                                                      /*user_data=*/dbus_bridge,
-                                                      /*user_data_free_func=*/nullptr,
-                                                      /*GError=*/nullptr);
+      "/org/usbguard/Devices",
+      introspection_data->interfaces[1],
+      &devices_interface_vtable,
+      /*user_data=*/dbus_bridge,
+      /*user_data_free_func=*/nullptr,
+      /*GError=*/nullptr);
   auto usbguard_rid = g_dbus_connection_register_object(connection,
-                                                      "/org/usbguard",
-                                                      introspection_data->interfaces[2],
-                                                      &usbguard_interface_vtable,
-                                                      /*user_data=*/dbus_bridge,
-                                                      /*user_data_free_func=*/nullptr,
-                                                      /*GError=*/nullptr);
+      "/org/usbguard",
+      introspection_data->interfaces[2],
+      &usbguard_interface_vtable,
+      /*user_data=*/dbus_bridge,
+      /*user_data_free_func=*/nullptr,
+      /*GError=*/nullptr);
 
   if (policy_rid <= 0 || devices_rid <= 0 || usbguard_rid <= 0) {
     std::cerr << "Unable to register required objects on the bus." << std::endl;
@@ -162,19 +161,20 @@ on_bus_acquired (GDBusConnection *connection,
 }
 
 static void
-on_name_acquired (GDBusConnection *connection,
-                  const gchar     *name,
-                  gpointer         user_data)
+on_name_acquired (GDBusConnection* connection,
+  const gchar*     name,
+  gpointer         user_data)
 {
   (void)name;
   (void)user_data;
   /* We got the name, reset the global return value */
   global_ret = EXIT_SUCCESS;
+
   try {
     dbus_bridge = new usbguard::DBusBridge(connection);
     handle_usbguard_ipc_state(/*state=*/false);
   }
-  catch(...) {
+  catch (...) {
     dbus_bridge = nullptr;
     std::cerr << "Unable to create the USBGuard DBus Bridge." << std::endl;
     g_main_loop_quit(main_loop);
@@ -183,9 +183,9 @@ on_name_acquired (GDBusConnection *connection,
 }
 
 static void
-on_name_lost (GDBusConnection *connection,
-              const gchar     *name,
-              gpointer         user_data)
+on_name_lost (GDBusConnection* connection,
+  const gchar*     name,
+  gpointer         user_data)
 {
   (void)connection;
   (void)name;
@@ -196,8 +196,8 @@ on_name_lost (GDBusConnection *connection,
   delete dbus_bridge_local;
 }
 
-static const char *options_short = "sSh";
-static const char *usbguard_arg0 = nullptr;
+static const char* options_short = "sSh";
+static const char* usbguard_arg0 = nullptr;
 
 static const struct ::option options_long[] = {
   { "system", no_argument, nullptr, 's' },
@@ -218,28 +218,31 @@ static void showHelp(std::ostream& stream)
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char* argv[])
 {
   usbguard_arg0 = argv[0];
-
   int opt = 0;
   bool use_system_bus = true;
 
   while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-    switch(opt) {
-      case 's':
-        use_system_bus = true;
-        break;
-      case 'S':
-        use_system_bus = false;
-        break;
-      case 'h':
-        showHelp(std::cout);
-        return EXIT_SUCCESS;
-      case '?':
-        showHelp(std::cerr);
-      default:
-        return EXIT_FAILURE;
+    switch (opt) {
+    case 's':
+      use_system_bus = true;
+      break;
+
+    case 'S':
+      use_system_bus = false;
+      break;
+
+    case 'h':
+      showHelp(std::cout);
+      return EXIT_SUCCESS;
+
+    case '?':
+      showHelp(std::cerr);
+
+    default:
+      return EXIT_FAILURE;
     }
   }
 
@@ -251,15 +254,17 @@ main (int argc, char *argv[])
 
   /* Ensure that the expected number of interfaces is defined */
   unsigned int interface_count = 0;
+
   if (introspection_data->interfaces != nullptr) {
     while (introspection_data->interfaces[interface_count] != nullptr) {
       ++interface_count;
     }
   }
+
   if (interface_count != expected_interface_count) {
     std::cerr << "The introspection data contains an unexpected"
-              << " number of interfaces: " << interface_count
-              << ", expected: " << expected_interface_count << std::endl;
+      << " number of interfaces: " << interface_count
+      << ", expected: " << expected_interface_count << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -271,18 +276,16 @@ main (int argc, char *argv[])
    * FAILURE return code.
    */
   global_ret = EXIT_FAILURE;
-
   /* Try to take ownership of the bus */
   auto owner_id = g_bus_own_name (use_system_bus ?
-                                    G_BUS_TYPE_SYSTEM : G_BUS_TYPE_SESSION,
-                                 "org.usbguard",
-                                 G_BUS_NAME_OWNER_FLAGS_NONE,
-                                 on_bus_acquired,
-                                 on_name_acquired,
-                                 on_name_lost,
-                                 /*user_data=*/nullptr,
-                                 /*user_data_free_func=*/nullptr);
-
+      G_BUS_TYPE_SYSTEM : G_BUS_TYPE_SESSION,
+      "org.usbguard",
+      G_BUS_NAME_OWNER_FLAGS_NONE,
+      on_bus_acquired,
+      on_name_acquired,
+      on_name_lost,
+      /*user_data=*/nullptr,
+      /*user_data_free_func=*/nullptr);
   int ret;
 
   /* Start the main loop */
@@ -290,6 +293,7 @@ main (int argc, char *argv[])
     if ((main_loop = g_main_loop_new (NULL, FALSE)) != nullptr) {
       g_main_loop_run (main_loop);
     }
+
     g_bus_unown_name (owner_id);
     ret = global_ret;
   }
@@ -300,7 +304,6 @@ main (int argc, char *argv[])
 
   /* Release allocated resources */
   g_dbus_node_info_unref (introspection_data);
-
   return ret;
 }
 

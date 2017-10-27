@@ -29,7 +29,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace usbguard {
+namespace usbguard
+{
   class DeviceManager;
   class DevicePrivate;
   class DLL_PUBLIC Device
@@ -46,7 +47,7 @@ namespace usbguard {
     std::shared_ptr<Rule> getDeviceRule(bool with_port = true, bool with_parent_hash = true, bool match_rule = false);
     std::string hashString(const std::string& value) const;
     void initializeHash();
-    void updateHash(const void * ptr, size_t size);
+    void updateHash(const void* ptr, size_t size);
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
     std::string finalizeHash();
     const std::string& getHash() const;
@@ -86,7 +87,7 @@ namespace usbguard {
     void loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
 
   private:
-    DevicePrivate *d_pointer;
+    DevicePrivate* d_pointer;
   };
 } /* namespace usbguard */
 

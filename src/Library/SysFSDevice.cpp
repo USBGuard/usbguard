@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "SysFSDevice.hpp"
@@ -27,7 +27,7 @@
 #include "usbguard/Exception.hpp"
 
 #ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE
+  #define _POSIX_C_SOURCE
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,7 +47,7 @@ namespace usbguard
       _sysfs_dirfd(-1)
   {
     USBGUARD_LOG(Trace) << "sysfs_path=" << sysfs_path
-                        << " without_parent=" << without_parent;
+      << " without_parent=" << without_parent;
 
     if (!without_parent) {
       _sysfs_parent_path = parentPath(sysfs_path);
@@ -65,7 +65,7 @@ namespace usbguard
     try {
       reloadUEvent();
     }
-    catch(...) {
+    catch (...) {
       close(_sysfs_dirfd);
       throw;
     }
@@ -127,6 +127,7 @@ namespace usbguard
       if (errno == ENOENT) {
         return false;
       }
+
       throw ErrnoException("SysFSDevice::hasAttribute", name, errno);
     }
 
@@ -136,19 +137,20 @@ namespace usbguard
   int SysFSDevice::openAttribute(const std::string& name) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;
-
     const int fd = openat(_sysfs_dirfd, name.c_str(), O_RDONLY);
+
     if (fd < 0) {
       throw ErrnoException("SysFSDevice", name, errno);
     }
+
     return fd;
   }
 
   std::string SysFSDevice::readAttribute(const std::string& name, bool strip_last_null, bool optional) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;
-
     const int fd = openat(_sysfs_dirfd, name.c_str(), O_RDONLY);
+
     if (fd < 0) {
       if (optional && errno == ENOENT) {
         return std::string();
@@ -157,11 +159,12 @@ namespace usbguard
         throw ErrnoException("SysFSDevice", name, errno);
       }
     }
+
     try {
       std::string buffer(4096, 0);
       ssize_t rc = -1;
       USBGUARD_SYSCALL_THROW("SysFSDevice",
-          (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
+        (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
 
       if (strip_last_null) {
         if (rc > 0) {
@@ -176,10 +179,9 @@ namespace usbguard
       }
 
       USBGUARD_LOG(Debug) << "value=" << buffer << " size=" << buffer.size();
-
       return buffer;
     }
-    catch(...) {
+    catch (...) {
       close(fd);
       throw;
     }
@@ -189,18 +191,19 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace) << "name=" << name << " value=" << value;
     USBGUARD_LOG(Trace) << "path=" << _sysfs_path;
-
     const int fd = openat(_sysfs_dirfd, name.c_str(), O_WRONLY);
+
     if (fd < 0) {
       throw ErrnoException("SysFSDevice", name, errno);
     }
+
     try {
       ssize_t rc = -1;
       USBGUARD_SYSCALL_THROW("SysFSDevice",
-          (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
+        (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
       return;
     }
-    catch(...) {
+    catch (...) {
       close(fd);
       throw;
     }
@@ -216,6 +219,6 @@ namespace usbguard
     const std::string uevent_string = readAttribute("uevent");
     _uevent = UEvent::fromString(uevent_string, /*attributes_only=*/true);
   }
-} /* namespace usbguard */ 
+} /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -23,7 +23,8 @@
 #include <string>
 #include <vector>
 
-namespace usbguard {
+namespace usbguard
+{
   class ConfigFilePrivate;
   class DLL_PUBLIC ConfigFile
   {

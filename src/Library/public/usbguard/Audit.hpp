@@ -37,116 +37,117 @@ namespace usbguard
 {
   class DLL_PUBLIC AuditIdentity
   {
-    public:
-      AuditIdentity();
-      AuditIdentity(uid_t uid, pid_t pid);
+  public:
+    AuditIdentity();
+    AuditIdentity(uid_t uid, pid_t pid);
 
-      uid_t uid() const;
-      pid_t pid() const;
+    uid_t uid() const;
+    pid_t pid() const;
 
-      std::string toString() const;
+    std::string toString() const;
 
-    private:
-      uid_t _uid;
-      pid_t _pid;
+  private:
+    uid_t _uid;
+    pid_t _pid;
   };
 
   class AuditBackend;
 
   class DLL_PUBLIC AuditEvent
   {
-      AuditEvent(const AuditIdentity& identity, std::shared_ptr<AuditBackend>& backend);
-    public:
-      using Keys = std::unordered_map<std::string,std::string>;
+    AuditEvent(const AuditIdentity& identity, std::shared_ptr<AuditBackend>& backend);
+  public:
+    using Keys = std::unordered_map<std::string, std::string>;
 
-      AuditEvent(AuditEvent&& event);
-      AuditEvent(const AuditEvent& event) = delete;
-      ~AuditEvent();
+    AuditEvent(AuditEvent&& event);
+    AuditEvent(const AuditEvent& event) = delete;
+    ~AuditEvent();
 
-      void success();
-      void failure();
+    void success();
+    void failure();
 
-      const AuditIdentity& identity() const;
-      const Keys& keys() const;
+    const AuditIdentity& identity() const;
+    const Keys& keys() const;
 
-    private:
-      void commit(const std::string& result);
-      void setCommited(bool state);
-      void setKey(const std::string& key, const std::string& value);
+  private:
+    void commit(const std::string& result);
+    void setCommited(bool state);
+    void setKey(const std::string& key, const std::string& value);
 
-      bool _commited;
-      
-      AuditIdentity _identity;
-      std::shared_ptr<AuditBackend> _backend;
-      Keys _keys;
+    bool _commited;
 
-      friend class Audit;
+    AuditIdentity _identity;
+    std::shared_ptr<AuditBackend> _backend;
+    Keys _keys;
+
+    friend class Audit;
   };
 
   class DLL_PUBLIC AuditBackend
   {
-    public:
-      AuditBackend();
-      virtual ~AuditBackend();
-      
-      virtual void write(const AuditEvent& event) = 0;
-      void commit(const AuditEvent& event);
+  public:
+    AuditBackend();
+    virtual ~AuditBackend();
 
-    private:
-      std::mutex _mutex;
+    virtual void write(const AuditEvent& event) = 0;
+    void commit(const AuditEvent& event);
+
+  private:
+    std::mutex _mutex;
   };
 
   class DLL_PUBLIC Audit
   {
-    public:
-      Audit(const AuditIdentity& identity);
+  public:
+    Audit(const AuditIdentity& identity);
 
-      void setBackend(std::unique_ptr<AuditBackend> backend);
+    void setBackend(std::unique_ptr<AuditBackend> backend);
 
-      AuditEvent policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event);
-      AuditEvent policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
-      AuditEvent policyEvent(std::shared_ptr<Device> device, Policy::EventType event);
-      AuditEvent policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
+    AuditEvent policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event);
+    AuditEvent policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
+    AuditEvent policyEvent(std::shared_ptr<Device> device, Policy::EventType event);
+    AuditEvent policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
-      AuditEvent deviceEvent(std::shared_ptr<Device> device, DeviceManager::EventType event);
-      AuditEvent deviceEvent(std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
+    AuditEvent deviceEvent(std::shared_ptr<Device> device, DeviceManager::EventType event);
+    AuditEvent deviceEvent(std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
-      /*
-       * Audit policy changes:
-       *   - rule append
-       *   - rule remove
-       *   - rule update
-       *   - policy parameter change
-       *
-       * Audit data:
-       *   - who: uid + pid
-       *   - when: time
-       *   - what: append, remove, update
-       *   - update: old, new
-       */
-      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event);
-      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
-      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event);
-      AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
+    /*
+     * Audit policy changes:
+     *   - rule append
+     *   - rule remove
+     *   - rule update
+     *   - policy parameter change
+     *
+     * Audit data:
+     *   - who: uid + pid
+     *   - when: time
+     *   - what: append, remove, update
+     *   - update: old, new
+     */
+    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event);
+    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
+    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event);
+    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
+      Rule::Target new_target);
 
-      /*
-       * Audit device changes:
-       *   - device insertion
-       *   - device removal
-       *   - device authorization target change
-       *
-       * Audit data:
-       *   - who: uid + pid
-       *   - when: time
-       *   - what: insert, remove, authorization target
-       *   - change: old, new
-       */
-      AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event);
-      AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
+    /*
+     * Audit device changes:
+     *   - device insertion
+     *   - device removal
+     *   - device authorization target change
+     *
+     * Audit data:
+     *   - who: uid + pid
+     *   - when: time
+     *   - what: insert, remove, authorization target
+     *   - change: old, new
+     */
+    AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event);
+    AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
-    private:
-      AuditIdentity _identity;
-      std::shared_ptr<AuditBackend> _backend;
+  private:
+    AuditIdentity _identity;
+    std::shared_ptr<AuditBackend> _backend;
   };
 } /* namespace usbguard */
 

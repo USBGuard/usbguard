@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/RuleCondition.hpp"
@@ -35,12 +35,12 @@ namespace usbguard
   public:
     AllowedMatchesCondition(const std::string& device_spec, bool negated = false);
     AllowedMatchesCondition(const AllowedMatchesCondition& rhs);
-    void init(Interface * const interface_ptr);
+    void init(Interface* const interface_ptr);
     bool update(const Rule& rule);
-    RuleConditionBase * clone() const;
+    RuleConditionBase* clone() const;
   private:
     Rule _device_match_rule;
-    Interface * _interface_ptr;
+    Interface* _interface_ptr;
   };
 } /* namespace usbguard */
 

@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard.hpp"
@@ -29,7 +29,7 @@
 
 namespace usbguard
 {
-  static const char *options_short = "hab";
+  static const char* options_short = "hab";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
@@ -49,27 +49,31 @@ namespace usbguard
     stream << std::endl;
   }
 
-  int usbguard_list_devices(int argc, char *argv[])
+  int usbguard_list_devices(int argc, char* argv[])
   {
     bool list_blocked = false;
     bool list_allowed = false;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-      switch(opt) {
-        case 'h':
-          showHelp(std::cout);
-          return EXIT_SUCCESS;
-        case 'a':
-          list_allowed = true;
-          break;
-        case 'b':
-          list_blocked = true;
-          break;
-        case '?':
-          showHelp(std::cerr);
-        default:
-          return EXIT_FAILURE;
+      switch (opt) {
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+
+      case 'a':
+        list_allowed = true;
+        break;
+
+      case 'b':
+        list_blocked = true;
+        break;
+
+      case '?':
+        showHelp(std::cerr);
+
+      default:
+        return EXIT_FAILURE;
       }
     }
 

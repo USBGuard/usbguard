@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Typedefs.hpp"
@@ -28,11 +28,12 @@
 #include <ostream>
 #include <mutex>
 
-namespace usbguard {
+namespace usbguard
+{
   class RuleSetPrivate
   {
   public:
-    RuleSetPrivate(RuleSet& p_instance, Interface * const interface_ptr);
+    RuleSetPrivate(RuleSet& p_instance, Interface* const interface_ptr);
     RuleSetPrivate(RuleSet& p_instance, const RuleSetPrivate& rhs);
     const RuleSetPrivate& operator=(const RuleSetPrivate& rhs);
     ~RuleSetPrivate();
@@ -57,7 +58,7 @@ namespace usbguard {
     mutable std::mutex _io_mutex; /* mutex for load/save */
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
     RuleSet& _p_instance;
-    Interface * const _interface_ptr;
+    Interface* const _interface_ptr;
     Rule::Target _default_target;
     std::string _default_action;
     Atomic<uint32_t> _id_next;

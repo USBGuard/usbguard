@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Exception.hpp"
@@ -44,16 +44,17 @@ namespace usbguard
    * Wrappers for the __builtin_expect function.
    */
 #if defined(__GNUC__)
-# define likely(expr) __builtin_expect(!!(expr), 1)
-# define unlikely(expr) __builtin_expect(!!(expr), 0)
+  #define likely(expr) __builtin_expect(!!(expr), 1)
+  #define unlikely(expr) __builtin_expect(!!(expr), 0)
 #else
-# define likely(expr) (expr)
-# define unlikely(expr) (expr)
+  #define likely(expr) (expr)
+  #define unlikely(expr) (expr)
 #endif
 
-  int runCommand(const char *path, const char *arg1, int timeout_secs = 10);
-  int runCommand(const char *path, const char *arg1, const char *arg2, int timeout_secs = 10);
-  int runCommand(const std::string& path, const std::vector<std::string>& args = std::vector<std::string>(), int timeout_secs = 10);
+  int runCommand(const char* path, const char* arg1, int timeout_secs = 10);
+  int runCommand(const char* path, const char* arg1, const char* arg2, int timeout_secs = 10);
+  int runCommand(const std::string& path, const std::vector<std::string>& args = std::vector<std::string>(),
+    int timeout_secs = 10);
 
   /**
    * Tokenize a std::string compatible type using delimiters specified in a string.
@@ -64,23 +65,27 @@ namespace usbguard
    * in the vector.
    */
   template<typename StringType>
-  void tokenizeString(const StringType& str, std::vector<StringType>& tokens, const typename std::vector<StringType>::value_type delimiters, const bool trim_empty = false)
+  void tokenizeString(const StringType& str, std::vector<StringType>& tokens,
+    const typename std::vector<StringType>::value_type delimiters, const bool trim_empty = false)
   {
     typename StringType::size_type pos, last_pos = 0;
-    while(true) {
+
+    while (true) {
       pos = str.find_first_of(delimiters, last_pos);
-      if(pos == StringType::npos) {
-	pos = str.length();
 
-	if(pos != last_pos || !trim_empty) {
-	  tokens.push_back(StringType(str.data() + last_pos, pos - last_pos));
-	}
+      if (pos == StringType::npos) {
+        pos = str.length();
 
-	break;
-      } else {
-	if(pos != last_pos || !trim_empty) {
-	  tokens.push_back(StringType(str.data() + last_pos, pos - last_pos));
-	}
+        if (pos != last_pos || !trim_empty) {
+          tokens.push_back(StringType(str.data() + last_pos, pos - last_pos));
+        }
+
+        break;
+      }
+      else {
+        if (pos != last_pos || !trim_empty) {
+          tokens.push_back(StringType(str.data() + last_pos, pos - last_pos));
+        }
       }
 
       last_pos = pos + 1;
@@ -92,21 +97,21 @@ namespace usbguard
    * representation.
    */
   template<typename T>
-  std::string numberToString(const T number, const std::string& prefix = std::string(), const int base = 10, const int align = -1, const char align_char = ' ')
+  std::string numberToString(const T number, const std::string& prefix = std::string(), const int base = 10, const int align = -1,
+    const char align_char = ' ')
   {
     std::ostringstream ss;
-
     ss << std::setbase(base);
     ss << number;
-
     const std::string number_string = ss.str();
     std::string result;
     result.append(prefix);
 
     if (align > 0 && number_string.size() < (size_t)align) {
       size_t chars_to_add = (size_t)align - number_string.size();
-      for (;chars_to_add > 0; --chars_to_add) {
-	result += align_char;
+
+      for (; chars_to_add > 0; --chars_to_add) {
+        result += align_char;
       }
     }
 
@@ -115,7 +120,8 @@ namespace usbguard
   }
 
   template<>
-  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align, const char align_char);
+  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align,
+    const char align_char);
 
   /**
    * Convert a string representation of a number
@@ -174,10 +180,13 @@ namespace usbguard
    * subdirectories.
    */
   int loadFiles(const std::string& directory,
-                std::function<std::string(const std::string&, const struct dirent *)> filter,
-                std::function<int(const std::string&, const std::string&)> loader,
-                std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
-                  [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) { return a.first < b.first; });
+    std::function<std::string(const std::string&, const struct dirent*)> filter,
+    std::function<int(const std::string&, const std::string&)> loader,
+    std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
+      [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b)
+  {
+    return a.first < b.first;
+  });
 
   /**
    * Remove prefix from string.
@@ -193,13 +202,14 @@ namespace usbguard
   /**
    * Read symlink destination.
    */
-  std::string symlinkPath(const std::string& linkpath, struct stat *st_user = nullptr);
+  std::string symlinkPath(const std::string& linkpath, struct stat* st_user = nullptr);
 
   /*
    * Restorer class
    */
   template<typename Tvar, typename Tval>
-  class Restorer {
+  class Restorer
+  {
   public:
     Restorer(Tvar& var, Tval transient, Tval restored)
       : _ref(var),
@@ -217,9 +227,8 @@ namespace usbguard
     Tval _val;
   };
 
-  struct FreeDeleter
-  {
-    void operator()(void *p)
+  struct FreeDeleter {
+    void operator()(void* p)
     {
       free(p);
     }

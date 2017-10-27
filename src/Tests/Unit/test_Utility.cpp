@@ -21,7 +21,8 @@
 
 using namespace usbguard;
 
-TEST_CASE("parentPath", "[Utility]") {
+TEST_CASE("parentPath", "[Utility]")
+{
   REQUIRE(parentPath("/a/b/c/d") == "/a/b/c");
   REQUIRE(parentPath("/a/b/c/d/") == "/a/b/c");
   REQUIRE(parentPath("/a/b/c/d//") == "/a/b/c");

@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/RuleCondition.hpp"
@@ -27,7 +27,8 @@
 
 #include <chrono>
 
-namespace usbguard {
+namespace usbguard
+{
   class Interface;
   class RulePrivate
   {
@@ -64,9 +65,9 @@ namespace usbguard {
     bool appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive = false) const;
     bool appliesTo(const Rule& rhs, bool parent_insensitive = false) const;
     bool appliesToWithConditions(const Rule& rhs, bool with_update = false);
-    
+
     bool meetsConditions(const Rule& rhs, bool with_update = false);
-    void initConditions(Interface * const interface);
+    void initConditions(Interface* const interface);
     void finiConditions();
     bool updateConditionsState(const Rule& rhs);
     uint64_t conditionsState() const;

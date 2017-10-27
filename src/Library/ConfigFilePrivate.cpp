@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "ConfigFilePrivate.hpp"
@@ -50,6 +50,7 @@ namespace usbguard
   void ConfigFilePrivate::open(const std::string& path, bool readonly)
   {
     _readonly = readonly;
+
     if (_readonly) {
       _stream.open(path, std::ios::in);
     }
@@ -60,6 +61,7 @@ namespace usbguard
     if (!_stream.is_open()) {
       throw std::runtime_error("Can't open " + path);
     }
+
     parse();
   }
 
@@ -75,7 +77,7 @@ namespace usbguard
 
     if (_dirty) {
       /* Update _lines */
-      for(auto const& map_entry : _settings) {
+      for (auto const& map_entry : _settings) {
         const NVPair& setting = map_entry.second;
         _lines[setting.line_number - 1] = setting.name + "=" + setting.value;
       }
@@ -86,6 +88,7 @@ namespace usbguard
 
     for (auto const& line : _lines) {
       _stream << line << std::endl;
+
       if (!_stream.good()) {
         throw std::runtime_error("Failed to write configuration to disk");
       }
@@ -101,6 +104,7 @@ namespace usbguard
       if (_dirty && !_readonly) {
         write();
       }
+
       _stream.close();
     }
   }
@@ -128,11 +132,11 @@ namespace usbguard
     std::string config_line;
     size_t config_line_number = 0;
 
-    while(std::getline(_stream, config_line)) {
+    while (std::getline(_stream, config_line)) {
       ++config_line_number;
       _lines.push_back(config_line);
-
       const size_t nv_separator = config_line.find_first_of("=");
+
       if (nv_separator == std::string::npos) {
         continue;
       }
@@ -149,7 +153,6 @@ namespace usbguard
       }
 
       NVPair& setting = _settings[name];
-
       setting.name = name;
       setting.value = value;
       setting.line_number = config_line_number;
@@ -173,6 +176,7 @@ namespace usbguard
         return true;
       }
     }
+
     return false;
   }
 } /* namespace usbguard */

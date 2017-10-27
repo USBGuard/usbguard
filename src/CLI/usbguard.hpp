@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Logger.hpp"
@@ -29,7 +29,7 @@
 
 namespace usbguard
 {
-  extern const char *usbguard_arg0;
+  extern const char* usbguard_arg0;
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

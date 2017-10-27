@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DeviceModel.h"
@@ -31,8 +31,9 @@
 #include <QTimer>
 #include <QSettings>
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+  class MainWindow;
 }
 
 class MainWindow : public QMainWindow, public usbguard::IPCClient
@@ -40,20 +41,20 @@ class MainWindow : public QMainWindow, public usbguard::IPCClient
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(QWidget* parent = 0);
   ~MainWindow();
 
 signals:
   void uiDevicePresenceChanged(quint32 id,
-                               usbguard::DeviceManager::EventType event,
-                               usbguard::Rule::Target target,
-                               const std::string& device_rule);
+    usbguard::DeviceManager::EventType event,
+    usbguard::Rule::Target target,
+    const std::string& device_rule);
 
   void uiDevicePolicyChanged(quint32 id,
-                             usbguard::Rule::Target target_old,
-                             usbguard::Rule::Target target_new,
-                             const std::string& device_rule,
-                             quint32 rule_id);
+    usbguard::Rule::Target target_old,
+    usbguard::Rule::Target target_new,
+    const std::string& device_rule,
+    quint32 rule_id);
 
   void uiConnected();
   void uiDisconnected();
@@ -64,19 +65,19 @@ protected slots:
   void ipcTryConnect();
 
   void showDeviceDialog(quint32 id, const usbguard::Rule& device_rule);
-  void showMessage(const QString &message, bool alert = false, bool statusbar = false);
+  void showMessage(const QString& message, bool alert = false, bool statusbar = false);
   void showNotification(QSystemTrayIcon::MessageIcon icon, const QString& title, const QString& message);
 
   void handleDevicePresenceChange(quint32 id,
-                                  usbguard::DeviceManager::EventType event,
-                                  usbguard::Rule::Target target,
-                                  const std::string& device_rule);
+    usbguard::DeviceManager::EventType event,
+    usbguard::Rule::Target target,
+    const std::string& device_rule);
 
   void handleDevicePolicyChange(quint32 id,
-                                usbguard::Rule::Target target_old,
-                                usbguard::Rule::Target target_new,
-                                const std::string& device_rule,
-                                quint32 rule_id);
+    usbguard::Rule::Target target_old,
+    usbguard::Rule::Target target_new,
+    const std::string& device_rule,
+    quint32 rule_id);
 
   void notifyIPCConnected();
   void notifyIPCDisconnected();
@@ -98,7 +99,7 @@ protected slots:
   void saveSettings();
 
   void loadDeviceList();
-  void editDeviceListRow(const QModelIndex &index);
+  void editDeviceListRow(const QModelIndex& index);
   void commitDeviceListChanges();
   void clearDeviceList();
   void resetDeviceList();
@@ -112,22 +113,22 @@ protected slots:
   void stopFlashing();
 
   void DevicePresenceChanged(quint32 id,
-                             usbguard::DeviceManager::EventType event,
-                             usbguard::Rule::Target target,
-                             const std::string& device_rule) override;
+    usbguard::DeviceManager::EventType event,
+    usbguard::Rule::Target target,
+    const std::string& device_rule) override;
 
   void DevicePolicyChanged(quint32 id,
-                           usbguard::Rule::Target target_old,
-                           usbguard::Rule::Target target_new,
-                           const std::string& device_rule,
-                           quint32 rule_id) override;
+    usbguard::Rule::Target target_old,
+    usbguard::Rule::Target target_new,
+    const std::string& device_rule,
+    quint32 rule_id) override;
 
   void IPCConnected() override;
   void IPCDisconnected(bool exception_initiated, const usbguard::IPCException& exception) override;
 
 private:
-  Ui::MainWindow *ui;
-  QSystemTrayIcon *systray;
+  Ui::MainWindow* ui;
+  QSystemTrayIcon* systray;
   QTimer _flash_timer;
   bool _flash_state;
   QTimer _ipc_timer;

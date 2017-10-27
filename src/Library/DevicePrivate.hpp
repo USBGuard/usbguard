@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Hash.hpp"
@@ -35,7 +35,8 @@
 
 #include <cstdint>
 
-namespace usbguard {
+namespace usbguard
+{
   class DevicePrivate
   {
   public:
@@ -50,7 +51,7 @@ namespace usbguard {
     std::string hashString(const std::string& value) const;
 
     void initializeHash();
-    void updateHash(const void * const ptr, size_t size);
+    void updateHash(const void* const ptr, size_t size);
     void updateHash(std::istream& descriptor_stream, size_t expected_size);
     std::string finalizeHash();
     const std::string& getHash() const;

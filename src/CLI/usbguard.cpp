@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Logger.hpp"
@@ -27,7 +27,7 @@
 #include <iostream>
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE
+  #define _GNU_SOURCE
 #endif
 #include <cstring> /* GNU version of basename(3) */
 
@@ -49,9 +49,9 @@
 
 namespace usbguard
 {
-  const char *usbguard_arg0 = nullptr;
+  const char* usbguard_arg0 = nullptr;
 
-  static const std::map<const std::string,int(*)(int, char**)> cmd_handler_map = {
+  static const std::map<const std::string, int(*)(int, char**)> cmd_handler_map = {
     { "get-parameter", &usbguard_get_parameter },
     { "set-parameter", &usbguard_set_parameter },
     { "list-devices", &usbguard_list_devices },
@@ -71,7 +71,7 @@ namespace usbguard
   static void showTopLevelHelp(std::ostream& stream = std::cout)
   {
     stream << " Usage: " << usbguard_arg0
-           << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
+      << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "" << std::endl;
@@ -89,14 +89,15 @@ namespace usbguard
     stream << std::endl;
     stream << "  generate-policy                Generate a rule set (policy) based on the connected USB devices." << std::endl;
     stream << "  watch                          Watch for IPC interface events and print them to stdout." << std::endl;
-    stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form." << std::endl;
+    stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form." <<
+      std::endl;
     stream << std::endl;
     stream << "  add-user <name>                Add USBGuard IPC user/group (requires root privilges)" << std::endl;
     stream << "  remove-user <name>             Remove USBGuard IPC user/group (requires root privileges)" << std::endl;
     stream << std::endl;
   }
 
-  static int usbguard_cli(int argc, char *argv[])
+  static int usbguard_cli(int argc, char* argv[])
   {
     usbguard_arg0 = ::basename(argv[0]);
 
@@ -105,40 +106,39 @@ namespace usbguard
       return EXIT_SUCCESS;
     }
 
-    const char * subcommand_key = argv[1];
+    const char* subcommand_key = argv[1];
     const auto iterator = cmd_handler_map.find(subcommand_key);
 
     /* Not such key in the map, show list of commands */
     if (iterator == cmd_handler_map.cend()) {
-
       showTopLevelHelp();
       return EXIT_FAILURE;
     }
-
 
     auto subcommand = iterator->second;
     return subcommand(argc - 1, argv + 1);
   }
 } /* namespace usbguard */
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   try {
     return usbguard::usbguard_cli(argc, argv);
   }
-  catch(const usbguard::IPCException& ex) {
+  catch (const usbguard::IPCException& ex) {
     std::cerr << "IPC ERROR: request id=" << ex.messageID()
-              << ": "  << ex.message() << std::endl;
+      << ": "  << ex.message() << std::endl;
   }
-  catch(const usbguard::Exception& ex) {
+  catch (const usbguard::Exception& ex) {
     std::cerr << "ERROR: " << ex.message() << std::endl;
   }
-  catch(const std::exception& ex) {
+  catch (const std::exception& ex) {
     std::cerr << "EXCEPTION: " << ex.what() << std::endl;
   }
-  catch(...) {
+  catch (...) {
     std::cerr << "BUG: Unknown exception" << std::endl;
   }
+
   return EXIT_FAILURE;
 }
 

@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Audit.hpp"
@@ -54,13 +54,11 @@ namespace usbguard
   std::string AuditIdentity::toString() const
   {
     std::string identity_string;
-
     identity_string.append("{ uid=");
     identity_string.append(numberToString(uid()));
     identity_string.append(" pid=");
     identity_string.append(numberToString(pid()));
     identity_string.append(" }");
-
     return identity_string;
   }
 
@@ -161,7 +159,7 @@ namespace usbguard
   {
     return policyEvent(_identity, rule, event);
   }
-  
+
   AuditEvent Audit::policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule)
   {
     return policyEvent(_identity, new_rule, old_rule);
@@ -181,7 +179,7 @@ namespace usbguard
   {
     return deviceEvent(_identity, device, event);
   }
-  
+
   AuditEvent Audit::deviceEvent(std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
   {
     return deviceEvent(_identity, new_device, old_device);
@@ -190,71 +188,62 @@ namespace usbguard
   AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> rule, Policy::EventType event_type)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(event_type));
     event.setKey("rule.id", numberToString(rule->getRuleID()));
     event.setKey("rule", rule->toString());
-
     return event;
   }
 
   AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(Policy::EventType::Update));
     event.setKey("rule.id", numberToString(old_rule->getRuleID()));
     event.setKey("rule.old", old_rule->toString());
     event.setKey("rule.new", new_rule->toString());
-
     return event;
   }
 
   AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Policy::EventType event_type)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(event_type));
     event.setKey("target", Rule::targetToString(device->getTarget()));
     event.setKey("device.system_name", device->getSystemName());
     event.setKey("device.rule", device->getDeviceRule()->toString());
-
     return event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target)
+  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
+    Rule::Target new_target)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(Policy::EventType::Update));
     event.setKey("target.old", Rule::targetToString(old_target));
     event.setKey("target.new", Rule::targetToString(new_target));
     event.setKey("device.system_name", device->getSystemName());
     event.setKey("device.rule", device->getDeviceRule()->toString());
-
     return event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event_type)
+  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device,
+    DeviceManager::EventType event_type)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(event_type));
     event.setKey("device.system_name", device->getSystemName());
     event.setKey("device.rule", device->getDeviceRule()->toString());
-
     return event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
+  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device,
+    std::shared_ptr<Device> old_device)
   {
     AuditEvent event(identity, _backend);
-
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(DeviceManager::EventType::Update));
     event.setKey("device.system_name", new_device->getSystemName());
     event.setKey("device.rule.old", old_device->getDeviceRule()->toString());
     event.setKey("device.rule.new", new_device->getDeviceRule()->toString());
-
     return event;
   }
 } /* namespace usbguard */

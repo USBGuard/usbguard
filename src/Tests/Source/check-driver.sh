@@ -43,11 +43,25 @@ GLOB_EXCLUDE=(
 
 ##################
 
+function __realpath () {
+  path="$1"
+  base="$2"
+  abs_path=$(readlink -f "$path")
+
+  if [[ -n "$2" ]]; then
+    abs_base="$(readlink -f "$base")"
+    abs_path="$(echo "$abs_path" | sed "s|^${abs_base}/\?||")"
+  fi
+
+  echo "$abs_path"
+}
+
 if [[ -z "${srcdir}" ]]; then
   echo "srcdir variable not set!"
   exit 1
 fi
 
+PROJECT_ROOT="${abs_top_srcdir}"
 SOURCE_ROOT="${srcdir}"
 CHECK_SCRIPTS_DIR="${srcdir}/src/Tests/Source/CheckScripts/"
 
@@ -64,8 +78,9 @@ FIND_ARGS="( -false $INCLUDE_ARGS ) -not ( -false $EXCLUDE_ARGS )"
 driver_retval=0
 
 while read source_filepath; do
-  source_relpath="$(realpath --relative-base="${SOURCE_ROOT}" "$source_filepath")"
+  source_relpath="$(__realpath "${source_filepath}" "${SOURCE_ROOT}")"
   failed_checks_output="File: ${source_relpath}\n"
+#  debug_checks_output="File: ${source_relpath}\n"
   some_checks_failed=0
 
   while read script_filepath; do
@@ -113,7 +128,7 @@ EOF
     #
     # Run check script
     #
-    env SOURCE_ROOT="$SOURCE_ROOT" "${script_filepath}" "${source_filepath}"
+    env PROJECT_ROOT="${PROJECT_ROOT}" SOURCE_ROOT="$SOURCE_ROOT" "${script_filepath}" "${source_filepath}"
 
     #
     # Process return value
@@ -135,7 +150,10 @@ EOF
     if [[ $check_failed -ne 0 ]]; then
       failed_checks_output="${failed_checks_output}$(printf '%28s: %s' "$(basename "${script_filepath}")" "$check_status")\n"
       some_checks_failed=1
+#    else
+#      debug_checks_output="${debug_checks_output}$(printf '%28s: %s' "$(basename "${script_filepath}")" "$check_status")\n"
     fi
+
   done <<EOF
 $(find "${CHECK_SCRIPTS_DIR}" -type f -executable -not -name '*~')
 EOF
@@ -144,6 +162,8 @@ if [[ $some_checks_failed -eq 1 ]]; then
   echo -e "${failed_checks_output}"
   driver_retval=1
 fi
+
+#echo -e "${debug_checks_output}"
 
 done <<EOF
 $(find "${SOURCE_ROOT}" ${FIND_ARGS})

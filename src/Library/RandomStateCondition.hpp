@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Typedefs.hpp"
@@ -36,7 +36,7 @@ namespace usbguard
     RandomStateCondition(const std::string& true_probability, bool negated = false);
     RandomStateCondition(const RandomStateCondition& rhs);
     bool update(const Rule& rule);
-    RuleConditionBase * clone() const;
+    RuleConditionBase* clone() const;
   private:
     std::random_device _rng_device;
     std::mt19937 _rng_gen;

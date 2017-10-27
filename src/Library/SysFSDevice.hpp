@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "UEvent.hpp"
@@ -31,31 +31,31 @@ namespace usbguard
 {
   class SysFSDevice
   {
-    public:
-      SysFSDevice();
-      SysFSDevice(const std::string& sysfs_path, bool without_parent = false);
-      SysFSDevice(SysFSDevice&& device);
-      ~SysFSDevice();
-      SysFSDevice& operator=(SysFSDevice&& rhs_device);
+  public:
+    SysFSDevice();
+    SysFSDevice(const std::string& sysfs_path, bool without_parent = false);
+    SysFSDevice(SysFSDevice&& device);
+    ~SysFSDevice();
+    SysFSDevice& operator=(SysFSDevice&& rhs_device);
 
-      const std::string& getPath() const;
-      const std::string& getName() const;
-      const UEvent& getUEvent() const;
-      const std::string& getParentPath() const;
-      bool hasAttribute(const std::string& name) const;
-      std::string readAttribute(const std::string& name, bool strip_last_null = false, bool optional = false) const;
-      void setAttribute(const std::string& name, const std::string& value);
-      int openAttribute(const std::string& name) const;
+    const std::string& getPath() const;
+    const std::string& getName() const;
+    const UEvent& getUEvent() const;
+    const std::string& getParentPath() const;
+    bool hasAttribute(const std::string& name) const;
+    std::string readAttribute(const std::string& name, bool strip_last_null = false, bool optional = false) const;
+    void setAttribute(const std::string& name, const std::string& value);
+    int openAttribute(const std::string& name) const;
 
-      void reload();
-    private:
-      void reloadUEvent();
+    void reload();
+  private:
+    void reloadUEvent();
 
-      std::string _sysfs_path;
-      std::string _sysfs_name;
-      std::string _sysfs_parent_path;
-      int _sysfs_dirfd;
-      UEvent _uevent;
+    std::string _sysfs_path;
+    std::string _sysfs_name;
+    std::string _sysfs_parent_path;
+    int _sysfs_dirfd;
+    UEvent _uevent;
   };
 } /* namespace usbguard */
 

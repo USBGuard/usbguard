@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard.hpp"
@@ -29,7 +29,7 @@
 
 namespace usbguard
 {
-  static const char *options_short = "wohe:";
+  static const char* options_short = "wohe:";
 
   static const struct ::option options_long[] = {
     { "wait", no_argument, nullptr, 'w' },
@@ -52,7 +52,7 @@ namespace usbguard
     stream << std::endl;
   }
 
-  int usbguard_watch(int argc, char *argv[])
+  int usbguard_watch(int argc, char* argv[])
   {
     int opt = 0;
     bool do_wait = false;
@@ -60,23 +60,28 @@ namespace usbguard
     std::string exec_path;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-      switch(opt) {
-        case 'w':
-          do_wait = true;
-          break;
-        case 'o':
-          wait_once = do_wait = true;
-          break;
-        case 'h':
-          showHelp(std::cout);
-          return EXIT_SUCCESS;
-        case 'e':
-          exec_path = std::string(optarg);
-          break;
-        case '?':
-          showHelp(std::cerr);
-        default:
-          return EXIT_FAILURE;
+      switch (opt) {
+      case 'w':
+        do_wait = true;
+        break;
+
+      case 'o':
+        wait_once = do_wait = true;
+        break;
+
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+
+      case 'e':
+        exec_path = std::string(optarg);
+        break;
+
+      case '?':
+        showHelp(std::cerr);
+
+      default:
+        return EXIT_FAILURE;
       }
     }
 
@@ -93,12 +98,14 @@ namespace usbguard
       try {
         watcher.connect();
         connect_waiting = false;
+
         if (wait_once) {
           do_wait = false;
         }
+
         watcher.wait();
       }
-      catch(const Exception& ex) {
+      catch (const Exception& ex) {
         /*
          * Re-throw if we won't be waiting for the connection
          * to become available.

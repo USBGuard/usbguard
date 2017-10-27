@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard.hpp"
@@ -33,7 +33,7 @@
 
 namespace usbguard
 {
-  static const char *options_short = "h";
+  static const char* options_short = "h";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
@@ -58,55 +58,65 @@ namespace usbguard
 
   class USBDescriptorPrinter : public USBDescriptorParserHooks
   {
-    public:
-      void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override
-      {
-        (void)parser;
-        switch(static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType)) {
-         case USBDescriptorType::Device:
-            printDeviceDescriptor(descriptor);
-            break;
-          case USBDescriptorType::Configuration:
-            printConfigurationDescriptor(descriptor);
-            break;
-         case USBDescriptorType::Interface:
-            printInterfaceDescriptor(descriptor);
-            break;
-          case USBDescriptorType::Endpoint:
-            switch (descriptor->bHeader.bLength) {
-              case sizeof(USBEndpointDescriptor):
-                printEndpointDescriptor(descriptor);
-                break;
-              case sizeof(USBAudioEndpointDescriptor):
-                printAudioEndpointDescriptor(descriptor);
-                break;
-              default:
-                printUnknownDescriptor(descriptor);
-            }
-            break;
-          case USBDescriptorType::String:
-          case USBDescriptorType::AssociationInterface:
-          case USBDescriptorType::Unknown:
-          default:
-            printUnknownDescriptor(descriptor);
-            break;
-         }
+  public:
+    void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override
+    {
+      (void)parser;
+
+      switch (static_cast<USBDescriptorType>(descriptor->bHeader.bDescriptorType)) {
+      case USBDescriptorType::Device:
+        printDeviceDescriptor(descriptor);
+        break;
+
+      case USBDescriptorType::Configuration:
+        printConfigurationDescriptor(descriptor);
+        break;
+
+      case USBDescriptorType::Interface:
+        printInterfaceDescriptor(descriptor);
+        break;
+
+      case USBDescriptorType::Endpoint:
+        switch (descriptor->bHeader.bLength) {
+        case sizeof(USBEndpointDescriptor):
+          printEndpointDescriptor(descriptor);
+          break;
+
+        case sizeof(USBAudioEndpointDescriptor):
+          printAudioEndpointDescriptor(descriptor);
+          break;
+
+        default:
+          printUnknownDescriptor(descriptor);
+        }
+
+        break;
+
+      case USBDescriptorType::String:
+      case USBDescriptorType::AssociationInterface:
+      case USBDescriptorType::Unknown:
+      default:
+        printUnknownDescriptor(descriptor);
+        break;
       }
+    }
   };
 
-  int usbguard_read_descriptor(int argc, char *argv[])
+  int usbguard_read_descriptor(int argc, char* argv[])
   {
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
-      switch(opt) {
-        case 'h':
-          showHelp(std::cout);
-          return EXIT_SUCCESS;
-        case '?':
-          showHelp(std::cerr);
-        default:
-          return EXIT_FAILURE;
+      switch (opt) {
+      case 'h':
+        showHelp(std::cout);
+        return EXIT_SUCCESS;
+
+      case '?':
+        showHelp(std::cerr);
+
+      default:
+        return EXIT_FAILURE;
       }
     }
 
@@ -127,13 +137,13 @@ namespace usbguard
       USBDescriptorPrinter printer;
       USBDescriptorParser parser(printer);
       const size_t size_parsed = parser.parse(descriptor_stream);
-
       printf("Bytes parsed: %zu\n", size_parsed);
 
       for (auto const& count : parser.getDescriptorCounts()) {
         printf("Descriptor type 0x%02" PRIx8 " count: %zu\n", count.first, count.second);
       }
     }
+
     return EXIT_SUCCESS;
   }
 
@@ -143,7 +153,7 @@ namespace usbguard
   do { \
     PRINTF_LEVEL(level); \
     printf("%s: type=%02" PRIx8 " length=%" PRIu8 "\n", label, \
-           (sp)->bHeader.bDescriptorType, (sp)->bHeader.bLength); \
+      (sp)->bHeader.bDescriptorType, (sp)->bHeader.bLength); \
   } while(0)
 
 #define PRINTF_MEMBER(sp, m, fmt, level) \
@@ -155,7 +165,6 @@ namespace usbguard
   void printDeviceDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBDeviceDescriptor* descriptor = reinterpret_cast<const USBDeviceDescriptor*>(descriptor_base);
-
     PRINTF_HEADER(descriptor, "Device Descriptor", 0);
     PRINTF_MEMBER(descriptor, bcdUSB, "0x%04" PRIx16, 0);
     PRINTF_MEMBER(descriptor, bDeviceClass, "0x%02" PRIx8, 0);
@@ -174,7 +183,6 @@ namespace usbguard
   void printConfigurationDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBConfigurationDescriptor* descriptor = reinterpret_cast<const USBConfigurationDescriptor*>(descriptor_base);
-
     PRINTF_HEADER(descriptor, "Configuration Descriptor", 0);
     PRINTF_MEMBER(descriptor, wTotalLength, "%" PRIu16, 0);
     PRINTF_MEMBER(descriptor, bNumInterfaces, "%" PRIu8, 0);
@@ -182,13 +190,12 @@ namespace usbguard
     PRINTF_MEMBER(descriptor, iConfiguration, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, bmAttributes, "%02" PRIx8, 0);
     PRINTF_MEMBER(descriptor, bMaxPower, "%" PRIu8, 0);
-    printf("\n"); 
+    printf("\n");
   }
 
   void printInterfaceDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBInterfaceDescriptor* descriptor = reinterpret_cast<const USBInterfaceDescriptor*>(descriptor_base);
-
     PRINTF_HEADER(descriptor, "Interface Descriptor", 0);
     PRINTF_MEMBER(descriptor, bInterfaceNumber, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, bAlternateSetting, "%" PRIu8, 0);
@@ -197,13 +204,12 @@ namespace usbguard
     PRINTF_MEMBER(descriptor, bInterfaceSubClass, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, bInterfaceProtocol, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, iInterface, "%" PRIu8, 0);
-    printf("\n"); 
+    printf("\n");
   }
 
   void printEndpointDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBEndpointDescriptor* descriptor = reinterpret_cast<const USBEndpointDescriptor*>(descriptor_base);
-
     PRINTF_HEADER(descriptor, "Endpoint Descriptor", 0);
     PRINTF_MEMBER(descriptor, bEndpointAddress, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, bmAttributes, "0x%02" PRIx8, 0);
@@ -215,7 +221,6 @@ namespace usbguard
   void printAudioEndpointDescriptor(const USBDescriptor* descriptor_base)
   {
     const USBAudioEndpointDescriptor* descriptor = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_base);
-
     PRINTF_HEADER(descriptor, "Endpoint Descriptor (Audio)", 0);
     PRINTF_MEMBER(descriptor, bEndpointAddress, "%" PRIu8, 0);
     PRINTF_MEMBER(descriptor, bmAttributes, "0x%02" PRIx8, 0);

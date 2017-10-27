@@ -18,7 +18,7 @@
 //          Jiri Vymazal   <jvymazal@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Daemon.hpp"
@@ -34,19 +34,19 @@
 #include <getopt.h>
 
 #if defined(HAVE_LIBCAPNG)
-# include <cap-ng.h>
-static void setupCapabilities(void);
+  #include <cap-ng.h>
+  static void setupCapabilities(void);
 #endif
 
 #ifndef USBGUARD_PID_FILE
-#define USBGUARD_PID_FILE "/var/run/usbguard.pid"
+  #define USBGUARD_PID_FILE "/var/run/usbguard.pid"
 #endif
 
 using namespace usbguard;
 
-const char * const G_optstring = "dfskKl:p:c:hWCP";
+const char* const G_optstring = "dfskKl:p:c:hWCP";
 
-static void printUsage(std::ostream& stream, const char *arg0)
+static void printUsage(std::ostream& stream, const char* arg0)
 {
   stream << std::endl;
   stream << "Usage: " << filenameFromPath(std::string(arg0), true) << " [OPTIONS]" << std::endl;
@@ -67,9 +67,9 @@ static void printUsage(std::ostream& stream, const char *arg0)
   stream << std::endl;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  const char * const arg0 = argv[0];
+  const char* const arg0 = argv[0];
   bool debug_mode = false;
   bool log_syslog = false;
   bool log_console = true;
@@ -84,60 +84,71 @@ int main(int argc, char *argv[])
   int opt;
 
   while ((opt = getopt(argc, argv, G_optstring)) != -1) {
-    switch(opt)
-      {
-      case 'd':
-	debug_mode = true;
-	break;
-      case 'f':
-        daemonize = true;
-        break;
-      case 's':
-	log_syslog = true;
-	break;
-      case 'k':
-	log_console = true;
-	break;
-      case 'K':
-	log_console = false;
-	break;
-      case 'l':
-	log_file = true;
-	log_file_path = std::string(optarg);
-	break;
-      case 'p':
-	pid_file = std::string(optarg);
-	break;
-      case 'P':
-  USBGUARD_LOG(Warning) << "PERMISSIONS CHECK ON POLICY FILE ARE TURNED OFF!";
-  check_permissions = false;
-  break;
-      case 'c':
-	conf_file = std::string(optarg);
-	break;
-      case 'W':
-	use_seccomp_whitelist = true;
-	break;
-      case 'C':
-	drop_capabilities = true;
-	break;
-      case 'h':
-	printUsage(std::cout, arg0);
-	return EXIT_SUCCESS;
-      case '?':
-	printUsage(std::cerr, arg0);
-	/* FALLTROUGH */
-      default:
-	return EXIT_FAILURE;
-      }
+    switch (opt) {
+    case 'd':
+      debug_mode = true;
+      break;
+
+    case 'f':
+      daemonize = true;
+      break;
+
+    case 's':
+      log_syslog = true;
+      break;
+
+    case 'k':
+      log_console = true;
+      break;
+
+    case 'K':
+      log_console = false;
+      break;
+
+    case 'l':
+      log_file = true;
+      log_file_path = std::string(optarg);
+      break;
+
+    case 'p':
+      pid_file = std::string(optarg);
+      break;
+
+    case 'P':
+      USBGUARD_LOG(Warning) << "PERMISSIONS CHECK ON POLICY FILE ARE TURNED OFF!";
+      check_permissions = false;
+      break;
+
+    case 'c':
+      conf_file = std::string(optarg);
+      break;
+
+    case 'W':
+      use_seccomp_whitelist = true;
+      break;
+
+    case 'C':
+      drop_capabilities = true;
+      break;
+
+    case 'h':
+      printUsage(std::cout, arg0);
+      return EXIT_SUCCESS;
+
+    case '?':
+      printUsage(std::cerr, arg0);
+
+    /* FALLTROUGH */
+    default:
+      return EXIT_FAILURE;
+    }
   }
 
   /* Initialize logging */
   USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
-                                    LogStream::Level::Trace
-                                    :
-                                    LogStream::Level::Warning));
-
+      LogStream::Level::Trace
+      :
+      LogStream::Level::Warning));
   USBGUARD_LOGGER.setOutputConsole(log_console);
   USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
   USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);
@@ -159,28 +170,33 @@ int main(int argc, char *argv[])
 
   /* Start the daemon */
   int ret = EXIT_FAILURE;
+
   try {
     usbguard::Daemon daemon;
+
     if (!conf_file.empty()) {
       daemon.loadConfiguration(conf_file, check_permissions);
     }
+
     if (daemonize) {
       if (log_console && !log_syslog && !log_file) {
         USBGUARD_LOG(Warning) << "You have selected to fork and log only to \
             console, nothing will be logged after forking!";
       }
+
       daemon.daemonize(pid_file);
     }
+
     daemon.run();
     ret = EXIT_SUCCESS;
   }
-  catch(const usbguard::Exception& ex) {
+  catch (const usbguard::Exception& ex) {
     USBGUARD_LOG(Error) << "ERROR: " << ex.message();
   }
-  catch(const std::exception& ex) {
+  catch (const std::exception& ex) {
     USBGUARD_LOG(Error) << "EXCEPTION: " << ex.what();
   }
-  catch(...) {
+  catch (...) {
     USBGUARD_LOG(Error) << "EXCEPTION: Unknown excepton caught while starting the process";
   }
 
@@ -188,15 +204,14 @@ int main(int argc, char *argv[])
 }
 
 #if defined(HAVE_LIBCAPNG)
- static void setupCapabilities(void)
- {
-
-   capng_clear(CAPNG_SELECT_BOTH);
-   capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE|CAPNG_PERMITTED),
-		 CAP_CHOWN, CAP_FOWNER,-1);
-   capng_apply(CAPNG_SELECT_BOTH);
-   return;
- }
+static void setupCapabilities(void)
+{
+  capng_clear(CAPNG_SELECT_BOTH);
+  capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE|CAPNG_PERMITTED),
+    CAP_CHOWN, CAP_FOWNER, -1);
+  capng_apply(CAPNG_SELECT_BOTH);
+  return;
+}
 #endif
 
 /* vim: set ts=2 sw=2 et */

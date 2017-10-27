@@ -21,9 +21,9 @@
 
 using namespace usbguard;
 
-TEST_CASE("Default constructed UEvent", "[UEvent]") {
+TEST_CASE("Default constructed UEvent", "[UEvent]")
+{
   UEvent uevent;
-
   SECTION("empty") {
     REQUIRE_NOTHROW(uevent.getAttribute("KEY1"));
     REQUIRE(uevent.getAttribute("KEY1") == std::string());
@@ -31,7 +31,6 @@ TEST_CASE("Default constructed UEvent", "[UEvent]") {
     REQUIRE_FALSE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.clear());
   }
-
   SECTION("set/get attribute") {
     REQUIRE_NOTHROW(uevent.setAttribute("KEY1", "value1"));
     REQUIRE(uevent.getAttribute("KEY1") == "value1");
@@ -39,32 +38,28 @@ TEST_CASE("Default constructed UEvent", "[UEvent]") {
     REQUIRE_FALSE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.clear());
   }
-
   SECTION("string serialization") {
     REQUIRE_THROWS(uevent.getHeaderLine());
     REQUIRE_THROWS(uevent.toString());
   }
 }
 
-TEST_CASE("UEvent with required attributes", "[UEvent]") {
+TEST_CASE("UEvent with required attributes", "[UEvent]")
+{
   UEvent uevent;
-
   REQUIRE_NOTHROW(uevent.setAttribute("ACTION", "add"));
   REQUIRE_NOTHROW(uevent.setAttribute("DEVPATH", "/bus/usb/devices/usb1"));
   REQUIRE_NOTHROW(uevent.setAttribute("SUBSYSTEM", "usb_device"));
-
   SECTION("non-existing attribute") {
     REQUIRE_NOTHROW(uevent.getAttribute("KEY1"));
     REQUIRE(uevent.getAttribute("KEY1") == std::string());
     REQUIRE_FALSE(uevent.hasAttribute("KEY1"));
   }
-
   SECTION("set/get attribute") {
     REQUIRE_NOTHROW(uevent.setAttribute("KEY1", "value1"));
     REQUIRE(uevent.getAttribute("KEY1") == "value1");
     REQUIRE(uevent.hasAttribute("KEY1"));
   }
-
   SECTION("string serialization") {
     REQUIRE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.getHeaderLine());

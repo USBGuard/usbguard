@@ -69,9 +69,9 @@ namespace usbguard
     }
 
     virtual void DevicePresenceChanged(uint32_t id,
-                                       DeviceManager::EventType event,
-                                       Rule::Target target,
-                                       const std::string& device_rule) override
+      DeviceManager::EventType event,
+      Rule::Target target,
+      const std::string& device_rule) override
     {
       (void)id;
       (void)event;
@@ -80,10 +80,10 @@ namespace usbguard
     }
 
     virtual void DevicePolicyChanged(uint32_t id,
-                                     Rule::Target target_old,
-                                     Rule::Target target_new,
-                                     const std::string& device_rule,
-                                     uint32_t rule_id) override
+      Rule::Target target_old,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id) override
     {
       (void)id;
       (void)target_old;
@@ -93,8 +93,8 @@ namespace usbguard
     }
 
     virtual void ExceptionMessage(const std::string& context,
-                                  const std::string& object,
-                                  const std::string& reason) override
+      const std::string& object,
+      const std::string& reason) override
     {
       (void)context;
       (void)object;

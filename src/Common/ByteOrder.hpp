@@ -18,13 +18,14 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include <cstdint>
 #include <endian.h>
 
-namespace usbguard {
+namespace usbguard
+{
 
   static inline uint16_t busEndianToHost(uint16_t bus_value)
   {

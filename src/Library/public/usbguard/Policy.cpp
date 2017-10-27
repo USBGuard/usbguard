@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/Policy.hpp"
@@ -27,15 +27,18 @@ namespace usbguard
 {
   std::string Policy::eventTypeToString(Policy::EventType event)
   {
-    switch(event) {
-      case Policy::EventType::Insert:
-        return "Insert";
-      case Policy::EventType::Update:
-        return "Update";
-      case Policy::EventType::Remove:
-        return "Remove";
-      default:
-        throw USBGUARD_BUG("unknown Policy::EventType value");
+    switch (event) {
+    case Policy::EventType::Insert:
+      return "Insert";
+
+    case Policy::EventType::Update:
+      return "Update";
+
+    case Policy::EventType::Remove:
+      return "Remove";
+
+    default:
+      throw USBGUARD_BUG("unknown Policy::EventType value");
     }
   }
 } /* namespace usbguard */

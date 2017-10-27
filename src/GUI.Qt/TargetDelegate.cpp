@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "TargetDelegate.h"
@@ -27,50 +27,46 @@
 
 #include <QComboBox>
 
-TargetDelegate::TargetDelegate(QObject *parent)
+TargetDelegate::TargetDelegate(QObject* parent)
   : QStyledItemDelegate(parent)
 {
 }
 
-QWidget *TargetDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget* TargetDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
   (void)option;
   (void)index;
   QComboBox* editor = new QComboBox(parent);
   editor->setFrame(false);
   editor->setAutoFillBackground(true);
-
   editor->addItem(tr("allow"), QString("allow"));
   editor->addItem(tr("block"), QString("block"));
   editor->addItem(tr("reject"), QString("reject"));
-
   return editor;
 }
 
-void TargetDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+void TargetDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
   QComboBox* combobox = static_cast<QComboBox*>(editor);
-
   DeviceModelItem* item = static_cast<DeviceModelItem*>(index.internalPointer());
   QString value = QString::fromStdString(usbguard::Rule::targetToString(item->getRequestedTarget()));
-
   const int value_index = combobox->findData(value);
+
   if (value_index != -1) {
     combobox->setCurrentIndex(value_index);
   }
 }
 
-void TargetDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+void TargetDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
   QComboBox* combobox = static_cast<QComboBox*>(editor);
-
-  usbguard::Rule::Target target = usbguard::Rule::targetFromString(combobox->itemData(combobox->currentIndex()).toString().toStdString());
+  usbguard::Rule::Target target = usbguard::Rule::targetFromString(combobox->itemData(
+        combobox->currentIndex()).toString().toStdString());
   DeviceModelItem* item = static_cast<DeviceModelItem*>(index.internalPointer());
-
   static_cast<DeviceModel*>(model)->updateRequestedTarget(item, target);
 }
 
-void TargetDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void TargetDelegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
   (void)index;
   editor->setGeometry(option.rect);

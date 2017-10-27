@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/ConfigFile.hpp"
@@ -28,7 +28,8 @@
 #include <string>
 #include <vector>
 
-namespace usbguard {
+namespace usbguard
+{
   class ConfigFilePrivate
   {
   public:
@@ -48,8 +49,7 @@ namespace usbguard {
     bool checkNVPair(const std::string& name, const std::string& value) const;
 
   private:
-    struct NVPair
-    {
+    struct NVPair {
       std::string name;
       std::string value;
       size_t line_number;
@@ -59,7 +59,7 @@ namespace usbguard {
     std::string _path;
     std::fstream _stream;
     std::vector<std::string> _lines;
-    std::map<std::string,NVPair> _settings;
+    std::map<std::string, NVPair> _settings;
     bool _dirty;
     bool _readonly;
     std::vector<std::string> _known_names;

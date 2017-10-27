@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DeviceManagerPrivate.hpp"
@@ -25,7 +25,8 @@
 #include "usbguard/DeviceManagerHooks.hpp"
 #include "usbguard/Exception.hpp"
 
-namespace usbguard {
+namespace usbguard
+{
   uint32_t DeviceManager::eventTypeToInteger(DeviceManager::EventType event)
   {
     return static_cast<uint32_t>(event);
@@ -33,30 +34,36 @@ namespace usbguard {
 
   DeviceManager::EventType DeviceManager::eventTypeFromInteger(uint32_t event_integer)
   {
-    switch(event_integer) {
-      case static_cast<uint32_t>(EventType::Insert):
-      case static_cast<uint32_t>(EventType::Update):
-      case static_cast<uint32_t>(EventType::Remove):
-        break;
-      default:
-        throw std::runtime_error("Invalid event type integer value");
+    switch (event_integer) {
+    case static_cast<uint32_t>(EventType::Insert):
+    case static_cast<uint32_t>(EventType::Update):
+    case static_cast<uint32_t>(EventType::Remove):
+      break;
+
+    default:
+      throw std::runtime_error("Invalid event type integer value");
     }
+
     return static_cast<EventType>(event_integer);
   }
 
   std::string DeviceManager::eventTypeToString(DeviceManager::EventType event)
   {
-    switch(event) {
-      case DeviceManager::EventType::Present:
-        return "Present";
-      case DeviceManager::EventType::Insert:
-        return "Insert";
-      case DeviceManager::EventType::Remove:
-        return "Remove";
-      case DeviceManager::EventType::Update:
-        return "Update";
-      default:
-        throw USBGUARD_BUG("unknown event type");
+    switch (event) {
+    case DeviceManager::EventType::Present:
+      return "Present";
+
+    case DeviceManager::EventType::Insert:
+      return "Insert";
+
+    case DeviceManager::EventType::Remove:
+      return "Remove";
+
+    case DeviceManager::EventType::Update:
+      return "Update";
+
+    default:
+      throw USBGUARD_BUG("unknown event type");
     }
   }
 
@@ -115,22 +122,25 @@ namespace usbguard {
 
     for (auto const& device : getDeviceList()) {
       if (query.appliesTo(device->getDeviceRule())) {
-        switch(query.getTarget()) {
-          case Rule::Target::Allow:
-          case Rule::Target::Block:
-            if (device->getTarget() == query.getTarget()) {
-              matching_devices.push_back(device);
-            }
-            break;
-          case Rule::Target::Device:
-          case Rule::Target::Match:
+        switch (query.getTarget()) {
+        case Rule::Target::Allow:
+        case Rule::Target::Block:
+          if (device->getTarget() == query.getTarget()) {
             matching_devices.push_back(device);
-            break;
-          case Rule::Target::Reject:
-          case Rule::Target::Unknown:
-          case Rule::Target::Invalid:
-          default:
-            throw std::runtime_error("Invalid device query target");
+          }
+
+          break;
+
+        case Rule::Target::Device:
+        case Rule::Target::Match:
+          matching_devices.push_back(device);
+          break;
+
+        case Rule::Target::Reject:
+        case Rule::Target::Unknown:
+        case Rule::Target::Invalid:
+        default:
+          throw std::runtime_error("Invalid device query target");
         }
       }
     }
@@ -155,26 +165,32 @@ namespace usbguard {
 } /* namespace usbguard */
 
 #if defined(HAVE_UEVENT)
-# include "UEventDeviceManager.hpp"
+  #include "UEventDeviceManager.hpp"
 #endif
 
 std::shared_ptr<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceManagerHooks& hooks, const std::string& backend)
 {
 #if defined(HAVE_UEVENT)
+
   if (backend == "udev") {
     USBGUARD_LOG(Warning) << "udev backend is OBSOLETE. Falling back to new default: uevent";
   }
+
   if (backend == "uevent" || /* transition udev => uevent */backend == "udev") {
     return std::make_shared<usbguard::UEventDeviceManager>(hooks);
   }
+
   if (backend == "dummy") {
-    const char * const device_root_cstr = getenv("USBGUARD_DUMMY_DEVICE_ROOT");
+    const char* const device_root_cstr = getenv("USBGUARD_DUMMY_DEVICE_ROOT");
+
     if (device_root_cstr == nullptr) {
       throw Exception("DeviceManager", "dummy", "USBGUARD_DUMMY_DEVICE_ROOT environment variable not defined");
     }
+
     const std::string device_root(device_root_cstr);
     return std::make_shared<usbguard::UEventDeviceManager>(hooks, device_root, /*dummy_mode=*/true);
   }
+
 #endif
   throw Exception("DeviceManager", "backend", "requested backend is not available");
 }

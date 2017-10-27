@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "DeviceManagerPrivate.hpp"
@@ -26,7 +26,8 @@
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
 
-namespace usbguard {
+namespace usbguard
+{
   DeviceManagerPrivate::DeviceManagerPrivate(DeviceManager& p_instance, DeviceManagerHooks& hooks)
     : _p_instance(p_instance),
       _hooks(hooks)
@@ -74,9 +75,11 @@ namespace usbguard {
     USBGUARD_LOG(Trace) << "entry: id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     auto it = _device_map.find(id);
+
     if (it == _device_map.end()) {
       throw Exception("Device remove", "device id", "id doesn't exist");
     }
+
     std::shared_ptr<Device> device = it->second;
     _device_map.erase(it);
     USBGUARD_LOG(Trace) << "return: device_ptr=" << device.get();
@@ -99,10 +102,11 @@ namespace usbguard {
   {
     USBGUARD_LOG(Trace) << "id=" << id;
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
+
     try {
       return _device_map.at(id);
     }
-    catch(...) {
+    catch (...) {
       throw Exception("Device lookup", "device id", "id doesn't exist");
     }
   }
@@ -110,7 +114,7 @@ namespace usbguard {
   void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
-                        << "device_ptr=" << device.get();
+      << "device_ptr=" << device.get();
     _hooks.dmHookDeviceEvent(event, device);
   }
 

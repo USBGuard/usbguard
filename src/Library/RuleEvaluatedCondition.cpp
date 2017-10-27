@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "RuleEvaluatedCondition.hpp"
@@ -28,8 +28,8 @@
 #include <string>
 
 #ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#include <ctime>
+  #define _XOPEN_SOURCE
+  #include <ctime>
 #endif
 
 namespace usbguard
@@ -54,17 +54,18 @@ namespace usbguard
       }
       else {
         const auto last_evaluated_duration = std::chrono::steady_clock::now() \
-                                              - rule.internal()->metadata().tp_last_evaluated;
+          - rule.internal()->metadata().tp_last_evaluated;
 
         if (last_evaluated_duration <= _elapsed_time) {
           return true;
         }
       }
     }
+
     return false;
   }
 
-  RuleConditionBase * RuleEvaluatedCondition::clone() const
+  RuleConditionBase* RuleEvaluatedCondition::clone() const
   {
     return new RuleEvaluatedCondition(*this);
   }

@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/RuleCondition.hpp"
@@ -55,7 +55,7 @@ namespace usbguard
     fini();
   }
 
-  void RuleConditionBase::init(Interface * const interface_ptr)
+  void RuleConditionBase::init(Interface* const interface_ptr)
   {
     (void)interface_ptr;
   }
@@ -135,7 +135,6 @@ namespace usbguard
     const bool negated = condition_string[0] == '!';
     const size_t identifier_start = negated ? 1 : 0;
     const size_t p_pos = condition_string.find_first_of('(');
-
     std::string identifier;
     std::string parameter;
 
@@ -170,29 +169,37 @@ namespace usbguard
     return getImplementation(identifier, parameter, negated);
   }
 
-  RuleConditionBase* RuleConditionBase::getImplementation(const std::string& identifier, const std::string& parameter, bool negated)
+  RuleConditionBase* RuleConditionBase::getImplementation(const std::string& identifier, const std::string& parameter,
+    bool negated)
   {
     if (identifier == "allowed-matches") {
       return new AllowedMatchesCondition(parameter, negated);
     }
+
     if (identifier == "localtime") {
       return new LocaltimeCondition(parameter, negated);
     }
+
     if (identifier == "true") {
       return new FixedStateCondition(true, negated);
     }
+
     if (identifier == "false") {
       return new FixedStateCondition(false, negated);
     }
+
     if (identifier == "random") {
       return new RandomStateCondition(parameter, negated);
     }
+
     if (identifier == "rule-applied") {
       return new RuleAppliedCondition(parameter, negated);
     }
+
     if (identifier == "rule-evaluated") {
       return new RuleEvaluatedCondition(parameter, negated);
     }
+
     throw std::runtime_error("Unknown rule condition");
   }
 
@@ -212,7 +219,7 @@ namespace usbguard
 
   RuleCondition::RuleCondition(RuleCondition&& rhs)
     : _condition(std::move(rhs._condition))
-  { 
+  {
   }
 
   RuleCondition& RuleCondition::operator=(const RuleCondition& rhs)

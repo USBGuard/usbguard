@@ -18,7 +18,7 @@
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "usbguard/USB.hpp"
@@ -27,8 +27,9 @@
 #include <QDialog>
 #include <QTimer>
 
-namespace Ui {
-class DeviceDialog;
+namespace Ui
+{
+  class DeviceDialog;
 }
 
 class DeviceDialog : public QDialog
@@ -41,7 +42,7 @@ public:
     MathTest
   };
 
-  explicit DeviceDialog(quint32 id, QWidget *parent = 0);
+  explicit DeviceDialog(quint32 id, QWidget* parent = 0);
   ~DeviceDialog();
 
   void setName(const QString& name);
@@ -78,7 +79,7 @@ private slots:
   void on_reject_button_clicked();
 
 private:
-  Ui::DeviceDialog *ui;
+  Ui::DeviceDialog* ui;
   usbguard::Rule::Target _default_decision;
   quint32 _default_decision_timeout;
   DecisionMethod _decision_method;

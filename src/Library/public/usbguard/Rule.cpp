@@ -17,13 +17,14 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "RulePrivate.hpp"
 #include "Utility.hpp"
 
-namespace usbguard {
+namespace usbguard
+{
   template<>
   std::string toRuleString(const std::string& value)
   {
@@ -68,12 +69,12 @@ namespace usbguard {
   {
     return d_pointer->getRuleID();
   }
- 
+
   void Rule::setTarget(Rule::Target target)
   {
     d_pointer->setTarget(target);
   }
- 
+
   Rule::Target Rule::getTarget() const
   {
     return d_pointer->getTarget();
@@ -243,7 +244,7 @@ namespace usbguard {
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||
-	     getTarget() == Target::Invalid);
+        getTarget() == Target::Invalid);
   }
 
   std::string Rule::toString(bool invalid) const
@@ -271,7 +272,7 @@ namespace usbguard {
     return d_pointer;
   }
 
-  static const std::vector<std::pair<std::string,Rule::Target> > target_ttable = {
+  static const std::vector<std::pair<std::string, Rule::Target>> target_ttable = {
     { "allow", Rule::Target::Allow },
     { "block", Rule::Target::Block },
     { "reject", Rule::Target::Reject },
@@ -283,9 +284,10 @@ namespace usbguard {
   {
     for (auto ttable_entry : target_ttable) {
       if (ttable_entry.second == target) {
-	return ttable_entry.first;
+        return ttable_entry.first;
       }
     }
+
     throw std::runtime_error("Invalid rule target string");
   }
 
@@ -293,9 +295,10 @@ namespace usbguard {
   {
     for (auto ttable_entry : target_ttable) {
       if (ttable_entry.first == target_string) {
-	return ttable_entry.second;
+        return ttable_entry.second;
       }
     }
+
     throw std::runtime_error("Invalid rule target string");
   }
 
@@ -306,20 +309,22 @@ namespace usbguard {
 
   Rule::Target Rule::targetFromInteger(const uint32_t target_integer)
   {
-    switch(target_integer) {
-      case static_cast<uint32_t>(Rule::Target::Allow):
-      case static_cast<uint32_t>(Rule::Target::Block):
-      case static_cast<uint32_t>(Rule::Target::Reject):
-      case static_cast<uint32_t>(Rule::Target::Match):
-      case static_cast<uint32_t>(Rule::Target::Device):
-        break;
-      default:
-        throw std::runtime_error("Invalid rule target integer value");
+    switch (target_integer) {
+    case static_cast<uint32_t>(Rule::Target::Allow):
+    case static_cast<uint32_t>(Rule::Target::Block):
+    case static_cast<uint32_t>(Rule::Target::Reject):
+    case static_cast<uint32_t>(Rule::Target::Match):
+    case static_cast<uint32_t>(Rule::Target::Device):
+      break;
+
+    default:
+      throw std::runtime_error("Invalid rule target integer value");
     }
+
     return static_cast<Rule::Target>(target_integer);
   }
 
-  static const std::vector<std::pair<std::string,Rule::SetOperator> > set_operator_ttable = {
+  static const std::vector<std::pair<std::string, Rule::SetOperator>> set_operator_ttable = {
     { "all-of", Rule::SetOperator::AllOf },
     { "one-of", Rule::SetOperator::OneOf },
     { "none-of", Rule::SetOperator::NoneOf },
@@ -332,9 +337,10 @@ namespace usbguard {
   {
     for (auto ttable_entry : set_operator_ttable) {
       if (ttable_entry.second == op) {
-	return ttable_entry.first;
+        return ttable_entry.first;
       }
     }
+
     throw std::runtime_error("Invalid set operator string");
   }
 
@@ -342,9 +348,10 @@ namespace usbguard {
   {
     for (auto ttable_entry : set_operator_ttable) {
       if (ttable_entry.first == set_operator_string) {
-	return ttable_entry.second;
+        return ttable_entry.second;
       }
     }
+
     throw std::runtime_error("Invalid set operator string");
   }
 } /* namespace usbguard */

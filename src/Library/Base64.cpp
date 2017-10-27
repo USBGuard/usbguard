@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "Base64.hpp"
@@ -27,7 +27,7 @@
 namespace usbguard
 {
   static const char BASE64_PADDING_CHAR = '=';
-  static const char encode_map[64+1] = 
+  static const char encode_map[64+1] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
@@ -37,7 +37,7 @@ namespace usbguard
     /* , */ 0,
     /* - */ 0,
     /* . */ 0,
-    /* / */ 63, 
+    /* / */ 63,
     /* 0 */ 52,
     /* 1 */ 53,
     /* 2 */ 54,
@@ -116,21 +116,24 @@ namespace usbguard
   };
 
 #define B(n) (*(in+(n)))
-  static void __b64_enc3(const uint8_t in[3], char out[4]) {
+  static void __b64_enc3(const uint8_t in[3], char out[4])
+  {
     out[0] = encode_map[(B(0) & 0xfc) >> 2];
     out[1] = encode_map[(B(0) & 0x03) << 4 | (B(1) & 0xf0) >> 4];
     out[2] = encode_map[(B(1) & 0x0f) << 2 | (B(2) & 0xc0) >> 6];
     out[3] = encode_map[(B(2) & 0x3f)];
   }
 
-  static void __b64_enc2 (const uint8_t in[2], char out[4]) {
+  static void __b64_enc2 (const uint8_t in[2], char out[4])
+  {
     out[0] = encode_map[(B(0) & 0xfc) >> 2];
     out[1] = encode_map[(B(0) & 0x03) << 4 | (B(1) & 0xf0) >> 4];
     out[2] = encode_map[(B(1) & 0x0f) << 2];
     out[3] = BASE64_PADDING_CHAR;
   }
 
-  static void __b64_enc1 (const uint8_t in, char out[4]) {
+  static void __b64_enc1 (const uint8_t in, char out[4])
+  {
     out[0] = encode_map[(in & 0xfc) >> 2];
     out[1] = encode_map[(in & 0x03) << 4];
     out[2] = BASE64_PADDING_CHAR;
@@ -138,54 +141,64 @@ namespace usbguard
   }
 #undef  B
 
-  static void __check_b64_input(const char *in, const size_t count)
+  static void __check_b64_input(const char* in, const size_t count)
   {
     bool valid = true;
+
     for (size_t i = 0; i < count; ++i) {
       char c = in[i];
+
       if (c < '+' || c > 'z') {
         valid = false;
         break;
       }
+
       if (c > 'Z' && c < 'a') {
         valid = false;
         break;
       }
+
       if (c > '9' && c < 'A') {
         valid = false;
         break;
       }
+
       if (c > '+' && c < '/') {
         valid = false;
         break;
       }
     }
+
     if (!valid) {
       throw std::runtime_error("Invalid base64 input");
     }
   }
 
 #define B(n) ((*(in+(n)) - '+') % (sizeof decode_map / sizeof(decode_map[0])))
-  static void __b64_dec4 (const char in[4], uint8_t out[3]) {
+  static void __b64_dec4 (const char in[4], uint8_t out[3])
+  {
     __check_b64_input(in, 4);
     out[0] =   decode_map[B(0)]         << 2  | ((decode_map[B(1)] & 0x30) >> 4);
     out[1] = ((decode_map[B(1)] & 0x0f) << 4) | ((decode_map[B(2)] & 0x3c) >> 2);
     out[2] = ((decode_map[B(2)] & 0x03) << 6) |   decode_map[B(3)];
   }
 
-  static void __b64_dec3 (const char in[3], uint8_t out[2]) {
+  static void __b64_dec3 (const char in[3], uint8_t out[2])
+  {
     __check_b64_input(in, 3);
     out[0] =   decode_map[B(0)]         << 2  | ((decode_map[B(1)] & 0x30) >> 4);
     out[1] = ((decode_map[B(1)] & 0x0f) << 4) | ((decode_map[B(2)] & 0x3c) >> 2);
   }
 
-  static void __b64_dec2 (const char in[2], uint8_t out[1]) {
+  static void __b64_dec2 (const char in[2], uint8_t out[1])
+  {
     __check_b64_input(in, 2);
     out[0] = (decode_map[B(0)] << 2) | ((decode_map[B(1)] >> 4) & 0x03);
   }
 #undef B
 
-  std::string base64Encode (const uint8_t * const data, const size_t size) {
+  std::string base64Encode (const uint8_t* const data, const size_t size)
+  {
     if (size == 0 || data == nullptr) {
       throw std::runtime_error("base64encode: invalid input");
     }
@@ -193,9 +206,8 @@ namespace usbguard
     const size_t encoded_size = base64EncodedSize(size);
     const uint8_t remainder = size % 3;
     const size_t enc3_count = (size - remainder) / 3;
-
     std::string result(encoded_size, 0);
-    char * const buffer = &result[0];
+    char* const buffer = &result[0];
     size_t i = 0;
 
     for (; i < enc3_count; ++i) {
@@ -203,22 +215,26 @@ namespace usbguard
     }
 
     switch (remainder) {
-      case 2:
-        __b64_enc2 (data + (i * 3), buffer + (i * 4));
-        break;
-      case 1:
-        __b64_enc1 (*(data + (i * 3)), buffer + (i * 4));
-        break;
-      case 0:
-        break;
-      default:
-        throw std::runtime_error("base64Encode: unexpected remainder value");
+    case 2:
+      __b64_enc2 (data + (i * 3), buffer + (i * 4));
+      break;
+
+    case 1:
+      __b64_enc1 (*(data + (i * 3)), buffer + (i * 4));
+      break;
+
+    case 0:
+      break;
+
+    default:
+      throw std::runtime_error("base64Encode: unexpected remainder value");
     }
 
     return result;
   }
 
-  std::string base64Decode(const char * const data, const size_t size) {
+  std::string base64Decode(const char* const data, const size_t size)
+  {
     if (size == 0 || (size % 4) != 0) {
       throw std::runtime_error("base64Decode: invalid input");
     }
@@ -230,14 +246,16 @@ namespace usbguard
     if (data[size - 1] == BASE64_PADDING_CHAR) {
       if (data[size - 2] == BASE64_PADDING_CHAR) {
         padding = 2;
-      } else {
+      }
+      else {
         padding = 1;
       }
+
       --dec4_count;
     }
 
     std::string result(decoded_size, 0);
-    uint8_t * const buffer = reinterpret_cast<uint8_t *>(&result[0]);
+    uint8_t* const buffer = reinterpret_cast<uint8_t*>(&result[0]);
     size_t i = 0;
 
     for (; i < dec4_count; ++i) {
@@ -245,19 +263,22 @@ namespace usbguard
     }
 
     switch (padding) {
-      case 2:
-        __b64_dec2 (data + (i * 4), buffer + (i * 3));
-        result.resize(3 * i + 1);
-        break;
-      case 1:
-        __b64_dec3 (data + (i * 4), buffer + (i * 3));
-        result.resize(3 * i + 2);
-        break;
-      case 0:
-        result.resize(3 * i);
-        break;
-      default:
-        throw std::runtime_error("base64Device: unexpected padding value");
+    case 2:
+      __b64_dec2 (data + (i * 4), buffer + (i * 3));
+      result.resize(3 * i + 1);
+      break;
+
+    case 1:
+      __b64_dec3 (data + (i * 4), buffer + (i * 3));
+      result.resize(3 * i + 2);
+      break;
+
+    case 0:
+      result.resize(3 * i);
+      break;
+
+    default:
+      throw std::runtime_error("base64Device: unexpected padding value");
     }
 
     return result;
@@ -265,7 +286,7 @@ namespace usbguard
 
   size_t base64EncodedSize(const size_t decoded_size)
   {
-    return (decoded_size / 3 * 4) + ((decoded_size % 3) == 0 ? 0 : 4); 
+    return (decoded_size / 3 * 4) + ((decoded_size % 3) == 0 ? 0 : 4);
   }
 
   size_t base64DecodedSize(const size_t encoded_size)
@@ -275,7 +296,7 @@ namespace usbguard
 
   std::string base64Encode(const std::string& value)
   {
-    return base64Encode(reinterpret_cast<const uint8_t *>(value.c_str()), value.size());
+    return base64Encode(reinterpret_cast<const uint8_t*>(value.c_str()), value.size());
   }
 
   std::string base64Decode(const std::string& value)

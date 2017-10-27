@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
-#include <build-config.h>
+  #include <build-config.h>
 #endif
 
 #include "UEvent.hpp"
@@ -63,9 +63,11 @@ namespace usbguard
   std::string UEvent::getAttribute(const std::string& name) const
   {
     auto it = _attributes.find(name);
+
     if (it == _attributes.end()) {
       return std::string();
-    } else {
+    }
+    else {
       return it->second;
     }
   }
@@ -78,23 +80,20 @@ namespace usbguard
   std::string UEvent::getHeaderLine() const
   {
     if (!hasAttribute("ACTION") ||
-        !hasAttribute("DEVPATH")) {
+      !hasAttribute("DEVPATH")) {
       throw std::runtime_error("uevent: missing required header line values");
     }
 
     std::string header_line;
-
     header_line.append(getAttribute("ACTION"));
     header_line.append(1, '@');
     header_line.append(getAttribute("DEVPATH"));
-
     return header_line;
   }
 
   std::string UEvent::toString(char separator) const
   {
     std::string uevent_string = getHeaderLine();
-
     uevent_string.append(1, separator);
 
     for (auto const& kv_pair : _attributes) {
@@ -109,7 +108,9 @@ namespace usbguard
 
   bool UEvent::hasRequiredAttributes() const
   {
-    for (const std::string name : { "ACTION", "DEVPATH", "SUBSYSTEM" }) {
+    for (const std::string name : {
+    "ACTION", "DEVPATH", "SUBSYSTEM"
+  }) {
       if (!hasAttribute(name)) {
         return false;
       }
