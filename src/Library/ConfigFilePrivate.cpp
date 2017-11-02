@@ -149,7 +149,7 @@ namespace usbguard
       }
 
       std::string name = trim(config_line.substr(0, nv_separator));
-      std::string value = config_line.substr(nv_separator + 1);
+      std::string value = trim(config_line.substr(nv_separator + 1));
 
       if (!checkNVPair(name, value)) {
         throw Exception("Configuration", name, "unknown configuration directive");
