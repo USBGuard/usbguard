@@ -25,7 +25,14 @@ Please share your feedback or request a feature in the Github issue trackers for
 
 == Documentation
 
- * TODO: link to docs here
+ * User Guide (TBA)
+ * Manual Pages
+ ** <<doc/man/usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>
+ ** <<doc/man/usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>
+ ** <<doc/man/usbguard-rules.conf.5.adoc#name, usbguard-rules.conf(5)>>
+ ** <<doc/man/usbguard.1.adoc#name, usbguard(1)>>
+ ** <<doc/man/usbguard-applet-qt.1.adoc#name, usbguard-applet-qt(1)>>
+ ** <<doc/man/usbguard-dbus.8.adoc#name, usbguard-dbus(8)>>
 
 == Compilation & Installation
 
