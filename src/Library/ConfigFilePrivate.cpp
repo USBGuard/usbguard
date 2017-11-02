@@ -23,6 +23,7 @@
 #include "ConfigFilePrivate.hpp"
 #include "Common/Utility.hpp"
 
+#include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
 
 #include <stdexcept>
@@ -59,7 +60,7 @@ namespace usbguard
     }
 
     if (!_stream.is_open()) {
-      throw std::runtime_error("Can't open " + path);
+      throw Exception("Configuration", path, "unable to open the configuration file");
     }
 
     parse();
@@ -68,11 +69,11 @@ namespace usbguard
   void ConfigFilePrivate::write()
   {
     if (!_stream.is_open()) {
-      throw std::runtime_error("BUG: ConfigFilePrivate::write: write() before open()");
+      throw USBGUARD_BUG("ConfigFilePrivate::write: write() before open()");
     }
 
     if (_readonly) {
-      throw std::runtime_error("BUG: ConfigFilePrivate::write: not applicable in read-only mode");
+      throw USBGUARD_BUG("ConfigFilePrivate::write: not applicable in read-only mode");
     }
 
     if (_dirty) {
@@ -90,7 +91,7 @@ namespace usbguard
       _stream << line << std::endl;
 
       if (!_stream.good()) {
-        throw std::runtime_error("Failed to write configuration to disk");
+        throw Exception("Configuration", "write", "failed to write configuration to disk");
       }
     }
 
@@ -138,7 +139,7 @@ namespace usbguard
       const size_t nv_separator = config_line.find_first_of("=");
 
       if (nv_separator == std::string::npos) {
-        continue;
+        throw Exception("Configuration", "line " + std::to_string(config_line_number), "syntax error");
       }
 
       std::string name = trim(config_line.substr(0, nv_separator));
@@ -149,7 +150,7 @@ namespace usbguard
       }
 
       if (!checkNVPair(name, value)) {
-        continue;
+        throw Exception("Configuration", name, "unknown configuration directive");
       }
 
       NVPair& setting = _settings[name];
