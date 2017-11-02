@@ -17,10 +17,18 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-set -ex
-
 PROJECT_ROOT="$(dirname "$0")/../"
 ASTYLE="${PROJECT_ROOT}/scripts/astyle.sh"
+
+echo
+echo " PLEASE READ:"
+echo " ============"
+echo " This script requires AStyle version 3 and above."
+echo " Older versions won't work correctly (or not at all)."
+echo " ============"
+echo
+
+set -ex
 
 find "${PROJECT_ROOT}/src" \
 	-type f -not -path '*ThirdParty/*' \
