@@ -136,6 +136,12 @@ namespace usbguard
     while (std::getline(_stream, config_line)) {
       ++config_line_number;
       _lines.push_back(config_line);
+      config_line = trim(config_line);
+
+      if (config_line[0] == '#') {
+        continue;
+      }
+
       const size_t nv_separator = config_line.find_first_of("=");
 
       if (nv_separator == std::string::npos) {
@@ -144,10 +150,6 @@ namespace usbguard
 
       std::string name = trim(config_line.substr(0, nv_separator));
       std::string value = config_line.substr(nv_separator + 1);
-
-      if (name[0] == '#') {
-        continue;
-      }
 
       if (!checkNVPair(name, value)) {
         throw Exception("Configuration", name, "unknown configuration directive");
