@@ -138,7 +138,7 @@ namespace usbguard
       _lines.push_back(config_line);
       config_line = trim(config_line);
 
-      if (config_line[0] == '#') {
+      if (config_line.size() < 1 || config_line[0] == '#') {
         continue;
       }
 
