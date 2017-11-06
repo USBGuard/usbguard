@@ -19,6 +19,7 @@
 #pragma once
 
 #include "Typedefs.hpp"
+#include "usbguard/Logger.hpp"
 
 #include <string>
 #include <vector>
@@ -41,6 +42,7 @@ namespace usbguard
     const std::string& getSettingValue(const std::string& name) const;
 
   private:
+    virtual bool checkMapValidity();
     ConfigFilePrivate* d_pointer;
   };
 } /* namespace usbguard */

@@ -27,6 +27,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace usbguard
 {
@@ -55,6 +56,17 @@ namespace usbguard
       size_t line_number;
     };
 
+    struct parsed_t {
+      const std::string lvalue;
+      const std::string rvalue;
+      parsed_t(const std::string a, const std::string b): lvalue(a), rvalue(b) {};
+    };
+
+    std::unique_ptr<struct parsed_t> parseString(std::string& str);
+    bool trim(std::string& str);
+    bool checkKeyValidity(const std::string& key);
+    bool checkMapValidity();
+
     ConfigFile& _p_instance;
     std::string _path;
     std::fstream _stream;
@@ -63,6 +75,7 @@ namespace usbguard
     bool _dirty;
     bool _readonly;
     std::vector<std::string> _known_names;
+    std::string separator {"="};
   };
 }
 
