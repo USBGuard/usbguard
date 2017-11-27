@@ -29,6 +29,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace usbguard
 {
@@ -483,14 +484,14 @@ namespace usbguard
 
     void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 
-    RulePrivate* internal();
-    const RulePrivate* internal() const;
+    std::unique_ptr<RulePrivate>& internal();
+    const std::unique_ptr<RulePrivate>& internal() const;
 
     /*** Static methods ***/
     static Rule fromString(const std::string& rule_string);
 
   private:
-    RulePrivate* d_pointer;
+    std::unique_ptr<RulePrivate> d_pointer;
   };
 } /* namespace usbguard */
 

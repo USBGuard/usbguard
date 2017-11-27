@@ -32,6 +32,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -233,6 +234,12 @@ namespace usbguard
       free(p);
     }
   };
+
+  template<typename T, typename... Params>
+  std::unique_ptr<T> make_unique(Params&& ... params)
+  {
+    return std::unique_ptr<T>(new T(std::forward<Params>(params)...));
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

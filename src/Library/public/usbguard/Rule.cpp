@@ -22,6 +22,7 @@
 
 #include "RulePrivate.hpp"
 #include "Utility.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
@@ -37,26 +38,20 @@ namespace usbguard
   const uint32_t Rule::ImplicitID = std::numeric_limits<uint32_t>::max() - 1;
 
   Rule::Rule()
+    : d_pointer(make_unique<RulePrivate>(*this))
   {
-    d_pointer = new RulePrivate(*this);
   }
 
-  Rule::~Rule()
-  {
-    delete d_pointer;
-    d_pointer = nullptr;
-  }
+  Rule::~Rule() = default;
 
   Rule::Rule(const Rule& rhs)
+    : d_pointer(make_unique<RulePrivate>(*this, *rhs.d_pointer))
   {
-    d_pointer = new RulePrivate(*this, *rhs.d_pointer);
   }
 
   const Rule& Rule::operator=(const Rule& rhs)
   {
-    RulePrivate* n_pointer = new RulePrivate(*this, *rhs.d_pointer);
-    delete d_pointer;
-    d_pointer = n_pointer;
+    d_pointer.reset(new RulePrivate(*this, *rhs.d_pointer));
     return *this;
   }
 
@@ -262,12 +257,12 @@ namespace usbguard
     return RulePrivate::fromString(rule_string);
   }
 
-  RulePrivate* Rule::internal()
+  std::unique_ptr<RulePrivate>& Rule::internal()
   {
     return d_pointer;
   }
 
-  const RulePrivate* Rule::internal() const
+  const std::unique_ptr<RulePrivate>& Rule::internal() const
   {
     return d_pointer;
   }

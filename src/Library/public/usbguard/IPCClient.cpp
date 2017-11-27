@@ -21,18 +21,16 @@
 #endif
 
 #include "IPCClientPrivate.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
   IPCClient::IPCClient(bool connected)
+    : d_pointer(make_unique<IPCClientPrivate>(*this, connected))
   {
-    d_pointer = new IPCClientPrivate(*this, connected);
   }
 
-  IPCClient::~IPCClient()
-  {
-    delete d_pointer;
-  }
+  IPCClient::~IPCClient() = default;
 
   void IPCClient::connect()
   {

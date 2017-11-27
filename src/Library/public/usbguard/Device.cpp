@@ -21,30 +21,25 @@
 #endif
 
 #include "DevicePrivate.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
   Device::Device(DeviceManager& manager)
+    : d_pointer(make_unique<DevicePrivate>(*this, manager))
   {
-    d_pointer = new DevicePrivate(*this, manager);
   }
 
-  Device::~Device()
-  {
-    delete d_pointer;
-    d_pointer = nullptr;
-  }
+  Device::~Device() = default;
 
   Device::Device(const Device& rhs)
+    : d_pointer(make_unique<DevicePrivate>(*this, *rhs.d_pointer))
   {
-    d_pointer = new DevicePrivate(*this, *rhs.d_pointer);
   }
 
   const Device& Device::operator=(const Device& rhs)
   {
-    DevicePrivate* n_pointer = new DevicePrivate(*this, *rhs.d_pointer);
-    delete d_pointer;
-    d_pointer = n_pointer;
+    d_pointer.reset(new DevicePrivate(*this, *rhs.d_pointer));
     return *this;
   }
 

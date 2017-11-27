@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace usbguard
 {
@@ -41,7 +42,7 @@ namespace usbguard
     const std::string& getSettingValue(const std::string& name) const;
 
   private:
-    ConfigFilePrivate* d_pointer;
+    std::unique_ptr<ConfigFilePrivate> d_pointer;
   };
 } /* namespace usbguard */
 
