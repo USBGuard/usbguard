@@ -1,7 +1,6 @@
-
 # Change Log
 
-## 0.7.1 - <unrelased>
+## 0.7.1 - 2017-11-30
 
 ### Added
 - CLI: usbguard watch command now includes an -e <path> option to run an executable
@@ -17,6 +16,7 @@
 
 ### Removed
 - Removed Utility.hpp header file from public API headers
+- Reduced usage of raw C pointers throughout the code
 
 ### Changed
 - Qt Applet: disabled session management
@@ -25,10 +25,13 @@
 - Replaced --enable-maintainer-mode configure option with --enable-full-test-suite
   option. When the new option is not used during the configure phase, only a basic
   set of test is run during the make check phase.
-- usbguard-daemon now opens it's configuration in read-only mode
+- usbguard-daemon now opens configuration in read-only mode
 - Fixed UEventDeviceManager to work with Linux Kernel >= 4.13
 - Refactored audit logging to support different audit log backends
 - Reformatted source code to conform to the code style.
+- Made the configuration parser strict. Unknown directives and wrong syntax will
+  cause an error.
+- Reformated documentation from markdown to asciidoc format.
 
 ## 0.7.0 - 2017-04-12
 ### Added
