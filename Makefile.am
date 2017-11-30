@@ -634,38 +634,13 @@ endif
 $(DIST_ARCHIVES):
 	test -f "$@" || $(MAKE) dist
 
-rpmbuild: $(DIST_ARCHIVES)
-	test -n "$(RPMBUILD_FLAGS)"
-	$(eval RPMBUILD_ROOT:=$(shell mktemp -d -t usbguard-srpm.XXXXXX))
-	$(eval RPMBUILD_SOURCES:=$(RPMBUILD_ROOT)/SOURCE)
-	$(eval RPMBUILD_SPECS:=$(RPMBUILD_ROOT)/SPECS)
-	$(eval RPMBUILD_BUILDS:=$(RPMBUILD_ROOT)/BUILDS)
-	$(MKDIR_P) $(RPMBUILD_SOURCES)
-	$(MKDIR_P) $(RPMBUILD_SPECS)
-	cp $(top_srcdir)/usbguard.spec $(RPMBUILD_SPECS)
-	cp $(top_builddir)/$(DIST_ARCHIVES) $(RPMBUILD_SOURCES)
-	rpmbuild $(RPMBUILD_FLAGS) \
-		--define "_sourcedir $(RPMBUILD_SOURCES)" \
-		--define "_srcrpmdir $(top_builddir)" \
-		--define "_rpmdir $(top_builddir)" \
-		--define "_builddir $(RPMBUILD_BUILDS)" \
-		"$(RPMBUILD_SPECS)/usbguard.spec"
-	rm -rf "$(RPMBUILD_ROOT)"
-
-rpmbuild-bs:
-	$(MAKE) rpmbuild RPMBUILD_FLAGS=-bs
-
-rpmbuild-ba:
-	$(MAKE) rpmbuild RPMBUILD_FLAGS=-ba
-
-release-files: rpmbuild-bs
+release-files:
 	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
 	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
 	$(MKDIR_P) $(RELEASE_DIR)
 	cp $(DIST_ARCHIVES) $(RELEASE_DIR)
-	cp $(PACKAGE)-$(VERSION)-*.src.rpm $(RELEASE_DIR)
-	cd $(RELEASE_DIR) && $(GPG) -b -a $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig
-	cd $(RELEASE_DIR) && openssl sha -sha256 $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sum
+	cd $(RELEASE_DIR) && $(GPG) -b -a -o - $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig
+	cd $(RELEASE_DIR) && openssl sha256 $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sum
 
 analyze-clang:
 	$(eval ANALYSIS_ROOT:=$(shell mktemp -d -t usbguard-analyze-clang.XXXXXX))
