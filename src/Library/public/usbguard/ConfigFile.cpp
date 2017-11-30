@@ -21,18 +21,16 @@
 #endif
 
 #include "ConfigFilePrivate.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
   ConfigFile::ConfigFile(const std::vector<std::string>& known_names)
+    : d_pointer(make_unique<ConfigFilePrivate>(*this, known_names))
   {
-    d_pointer = new ConfigFilePrivate(*this, known_names);
   }
 
-  ConfigFile::~ConfigFile()
-  {
-    delete d_pointer;
-  }
+  ConfigFile::~ConfigFile() = default;
 
   void ConfigFile::open(const std::string& path, bool readonly)
   {

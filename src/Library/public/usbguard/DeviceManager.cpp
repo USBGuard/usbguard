@@ -21,6 +21,7 @@
 #endif
 
 #include "DeviceManagerPrivate.hpp"
+#include "Common/Utility.hpp"
 
 #include "usbguard/DeviceManagerHooks.hpp"
 #include "usbguard/Exception.hpp"
@@ -68,28 +69,22 @@ namespace usbguard
   }
 
   DeviceManager::DeviceManager(DeviceManagerHooks& hooks)
+    : d_pointer(make_unique<DeviceManagerPrivate>(*this, hooks))
   {
-    d_pointer = new DeviceManagerPrivate(*this, hooks);
   }
 
   DeviceManager::DeviceManager(const DeviceManager& rhs)
+    : d_pointer(make_unique<DeviceManagerPrivate>(*this, *rhs.d_pointer))
   {
-    d_pointer = new DeviceManagerPrivate(*this, *rhs.d_pointer);
   }
 
   const DeviceManager& DeviceManager::operator=(const DeviceManager& rhs)
   {
-    DeviceManagerPrivate* n_pointer = new DeviceManagerPrivate(*this, *rhs.d_pointer);
-    delete d_pointer;
-    d_pointer = n_pointer;
+    d_pointer.reset(new DeviceManagerPrivate(*this, *rhs.d_pointer));
     return *this;
   }
 
-  DeviceManager::~DeviceManager()
-  {
-    delete d_pointer;
-    d_pointer = nullptr;
-  }
+  DeviceManager::~DeviceManager() = default;
 
   void DeviceManager::setRestoreControllerDeviceState(bool enabled)
   {

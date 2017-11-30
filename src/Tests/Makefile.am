@@ -100,7 +100,8 @@ test_unit_LDFLAGS=\
 test_regression_SOURCES=\
 	main.cpp \
 	Regression/test_Rule_ghi37.cpp \
-	Regression/test_Rule_ghi113.cpp
+	Regression/test_Rule_ghi113.cpp \
+	Regression/github-PR209-config-parser.cpp
 
 test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la

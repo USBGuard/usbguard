@@ -23,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace usbguard
 {
@@ -43,7 +44,7 @@ namespace usbguard
 
   private:
     virtual bool checkMapValidity();
-    ConfigFilePrivate* d_pointer;
+    std::unique_ptr<ConfigFilePrivate> d_pointer;
   };
 } /* namespace usbguard */
 

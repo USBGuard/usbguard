@@ -82,7 +82,7 @@ namespace usbguard
     static std::shared_ptr<DeviceManager> create(DeviceManagerHooks& hooks, const std::string& backend);
 
   private:
-    DeviceManagerPrivate* d_pointer;
+    std::unique_ptr<DeviceManagerPrivate> d_pointer;
   };
 
 } /* namespace usbguard */

@@ -22,30 +22,25 @@
 
 #include "Typedefs.hpp"
 #include "RuleSetPrivate.hpp"
+#include "Common/Utility.hpp"
 
 namespace usbguard
 {
   RuleSet::RuleSet(Interface* const interface_ptr)
+    : d_pointer(make_unique<RuleSetPrivate>(*this, interface_ptr))
   {
-    d_pointer = new RuleSetPrivate(*this, interface_ptr);
   }
 
-  RuleSet::~RuleSet()
-  {
-    delete d_pointer;
-    d_pointer = nullptr;
-  }
+  RuleSet::~RuleSet() = default;
 
   RuleSet::RuleSet(const RuleSet& rhs)
+    : d_pointer(make_unique<RuleSetPrivate>(*this, *rhs.d_pointer))
   {
-    d_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
   }
 
   const RuleSet& RuleSet::operator=(const RuleSet& rhs)
   {
-    RuleSetPrivate* n_pointer = new RuleSetPrivate(*this, *rhs.d_pointer);
-    delete d_pointer;
-    d_pointer = n_pointer;
+    d_pointer.reset(new RuleSetPrivate(*this, *rhs.d_pointer));
     return *this;
   }
 

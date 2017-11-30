@@ -25,6 +25,7 @@
 #include <istream>
 #include <mutex>
 #include <string>
+#include <memory>
 
 #include <cstddef>
 #include <cstdint>
@@ -87,7 +88,7 @@ namespace usbguard
     void loadEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
 
   private:
-    DevicePrivate* d_pointer;
+    std::unique_ptr<DevicePrivate> d_pointer;
   };
 } /* namespace usbguard */
 

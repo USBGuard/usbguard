@@ -25,6 +25,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <cstdint>
 
@@ -102,7 +103,7 @@ namespace usbguard
     }
 
   private:
-    IPCClientPrivate* d_pointer;
+    std::unique_ptr<IPCClientPrivate> d_pointer;
   };
 
 } /* namespace usbguard */

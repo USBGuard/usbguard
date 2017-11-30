@@ -145,7 +145,7 @@ namespace usbguard
     uint32_t assignID();
 
   private:
-    RuleSetPrivate* d_pointer;
+    std::unique_ptr<RuleSetPrivate> d_pointer;
   };
 }
 
