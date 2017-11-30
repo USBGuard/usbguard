@@ -634,7 +634,7 @@ endif
 $(DIST_ARCHIVES):
 	test -f "$@" || $(MAKE) dist
 
-release-files:
+release-files: $(DIST_ARCHIVES)
 	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
 	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
 	$(MKDIR_P) $(RELEASE_DIR)
