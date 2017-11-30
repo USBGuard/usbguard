@@ -35,7 +35,6 @@ namespace usbguard
   void ConfigFile::open(const std::string& path, bool readonly)
   {
     d_pointer->open(path, readonly);
-    checkMapValidity();
   }
 
   void ConfigFile::write()
@@ -61,14 +60,6 @@ namespace usbguard
   bool ConfigFile::hasSettingValue(const std::string& name) const
   {
     return d_pointer->hasSettingValue(name);
-  }
-
-  bool ConfigFile::checkMapValidity()
-  {
-    // TODO
-    USBGUARD_LOG(Warning) << "Configuration : check : NOT IMPLEMENTED!";
-    USBGUARD_LOG(Info) << "Configuration : check : passed!";
-    return true;
   }
 } /* namespace usbguard */
 

@@ -21,6 +21,8 @@
 #endif
 
 #include "ConfigFilePrivate.hpp"
+#include "KeyValueParser.hpp"
+
 #include "Common/Utility.hpp"
 
 #include "usbguard/Exception.hpp"
@@ -32,8 +34,24 @@
 
 #include <cstddef>
 
+
 namespace usbguard
 {
+  class KeyValueParser_custom : public KeyValueParser
+  {
+  public:
+    KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
+    KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
+    virtual bool checkMapValidity() override final;
+  };
+
+  bool KeyValueParser_custom::checkMapValidity()
+  {
+    /* Some difficult checks in map*/
+    USBGUARD_LOG(Info) << "Checks passed!";
+    return true;
+  }
+
   ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const std::vector<std::string>& known_names)
     : _p_instance(p_instance),
       _known_names(known_names)
@@ -132,20 +150,24 @@ namespace usbguard
   {
     std::string config_line;
     size_t config_line_number = 0;
-    std::map<std::string, NVPair> m;
-    std::map<std::string, NVPair>::iterator it;
+    KeyValueParser_custom kvparser(_known_names, "=");
 
     while (std::getline(_stream, config_line)) {
       ++config_line_number;
       _lines.push_back(config_line);
-      auto p = this->parseString(config_line);
+
+      if ((config_line.size() < 1) || (config_line[0] == '#')) {
+        continue;
+      }
+
+      auto p = kvparser.parseString(config_line);
 
       if (p != nullptr) {
         NVPair& setting = _settings[p->lvalue];
         setting.name = p->lvalue;
         setting.value = p->rvalue;
         setting.line_number = config_line_number;
-        USBGUARD_LOG(Debug) << "Parsed: " << p->lvalue << separator << p->rvalue;
+        USBGUARD_LOG(Debug) << "Parsed: " << p->lvalue << "=" << p->rvalue;
       }
     }
   }
@@ -170,92 +192,6 @@ namespace usbguard
 
     return false;
   }
-
-  std::unique_ptr<usbguard::ConfigFilePrivate::parsed_t> ConfigFilePrivate::parseString(std::string& str)
-  {
-    std::string::size_type sep_pos;
-    std::string key, val;
-
-    if (str.length() <= 0) {
-      return nullptr;
-    }
-
-    if (str.length() > 0 && str[0] == '#') {
-      return nullptr;
-    }
-
-    USBGUARD_LOG(Debug) << "Parsing line: " << str;
-    sep_pos = str.find(this->separator);
-
-    if (sep_pos == std::string::npos) {
-      USBGUARD_LOG(Error) << "Error: separator not found: '" << str << "'";
-      throw Exception("Configuration", "Parser", "Separator not found");
-    }
-    else {
-      key = str.substr(0, sep_pos);
-      val = str.substr(sep_pos + 1);
-
-      if (this->trim(key)) {
-        USBGUARD_LOG(Debug) << "Warning: trim(): '"<< key << "'";
-      }
-
-      if (this->trim(val)) {
-        USBGUARD_LOG(Debug) << "Warning: trim(): '"<< val << "'";
-      }
-
-      if (!this->checkKeyValidity(key)) {
-        USBGUARD_LOG(Error) << "Error: parsed key is not in key set: '" << key << "'";
-        throw Exception("Configuration", "Parser", "Invalid key");
-        return nullptr;
-      }
-      else {
-        std::unique_ptr<struct parsed_t> p (new struct parsed_t(key, val));
-        return p;
-      }
-    }
-
-    return nullptr;
-  }
-
-  bool ConfigFilePrivate::trim(std::string& str)
-  {
-    if (str.length() <= 0) {
-      return true;
-    }
-
-    std::locale loc;
-
-    while (std::isspace(str.back(), loc)) {
-      str.pop_back();
-    }
-
-    while (std::isspace(str.front(), loc)) {
-      str = str.substr(1);
-    }
-
-    return false;
-  }
-
-  bool ConfigFilePrivate::checkMapValidity()
-  {
-    throw Exception("Configuration", "checkValidity", "Override ConfigParser::checkMapValidity() virtual method!");
-    return false;
-  }
-
-  bool ConfigFilePrivate::checkKeyValidity(const std::string& key)
-  {
-    for (auto a: this->_known_names) {
-      if (!key.compare(a)) {
-        return true;
-      }
-      else {
-        continue;
-      }
-    }
-
-    return false;
-  }
-
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

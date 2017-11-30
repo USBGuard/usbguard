@@ -43,7 +43,6 @@ namespace usbguard
     const std::string& getSettingValue(const std::string& name) const;
 
   private:
-    virtual bool checkMapValidity();
     std::unique_ptr<ConfigFilePrivate> d_pointer;
   };
 } /* namespace usbguard */
