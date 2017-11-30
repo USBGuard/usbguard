@@ -5,11 +5,11 @@ USBGuard
 [.clearfix]
 --
 [.left]
-image::https://travis-ci.org/dkopecek/usbguard.svg?branch=master[Travis CI, link=https://travis-ci.org/dkopecek/usbguard]
+image::https://travis-ci.org/USBGuard/usbguard.svg?branch=master[Travis CI, link=https://travis-ci.org/USBGuard/usbguard]
 [.left]
-image::https://coveralls.io/repos/github/dkopecek/usbguard/badge.svg[Coverage, link=https://coveralls.io/github/dkopecek/usbguard]
+image::https://coveralls.io/repos/github/USBGuard/usbguard/badge.svg[Coverage, link=https://coveralls.io/github/USBGuard/usbguard]
 [.left]
-image::https://img.shields.io/github/license/dkopecek/usbguard.svg[License, link=https://github.com/dkopecek/usbguard/#license]
+image::https://img.shields.io/github/license/USBGuard/usbguard.svg[License, link=https://github.com/USBGuard/usbguard/#license]
 --
 
 == About

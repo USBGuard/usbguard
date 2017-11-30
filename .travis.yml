@@ -102,7 +102,7 @@ after_success:
 addons:
   coverity_scan:
     project:
-      name: dkopecek/usbguard
+      name: USBGuard/usbguard
     notification_email: dnk1618@gmail.com
     build_command: make
     branch_pattern: coverity_scan

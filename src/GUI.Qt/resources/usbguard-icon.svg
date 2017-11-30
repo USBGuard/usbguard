@@ -65,7 +65,7 @@
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
         <dc:description>Official USBGuard project logo.</dc:description>
-        <dc:source>https://github.com/dkopecek/usbguard/</dc:source>
+        <dc:source>https://github.com/USBGuard/usbguard/</dc:source>
         <dc:date>2016</dc:date>
       </cc:Work>
       <cc:License
