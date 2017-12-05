@@ -495,8 +495,8 @@ namespace usbguard
     while (!exit_loop);
 
     if (pid_fd != -1) {
-      lockf(pid_fd, F_ULOCK, 0);
-      close(pid_fd);
+      (void)lockf(pid_fd, F_ULOCK, 0);
+      (void)close(pid_fd);
     }
 
     IPCServer::stop();
@@ -568,7 +568,7 @@ namespace usbguard
 
     /* Now we are forked 2nd time */
     umask(0047);  /* no need for world-accessible or executable files */
-    chdir("/");
+    (void)chdir("/");
     const std::array<int, 3> std_fds {{STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO}};
     int fd_null;
     USBGUARD_SYSCALL_THROW("Daemonize", (fd_null = open("/dev/null", O_RDWR)) < 0);
