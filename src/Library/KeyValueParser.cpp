@@ -72,11 +72,11 @@ namespace usbguard
         throw Exception("KeyValueParser", "Parser", "Invalid key");
       }
       else {
-        return std::make_pair(key,val);
+        return std::make_pair(key, val);
       }
     }
 
-    return std::make_pair("err","err");
+    return std::make_pair("err", "err");
   }
 
   bool KeyValueParser::parseStream(std::fstream& stream)
