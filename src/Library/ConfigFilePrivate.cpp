@@ -21,6 +21,8 @@
 #endif
 
 #include "ConfigFilePrivate.hpp"
+#include "KeyValueParser.hpp"
+
 #include "Common/Utility.hpp"
 
 #include "usbguard/Exception.hpp"
@@ -32,8 +34,24 @@
 
 #include <cstddef>
 
+
 namespace usbguard
 {
+  class KeyValueParser_custom : public KeyValueParser
+  {
+  public:
+    KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
+    KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
+    virtual bool checkMapValidity() override final;
+  };
+
+  bool KeyValueParser_custom::checkMapValidity()
+  {
+    /* Some difficult checks in map*/
+    USBGUARD_LOG(Info) << "Checks passed!";
+    return true;
+  }
+
   ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const std::vector<std::string>& known_names)
     : _p_instance(p_instance),
       _known_names(known_names)
@@ -132,33 +150,25 @@ namespace usbguard
   {
     std::string config_line;
     size_t config_line_number = 0;
+    KeyValueParser_custom kvparser(_known_names, "=");
 
     while (std::getline(_stream, config_line)) {
       ++config_line_number;
       _lines.push_back(config_line);
-      config_line = trim(config_line);
 
-      if (config_line.size() < 1 || config_line[0] == '#') {
+      if ((config_line.size() < 1) || (config_line[0] == '#')) {
         continue;
       }
 
-      const size_t nv_separator = config_line.find_first_of("=");
+      auto p = kvparser.parseString(config_line);
 
-      if (nv_separator == std::string::npos) {
-        throw Exception("Configuration", "line " + std::to_string(config_line_number), "syntax error");
+      if (p != nullptr) {
+        NVPair& setting = _settings[p->lvalue];
+        setting.name = p->lvalue;
+        setting.value = p->rvalue;
+        setting.line_number = config_line_number;
+        USBGUARD_LOG(Debug) << "Parsed: " << p->lvalue << "=" << p->rvalue;
       }
-
-      std::string name = trim(config_line.substr(0, nv_separator));
-      std::string value = trim(config_line.substr(nv_separator + 1));
-
-      if (!checkNVPair(name, value)) {
-        throw Exception("Configuration", name, "unknown configuration directive");
-      }
-
-      NVPair& setting = _settings[name];
-      setting.name = name;
-      setting.value = value;
-      setting.line_number = config_line_number;
     }
   }
 

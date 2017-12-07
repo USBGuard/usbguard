@@ -19,6 +19,7 @@
 #pragma once
 
 #include "Typedefs.hpp"
+#include "usbguard/Logger.hpp"
 
 #include <string>
 #include <vector>
