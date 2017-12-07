@@ -32,11 +32,11 @@
 namespace usbguard
 {
 
-  struct parsed_t {
-    const std::string lvalue;
-    const std::string rvalue;
-    parsed_t(const std::string a, const std::string b): lvalue(a), rvalue(b) {};
-  };
+  // struct parsed_t {
+  //   const std::string lvalue;
+  //   const std::string rvalue;
+  //   parsed_t(const std::string a, const std::string b): lvalue(a), rvalue(b) {};
+  // };
 
   class KeyValueParser
   {
@@ -44,12 +44,12 @@ namespace usbguard
     std::string separator {""};
     std::map<std::string, std::string> output_map;
     bool checkKeyValidity(const std::string& key);
-    virtual bool checkMapValidity();
+    virtual bool checkMapValidity() = 0;
 
   public:
     KeyValueParser(const std::vector<std::string>& v);
     KeyValueParser(const std::vector<std::string>& v, const std::string& sep);
-    std::unique_ptr<struct parsed_t> parseString(std::string& str);
+    std::pair<std::string, std::string> parseLine(std::string& str);
     bool parseStream(std::fstream& stream);
     std::map<std::string, std::string> getMap();
     void viewConfig();

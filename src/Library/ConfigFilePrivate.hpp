@@ -22,6 +22,8 @@
 #endif
 
 #include "usbguard/ConfigFile.hpp"
+#include "KeyValueParser.hpp"
+
 
 #include <fstream>
 #include <map>
@@ -64,6 +66,14 @@ namespace usbguard
     bool _dirty;
     bool _readonly;
     std::vector<std::string> _known_names;
+  };
+
+  class KeyValueParser_custom : public KeyValueParser
+  {
+  public:
+    KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
+    KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
+    bool checkMapValidity();
   };
 }
 

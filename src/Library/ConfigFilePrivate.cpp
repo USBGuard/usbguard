@@ -37,14 +37,6 @@
 
 namespace usbguard
 {
-  class KeyValueParser_custom : public KeyValueParser
-  {
-  public:
-    KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
-    KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
-    virtual bool checkMapValidity() override final;
-  };
-
   bool KeyValueParser_custom::checkMapValidity()
   {
     /* Some difficult checks in map*/
@@ -160,14 +152,14 @@ namespace usbguard
         continue;
       }
 
-      auto p = kvparser.parseString(config_line);
+      auto p = kvparser.parseLine(config_line);
 
-      if (p != nullptr) {
-        NVPair& setting = _settings[p->lvalue];
-        setting.name = p->lvalue;
-        setting.value = p->rvalue;
+      if (p.first.compare("err")) {
+        NVPair& setting = _settings[p.first];
+        setting.name = p.first;
+        setting.value = p.second;
         setting.line_number = config_line_number;
-        USBGUARD_LOG(Debug) << "Parsed: " << p->lvalue << "=" << p->rvalue;
+        USBGUARD_LOG(Debug) << "Parsed: " << p.first << "=" << p.second;
       }
     }
   }

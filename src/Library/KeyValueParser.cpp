@@ -47,7 +47,7 @@ namespace usbguard
     std::cout << "\b\b " << std::endl;
   }
 
-  std::unique_ptr<struct parsed_t> KeyValueParser::parseString(std::string& str)
+  std::pair<std::string, std::string> KeyValueParser::parseLine(std::string& str)
   {
     std::string::size_type sep_pos;
     std::string key_c, key, val;
@@ -72,12 +72,11 @@ namespace usbguard
         throw Exception("KeyValueParser", "Parser", "Invalid key");
       }
       else {
-        std::unique_ptr<struct parsed_t> p (new struct parsed_t(key, val));
-        return p;
+        return std::make_pair(key,val);
       }
     }
 
-    return nullptr;
+    return std::make_pair("err","err");
   }
 
   bool KeyValueParser::parseStream(std::fstream& stream)
@@ -91,16 +90,16 @@ namespace usbguard
         continue;
       }
 
-      auto p = this->parseString(line);
+      auto p = this->parseLine(line);
 
-      if (p != nullptr) {
-        it = m.find(p->lvalue);
+      if (p.first.compare("err")) {
+        it = m.find(p.first);
 
         if (it != m.end()) {
-          m.emplace(p->lvalue, p->rvalue);
+          m.emplace(p.first, p.second);
         }
         else {
-          m[p->lvalue] = p->rvalue;
+          m[p.first] = p.second;
         }
       }
     }
@@ -123,13 +122,7 @@ namespace usbguard
       }
     }
 
-    return 1;
-  }
-
-  bool KeyValueParser::checkMapValidity()
-  {
-    USBGUARD_LOG(Error) << "ERROR: Override KeyValueParser::checkMapValidity() method!" << std::endl;
-    return false;
+    return true;
   }
 
   std::map<std::string, std::string> KeyValueParser::getMap()
