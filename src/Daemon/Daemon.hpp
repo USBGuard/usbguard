@@ -63,7 +63,7 @@ namespace usbguard
 
     int checkPermissions(const std::string& path, const mode_t permissions);
     void loadConfiguration(const std::string& path, const bool check_permissions);
-    void loadRules(const bool check_permissions);
+    void loadRules();
     void loadIPCAccessControlFiles(const std::string& path);
     bool loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath);
     void checkIPCAccessControlName(const std::string& basename);
