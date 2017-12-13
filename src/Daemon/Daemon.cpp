@@ -181,9 +181,15 @@ namespace usbguard
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
-      _nss.setRulesPath(rule_file);
+
+        const std::string& rulefile_path = _config.getSettingValue("RuleFile");
+        if (check_permissions) {
+          checkPermissions(rulefile_path, (S_IRUSR | S_IWUSR));
+        }
+
+      _nss.setRulesPath(rulefile_path);
     }
-    loadRules(check_permissions);
+    loadRules();
 
     /* ImplicitPolicyTarget */
     if (_config.hasSettingValue("ImplicitPolicyTarget")) {
@@ -329,13 +335,9 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const bool check_permissions)
+  void Daemon::loadRules()
   {
     USBGUARD_LOG(Info) << "Loading RuleSet";
-
-    if (check_permissions) {
-      checkPermissions(path, (S_IRUSR | S_IWUSR));
-    }
 
     auto ruleset = _nss.getRuleSet(this);
 
@@ -665,7 +667,7 @@ namespace usbguard
   void Daemon::removeRule(uint32_t id)
   {
     USBGUARD_LOG(Trace) << "id=" << id;
-    
+
     _policy.removeRule(id);
     if (_config.hasSettingValue("RuleFile")) {
       _policy.getRuleSet()->save();
