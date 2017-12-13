@@ -874,7 +874,6 @@ namespace usbguard
      */
     auto rule_set = _p_instance.listRules(query);
     const uint32_t default_target = Rule::targetToInteger(rule_set->getDefaultTarget());
-
     /*
      * Construct the response.
      */

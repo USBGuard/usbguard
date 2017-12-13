@@ -29,26 +29,27 @@
 
 namespace usbguard
 {
-class DLL_PUBLIC LDAPUtil
+  class DLL_PUBLIC LDAPUtil
   {
   public:
     enum class LDAP_KEY_INDEX {
-        RuleType = 0,
-        USBGuardHost,
-        DeviceID,
-        DeviceSerial,
-        DeviceName,
-        DeviceHash,
-        DeviceParentHash,
-        DeviceViaPort,
-        DeviceWithInterface,
-        RuleCondition
-      };
+      RuleType = 0,
+      USBGuardHost,
+      DeviceID,
+      DeviceSerial,
+      DeviceName,
+      DeviceHash,
+      DeviceParentHash,
+      DeviceViaPort,
+      DeviceWithInterface,
+      RuleCondition
+    };
     static std::vector<std::string> _ldap_keys;
     static std::vector<std::string> _rule_keys;
 
-    static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string> &values, bool invalid);
-    static void serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream, std::map<std::string, std::string> &values);
+    static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values, bool invalid);
+    static void serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream,
+      std::map<std::string, std::string>& values);
   };
 } /* namespace usbguard */
 

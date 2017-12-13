@@ -64,21 +64,19 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Hostname is: " << _hostname;
     parseConf(_ldap_file);
     validateConf();
-    LDAP * ptr = nullptr;
+    LDAP* ptr = nullptr;
+
     if (ldap_initialize(&ptr, _parsedOptions["URI"].c_str()) != LDAP_SUCCESS) {
       throw ErrnoException("LDAPHandler initialization", "ldap_initialize", errno);
     }
-    _ldap_ptr.reset(ptr);
 
+    _ldap_ptr.reset(ptr);
     int version = LDAP_VERSION3;
     ldap_set_option(_ldap_ptr.get(), LDAP_OPT_PROTOCOL_VERSION, &version);
-
     rc = LDAP_SUCCESS;
     struct berval passwd;
-
     passwd.bv_val = strdup(_parsedOptions["ROOTPW"].c_str());
     passwd.bv_len = _parsedOptions["ROOTPW"].length();
-
     rc = ldap_sasl_bind_s(_ldap_ptr.get(), _parsedOptions["ROOTDN"].c_str(), LDAP_SASL_SIMPLE,
         &passwd, nullptr, nullptr, nullptr);
     free(passwd.bv_val);
@@ -115,12 +113,14 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Fetched LDAP DNs: ";
     char* dn = nullptr;
 
-    for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), ptr.get() ); e != nullptr; e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
+    for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), ptr.get() ); e != nullptr;
+      e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
       if ( (dn = ldap_get_dn( _ldap_ptr.get(), e )) != NULL ) {
         USBGUARD_LOG(Debug) << "dn: " << dn;
         ldap_memfree( dn );
       }
     }
+
     return ptr;
   }
 
@@ -133,7 +133,8 @@ namespace usbguard
     struct berval** entry = nullptr;
     char* dn = nullptr;
 
-    for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), message.get() ); e != nullptr; e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
+    for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), message.get() ); e != nullptr;
+      e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
       std::string rule;
 
       if ( (dn = ldap_get_dn( _ldap_ptr.get(), e)) != nullptr ) {
@@ -259,7 +260,8 @@ namespace usbguard
     }
 
     if (!_configValues["RULEQUERY"]) {
-      _parsedOptions["RULEQUERY"] = "(&(cn=Rule*)(|(USBGuardHost=" + _hostname + ")(&(USBGuardHost=\\*)(!(USBGuardHost=!" + _hostname + ")))))";
+      _parsedOptions["RULEQUERY"] = "(&(cn=Rule*)(|(USBGuardHost=" + _hostname + ")(&(USBGuardHost=\\*)(!(USBGuardHost=!" + _hostname
+        + ")))))";
       _configValues["RULEQUERY"] = true;
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];

@@ -78,6 +78,7 @@ namespace usbguard
       else {
         ret = "SourceLOCAL::uknown";
       }
+
       break;
 
     case NSHandler::SourceType::LDAP:
@@ -117,8 +118,8 @@ namespace usbguard
 
   std::shared_ptr<RuleSet> NSHandler::generateSSSD(Interface* const interface_ptr)
   {
-      auto rule_set = std::make_shared<RuleSet>(interface_ptr);
-      return rule_set;
+    auto rule_set = std::make_shared<RuleSet>(interface_ptr);
+    return rule_set;
   }
 
   std::shared_ptr<RuleSet> NSHandler::getRuleSet(Interface* const interface_ptr)
