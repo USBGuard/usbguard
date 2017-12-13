@@ -394,7 +394,6 @@ namespace usbguard
     auto message_in = qbIPCSendRecvMessage(message_out);
     const Rule::Target default_target = \
       Rule::targetFromInteger(message_in->response().default_target());
-
     auto rule_set = std::make_shared<RuleSet>(&_p_instance);
     rule_set->setDefaultTarget(default_target);
 

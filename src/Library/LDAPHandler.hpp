@@ -78,14 +78,14 @@ namespace usbguard
   {
   public:
     struct LDAPDeleter {
-      void operator()(LDAP *p)
+      void operator()(LDAP* p)
       {
-          ldap_unbind_ext_s(p, nullptr, nullptr);
+        ldap_unbind_ext_s(p, nullptr, nullptr);
       }
 
-      void operator()(LDAPMessage *p)
+      void operator()(LDAPMessage* p)
       {
-          ldap_msgfree(p);
+        ldap_msgfree(p);
       }
     };
 

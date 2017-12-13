@@ -167,7 +167,6 @@ namespace usbguard
 
   void Daemon::loadConfiguration(const std::string& path, const bool check_permissions)
   {
-
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
 
     if (check_permissions) {
@@ -175,20 +174,20 @@ namespace usbguard
     }
 
     _config.open(path, /*readonly=*/true);
-
     USBGUARD_LOG(Info) << "Loading NSSwitch...";
     _nss.parseNSSwitch();
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
+      const std::string& rulefile_path = _config.getSettingValue("RuleFile");
 
-        const std::string& rulefile_path = _config.getSettingValue("RuleFile");
-        if (check_permissions) {
-          checkPermissions(rulefile_path, (S_IRUSR | S_IWUSR));
-        }
+      if (check_permissions) {
+        checkPermissions(rulefile_path, (S_IRUSR | S_IWUSR));
+      }
 
       _nss.setRulesPath(rulefile_path);
     }
+
     loadRules();
 
     /* ImplicitPolicyTarget */
@@ -338,19 +337,18 @@ namespace usbguard
   void Daemon::loadRules()
   {
     USBGUARD_LOG(Info) << "Loading RuleSet";
-
     auto ruleset = _nss.getRuleSet(this);
 
     try {
-        ruleset->load();
+      ruleset->load();
     }
-    catch(const RuleParserError& ex) {
+    catch (const RuleParserError& ex) {
       throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
     }
-    catch(const std::exception& ex) {
+    catch (const std::exception& ex) {
       throw Exception("Rules", _nss.getSourceInfo(), ex.what());
     }
-    catch(...) {
+    catch (...) {
       throw Exception("Rules", _nss.getSourceInfo(), "unknown exception");
     }
 
@@ -613,8 +611,8 @@ namespace usbguard
       << " parent_insensitive=" << parent_insensitive;
     const Rule match_rule = Rule::fromString(match_spec);
     const Rule new_rule = Rule::fromString(rule_spec);
-
     const uint32_t id = _policy.upsertRule(match_rule, new_rule, parent_insensitive);
+
     if (_config.hasSettingValue("RuleFile")) {
       _policy.getRuleSet()->save();
     }
@@ -654,8 +652,8 @@ namespace usbguard
       << " parent_id=" << parent_id;
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
-
     const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
+
     if (_config.hasSettingValue("RuleFile")) {
       _policy.getRuleSet()->save();
     }
@@ -667,8 +665,8 @@ namespace usbguard
   void Daemon::removeRule(uint32_t id)
   {
     USBGUARD_LOG(Trace) << "id=" << id;
-
     _policy.removeRule(id);
+
     if (_config.hasSettingValue("RuleFile")) {
       _policy.getRuleSet()->save();
     }
@@ -949,7 +947,6 @@ namespace usbguard
     /* Upsert */
     const uint32_t rule_id = upsertRule(match_spec, rule_spec, /*parent_insensitive=*/true);
     auto upsert_rule = _policy.getRule(rule_id);
-
     USBGUARD_LOG(Trace) << "return:"
       << " upsert_rule=" << upsert_rule->toString();
     return upsert_rule;

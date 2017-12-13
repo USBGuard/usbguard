@@ -67,7 +67,6 @@ namespace usbguard
       rule_number++;
       USBGUARD_LOG(Info);
     }
-
   }
   void LDAPRuleSet::save() {}
 } /* namespace usbguard */
