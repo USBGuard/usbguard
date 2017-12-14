@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 Red Hat, Inc.
+// Copyright (C) 2015 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,36 +15,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+// Authors: Marek Tamaskovic <mtamasko@redhat.com>
 //
 #pragma once
+#ifdef HAVE_BUILD_CONFIG_H
+  #include <build-config.h>
+#endif
 
-#include "Typedefs.hpp"
-#include "usbguard/Logger.hpp"
-
-#include <string>
+#include <iostream>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <map>
 #include <memory>
 
 namespace usbguard
 {
-  class ConfigFilePrivate;
-  class DLL_PUBLIC ConfigFile
+
+  class KeyValueParser
   {
+    std::vector<std::string> keys;
+    std::string separator {""};
+    std::map<std::string, std::string> output_map;
+    bool checkKeyValidity(const std::string& key);
+    virtual bool checkMapValidity();
+
   public:
-    ConfigFile(const std::vector<std::string>& known_names = std::vector<std::string>());
-    ~ConfigFile();
-
-    void open(const std::string& path, bool readonly = false);
-    void write();
-    void close();
-
-    void setSettingValue(const std::string& name, std::string& value);
-    bool hasSettingValue(const std::string& name) const;
-    const std::string& getSettingValue(const std::string& name) const;
-
-  private:
-    std::unique_ptr<ConfigFilePrivate> d_pointer;
+    KeyValueParser(const std::vector<std::string>& v);
+    KeyValueParser(const std::vector<std::string>& v, const std::string& sep);
+    std::pair<std::string, std::string> parseLine(std::string& str);
+    bool parseStream(std::fstream& stream);
+    std::map<std::string, std::string> getMap();
+    void viewConfig();
   };
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
+

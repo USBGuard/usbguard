@@ -219,6 +219,8 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCServerPrivate.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/Init.cpp \
+	src/Library/KeyValueParser.cpp \
+	src/Library/KeyValueParser.hpp \
 	src/Library/LocaltimeCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
 	src/Library/RandomStateCondition.cpp \

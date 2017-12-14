@@ -22,11 +22,14 @@
 #endif
 
 #include "usbguard/ConfigFile.hpp"
+#include "KeyValueParser.hpp"
+
 
 #include <fstream>
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace usbguard
 {
@@ -64,6 +67,7 @@ namespace usbguard
     bool _readonly;
     std::vector<std::string> _known_names;
   };
-}
+
+} /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

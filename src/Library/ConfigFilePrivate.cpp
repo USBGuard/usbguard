@@ -21,6 +21,8 @@
 #endif
 
 #include "ConfigFilePrivate.hpp"
+#include "KeyValueParser.hpp"
+
 #include "Common/Utility.hpp"
 
 #include "usbguard/Exception.hpp"
@@ -31,6 +33,7 @@
 #include <string>
 
 #include <cstddef>
+
 
 namespace usbguard
 {
@@ -132,33 +135,22 @@ namespace usbguard
   {
     std::string config_line;
     size_t config_line_number = 0;
+    KeyValueParser kvparser(_known_names, "=");
 
     while (std::getline(_stream, config_line)) {
       ++config_line_number;
       _lines.push_back(config_line);
-      config_line = trim(config_line);
 
-      if (config_line.size() < 1 || config_line[0] == '#') {
+      if ((config_line.size() < 1) || (config_line[0] == '#')) {
         continue;
       }
 
-      const size_t nv_separator = config_line.find_first_of("=");
-
-      if (nv_separator == std::string::npos) {
-        throw Exception("Configuration", "line " + std::to_string(config_line_number), "syntax error");
-      }
-
-      std::string name = trim(config_line.substr(0, nv_separator));
-      std::string value = trim(config_line.substr(nv_separator + 1));
-
-      if (!checkNVPair(name, value)) {
-        throw Exception("Configuration", name, "unknown configuration directive");
-      }
-
-      NVPair& setting = _settings[name];
-      setting.name = name;
-      setting.value = value;
+      auto p = kvparser.parseLine(config_line);
+      NVPair& setting = _settings[p.first];
+      setting.name = p.first;
+      setting.value = p.second;
       setting.line_number = config_line_number;
+      USBGUARD_LOG(Debug) << "Parsed: " << p.first << "=" << p.second;
     }
   }
 
