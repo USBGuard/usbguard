@@ -57,15 +57,10 @@ namespace usbguard
       throw Exception("KeyValueParser", "Parser", "Separator not found: syntax error");
     }
     else {
-      // std::cout << "found at: " << str.substr(sep_pos) << " " << sep_pos << std::endl;
       key = str.substr(0, sep_pos);
       val = str.substr(sep_pos + 1);
       key = trim(key);
       val = trim(val);
-
-      // USBGUARD_LOG(Error) << "\""<< key <<"\"" << "\""<< val <<"\"";
-
-      // std::cout << "parsed:  '" << key << "'='" << val << "'" << std::endl;
 
       if (this->checkKeyValidity(key)) {
         USBGUARD_LOG(Error) << "Error: parsed key is not in key set: '" << key << "'";
@@ -75,8 +70,6 @@ namespace usbguard
         return std::make_pair(key, val);
       }
     }
-
-    return std::make_pair("err", "err");
   }
 
   bool KeyValueParser::parseStream(std::fstream& stream)
@@ -91,16 +84,13 @@ namespace usbguard
       }
 
       auto p = this->parseLine(line);
+      it = m.find(p.first);
 
-      if (p.first.compare("err")) {
-        it = m.find(p.first);
-
-        if (it != m.end()) {
-          m.emplace(p.first, p.second);
-        }
-        else {
-          m[p.first] = p.second;
-        }
+      if (it != m.end()) {
+        m.emplace(p.first, p.second);
+      }
+      else {
+        m[p.first] = p.second;
       }
     }
 
@@ -129,6 +119,13 @@ namespace usbguard
   {
     return this->output_map;
   }
+
+  bool KeyValueParser::checkMapValidity()
+  {
+    /* Some difficult checks in map*/
+    return true;
+  }
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

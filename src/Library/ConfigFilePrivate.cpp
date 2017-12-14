@@ -37,13 +37,6 @@
 
 namespace usbguard
 {
-  bool ConfigFilePrivate::KeyValueParser_custom::checkMapValidity()
-  {
-    /* Some difficult checks in map*/
-    USBGUARD_LOG(Info) << "Checks passed!";
-    return true;
-  }
-
   ConfigFilePrivate::ConfigFilePrivate(ConfigFile& p_instance, const std::vector<std::string>& known_names)
     : _p_instance(p_instance),
       _known_names(known_names)
@@ -142,7 +135,7 @@ namespace usbguard
   {
     std::string config_line;
     size_t config_line_number = 0;
-    KeyValueParser_custom kvparser(_known_names, "=");
+    KeyValueParser kvparser(_known_names, "=");
 
     while (std::getline(_stream, config_line)) {
       ++config_line_number;
@@ -153,14 +146,11 @@ namespace usbguard
       }
 
       auto p = kvparser.parseLine(config_line);
-
-      if (p.first.compare("err")) {
-        NVPair& setting = _settings[p.first];
-        setting.name = p.first;
-        setting.value = p.second;
-        setting.line_number = config_line_number;
-        USBGUARD_LOG(Debug) << "Parsed: " << p.first << "=" << p.second;
-      }
+      NVPair& setting = _settings[p.first];
+      setting.name = p.first;
+      setting.value = p.second;
+      setting.line_number = config_line_number;
+      USBGUARD_LOG(Debug) << "Parsed: " << p.first << "=" << p.second;
     }
   }
 
