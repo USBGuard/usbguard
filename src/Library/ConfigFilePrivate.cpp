@@ -37,7 +37,7 @@
 
 namespace usbguard
 {
-  bool KeyValueParser_custom::checkMapValidity()
+  bool ConfigFilePrivate::KeyValueParser_custom::checkMapValidity()
   {
     /* Some difficult checks in map*/
     USBGUARD_LOG(Info) << "Checks passed!";

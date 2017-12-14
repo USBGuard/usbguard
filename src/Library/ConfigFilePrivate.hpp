@@ -52,6 +52,15 @@ namespace usbguard
     bool checkNVPair(const std::string& name, const std::string& value) const;
 
   private:
+
+    class KeyValueParser_custom : public KeyValueParser
+    {
+    public:
+      KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
+      KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
+      bool checkMapValidity();
+    };
+
     struct NVPair {
       std::string name;
       std::string value;
@@ -68,13 +77,6 @@ namespace usbguard
     std::vector<std::string> _known_names;
   };
 
-  class KeyValueParser_custom : public KeyValueParser
-  {
-  public:
-    KeyValueParser_custom(const std::vector<std::string>& v): KeyValueParser_custom(v, "=") {};
-    KeyValueParser_custom(const std::vector<std::string>& v, const std::string& sep): KeyValueParser(v, sep) {};
-    bool checkMapValidity();
-  };
 }
 
 /* vim: set ts=2 sw=2 et */
