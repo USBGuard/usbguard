@@ -22,57 +22,12 @@
 #endif
 
 #include <map>
-#include <pegtl.hh>
+#include "KeyValueParser.hpp"
 #include <ldap.h>
 #include "usbguard/Rule.hpp"
 
 namespace usbguard
 {
-
-  namespace LDAPConfParser
-  {
-
-    struct blanked_s
-      : pegtl::star< pegtl::space > {};
-
-    struct blanked_p
-      : pegtl::plus< pegtl::space > {};
-
-    struct option
-      : pegtl::seq< pegtl::identifier_first, pegtl::star< pegtl::identifier_other >> {};
-
-    struct value
-      : pegtl::plus< pegtl::print > {};
-
-    struct grammar
-      : pegtl::must< blanked_s, option, blanked_p, value, blanked_s, pegtl::eolf > {};
-
-    template< typename Rule >
-    struct action
-      : pegtl::nothing< Rule > {};
-
-    template<>
-    struct action< option > {
-      template < typename Input >
-      static void apply(const Input& in, std::pair<std::string, std::string>& p )
-      {
-        p.first = in.string();
-
-        for (unsigned i = 0; i < p.first.length(); ++i) {
-          p.first[i] = std::toupper(p.first[i], std::locale::classic());
-        }
-      }
-    };
-
-    template<>
-    struct action< value > {
-      template < typename Input >
-      static void apply(const Input& in, std::pair<std::string, std::string>& p )
-      {
-        p.second = in.string();
-      }
-    };
-  }
 
   class DLL_PUBLIC LDAPHandler
   {
@@ -97,13 +52,14 @@ namespace usbguard
 
     std::vector<std::string> ldapToRules(std::shared_ptr<LDAPMessage> message);
 
-    static std::map<std::string, bool> _configValues;
+    static std::vector<std::string> _configValues;
 
   private:
     void parseConf(const std::string path);
     void validateConf();
 
     std::map<std::string, std::string> _parsedOptions;
+    KeyValueParser _parser;
 
     enum class LDAP_KEY_INDEX {
       RuleType = 0,

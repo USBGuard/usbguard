@@ -27,6 +27,7 @@
 #include "usbguard/Logger.hpp"
 
 #include "Common/LDAPUtil.hpp"
+#include "Common/Utility.hpp"
 #include "LDAPHandler.hpp"
 
 #include <ldap.h>
@@ -35,17 +36,18 @@
 namespace usbguard
 {
 
-  std::map<std::string, bool> LDAPHandler::_configValues = {
-    {"URI", false},
-    {"ROOTDN", false},
-    {"BASE", false},
-    {"ROOTPW", false},
-    {"USBGUARDBASE", false},
-    {"RULEQUERY", false}
+  std::vector<std::string> LDAPHandler::_configValues = {
+    "URI",
+    "ROOTDN",
+    "BASE",
+    "ROOTPW",
+    "USBGUARDBASE",
+    "RULEQUERY"
   };
 
   LDAPHandler::LDAPHandler()
-    : _ldap_file("/etc/usbguard/usbguard-ldap.conf")
+    : _parser(LDAPHandler::_configValues, " ", /*case_sensitive*/false),
+      _ldap_file("/etc/usbguard/usbguard-ldap.conf")
   {
     USBGUARD_LOG(Info) << "LDAPHandler Loading...";
     char array[HOST_NAME_MAX];
@@ -64,6 +66,7 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Hostname is: " << _hostname;
     parseConf(_ldap_file);
     validateConf();
+
     LDAP* ptr = nullptr;
 
     if (ldap_initialize(&ptr, _parsedOptions["URI"].c_str()) != LDAP_SUCCESS) {
@@ -196,29 +199,8 @@ namespace usbguard
       throw ErrnoException("LDAP configuration parsing", _ldap_file, errno);
     }
 
-    std::string line;
-    std::pair<std::string, std::string> parsed;
-    unsigned line_number = 0;
-
-    while (std::getline(ldap_file, line)) {
-      line_number++;
-
-      if (line[0] != '#' && line[0] != 0 ) {
-        try {
-          pegtl::parse_string< usbguard::LDAPConfParser::grammar, usbguard::LDAPConfParser::action >
-          ( line, _ldap_file + ":" + std::to_string(line_number), parsed );
-          //pegtl::parse< usbguard::LDAPConfParser::grammar, usbguard::LDAPConfParser::action >( in, parsed ); --> new pegtl
-        }
-        catch (pegtl::parse_error& e) {
-          USBGUARD_LOG(Debug) << "--- Parsing line: " << line_number << "---";
-          USBGUARD_LOG(Debug) << line;
-          USBGUARD_LOG(Debug) << "--- Nothing to do ---" << std::endl;
-          continue;
-        }
-
-        _parsedOptions.insert(parsed);
-      }
-    }
+    _parser.parseStream(ldap_file);
+    _parsedOptions = _parser.getMap();
 
     ldap_file.close();
     USBGUARD_LOG(Debug) << "Map contains:";
@@ -234,39 +216,37 @@ namespace usbguard
   {
     USBGUARD_LOG(Debug) << "Validating LDAP conf";
 
-    for (auto x: _parsedOptions) {
-      if (_configValues.find(x.first) == _configValues.end()) {
-        throw Exception("LDAP conf validation", "validateConf", "Parsed option is not valid: " + x.first);
-      }
-      else {
-        _configValues[x.first] = true;
-      }
-    }
-
+    // required
     std::vector<std::string> v = {"URI", "BASE", "ROOTDN", "ROOTPW"};
 
     for (auto s: v) {
-      if (!_configValues[s]) {
+      if (_parsedOptions[s] == "") {
         USBGUARD_LOG(Debug) << "Option " << s << " is missing!";
         throw Exception("LDAP conf validation", "validateConf", "Too few options");
       }
     }
 
-    if (!_configValues["USBGUARDBASE"]) {
-      _parsedOptions["USBGUARDBASE"] = "ou=USBGuard," + _parsedOptions["BASE"];
-      _configValues["USBGUARDBASE"] = true;
+    if (_parsedOptions["USBGUARDBASE"] == "") {
+       _parsedOptions["USBGUARDBASE"] = "ou=USBGuard," + _parsedOptions["BASE"];
       USBGUARD_LOG(Debug) << "Option " << "USBGUARDBASE" << " is missing!";
+      USBGUARD_LOG(Debug) <<  _parsedOptions["USBGUARDBASE"];
       USBGUARD_LOG(Debug) << "Using defult: " << _parsedOptions["USBGUARDBASE"];
     }
 
-    if (!_configValues["RULEQUERY"]) {
+    if (_parsedOptions["RULEQUERY"] == "") {
       _parsedOptions["RULEQUERY"] = "(&(cn=Rule*)(|(USBGuardHost=" + _hostname + ")(&(USBGuardHost=\\*)(!(USBGuardHost=!" + _hostname
         + ")))))";
-      _configValues["RULEQUERY"] = true;
+
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];
     }
-  }
+
+    USBGUARD_LOG(Debug) << "Map after validation:";
+
+    for (auto x: _parsedOptions) {
+      USBGUARD_LOG(Debug) << "--> " << x.first << "->" << x.second << " <--";
+    }
+ }
 }
 
 /* vim: set ts=2 sw=2 et */
