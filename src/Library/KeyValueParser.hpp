@@ -25,7 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <fstream>
+#include <istream>
 #include <map>
 #include <memory>
 
@@ -44,11 +44,10 @@ namespace usbguard
     KeyValueParser(const std::vector<std::string>& v);
     KeyValueParser(const std::vector<std::string>& v, const std::string& sep);
     std::pair<std::string, std::string> parseLine(std::string& str);
-    bool parseStream(std::fstream& stream);
+    bool parseStream(std::istream& stream);
     std::map<std::string, std::string> getMap();
     void viewConfig();
   };
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
-

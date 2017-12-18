@@ -72,7 +72,7 @@ namespace usbguard
     }
   }
 
-  bool KeyValueParser::parseStream(std::fstream& stream)
+  bool KeyValueParser::parseStream(std::istream& stream)
   {
     std::map<std::string, std::string> m;
     std::map<std::string, std::string>::iterator it;
