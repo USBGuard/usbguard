@@ -15,7 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
-// Authors: Marek Tamaskovic <mtamasko@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -28,23 +29,27 @@
 #include <istream>
 #include <map>
 #include <memory>
+#include <locale>
 
 namespace usbguard
 {
 
   class KeyValueParser
   {
-    std::vector<std::string> keys;
-    std::string separator {""};
-    std::map<std::string, std::string> output_map;
+    std::vector<std::string> _keys;
+    std::string _separator {""};
+    std::map<std::string, std::string> _output_map;
+
+    std::locale _loc;
+    bool _case_sensitive;
+
     bool checkKeyValidity(const std::string& key);
-    virtual bool checkMapValidity();
 
   public:
-    KeyValueParser(const std::vector<std::string>& v);
-    KeyValueParser(const std::vector<std::string>& v, const std::string& sep);
+    KeyValueParser(const std::vector<std::string>& v, bool case_sensitive = true);
+    KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive = true);
     std::pair<std::string, std::string> parseLine(std::string& str);
-    bool parseStream(std::istream& stream);
+    void parseStream(std::istream& stream);
     std::map<std::string, std::string> getMap();
     void viewConfig();
   };
