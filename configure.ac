@@ -1,7 +1,7 @@
 AC_PREREQ([2.69])
 AC_INIT([usbguard],
         m4_esyscmd_s([cat VERSION]),
-        [dkopecek@redhat.com])
+        [usbguard@usbguard.org])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/build-config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
