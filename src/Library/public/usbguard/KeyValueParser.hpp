@@ -36,8 +36,8 @@ namespace usbguard
   class DLL_PUBLIC KeyValueParser
   {
   public:
-    KeyValueParser(const std::vector<std::string>& v, bool case_sensitive = true);
-    KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive = true);
+    KeyValueParser(const std::vector<std::string>& v, bool case_sensitive, bool validate_keys);
+    KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive, bool validate_keys);
 
     ~KeyValueParser();
 

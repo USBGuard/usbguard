@@ -335,15 +335,13 @@ usbguard_daemon_CPPFLAGS=\
 	$(AM_CPPFLAGS) \
 	@seccomp_CFLAGS@ \
 	@libcapng_CFLAGS@ \
-	@audit_CFLAGS@ \
-	@pegtl_CFLAGS@
+	@audit_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	@seccomp_LIBS@ \
 	@libcapng_LIBS@ \
-	@audit_LIBS@ \
-	@pegtl_LIBS@
+	@audit_LIBS@
 
 EXTRA_DIST +=\
 	README.adoc \

@@ -29,44 +29,10 @@
 
 #include "../LDAPHandler.hpp"
 
-#include <pegtl.hh>
+#include "usbguard/KeyValueParser.hpp"
 
 namespace usbguard
 {
-
-  namespace NSSwitchParser
-  {
-
-    struct blanked
-      : pegtl::star< pegtl::blank > {};
-
-    struct prop_name
-      : pegtl::istring< 'u', 's', 'b', 'g', 'u', 'a', 'r', 'd' > {};
-
-    struct value
-      : pegtl::plus< pegtl::alpha > {};
-
-    struct grammar
-      : pegtl::must< blanked, prop_name, blanked, pegtl::one< ':' >, blanked, value, blanked, pegtl::eof > {};
-
-    template< typename Rule >
-    struct action
-      : pegtl::nothing< Rule > {};
-
-    template<>
-    struct action< value > {
-      template < typename Input >
-      static void apply(const Input& in, std::string& str )
-      {
-        str = in.string();
-
-        for (unsigned i = 0; i < str.length(); ++i) {
-          str[i] = std::tolower(str[i], std::locale::classic());
-        }
-      }
-    };
-  }
-
   class Interface;
   class DLL_PUBLIC NSHandler
   {
@@ -75,7 +41,7 @@ namespace usbguard
     enum class SourceType {
       LOCAL,
       LDAP,
-      SSSD
+      //      SSSD
     };
 
     NSHandler();
@@ -86,7 +52,6 @@ namespace usbguard
     void parseNSSwitch();
 
     void setNSSwitchPath(const std::string& path);
-    void setPropertyName(const std::string& name);
 
     std::string getSourceInfo();
 
@@ -94,12 +59,12 @@ namespace usbguard
     std::shared_ptr<RuleSet> generateMEMRuleSet(Interface* const interface_ptr);
     std::shared_ptr<RuleSet> generateLOCAL(Interface* const interface_ptr);
     std::shared_ptr<RuleSet> generateLDAP(Interface* const interface_ptr);
-    std::shared_ptr<RuleSet> generateSSSD(Interface* const interface_ptr);
+    // std::shared_ptr<RuleSet> generateSSSD(Interface* const interface_ptr);
 
-    std::string _prop_name;
+    KeyValueParser _parser;
+    std::map<std::string, std::string> _parsedOptions;
+
     std::string _nsswitch_path;
-    unsigned _num_possible_values;
-    std::vector<std::string> _possible_values;
 
     SourceType _source;
 

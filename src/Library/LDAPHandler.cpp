@@ -47,7 +47,7 @@ namespace usbguard
   };
 
   LDAPHandler::LDAPHandler()
-    : _parser(LDAPHandler::_configValues, " ", /*case_sensitive*/false),
+    : _parser(LDAPHandler::_configValues, " ", /*case_sensitive?*/false, /*validate_keys?*/true),
       _ldap_file("/etc/usbguard/usbguard-ldap.conf")
   {
     USBGUARD_LOG(Info) << "LDAPHandler Loading...";
@@ -241,7 +241,7 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Map after validation:";
 
     for (auto x: _parsedOptions) {
-      USBGUARD_LOG(Debug) << "--> " << x.first << "->" << x.second << " <--";
+      USBGUARD_LOG(Debug) << "--> " << x.first << " -> " << x.second << " <--";
     }
   }
 }

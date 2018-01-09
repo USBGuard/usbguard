@@ -46,13 +46,14 @@ namespace usbguard
 
     std::locale _loc;
     bool _case_sensitive;
+    bool _validate_keys;
 
     bool checkKeyValidity(const std::string& key);
 
   public:
-    KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive = true);
+    KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive, bool validate_keys);
     KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, const std::string& sep,
-      bool case_sensitive = true);
+      bool case_sensitive, bool validate_keys);
     std::pair<std::string, std::string> parseLine(std::string& str);
     void parseStream(std::istream& stream);
     std::map<std::string, std::string> getMap();

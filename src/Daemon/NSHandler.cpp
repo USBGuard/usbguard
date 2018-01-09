@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <cctype>
+#include <locale>
 
 #include "NSHandler.hpp"
 
@@ -34,21 +35,20 @@
 
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
+#include "usbguard/KeyValueParser.hpp"
 
 namespace usbguard
 {
 
   NSHandler::NSHandler()
-    : _prop_name("usbguard"),
-      _nsswitch_path("/etc/nsswitch.conf"),
-      _possible_values(
-  {"files", "ldap", "sss"
-  }),
+    : _parser( {"usbguard"}, ":", /*case_sensitive?*/false, /*validate_keys?*/false),
+  _nsswitch_path("/etc/nsswitch.conf"),
   _rulesPath(""),
   _ldap(nullptr)
   {
-    _num_possible_values = _possible_values.size();
+    USBGUARD_LOG(Info) << "NSHandler Loading...";
     _source = SourceType::LOCAL;
+    _parser.viewConfig();
     USBGUARD_LOG(Info) << "NSHandler Loaded";
   }
 
@@ -59,11 +59,6 @@ namespace usbguard
   void NSHandler::setNSSwitchPath(const std::string& path)
   {
     _nsswitch_path = path;
-  }
-
-  void NSHandler::setPropertyName(const std::string& name)
-  {
-    _prop_name = name;
   }
 
   std::string NSHandler::getSourceInfo()
@@ -85,9 +80,9 @@ namespace usbguard
       ret = "SourceLDAP";
       break;
 
-    case NSHandler::SourceType::SSSD:
-      ret = "SourceSSSD";
-      break;
+    // case NSHandler::SourceType::SSSD:
+    //   ret = "SourceSSSD";
+    //   break;
 
     default:
       ret = "SourceUnknown";
@@ -116,11 +111,11 @@ namespace usbguard
     return std::dynamic_pointer_cast<RuleSet>(rule_set);
   }
 
-  std::shared_ptr<RuleSet> NSHandler::generateSSSD(Interface* const interface_ptr)
-  {
-    auto rule_set = std::make_shared<RuleSet>(interface_ptr);
-    return rule_set;
-  }
+  // std::shared_ptr<RuleSet> NSHandler::generateSSSD(Interface* const interface_ptr)
+  // {
+  //   auto rule_set = std::make_shared<RuleSet>(interface_ptr);
+  //   return rule_set;
+  // }
 
   std::shared_ptr<RuleSet> NSHandler::getRuleSet(Interface* const interface_ptr)
   {
@@ -140,9 +135,9 @@ namespace usbguard
       return generateLDAP(interface_ptr);
       break;
 
-    case SourceType::SSSD:
-      return generateSSSD(interface_ptr);
-      break;
+    // case SourceType::SSSD:
+    //   return generateSSSD(interface_ptr);
+    //   break;
 
     default:
       return generateMEMRuleSet(interface_ptr);
@@ -166,60 +161,33 @@ namespace usbguard
       throw ErrnoException("NSSwitch parsing", _nsswitch_path, errno);
     }
 
-    std::string line;
-    std::string parsed = "";
-    unsigned line_number = 0;
-
-    while (std::getline(nss, line)) {
-      line_number++;
-
-      if (line[0] != '#') {
-        //pegtl::string_input<> in( line, _nsswitch_path + ":" + std::to_string(line_number) ); --> new pegtl
-        try {
-          pegtl::parse_string< usbguard::NSSwitchParser::grammar, usbguard::NSSwitchParser::action >
-          ( line, _nsswitch_path + ":" + std::to_string(line_number), parsed );
-          //pegtl::parse< usbguard::NSSwitchParser::grammar, usbguard::NSSwitchParser::action >( in, parsed ); --> new pegtl
-        }
-        catch (pegtl::parse_error& e) {
-          USBGUARD_LOG(Debug) << "--- Parsing line: " << line_number << "---";
-          USBGUARD_LOG(Debug) << line;
-          USBGUARD_LOG(Debug) << "--- Nothing to do ---";
-          continue;
-        }
-      }
-
-      if (parsed != "") {
-        break;
-      }
-    }
-
-    if (parsed == "") {
-      USBGUARD_LOG(Info) << "There is no \"" << _prop_name << "\"" << " in \"" << _nsswitch_path << "\"";
-      USBGUARD_LOG(Info) << "Using default local source of rules!";
-    }
-    else {
-      USBGUARD_LOG(Info) << "NSSwitch has been parsed. Parsed value is " + parsed;
-    }
-
-    bool found = false;
-
-    for (unsigned i = 0 ; i < _num_possible_values; i++) {
-      if (_possible_values[i] == parsed) {
-        _source = static_cast<SourceType>(i);
-        found = true;
-        break;
-      }
-    }
-
-    if (found) {
-      USBGUARD_LOG(Info) << "Parsed value -->" << parsed << "<-- is valid.";
-    }
-    else {
-      USBGUARD_LOG(Info) << "Parsed value -->" << parsed << "<-- is not valid!";
-      USBGUARD_LOG(Info) << "Using default local source of rules!";
-    }
-
+    _parser.parseStream(nss);
+    _parsedOptions = _parser.getMap();
     nss.close();
+    USBGUARD_LOG(Debug) << "Map contains:";
+
+    for (auto x: _parsedOptions) {
+      USBGUARD_LOG(Debug) << "--> " << x.first << " -> " << x.second << " <--";
+    }
+
+    std::locale loc;
+
+    for (unsigned i = 0 ; i < _parsedOptions["USBGUARD"].length() ; i++) {
+      _parsedOptions["USBGUARD"][i] = std::toupper(_parsedOptions["USBGUARD"][i], loc);
+    }
+
+    USBGUARD_LOG(Info) << "Fetched value is -> " << _parsedOptions["USBGUARD"] << " <-";
+
+    if (_parsedOptions["USBGUARD"] == "FILES") {
+      _source = SourceType::LOCAL;
+    }
+    else if (_parsedOptions["USBGUARD"] == "LDAP") {
+      _source = SourceType::LDAP;
+    }
+    else {
+      USBGUARD_LOG(Info) << "Value is not valid or not set, using default FILES";
+      _source = SourceType::LOCAL;
+    }
   }
 } /* namespace usbguard */
 

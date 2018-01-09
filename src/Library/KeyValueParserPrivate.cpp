@@ -39,26 +39,24 @@ namespace usbguard
   * vector v should have strings UPPERCASE when case insensitive mode was enabled
   */
   KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
-    const std::string& sep, bool case_sensitive):
-    _keys(v), _separator(sep), _p_instance(p_instance), _case_sensitive(case_sensitive)
+    const std::string& sep, bool case_sensitive, bool validate_keys):
+    _keys(v), _separator(sep), _p_instance(p_instance), _case_sensitive(case_sensitive), _validate_keys(validate_keys)
   {
     (void)_p_instance;
   }
 
   KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
-    bool case_sensitive):
-    KeyValueParserPrivate(p_instance, v, "=", case_sensitive) {}
+    bool case_sensitive, bool validate_keys):
+    KeyValueParserPrivate(p_instance, v, "=", case_sensitive, validate_keys) {}
 
   void KeyValueParserPrivate::viewConfig()
   {
-    std::cout << "separator:\t" << this->_separator << std::endl;
-    std::cout << "keys:\t";
+    USBGUARD_LOG(Info) << "separator -> " << this->_separator;
+    USBGUARD_LOG(Info) << "keys:";
 
     for (auto item : this->_keys) {
-      std::cout << item << ", ";
+      USBGUARD_LOG(Info) << "--->"<< item;
     }
-
-    std::cout << "\b\b " << std::endl;
   }
 
   std::pair<std::string, std::string> KeyValueParserPrivate::parseLine(std::string& str)
@@ -82,7 +80,7 @@ namespace usbguard
         }
       }
 
-      if (this->checkKeyValidity(key)) {
+      if (_validate_keys && this->checkKeyValidity(key)) {
         USBGUARD_LOG(Error) << "Error: parsed key is not in key set: '" << key << "'";
         throw Exception("KeyValueParser", "Parser", "Invalid key");
       }
