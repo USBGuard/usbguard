@@ -25,6 +25,7 @@
 
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
+#include "usbguard/KeyValueParser.hpp"
 
 #include "Common/LDAPUtil.hpp"
 #include "Common/Utility.hpp"
@@ -66,7 +67,6 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Hostname is: " << _hostname;
     parseConf(_ldap_file);
     validateConf();
-
     LDAP* ptr = nullptr;
 
     if (ldap_initialize(&ptr, _parsedOptions["URI"].c_str()) != LDAP_SUCCESS) {
@@ -201,7 +201,6 @@ namespace usbguard
 
     _parser.parseStream(ldap_file);
     _parsedOptions = _parser.getMap();
-
     ldap_file.close();
     USBGUARD_LOG(Debug) << "Map contains:";
 
@@ -215,7 +214,6 @@ namespace usbguard
   void LDAPHandler::validateConf()
   {
     USBGUARD_LOG(Debug) << "Validating LDAP conf";
-
     // required
     std::vector<std::string> v = {"URI", "BASE", "ROOTDN", "ROOTPW"};
 
@@ -227,7 +225,7 @@ namespace usbguard
     }
 
     if (_parsedOptions["USBGUARDBASE"] == "") {
-       _parsedOptions["USBGUARDBASE"] = "ou=USBGuard," + _parsedOptions["BASE"];
+      _parsedOptions["USBGUARDBASE"] = "ou=USBGuard," + _parsedOptions["BASE"];
       USBGUARD_LOG(Debug) << "Option " << "USBGUARDBASE" << " is missing!";
       USBGUARD_LOG(Debug) <<  _parsedOptions["USBGUARDBASE"];
       USBGUARD_LOG(Debug) << "Using defult: " << _parsedOptions["USBGUARDBASE"];
@@ -236,7 +234,6 @@ namespace usbguard
     if (_parsedOptions["RULEQUERY"] == "") {
       _parsedOptions["RULEQUERY"] = "(&(cn=Rule*)(|(USBGuardHost=" + _hostname + ")(&(USBGuardHost=\\*)(!(USBGuardHost=!" + _hostname
         + ")))))";
-
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];
     }
@@ -246,7 +243,7 @@ namespace usbguard
     for (auto x: _parsedOptions) {
       USBGUARD_LOG(Debug) << "--> " << x.first << "->" << x.second << " <--";
     }
- }
+  }
 }
 
 /* vim: set ts=2 sw=2 et */

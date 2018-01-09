@@ -227,8 +227,8 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCServerPrivate.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/Init.cpp \
-	src/Library/KeyValueParser.cpp \
-	src/Library/KeyValueParser.hpp \
+	src/Library/KeyValueParserPrivate.cpp \
+	src/Library/KeyValueParserPrivate.hpp \
 	src/Library/LDAPHandler.cpp \
 	src/Library/LDAPHandler.hpp \
 	src/Library/LDAPRuleSet.cpp \
@@ -269,6 +269,8 @@ libusbguard_la_SOURCES=\
 	src/Library/public/usbguard/DeviceManagerHooks.cpp \
 	src/Library/public/usbguard/IPCClient.cpp \
 	src/Library/public/usbguard/IPCServer.cpp \
+  src/Library/public/usbguard/KeyValueParser.cpp \
+	src/Library/public/usbguard/KeyValueParser.hpp \
 	src/Library/public/usbguard/Logger.cpp \
 	src/Library/public/usbguard/Rule.cpp \
 	src/Library/public/usbguard/RuleCondition.cpp \
@@ -288,6 +290,7 @@ pkginclude_HEADERS=\
 	src/Library/public/usbguard/IPCClient.hpp \
 	src/Library/public/usbguard/IPCServer.hpp \
 	src/Library/public/usbguard/Interface.hpp \
+  src/Library/public/usbguard/KeyValueParser.hpp \
 	src/Library/public/usbguard/Logger.hpp \
 	src/Library/public/usbguard/Predicates.hpp \
 	src/Library/public/usbguard/Rule.hpp \

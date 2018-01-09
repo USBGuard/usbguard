@@ -31,14 +31,18 @@
 #include <memory>
 #include <locale>
 
+#include "usbguard/KeyValueParser.hpp"
+
 namespace usbguard
 {
 
-  class KeyValueParser
+  class KeyValueParserPrivate
   {
     std::vector<std::string> _keys;
     std::string _separator {""};
     std::map<std::string, std::string> _output_map;
+
+    KeyValueParser& _p_instance;
 
     std::locale _loc;
     bool _case_sensitive;
@@ -46,8 +50,9 @@ namespace usbguard
     bool checkKeyValidity(const std::string& key);
 
   public:
-    KeyValueParser(const std::vector<std::string>& v, bool case_sensitive = true);
-    KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive = true);
+    KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive = true);
+    KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, const std::string& sep,
+      bool case_sensitive = true);
     std::pair<std::string, std::string> parseLine(std::string& str);
     void parseStream(std::istream& stream);
     std::map<std::string, std::string> getMap();

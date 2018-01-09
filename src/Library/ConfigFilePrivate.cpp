@@ -21,7 +21,7 @@
 #endif
 
 #include "ConfigFilePrivate.hpp"
-#include "KeyValueParser.hpp"
+#include "usbguard/KeyValueParser.hpp"
 
 #include "Common/Utility.hpp"
 

@@ -22,7 +22,7 @@
 #endif
 
 #include <map>
-#include "KeyValueParser.hpp"
+#include "usbguard/KeyValueParser.hpp"
 #include <ldap.h>
 #include "usbguard/Rule.hpp"
 
