@@ -35,6 +35,7 @@ namespace usbguard
     enum class LDAP_KEY_INDEX {
       RuleType = 0,
       USBGuardHost,
+      USBGuardOrder,
       DeviceID,
       DeviceSerial,
       DeviceName,

@@ -4,6 +4,7 @@ objectClass: top
 cn: Rule1
 RuleType: allow
 USBGuardHost: Axis
+USBGuardOrder: 0
 DeviceID: 1038:1702
 DeviceSerial: ""
 DeviceName: "SteelSeries Rival 100 Gaming Mouse"
@@ -19,6 +20,7 @@ cn: Rule2
 RuleType: allow
 USBGuardHost: *
 USBGuardHost: !Axis
+USBGuardOrder: 1
 DeviceID: 1038:1702
 DeviceSerial: ""
 DeviceName: "Keyboard..."
@@ -32,6 +34,7 @@ objectClass: top
 cn: Rule3
 RuleType: allow
 USBGuardHost: *
+USBGuardOrder: 2
 DeviceID: 1038:1702
 DeviceSerial: ""
 DeviceName: "Flash"
@@ -44,3 +47,4 @@ objectClass: top
 cn: Rule4
 RuleType: allow
 USBGuardHost: *
+USBGuardOrder: 3

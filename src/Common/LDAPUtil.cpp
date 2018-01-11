@@ -29,6 +29,7 @@ namespace usbguard
   std::vector<std::string> LDAPUtil::_ldap_keys = {
     "RuleType",
     "USBGuardHost",
+    "USBGuardOrder",
     "DeviceID",
     "DeviceSerial",
     "DeviceName",
@@ -40,8 +41,9 @@ namespace usbguard
   };
 
   std::vector<std::string> LDAPUtil::_rule_keys = {
-    "RuleType",
-    "USBGuardHost",
+    "RuleType", /* just for indexing */
+    "USBGuardHost", /* just for indexing */
+    "USBGuardOrder", /* just for indexing */
     "id",
     "serial",
     "name",

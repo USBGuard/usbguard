@@ -153,23 +153,26 @@ namespace usbguard
 
           std::string value((*entry)[0].bv_val);
 
-          switch (static_cast<LDAPHandler::LDAP_KEY_INDEX>(i)) {
-          case LDAPHandler::LDAP_KEY_INDEX::RuleType:
+          switch (static_cast<LDAPUtil::LDAP_KEY_INDEX>(i)) {
+          case LDAPUtil::LDAP_KEY_INDEX::RuleType:
             rule += value;
             break;
 
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceID:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceSerial:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceName:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceHash:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceParentHash:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceViaPort:
-          case LDAPHandler::LDAP_KEY_INDEX::DeviceWithInterface:
-          case LDAPHandler::LDAP_KEY_INDEX::RuleCondition:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceID:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceSerial:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceName:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceHash:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceParentHash:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceViaPort:
+          case LDAPUtil::LDAP_KEY_INDEX::DeviceWithInterface:
+          case LDAPUtil::LDAP_KEY_INDEX::RuleCondition:
             rule += " " + LDAPUtil::_rule_keys[i] + " " + value;
             break;
 
-          case LDAPHandler::LDAP_KEY_INDEX::USBGuardHost:
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardHost:
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardOrder:
+            break;
+
           default:
             /* code */
             break;
@@ -232,8 +235,15 @@ namespace usbguard
     }
 
     if (_parsedOptions["RULEQUERY"] == "") {
-      _parsedOptions["RULEQUERY"] = "(&(cn=Rule*)(|(USBGuardHost=" + _hostname + ")(&(USBGuardHost=\\*)(!(USBGuardHost=!" + _hostname
-        + ")))))";
+      _parsedOptions["RULEQUERY"] = "(&" "(cn=Rule*)"  /*TODO add option for setting cn prefix*/
+        /*                              */"(|" "(&" "(USBGuardHost=" + _hostname + ")"
+        /*                                        */"(!" "(USBGuardHost=!" + _hostname + "))"
+        /*                                   */")"
+        /*                                   */"(&" "(USBGuardHost=\\*)"
+        /*                                        */"(!" "(USBGuardHost=!" + _hostname + "))"
+        /*                                   */")"
+        /*                              */")"
+        /*                        */")";
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];
     }

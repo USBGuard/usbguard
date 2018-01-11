@@ -61,19 +61,6 @@ namespace usbguard
     std::map<std::string, std::string> _parsedOptions;
     KeyValueParser _parser;
 
-    enum class LDAP_KEY_INDEX {
-      RuleType = 0,
-      USBGuardHost,
-      DeviceID,
-      DeviceSerial,
-      DeviceName,
-      DeviceHash,
-      DeviceParentHash,
-      DeviceViaPort,
-      DeviceWithInterface,
-      RuleCondition
-    };
-
     std::unique_ptr<LDAP, LDAPDeleter> _ldap_ptr;
     std::string _ldap_file;
     std::string _hostname;
