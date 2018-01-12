@@ -127,9 +127,9 @@ namespace usbguard
     return ptr;
   }
 
-  std::vector<std::string> LDAPHandler::ldapToRules(std::shared_ptr<LDAPMessage> message)
+  std::vector<std::pair<long, std::string>> LDAPHandler::ldapToRules(std::shared_ptr<LDAPMessage> message)
   {
-    std::vector<std::string> rules;
+    std::vector<std::pair<long, std::string>> rules;
     USBGUARD_LOG(Info);
     USBGUARD_LOG(Info) << "Complete LDAP Data:";
     USBGUARD_LOG(Info);
@@ -138,7 +138,7 @@ namespace usbguard
 
     for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), message.get() ); e != nullptr;
       e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
-      std::string rule;
+      std::pair<long, std::string> rule;
 
       if ( (dn = ldap_get_dn( _ldap_ptr.get(), e)) != nullptr ) {
         USBGUARD_LOG(Info) << "dn: " << dn;
@@ -152,10 +152,11 @@ namespace usbguard
           }
 
           std::string value((*entry)[0].bv_val);
+          size_t index = 0;
 
           switch (static_cast<LDAPUtil::LDAP_KEY_INDEX>(i)) {
           case LDAPUtil::LDAP_KEY_INDEX::RuleType:
-            rule += value;
+            rule.second += value;
             break;
 
           case LDAPUtil::LDAP_KEY_INDEX::DeviceID:
@@ -166,11 +167,19 @@ namespace usbguard
           case LDAPUtil::LDAP_KEY_INDEX::DeviceViaPort:
           case LDAPUtil::LDAP_KEY_INDEX::DeviceWithInterface:
           case LDAPUtil::LDAP_KEY_INDEX::RuleCondition:
-            rule += " " + LDAPUtil::_rule_keys[i] + " " + value;
+            rule.second += " " + LDAPUtil::_rule_keys[i] + " " + value;
+            break;
+
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardOrder:
+            rule.first = std::stol(value, &index);
+
+            if (value[index] != 0) {
+              throw Exception("ldapToRules", "stol", "cannot convert USBGuardOrder to number: " + value);
+            }
+
             break;
 
           case LDAPUtil::LDAP_KEY_INDEX::USBGuardHost:
-          case LDAPUtil::LDAP_KEY_INDEX::USBGuardOrder:
             break;
 
           default:
@@ -184,9 +193,6 @@ namespace usbguard
       }
 
       rules.push_back(rule);
-      USBGUARD_LOG(Info);
-      USBGUARD_LOG(Info) << rule;
-      USBGUARD_LOG(Info);
     }
 
     return rules;

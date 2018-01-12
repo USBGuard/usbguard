@@ -34,7 +34,7 @@ objectClass: top
 cn: Rule3
 RuleType: allow
 USBGuardHost: *
-USBGuardOrder: 2
+USBGuardOrder: 6
 DeviceID: 1038:1702
 DeviceSerial: ""
 DeviceName: "Flash"
@@ -47,4 +47,4 @@ objectClass: top
 cn: Rule4
 RuleType: allow
 USBGuardHost: *
-USBGuardOrder: 3
+USBGuardOrder: 2

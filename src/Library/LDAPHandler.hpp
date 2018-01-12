@@ -50,7 +50,7 @@ namespace usbguard
     std::shared_ptr<LDAPMessage> query(const std::string filter);
     std::string getRuleQuery();
 
-    std::vector<std::string> ldapToRules(std::shared_ptr<LDAPMessage> message);
+    std::vector<std::pair<long, std::string>> ldapToRules(std::shared_ptr<LDAPMessage> message);
 
     static std::vector<std::string> _configValues;
 

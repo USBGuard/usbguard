@@ -20,6 +20,8 @@
   #include <build-config.h>
 #endif
 
+#include <algorithm>
+
 #include "LDAPRuleSet.hpp"
 #include "LDAPHandler.hpp"
 
@@ -56,13 +58,16 @@ namespace usbguard
   void LDAPRuleSet::load()
   {
     std::shared_ptr<LDAPMessage> message = LDAP->query(LDAP->getRuleQuery());
-    std::vector<std::string> v = LDAP->ldapToRules(message);
+    std::vector<std::pair<long, std::string>> v = LDAP->ldapToRules(message);
+    std::sort(v.begin(), v.end(), [](std::pair<long, std::string> a, std::pair<long, std::string> b) {
+      return a.first < b.first;
+    });
     size_t rule_number = 1;
 
-    for (std::string _rule: v) {
-      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number;
-      USBGUARD_LOG(Info) << _rule;
-      auto rule = parseRuleFromString(_rule, "", rule_number);
+    for (auto _rule: v) {
+      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "USBGuardOrder: "<< _rule.first;
+      USBGUARD_LOG(Info) << _rule.second;
+      auto rule = parseRuleFromString(_rule.second, "", rule_number);
       appendRule(rule);
       rule_number++;
       USBGUARD_LOG(Info);
