@@ -21,8 +21,9 @@
 #endif
 
 #include "LDAPUtil.hpp"
+
 #include "usbguard/Rule.hpp"
-#include "../RuleSet.hpp"
+#include "usbguard/RuleSet.hpp"
 
 namespace usbguard
 {

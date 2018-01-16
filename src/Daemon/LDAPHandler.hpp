@@ -22,14 +22,15 @@
 #endif
 
 #include <map>
-#include "usbguard/KeyValueParser.hpp"
 #include <ldap.h>
+
+#include "usbguard/KeyValueParser.hpp"
 #include "usbguard/Rule.hpp"
 
 namespace usbguard
 {
 
-  class DLL_PUBLIC LDAPHandler
+  class LDAPHandler
   {
   public:
     struct LDAPDeleter {

@@ -18,7 +18,7 @@
 //
 #pragma once
 
-#include "../Policy.hpp"
+#include "Policy.hpp"
 
 #include "Device.hpp"
 #include "DeviceManager.hpp"

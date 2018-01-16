@@ -20,10 +20,10 @@
   #include <build-config.h>
 #endif
 
-#include "RulePrivate.hpp"
 #include "FileRuleSet.hpp"
 
 #include "usbguard/Typedefs.hpp"
+#include "usbguard/Rule.hpp"
 #include "usbguard/RuleParser.hpp"
 #include "usbguard/Exception.hpp"
 

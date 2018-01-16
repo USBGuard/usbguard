@@ -24,8 +24,8 @@
 #include <vector>
 #include <map>
 
-#include <usbguard/Rule.hpp>
-#include "../RuleSet.hpp"
+#include "usbguard/Rule.hpp"
+#include "usbguard/RuleSet.hpp"
 
 namespace usbguard
 {

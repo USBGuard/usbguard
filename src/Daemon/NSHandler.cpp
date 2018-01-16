@@ -29,13 +29,13 @@
 
 #include "NSHandler.hpp"
 
-#include "../RuleSet.hpp"
-#include "../FileRuleSet.hpp"
-#include "../LDAPRuleSet.hpp"
+#include "FileRuleSet.hpp"
+#include "LDAPRuleSet.hpp"
 
 #include "usbguard/Exception.hpp"
-#include "usbguard/Logger.hpp"
 #include "usbguard/KeyValueParser.hpp"
+#include "usbguard/Logger.hpp"
+#include "usbguard/RuleSet.hpp"
 
 namespace usbguard
 {

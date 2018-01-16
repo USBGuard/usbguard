@@ -24,12 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "usbguard/Typedefs.hpp"
-#include "../RuleSet.hpp"
-
-#include "../LDAPHandler.hpp"
-
 #include "usbguard/KeyValueParser.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/Typedefs.hpp"
+
+#include "LDAPHandler.hpp"
 
 namespace usbguard
 {

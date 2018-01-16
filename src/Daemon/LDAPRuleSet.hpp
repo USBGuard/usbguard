@@ -23,7 +23,7 @@
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/Rule.hpp"
-#include "RuleSet.hpp"
+#include "usbguard/RuleSet.hpp"
 
 #include "LDAPHandler.hpp"
 

@@ -23,7 +23,7 @@
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/Rule.hpp"
-#include "RuleSet.hpp"
+#include "usbguard/RuleSet.hpp"
 
 #include <istream>
 #include <ostream>
@@ -32,7 +32,7 @@
 namespace usbguard
 {
   class Interface;
-  class DLL_PUBLIC FileRuleSet : public RuleSetAbstract
+  class FileRuleSet : public RuleSetAbstract
   {
   public:
     FileRuleSet(Interface* const interface_ptr, std::string const path);

@@ -23,9 +23,9 @@
 
 #include "IPCClientPrivate.hpp"
 #include "IPCPrivate.hpp"
-#include "RuleSet.hpp"
 
 #include "usbguard/Logger.hpp"
+#include "usbguard/RuleSet.hpp"
 
 #include <stdint.h>
 #include <unistd.h>

@@ -26,8 +26,8 @@
 #include "Common/Thread.hpp"
 
 #include "NSHandler.hpp"
-#include "../RuleSet.hpp"
-#include "../Policy.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/Policy.hpp"
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/ConfigFile.hpp"
