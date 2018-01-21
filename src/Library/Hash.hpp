@@ -51,11 +51,13 @@ namespace usbguard
     size_t update(std::istream& stream);
     std::string getBase64();
   private:
+    void release();
+
 #if defined(USBGUARD_USE_LIBSODIUM)
     crypto_hash_sha256_state _state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-    gcry_md_hd_t _state;
+    gcry_md_hd_t _state {nullptr};
 #endif
   };
 } /* namespace usbguard */

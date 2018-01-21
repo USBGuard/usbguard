@@ -104,10 +104,16 @@ namespace usbguard
     }
 
     /*
-     * Process USB descriptor data
+     * Process USB descriptor data.
+     *
+     * FDInputStream (stdio_filebuf) is responsible for closing the file
+     * descriptor returned by sysfs_device.openAttribute().
+     *
      */
     FDInputStream descriptor_stream(sysfs_device.openAttribute("descriptors"));
-    /* Find out the descriptor data stream size */
+    /*
+     * Find out the descriptor data stream size
+     */
     size_t descriptor_expected_size = 0;
 
     if (!descriptor_stream.good()) {

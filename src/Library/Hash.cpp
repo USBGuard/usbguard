@@ -45,6 +45,7 @@ namespace usbguard
 
   Hash::Hash(const Hash& rhs)
   {
+    release();
 #if defined(USBGUARD_USE_LIBSODIUM)
     _state = rhs._state;
 #endif
@@ -55,6 +56,7 @@ namespace usbguard
 
   Hash::Hash(Hash&& rhs)
   {
+    release();
 #if defined(USBGUARD_USE_LIBSODIUM)
     _state = rhs._state;
     memset(&rhs._state, 0, sizeof _state);
@@ -67,6 +69,7 @@ namespace usbguard
 
   Hash& Hash::operator=(Hash&& rhs)
   {
+    release();
 #if defined(USBGUARD_USE_LIBSODIUM)
     _state = rhs._state;
     memset(&rhs._state, 0, sizeof _state);
@@ -80,10 +83,15 @@ namespace usbguard
 
   Hash::~Hash()
   {
+    release();
+  }
+
+  void Hash::release()
+  {
 #if defined(USBGUARD_USE_LIBSODIUM)
     memset(&_state, 0, sizeof _state);
 #endif
-#if defined(USBGUARD_USE_LIBGRCRYPT)
+#if defined(USBGUARD_USE_LIBGCRYPT)
 
     if (_state != nullptr) {
       gcry_md_close(_state);

@@ -97,7 +97,17 @@ namespace usbguard
   void AuditEvent::commit(const std::string& result)
   {
     setKey("result", result);
-    _backend->commit(*this);
+
+    /* Skip backend commit if there's no backend set */
+    if (_backend != nullptr) {
+      _backend->commit(*this);
+    }
+
+    /*
+     * Mark as commited even if it wasn't actually commited
+     * because of no valid backend. Otherwise the destructor
+     * would try to commit it again as failed.
+     */
     setCommited(true);
   }
 

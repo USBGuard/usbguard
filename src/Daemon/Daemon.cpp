@@ -334,6 +334,10 @@ namespace usbguard
         std::unique_ptr<AuditBackend> backend(new LinuxAuditBackend());
         _audit.setBackend(std::move(backend));
       }
+      else {
+        USBGUARD_LOG(Info) << "Audit logging disabled. Set AuditBackend and/or AuditFilePath to enable.";
+        _audit.setBackend(nullptr);
+      }
     }
 
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";

@@ -149,7 +149,7 @@ namespace usbguard
   std::string SysFSDevice::readAttribute(const std::string& name, bool strip_last_null, bool optional) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;
-    const int fd = openat(_sysfs_dirfd, name.c_str(), O_RDONLY);
+    const ScopedFD fd(openat(_sysfs_dirfd, name.c_str(), O_RDONLY));
 
     if (fd < 0) {
       if (optional && errno == ENOENT) {
@@ -160,53 +160,40 @@ namespace usbguard
       }
     }
 
-    try {
-      std::string buffer(4096, 0);
-      ssize_t rc = -1;
-      USBGUARD_SYSCALL_THROW("SysFSDevice",
-        (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
+    std::string buffer(4096, 0);
+    ssize_t rc = -1;
+    USBGUARD_SYSCALL_THROW("SysFSDevice",
+      (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
 
-      if (strip_last_null) {
-        if (rc > 0) {
-          buffer.resize(static_cast<size_t>(rc) - 1);
-        }
-        else {
-          return std::string();
-        }
+    if (strip_last_null) {
+      if (rc > 0) {
+        buffer.resize(static_cast<size_t>(rc) - 1);
       }
       else {
-        buffer.resize(static_cast<size_t>(rc));
+        return std::string();
       }
+    }
+    else {
+      buffer.resize(static_cast<size_t>(rc));
+    }
 
-      USBGUARD_LOG(Debug) << "value=" << buffer << " size=" << buffer.size();
-      return buffer;
-    }
-    catch (...) {
-      close(fd);
-      throw;
-    }
+    USBGUARD_LOG(Debug) << "value=" << buffer << " size=" << buffer.size();
+    return buffer;
   }
 
   void SysFSDevice::setAttribute(const std::string& name, const std::string& value)
   {
     USBGUARD_LOG(Trace) << "name=" << name << " value=" << value;
     USBGUARD_LOG(Trace) << "path=" << _sysfs_path;
-    const int fd = openat(_sysfs_dirfd, name.c_str(), O_WRONLY);
+    const ScopedFD fd(openat(_sysfs_dirfd, name.c_str(), O_WRONLY));
 
     if (fd < 0) {
       throw ErrnoException("SysFSDevice", name, errno);
     }
 
-    try {
-      ssize_t rc = -1;
-      USBGUARD_SYSCALL_THROW("SysFSDevice",
-        (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
-      return;
-    }
-    catch (...) {
-      close(fd);
-      throw;
-    }
+    ssize_t rc = -1;
+    USBGUARD_SYSCALL_THROW("SysFSDevice",
+      (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
   }
 
   void SysFSDevice::reload()

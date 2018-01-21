@@ -240,6 +240,45 @@ namespace usbguard
   {
     return std::unique_ptr<T>(new T(std::forward<Params>(params)...));
   }
+
+  /*
+   * Scoped File Descriptor
+   */
+  class ScopedFD
+  {
+  public:
+    ScopedFD(int fd)
+      : _fd(fd) {}
+
+    ScopedFD(const ScopedFD&) = delete;
+
+    ~ScopedFD()
+    {
+      if (_fd >= 0) {
+        ::close(_fd);
+        _fd = -1;
+      }
+    }
+
+    operator int() const noexcept
+    {
+      return _fd;
+    }
+
+    bool operator<(int rhs) const noexcept
+    {
+      return _fd < rhs;
+    }
+
+    bool operator==(int rhs) const noexcept
+    {
+      return _fd == rhs;
+    }
+
+  private:
+    int _fd{-1};
+  };
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
