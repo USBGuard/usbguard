@@ -167,10 +167,6 @@ libqb_summary="system-wide; $qb_CFLAGS $qb_LIBS"],
 )
 
 #
-# ldap library
-#
-AC_SUBST(ldap_LIBS, [-lldap])
-#
 # sodium library
 #
 PKG_CHECK_MODULES([sodium], [libsodium >= 0.4.5],
@@ -525,6 +521,35 @@ else
 fi
 
 #
+# LDAP
+#
+AC_ARG_WITH([ldap], AC_HELP_STRING([--with-ldap], [Build USBGuard with ldap support]), [], [with_ldap=no])
+if test "x$with_ldap" = xyes; then
+  #
+  # Check for LDAP ldap.h
+  #
+  AC_CHECK_HEADER(
+      [ldap.h],
+      [
+        ldap_LIBS="-lldap"
+        ldap_CFLAGS=""
+        AC_DEFINE([HAVE_LDAP], [1], [ldap API available])
+        libldap_summary="system-wide; $ldap_CFLAGS $ldap_LIBS"
+      ],
+      [
+        ldap_LIBS=""
+        ldap_CFLAGS=""
+        AC_MSG_ERROR([Building with --with-ldap but ldap.h is not available])
+        libldap_summary="not found"
+      ]
+)
+else
+  libldap_summary="None; building without LDAP support"
+fi
+AC_SUBST(ldap_LIBS)
+AC_SUBST(ldap_CFLAGS)
+
+#
 # AddressSanitizer
 #
 # Based on: https://github.com/machinezone/tcpkali/blob/15903a7692abecbd28899d44e822a6f894caa23c/configure.aci#L73
@@ -760,6 +785,7 @@ echo
 echo "      libqb: $libqb_summary"
 echo "     crypto: $crypto_summary"
 echo "   libaudit: $libaudit_summary"
+echo "    libldap: $libldap_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"

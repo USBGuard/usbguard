@@ -30,7 +30,10 @@
 #include "NSHandler.hpp"
 
 #include "FileRuleSet.hpp"
-#include "LDAPRuleSet.hpp"
+
+#ifdef HAVE_LDAP
+  #include "LDAPRuleSet.hpp"
+#endif
 
 #include "usbguard/Exception.hpp"
 #include "usbguard/KeyValueParser.hpp"
@@ -43,8 +46,7 @@ namespace usbguard
   NSHandler::NSHandler()
     : _parser( {"usbguard"}, ":", /*case_sensitive?*/false, /*validate_keys?*/false),
   _nsswitch_path("/etc/nsswitch.conf"),
-  _rulesPath(""),
-  _ldap(nullptr)
+  _rulesPath("")
   {
     USBGUARD_LOG(Info) << "NSHandler Loading...";
     _source = SourceType::LOCAL;
@@ -75,10 +77,12 @@ namespace usbguard
       }
 
       break;
+#ifdef HAVE_LDAP
 
     case NSHandler::SourceType::LDAP:
       ret = "SourceLDAP";
       break;
+#endif
 
     // case NSHandler::SourceType::SSSD:
     //   ret = "SourceSSSD";
@@ -104,12 +108,14 @@ namespace usbguard
     return std::dynamic_pointer_cast<RuleSet>(rule_set);
   }
 
+#ifdef HAVE_LDAP
   std::shared_ptr<RuleSet> NSHandler::generateLDAP(Interface* const interface_ptr)
   {
     _ldap = std::make_shared<LDAPHandler>();
     auto rule_set = std::make_shared<LDAPRuleSet>(interface_ptr, _ldap);
     return std::dynamic_pointer_cast<RuleSet>(rule_set);
   }
+#endif
 
   // std::shared_ptr<RuleSet> NSHandler::generateSSSD(Interface* const interface_ptr)
   // {
@@ -130,10 +136,12 @@ namespace usbguard
       }
 
       break;
+#ifdef HAVE_LDAP
 
     case SourceType::LDAP:
       return generateLDAP(interface_ptr);
       break;
+#endif
 
     // case SourceType::SSSD:
     //   return generateSSSD(interface_ptr);
@@ -182,7 +190,13 @@ namespace usbguard
       _source = SourceType::LOCAL;
     }
     else if (_parsedOptions["USBGUARD"] == "LDAP") {
+#ifdef HAVE_LDAP
       _source = SourceType::LDAP;
+#else
+      USBGUARD_LOG(Info) << "USBGuard has been compiled without LDAP support";
+      USBGUARD_LOG(Info) << "Using default value FILES";
+      _source = SourceType::LOCAL;
+#endif
     }
     else {
       USBGUARD_LOG(Info) << "Value is not valid or not set, using default FILES";

@@ -16,10 +16,13 @@
 //
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
+
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
+
+#ifdef HAVE_LDAP
 
 #include <map>
 #include <ldap.h>
@@ -67,5 +70,7 @@ namespace usbguard
     std::string _hostname;
   };
 }
+
+#endif
 
 /* vim: set ts=2 sw=2 et */

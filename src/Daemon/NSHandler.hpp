@@ -28,7 +28,9 @@
 #include "usbguard/RuleSet.hpp"
 #include "usbguard/Typedefs.hpp"
 
-#include "LDAPHandler.hpp"
+#ifdef HAVE_LDAP
+  #include "LDAPHandler.hpp"
+#endif
 
 namespace usbguard
 {
@@ -39,8 +41,10 @@ namespace usbguard
 
     enum class SourceType {
       LOCAL,
+#ifdef HAVE_LDAP
       LDAP,
-      //      SSSD
+#endif
+      //SSSD
     };
 
     NSHandler();
@@ -57,7 +61,9 @@ namespace usbguard
   private:
     std::shared_ptr<RuleSet> generateMEMRuleSet(Interface* const interface_ptr);
     std::shared_ptr<RuleSet> generateLOCAL(Interface* const interface_ptr);
+#ifdef HAVE_LDAP
     std::shared_ptr<RuleSet> generateLDAP(Interface* const interface_ptr);
+#endif
     // std::shared_ptr<RuleSet> generateSSSD(Interface* const interface_ptr);
 
     KeyValueParser _parser;
@@ -69,7 +75,9 @@ namespace usbguard
 
     std::string _rulesPath;
 
-    std::shared_ptr<LDAPHandler> _ldap;
+#ifdef HAVE_LDAP
+    std::shared_ptr<LDAPHandler> _ldap = nullptr;
+#endif
   };
 } /* namespace usbguard */
 

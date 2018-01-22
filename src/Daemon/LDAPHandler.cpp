@@ -16,9 +16,13 @@
 //
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
+
+
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
+
+#ifdef HAVE_LDAP
 
 #include <iostream>
 #include <string.h>
@@ -261,5 +265,7 @@ namespace usbguard
     }
   }
 }
+
+#endif
 
 /* vim: set ts=2 sw=2 et */

@@ -20,6 +20,8 @@
   #include <build-config.h>
 #endif
 
+#ifdef HAVE_LDAP
+
 #include <algorithm>
 
 #include "LDAPRuleSet.hpp"
@@ -75,5 +77,7 @@ namespace usbguard
   }
   void LDAPRuleSet::save() {}
 } /* namespace usbguard */
+
+#endif
 
 /* vim: set ts=2 sw=2 et */
