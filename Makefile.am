@@ -26,7 +26,12 @@ EXTRA_DIST =\
 	usbguard.service.in \
 	VERSION \
 	CHANGELOG.md \
-	src/astylerc
+	src/astylerc \
+	scripts/usbguard-zsh-completion \
+	scripts/modeline.vim \
+	scripts/astyle.sh \
+	scripts/reformat-sources.sh \
+	scripts/usb-descriptor-collect.sh
 
 BUILT_SOURCES=\
 	src/build-config.h
