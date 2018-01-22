@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.7.2 - 2018-01-22
+
+### Fixed/Changed
+
+- Fixed memory leaks in usbguard::Hash class.
+- Fixed file descriptor leaks in usbguard::SysFSDevice class.
+- Skip audit backend logging when no backend was set.
+
+### Added
+
+- Added zsh completion & other scripts to the distribution tarball.
+
 ## 0.7.1 - 2017-11-30
 
 ### Added
