@@ -170,3 +170,4 @@ AuditBackend=FileAudit
 # USBGuard audit events log file path.
 #
 AuditFilePath=%localstatedir%/log/usbguard/usbguard-audit.log
+
