@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.7.3 - unreleased
+
+### Changed
+
+- usbguard-daemon will now exit with an error if it fails to open
+  a logging file or audit event file.
+
+### Added
+
+### Removed
+
 ## 0.7.2 - 2018-01-22
 
 ### Fixed/Changed

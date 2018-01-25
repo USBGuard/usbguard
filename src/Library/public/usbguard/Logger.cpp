@@ -215,7 +215,14 @@ namespace usbguard
       : OStreamSink("file", _stream)
     {
       _filepath = filepath;
-      _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
+
+      try {
+        _stream.exceptions(std::fstream::failbit);
+        _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
+      }
+      catch (...) {
+        throw Exception("FileSink", filepath, "failed to open");
+      }
     }
 
     ~FileSink()
@@ -237,11 +244,12 @@ namespace usbguard
       const auto saved_umask = umask(0177);
 
       try {
+        _stream.exceptions(std::fstream::failbit);
         _stream.open(filepath, std::fstream::app);
       }
       catch (...) {
         umask(saved_umask);
-        throw;
+        throw Exception("AuditFileSink", filepath, "failed to open");
       }
 
       umask(saved_umask);
