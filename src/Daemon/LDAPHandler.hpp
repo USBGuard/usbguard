@@ -25,6 +25,7 @@
 #ifdef HAVE_LDAP
 
 #include <map>
+#include <ctime>
 #include <ldap.h>
 
 #include "usbguard/KeyValueParser.hpp"
@@ -53,6 +54,7 @@ namespace usbguard
 
     std::shared_ptr<LDAPMessage> query(const std::string filter);
     std::string getRuleQuery();
+    std::time_t getUpdateInterval();
 
     std::vector<std::pair<long, std::string>> ldapToRules(std::shared_ptr<LDAPMessage> message);
 
@@ -68,6 +70,8 @@ namespace usbguard
     std::unique_ptr<LDAP, LDAPDeleter> _ldap_ptr;
     std::string _ldap_file;
     std::string _hostname;
+
+    std::time_t _updateInterval;
   };
 }
 

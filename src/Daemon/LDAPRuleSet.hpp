@@ -29,6 +29,11 @@
 
 #include "LDAPHandler.hpp"
 
+#include "Common/Thread.hpp"
+
+#include <ctime>
+#include <future>
+
 namespace usbguard
 {
   class Interface;
@@ -39,10 +44,19 @@ namespace usbguard
     LDAPRuleSet(const LDAPRuleSet& rhs);
     const LDAPRuleSet& operator=(const LDAPRuleSet& rhs);
 
+    ~LDAPRuleSet();
+
+    void update();
+    void loop();
+
     void load() override;
     void save() override;
+
+    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const override;
+
   private:
-    std::shared_ptr<LDAPHandler> LDAP;
+    std::shared_ptr<LDAPHandler> _LDAP;
+    std::time_t _last_update;
   };
 } /* namespace usbguard */
 

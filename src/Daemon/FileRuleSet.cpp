@@ -86,7 +86,7 @@ namespace usbguard
 
   void FileRuleSet::load(std::istream& stream)
   {
-    std::unique_lock<std::mutex> lock(_io_mutex);
+    std::unique_lock<std::mutex> lock(_op_mutex);
     std::string line_string;
     size_t line_number = 0;
 
@@ -96,7 +96,7 @@ namespace usbguard
       const Rule rule = parseRuleFromString(line_string, "", line_number);
 
       if (rule) {
-        appendRule(rule);
+        appendRule(rule, Rule::LastID, /*lock=*/false);
       }
     }
     while (stream.good());

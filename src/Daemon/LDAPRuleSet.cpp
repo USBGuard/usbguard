@@ -33,12 +33,16 @@
 
 #include "Common/LDAPUtil.hpp"
 
+#include <future>
+#include <unistd.h>
+
 
 namespace usbguard
 {
   LDAPRuleSet::LDAPRuleSet(Interface* const interface_ptr, std::shared_ptr<LDAPHandler> ldap)
     : RuleSetAbstract(interface_ptr),
-      LDAP(ldap)
+      _LDAP(ldap)
+
   {
     clearWritable();
     USBGUARD_LOG(Info) << "Creating LDAPRuleSet";
@@ -46,7 +50,7 @@ namespace usbguard
 
   LDAPRuleSet::LDAPRuleSet(const LDAPRuleSet& rhs)
     : RuleSetAbstract(rhs._interface_ptr),
-      LDAP(rhs.LDAP)
+      _LDAP(rhs._LDAP)
   {
     *this = rhs;
   }
@@ -57,25 +61,60 @@ namespace usbguard
     return *this;
   }
 
+  LDAPRuleSet::~LDAPRuleSet()
+  {
+  }
+
   void LDAPRuleSet::load()
   {
-    std::shared_ptr<LDAPMessage> message = LDAP->query(LDAP->getRuleQuery());
-    std::vector<std::pair<long, std::string>> v = LDAP->ldapToRules(message);
+    std::shared_ptr<LDAPMessage> message = _LDAP->query(_LDAP->getRuleQuery());
+    std::vector<std::pair<long, std::string>> v = _LDAP->ldapToRules(message);
     std::sort(v.begin(), v.end(), [](std::pair<long, std::string> a, std::pair<long, std::string> b) {
       return a.first < b.first;
     });
     size_t rule_number = 1;
 
     for (auto _rule: v) {
-      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "USBGuardOrder: "<< _rule.first;
+      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  USBGuardOrder: "<< _rule.first;
       USBGUARD_LOG(Info) << _rule.second;
       auto rule = parseRuleFromString(_rule.second, "", rule_number);
-      appendRule(rule);
+      appendRule(rule, Rule::LastID, /*lock=*/false);
       rule_number++;
       USBGUARD_LOG(Info);
     }
+
+    _last_update = std::time(nullptr);
   }
   void LDAPRuleSet::save() {}
+
+  void LDAPRuleSet::update()
+  {
+    USBGUARD_LOG(Trace);
+
+    if (std::time(nullptr) - _last_update < _LDAP->getUpdateInterval()) {
+      USBGUARD_LOG(Trace) << "UPDATE is not needed!";
+      return;
+    }
+
+    /*TODO:
+    *
+    * we should handle that LDAP server can be unreachable
+    *
+    */
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    USBGUARD_LOG(Trace) << "Processing UPDATE!";
+    _rules.clear();
+    _id_next = Rule::RootID + 1;
+    load();
+  }
+
+  std::shared_ptr<Rule> LDAPRuleSet::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
+  {
+    USBGUARD_LOG(Trace);
+    std::future<void> ft = std::async(std::launch::deferred, &LDAPRuleSet::update, *this);
+    ft.get();
+    return RuleSet::getFirstMatchingRule(device_rule, from_id);
+  }
 } /* namespace usbguard */
 
 #endif

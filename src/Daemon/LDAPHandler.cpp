@@ -47,12 +47,14 @@ namespace usbguard
     "BASE",
     "ROOTPW",
     "USBGUARDBASE",
-    "RULEQUERY"
+    "RULEQUERY",
+    "UPDATEINTERVAL"
   };
 
   LDAPHandler::LDAPHandler()
     : _parser(LDAPHandler::_configValues, " ", /*case_sensitive?*/false, /*validate_keys?*/true),
-      _ldap_file("/etc/usbguard/usbguard-ldap.conf")
+      _ldap_file("/etc/usbguard/usbguard-ldap.conf"),
+      _updateInterval(1 * 60 * 60 * 1000)           /* default update interval is 1h*/
   {
     USBGUARD_LOG(Info) << "LDAPHandler Loading...";
     char array[HOST_NAME_MAX];
@@ -102,6 +104,11 @@ namespace usbguard
   std::string LDAPHandler::getRuleQuery()
   {
     return _parsedOptions["RULEQUERY"];
+  }
+
+  std::time_t LDAPHandler::getUpdateInterval()
+  {
+    return _updateInterval;
   }
 
   std::shared_ptr<LDAPMessage> LDAPHandler::query(const std::string filter)
@@ -256,6 +263,15 @@ namespace usbguard
         /*                        */")";
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];
+    }
+
+    if (_parsedOptions["UPDATEINTERVAL"] != "") {
+      size_t index = 0;
+      _updateInterval = std::stol(_parsedOptions["UPDATEINTERVAL"], &index) * 60 * 60 * 1000;
+
+      if (_parsedOptions["UPDATEINTERVAL"][index] != 0) {
+        throw Exception("validateConf", "stol", "cannot convert UPDATEINTERVAL to number: " + _parsedOptions["UPDATEINTERVAL"]);
+      }
     }
 
     USBGUARD_LOG(Debug) << "Map after validation:";

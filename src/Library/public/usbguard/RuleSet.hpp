@@ -48,7 +48,9 @@ namespace usbguard
     uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
     std::shared_ptr<Rule> getRule(uint32_t id);
     bool removeRule(uint32_t id);
-    std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
+
+    virtual std::shared_ptr<Rule> getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id = 1) const;
+
     std::vector<std::shared_ptr<const Rule>> getRules();
     uint32_t assignID(std::shared_ptr<Rule> rule);
     uint32_t assignID();
@@ -58,7 +60,6 @@ namespace usbguard
     bool isWritable();
 
   protected:
-    mutable std::mutex _io_mutex; /* mutex for load/save */
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
 
     bool _writable;

@@ -189,6 +189,7 @@ namespace usbguard
   {
     (void)from_id; /* TODO */
     std::unique_lock<std::mutex> op_lock(_op_mutex);
+    USBGUARD_LOG(Trace);
 
     for (auto& rule_ptr : _rules) {
       if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
@@ -256,7 +257,6 @@ namespace usbguard
 
   void RuleSet::serialize(std::ostream& stream) const
   {
-    std::unique_lock<std::mutex> io_lock(_io_mutex);
     std::unique_lock<std::mutex> op_lock(_op_mutex);
 
     for (auto const& rule : _rules) {
