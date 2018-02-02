@@ -331,7 +331,7 @@ namespace usbguard
         const std::string value = _config.getSettingValue("AuditFilePath");
         USBGUARD_LOG(Debug) << "Setting AuditFilePath to " << value;
         USBGUARD_LOGGER.setAuditFile(true, value);
-        std::unique_ptr<AuditBackend> backend(new LinuxAuditBackend());
+        std::unique_ptr<AuditBackend> backend(new FileAuditBackend());
         _audit.setBackend(std::move(backend));
       }
       else {
