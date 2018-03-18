@@ -1,0 +1,55 @@
+---
+
+- name: Create the directory for ldap database
+  file: path=/var/lib/ldap/{{ openldap_server_domain_name }}/ state=directory owner={{ openldap_server_user }} group={{ openldap_server_user }}
+
+- name: Create the directory for ldap certificates
+  file: path={{ openldap_server_app_path }}/certs/ state=directory owner={{ openldap_server_user }} group={{ openldap_server_user }}
+
+- name: Generate the private key for certificate request
+  shell: openssl genrsa -des3 -passout pass:password -out my1.key 1024 chdir={{ openldap_server_app_path }}/certs/ 
+         creates={{ openldap_server_app_path }}/certs/my1.key
+
+- name: Strip the passphrase from the key 
+  shell: openssl rsa -in my1.key -passin pass:password -out my.key chdir={{ openldap_server_app_path }}/certs/ 
+         creates={{ openldap_server_app_path }}/certs/my.key
+
+- name: Create and sign the the new certificate 
+  shell: openssl req -new -x509 -subj '/C={{ openldap_server_country }}/ST={{ openldap_server_state }}/L={{ openldap_server_location }}/O={{ openldap_server_organization }}/CN={{ ansible_hostname }}/' -days 3650 -key my.key -out cert.crt -extensions v3_ca chdir={{ openldap_server_app_path }}/certs/   creates={{ openldap_server_app_path }}/certs/cert.crt
+
+- name: copy the supporting files
+  copy: src=ldap dest=/etc/sysconfig/ldap mode=0755
+  when: openldap_server_enable_ssl and ansible_os_family == 'RedHat'
+  notify: 
+   - restart slapd
+
+- name: copy the supporting files
+  copy: src=slapd_fedora dest=/etc/sysconfig/slapd mode=0755
+  when: openldap_server_enable_ssl and ansible_distribution == "Fedora"
+  notify: 
+   - restart slapd
+
+- name: copy the supporting files
+  copy: src=slapd dest=/etc/default/slapd mode=0755
+  when: openldap_server_enable_ssl and ansible_os_family == 'Debian'
+  notify: 
+   - restart slapd
+  
+- name: Copy the template for creating base dn
+  template: src={{ openldap_server_ldif }} dest=/tmp/
+  register: result
+
+- name: start the slapd service
+  service: name=slapd state=restarted enabled=yes 
+
+- name: start the slapd service
+  service: name=slapd state=restarted enabled=yes 
+
+- name: Add the base domain
+  shell: "ldapadd -x -D 'cn=Manager,dc={{ openldap_server_domain_name.split('.')[0] }},dc={{ openldap_server_domain_name.split('.')[1] }}' -w {{ openldap_server_rootpw }} -f {{ result.dest|default(result.path) }}"
+
+- name: Upload USBGuard schema
+  copy: src=usbguard.ldif dest={{ openldap_server_app_path }}/schema/
+
+- name: Add usbguard.ldif to LDAP
+  shell: ldapadd -Q -Y EXTERNAL -H ldapi:/// -f {{ openldap_server_app_path }}/schema/usbguard.ldif

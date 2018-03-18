@@ -1,0 +1,26 @@
+#
+# LDAP Defaults
+#
+
+# See ldap.conf(5) for details
+# This file should be world readable but not world writable.
+
+BASE    dc={{ openldap_server_domain_name.split('.')[0] }},dc={{ openldap_server_domain_name.split('.')[1] }}
+{% if openldap_server_enable_ssl %}
+URI     ldaps://localhost
+TLS_REQCERT never
+{% endif %}
+{% if not openldap_server_enable_ssl %}
+URI     ldap://localhost
+{% endif %}
+
+#SIZELIMIT      12
+#TIMELIMIT      15
+#DEREF          never
+TLS_CACERTDIR /etc/openldap/cacerts
+{% if ansible_os_family == 'RedHat' %}
+TLS_CACERT /etc/openldap/certs/cert.crt
+{% endif %}
+{% if ansible_os_family == 'Debian' %}
+TLS_CACERT /etc/ldap/certs/cert.crt
+{% endif %}

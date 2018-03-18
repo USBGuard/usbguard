@@ -1,0 +1,62 @@
+---
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+#- name: Update system first (RedHat)
+#  yum: name="*" state=latest
+#  when: ansible_os_family == 'RedHat'
+
+- name: Install YUM Utils (RedHat)
+  yum: name="yum-utils" state=latest
+  when: ansible_os_family == 'RedHat'
+
+- name: Clean yum transactions
+  shell: "yum-complete-transaction --cleanup-only"
+  when: ansible_os_family == 'RedHat'
+
+- name: turn off selinux
+  selinux: state=permissive policy=targeted
+  when: ansible_os_family == 'RedHat'
+
+- name: turn off firewall
+  service: name=firewalld state=stopped
+  when: ansible_os_family == 'RedHat'
+
+#- name: Update system first (Debian)
+#  shell: "apt update -yq; apt upgrade -yq"
+#  when: ansible_os_family == 'Debian'
+
+- name: Install the openldap and required Packages for RedHat
+  yum: name={{ item }} state=installed
+  with_items: "{{ openldap_server_pkgs }}"
+  when: ansible_os_family == 'RedHat'
+
+
+- name: Install the openldap and required Packages for Ubuntu
+  apt: name={{ item }} state=installed
+  with_items: "{{ openldap_server_pkgs }}"
+#  environment: env
+  when: ansible_os_family == 'Debian'
+
+- name: Delete the configuration directory
+  file: path={{ openldap_server_app_path }}/slapd.d state=absent
+
+- name: Delete the /var/lib/ldap directory
+  file: path=/var/lib/ldap/* state=absent
+
+- name: Make slapd.d
+  file: path={{ openldap_server_app_path }}/slapd.d state=directory owner={{ openldap_server_user }} group={{ openldap_server_user }}
+
+- name: Copy slapd.ldif
+  template: src={{ openldap_server_slapd_init }} dest={{ openldap_server_app_path }}/slapd.ldif
+
+- name: Fill the database
+  shell: slapadd -F {{ openldap_server_app_path }}/slapd.d -n0 -l {{ openldap_server_app_path }}/slapd.ldif
+
+- name: Fix permissions
+  shell: chown -R {{ openldap_server_user }}:{{ openldap_server_user }} {{ openldap_server_app_path }}/slapd.d
+
+- name: Copy the ldap.conf configuration file
+  template: src=ldap.conf.j2 dest={{ openldap_server_app_path }}/ldap.conf
+

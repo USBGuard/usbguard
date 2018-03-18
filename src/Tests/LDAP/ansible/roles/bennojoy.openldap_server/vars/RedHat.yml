@@ -1,0 +1,11 @@
+openldap_server_pkgs:
+  - openldap-servers
+  - openldap-clients
+  - libselinux-python
+  - openssl
+
+openldap_server_app_path: "/etc/openldap/"
+openldap_server_user: ldap
+
+openldap_server_slapd_init: slapd.fedora.ldif.j2
+
