@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //          Jiri Vymazal   <jvymazal@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -25,6 +26,7 @@
 #include "FileAuditBackend.hpp"
 #include "LinuxAuditBackend.hpp"
 #include "Common/Utility.hpp"
+#include "NSHandler.hpp"
 
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleParser.hpp"
@@ -100,7 +102,6 @@ namespace usbguard
 
   Daemon::Daemon()
     : _config(G_config_known_names),
-      _ruleset(this),
       _audit(_audit_identity)
   {
     sigset_t signal_set;
@@ -173,27 +174,21 @@ namespace usbguard
     }
 
     _config.open(path, /*readonly=*/true);
+    USBGUARD_LOG(Info) << "Loading NSSwitch...";
+    _nss.parseNSSwitch();
 
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
-      const std::string& rule_file = _config.getSettingValue("RuleFile");
+      const std::string& rulefile_path = _config.getSettingValue("RuleFile");
 
-      try {
-        loadRules(rule_file, check_permissions);
+      if (check_permissions) {
+        checkPermissions(rulefile_path, (S_IRUSR | S_IWUSR));
       }
-      catch (const RuleParserError& ex) {
-        throw Exception("Configuration", rule_file, ex.hint());
-      }
-      catch (const std::exception& ex) {
-        throw Exception("Configuration", rule_file, ex.what());
-      }
-      catch (...) {
-        throw Exception("Configuration", rule_file, "unknown exception");
-      }
+
+      _nss.setRulesPath(rulefile_path);
     }
-    else {
-      USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
-    }
+
+    loadRules();
 
     /* ImplicitPolicyTarget */
     if (_config.hasSettingValue("ImplicitPolicyTarget")) {
@@ -343,15 +338,25 @@ namespace usbguard
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
-  void Daemon::loadRules(const std::string& path, const bool check_permissions)
+  void Daemon::loadRules()
   {
-    USBGUARD_LOG(Info) << "Loading permanent policy file " << path;
+    USBGUARD_LOG(Info) << "Loading RuleSet";
+    auto ruleset = _nss.getRuleSet(this);
 
-    if (check_permissions) {
-      checkPermissions(path, (S_IRUSR | S_IWUSR));
+    try {
+      ruleset->load();
+    }
+    catch (const RuleParserError& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
+    }
+    catch (const std::exception& ex) {
+      throw Exception("Rules", _nss.getSourceInfo(), ex.what());
+    }
+    catch (...) {
+      throw Exception("Rules", _nss.getSourceInfo(), "unknown exception");
     }
 
-    _ruleset.load(path);
+    _policy.setRuleSet(ruleset);
   }
 
   void Daemon::loadIPCAccessControlFiles(const std::string& path)
@@ -425,7 +430,7 @@ namespace usbguard
   {
     USBGUARD_LOG(Debug) << "Setting ImplicitPolicyTarget to " << Rule::targetToString(target);
     _implicit_policy_target = target;
-    _ruleset.setDefaultTarget(target);
+    _policy.setDefaultTarget(target);
   }
 
   void Daemon::setPresentDevicePolicyMethod(DevicePolicyMethod policy)
@@ -589,7 +594,7 @@ namespace usbguard
 
   uint32_t Daemon::assignID()
   {
-    return _ruleset.assignID();
+    return _policy.assignID();
   }
 
   /*
@@ -610,10 +615,10 @@ namespace usbguard
       << " parent_insensitive=" << parent_insensitive;
     const Rule match_rule = Rule::fromString(match_spec);
     const Rule new_rule = Rule::fromString(rule_spec);
-    const uint32_t id = _ruleset.upsertRule(match_rule, new_rule, parent_insensitive);
+    const uint32_t id = _policy.upsertRule(match_rule, new_rule, parent_insensitive);
 
     if (_config.hasSettingValue("RuleFile")) {
-      _ruleset.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -651,10 +656,10 @@ namespace usbguard
       << " parent_id=" << parent_id;
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
-    const uint32_t id = _ruleset.appendRule(rule, parent_id);
+    const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
 
     if (_config.hasSettingValue("RuleFile")) {
-      _ruleset.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -664,17 +669,17 @@ namespace usbguard
   void Daemon::removeRule(uint32_t id)
   {
     USBGUARD_LOG(Trace) << "id=" << id;
-    _ruleset.removeRule(id);
+    _policy.removeRule(id);
 
     if (_config.hasSettingValue("RuleFile")) {
-      _ruleset.save(_config.getSettingValue("RuleFile"));
+      _policy.getRuleSet()->save();
     }
   }
 
-  const RuleSet Daemon::listRules(const std::string& query)
+  const std::shared_ptr<RuleSet> Daemon::listRules(const std::string& query)
   {
     USBGUARD_LOG(Trace) << "entry: query=" << query;
-    return _ruleset;
+    return _policy.getRuleSet();
   }
 
   uint32_t Daemon::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
@@ -797,7 +802,7 @@ namespace usbguard
       break;
 
     case DevicePolicyMethod::ApplyPolicy:
-      policy_rule = _ruleset.getFirstMatchingRule(device_rule);
+      policy_rule = _policy.getFirstMatchingRule(device_rule);
       break;
 
     case DevicePolicyMethod::Allow:
@@ -847,7 +852,7 @@ namespace usbguard
       break;
 
     case DevicePolicyMethod::ApplyPolicy:
-      matched_rule = _ruleset.getFirstMatchingRule(device_rule);
+      matched_rule = _policy.getFirstMatchingRule(device_rule);
       target = matched_rule->getTarget();
       break;
 
@@ -945,7 +950,7 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "rule_spec=" << rule_spec;
     /* Upsert */
     const uint32_t rule_id = upsertRule(match_spec, rule_spec, /*parent_insensitive=*/true);
-    auto upsert_rule = _ruleset.getRule(rule_id);
+    auto upsert_rule = _policy.getRule(rule_id);
     USBGUARD_LOG(Trace) << "return:"
       << " upsert_rule=" << upsert_rule->toString();
     return upsert_rule;

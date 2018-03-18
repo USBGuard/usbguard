@@ -203,6 +203,8 @@ libusbguard_la_SOURCES=\
 	src/Common/Thread.hpp \
 	src/Common/Utility.cpp \
 	src/Common/Utility.hpp \
+	src/Common/LDAPUtil.cpp \
+	src/Common/LDAPUtil.hpp \
 	src/Library/AllowedMatchesCondition.cpp \
 	src/Library/AllowedMatchesCondition.hpp \
 	src/Library/Base64.cpp \
@@ -224,8 +226,8 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCServerPrivate.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/Init.cpp \
-	src/Library/KeyValueParser.cpp \
-	src/Library/KeyValueParser.hpp \
+	src/Library/KeyValueParserPrivate.cpp \
+	src/Library/KeyValueParserPrivate.hpp \
 	src/Library/LocaltimeCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
 	src/Library/RandomStateCondition.cpp \
@@ -238,8 +240,6 @@ libusbguard_la_SOURCES=\
 	src/Library/RuleParser/Grammar.hpp \
 	src/Library/RulePrivate.cpp \
 	src/Library/RulePrivate.hpp \
-	src/Library/RuleSetPrivate.cpp \
-	src/Library/RuleSetPrivate.hpp \
 	src/Library/SysFSDevice.cpp \
 	src/Library/SysFSDevice.hpp \
 	src/Library/UEvent.cpp \
@@ -251,13 +251,13 @@ libusbguard_la_SOURCES=\
 	src/Library/Utility.cpp \
 	src/Library/Utility.hpp \
 	src/Library/public/usbguard/Audit.cpp \
-	src/Library/public/usbguard/Audit.hpp \
 	src/Library/public/usbguard/ConfigFile.cpp \
 	src/Library/public/usbguard/Device.cpp \
 	src/Library/public/usbguard/DeviceManager.cpp \
 	src/Library/public/usbguard/DeviceManagerHooks.cpp \
 	src/Library/public/usbguard/IPCClient.cpp \
 	src/Library/public/usbguard/IPCServer.cpp \
+	src/Library/public/usbguard/KeyValueParser.cpp \
 	src/Library/public/usbguard/Logger.cpp \
 	src/Library/public/usbguard/Policy.cpp \
 	src/Library/public/usbguard/Rule.cpp \
@@ -279,6 +279,7 @@ pkginclude_HEADERS=\
 	src/Library/public/usbguard/IPCClient.hpp \
 	src/Library/public/usbguard/IPCServer.hpp \
 	src/Library/public/usbguard/Interface.hpp \
+	src/Library/public/usbguard/KeyValueParser.hpp \
 	src/Library/public/usbguard/Logger.hpp \
 	src/Library/public/usbguard/Policy.hpp \
 	src/Library/public/usbguard/Predicates.hpp \
@@ -309,6 +310,14 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/Daemon.cpp \
 	src/Daemon/Daemon.hpp \
 	src/Daemon/main.cpp \
+	src/Daemon/FileRuleSet.cpp \
+	src/Daemon/FileRuleSet.hpp \
+	src/Daemon/LDAPHandler.cpp \
+	src/Daemon/LDAPHandler.hpp \
+	src/Daemon/LDAPRuleSet.cpp \
+	src/Daemon/LDAPRuleSet.hpp \
+	src/Daemon/NSHandler.cpp \
+	src/Daemon/NSHandler.hpp \
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
 	src/Common/Utility.hpp \
@@ -321,12 +330,14 @@ usbguard_daemon_SOURCES=\
 usbguard_daemon_CPPFLAGS=\
 	-fPIE \
 	$(AM_CPPFLAGS) \
+	@ldap_CFLAGS@ \
 	@seccomp_CFLAGS@ \
 	@libcapng_CFLAGS@ \
 	@audit_CFLAGS@
 
 usbguard_daemon_LDADD=\
 	$(top_builddir)/libusbguard.la \
+	@ldap_LIBS@ \
 	@seccomp_LIBS@ \
 	@libcapng_LIBS@ \
 	@audit_LIBS@

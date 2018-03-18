@@ -59,6 +59,18 @@ matrix:
         apt:
           packages: ['libgcrypt-dev']
       env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
+    -os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['slapd', 'ldap-utils']
+      env: CONFIGURE_ARGS=--with-ldap
+    -os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages: ['slapd', 'ldap-utils']
+      env: CONFIGURE_ARGS=--with-ldap
     - os: linux
       compiler: gcc
       addons:

@@ -23,11 +23,12 @@
   #include <build-config.h>
 #endif
 
-#include "KeyValueParser.hpp"
 #include "Common/Utility.hpp"
-
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
+
+#include "usbguard/KeyValueParser.hpp"
+#include "KeyValueParserPrivate.hpp"
 
 #include <locale>
 
@@ -37,27 +38,28 @@ namespace usbguard
   * NOTE:
   * vector v should have strings UPPERCASE when case insensitive mode was enabled
   */
-  KeyValueParser::KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive):
-    _keys(v), _separator(sep), _case_sensitive(case_sensitive)
+  KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
+    const std::string& sep, bool case_sensitive, bool validate_keys):
+    _keys(v), _separator(sep), _p_instance(p_instance), _case_sensitive(case_sensitive), _validate_keys(validate_keys)
   {
+    (void)_p_instance;
   }
 
-  KeyValueParser::KeyValueParser(const std::vector<std::string>& v, bool case_sensitive):
-    KeyValueParser(v, "=", case_sensitive) {}
+  KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
+    bool case_sensitive, bool validate_keys):
+    KeyValueParserPrivate(p_instance, v, "=", case_sensitive, validate_keys) {}
 
-  void KeyValueParser::viewConfig()
+  void KeyValueParserPrivate::viewConfig()
   {
-    std::cout << "separator:\t" << this->_separator << std::endl;
-    std::cout << "keys:\t";
+    USBGUARD_LOG(Info) << "separator -> " << this->_separator;
+    USBGUARD_LOG(Info) << "keys:";
 
     for (auto item : this->_keys) {
-      std::cout << item << ", ";
+      USBGUARD_LOG(Info) << "--->"<< item;
     }
-
-    std::cout << "\b\b " << std::endl;
   }
 
-  std::pair<std::string, std::string> KeyValueParser::parseLine(std::string& str)
+  std::pair<std::string, std::string> KeyValueParserPrivate::parseLine(std::string& str)
   {
     std::string::size_type sep_pos;
     std::string key_c, key, val;
@@ -78,7 +80,7 @@ namespace usbguard
         }
       }
 
-      if (this->checkKeyValidity(key)) {
+      if (_validate_keys && this->checkKeyValidity(key)) {
         USBGUARD_LOG(Error) << "Error: parsed key is not in key set: '" << key << "'";
         throw Exception("KeyValueParser", "Parser", "Invalid key");
       }
@@ -88,7 +90,7 @@ namespace usbguard
     }
   }
 
-  void KeyValueParser::parseStream(std::istream& stream)
+  void KeyValueParserPrivate::parseStream(std::istream& stream)
   {
     std::map<std::string, std::string> m;
     std::map<std::string, std::string>::iterator it;
@@ -113,7 +115,7 @@ namespace usbguard
     this->_output_map = std::move(m);
   }
 
-  bool KeyValueParser::checkKeyValidity(const std::string& key)
+  bool KeyValueParserPrivate::checkKeyValidity(const std::string& key)
   {
     for (auto a: this->_keys) {
       if (!key.compare(a)) {
@@ -124,7 +126,7 @@ namespace usbguard
     return true;
   }
 
-  std::map<std::string, std::string> KeyValueParser::getMap()
+  std::map<std::string, std::string> KeyValueParserPrivate::getMap()
   {
     return this->_output_map;
   }

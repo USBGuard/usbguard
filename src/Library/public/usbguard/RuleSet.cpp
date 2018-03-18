@@ -15,110 +15,255 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
-#include "Typedefs.hpp"
-#include "RuleSetPrivate.hpp"
-#include "Common/Utility.hpp"
+#include "RulePrivate.hpp"
+#include "RuleSet.hpp"
+
+#include "usbguard/Typedefs.hpp"
+#include "usbguard/RuleParser.hpp"
+#include "usbguard/Exception.hpp"
+
+#include <fstream>
 
 namespace usbguard
 {
+
   RuleSet::RuleSet(Interface* const interface_ptr)
-    : d_pointer(make_unique<RuleSetPrivate>(*this, interface_ptr))
+    : _interface_ptr(interface_ptr)
   {
+    clearWritable();
+    _default_target = Rule::Target::Block;
+    _default_action = std::string();
+    _id_next = Rule::RootID + 1;
   }
 
-  RuleSet::~RuleSet() = default;
-
   RuleSet::RuleSet(const RuleSet& rhs)
-    : d_pointer(make_unique<RuleSetPrivate>(*this, *rhs.d_pointer))
+    : _interface_ptr(rhs._interface_ptr)
   {
   }
 
   const RuleSet& RuleSet::operator=(const RuleSet& rhs)
   {
-    d_pointer.reset(new RuleSetPrivate(*this, *rhs.d_pointer));
+    _default_target = rhs._default_target;
+    _default_action = rhs._default_action;
+    _id_next = rhs._id_next.load();
+    _rules = rhs._rules;
     return *this;
-  }
-
-  void RuleSet::load(const std::string& path)
-  {
-    d_pointer->load(path);
-  }
-
-  void RuleSet::load(std::istream& stream)
-  {
-    d_pointer->load(stream);
-  }
-
-  void RuleSet::save(const std::string& path) const
-  {
-    d_pointer->save(path);
-  }
-
-  void RuleSet::save(std::ostream& stream) const
-  {
-    d_pointer->save(stream);
   }
 
   void RuleSet::setDefaultTarget(Rule::Target target)
   {
-    d_pointer->setDefaultTarget(target);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    _default_target = target;
   }
 
   Rule::Target RuleSet::getDefaultTarget() const
   {
-    return d_pointer->getDefaultTarget();
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    return _default_target;
   }
 
   void RuleSet::setDefaultAction(const std::string& action)
   {
-    d_pointer->setDefaultAction(action);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    _default_action = action;
   }
 
-  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id)
+  uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id, bool lock)
   {
-    return d_pointer->appendRule(rule, parent_id);
+    std::unique_lock<std::mutex> op_lock(_op_mutex, std::defer_lock);
+
+    if (lock) {
+      op_lock.lock();
+    }
+
+    auto rule_ptr = std::make_shared<Rule>(rule);
+
+    /*
+     * If the rule doesn't already have a sequence number
+     * assigned, do it now. Otherwise update the sequence
+     * number counter so that we don't generate a duplicit
+     * one if assignID() gets called in the future.
+     */
+    if (rule_ptr->getRuleID() == Rule::DefaultID) {
+      assignID(rule_ptr);
+    }
+    else {
+      _id_next = std::max(_id_next.load(), rule_ptr->getRuleID() + 1);
+    }
+
+    /* Initialize conditions */
+    rule_ptr->internal()->initConditions(_interface_ptr);
+
+    /* Append the rule to the main rule table */
+    if (parent_id == Rule::LastID) {
+      _rules.push_back(rule_ptr);
+    }
+    else if (parent_id == 0) {
+      _rules.insert(_rules.begin(), rule_ptr);
+    }
+    else {
+      bool parent_found = false;
+
+      for (auto it = _rules.begin(); it != _rules.end(); ++it) {
+        const Rule& rule = **it;
+
+        if (rule.getRuleID() == parent_id) {
+          _rules.insert(it+1, rule_ptr);
+          parent_found = true;
+          break;
+        }
+      }
+
+      if (!parent_found) {
+        throw Exception("Rule set append", "rule", "Invalid parent ID");
+      }
+    }
+
+    return rule_ptr->getRuleID();
   }
 
   uint32_t RuleSet::upsertRule(const Rule& match_rule, const Rule& new_rule, const bool parent_insensitive)
   {
-    return d_pointer->upsertRule(match_rule, new_rule, parent_insensitive);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    std::shared_ptr<Rule> matching_rule;
+
+    for (auto& rule_ptr : _rules) {
+      if (rule_ptr->internal()->appliesTo(match_rule, parent_insensitive)) {
+        if (!matching_rule) {
+          matching_rule = rule_ptr;
+        }
+        else {
+          throw Exception("Rule set upsert", "rule", "Cannot upsert; multiple matching rules");
+        }
+      }
+    }
+
+    if (matching_rule) {
+      const uint32_t id = matching_rule->getRuleID();
+      *matching_rule = new_rule;
+      matching_rule->setRuleID(id);
+      return id;
+    }
+    else {
+      return appendRule(new_rule, Rule::LastID, /*lock=*/false);
+    }
   }
 
   std::shared_ptr<Rule> RuleSet::getRule(uint32_t id)
   {
-    return d_pointer->getRule(id);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
+    for (auto const& rule : _rules) {
+      if (rule->getRuleID() == id) {
+        return rule;
+      }
+    }
+
+    throw Exception("Rule set lookup", "rule id", "id doesn't exist");
   }
 
   bool RuleSet::removeRule(uint32_t id)
   {
-    return d_pointer->removeRule(id);
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
+    for (auto it = _rules.begin(); it != _rules.end(); ++it) {
+      auto const& rule_ptr = *it;
+
+      if (rule_ptr->getRuleID() == id) {
+        _rules.erase(it);
+        return true;
+      }
+    }
+
+    /* FIXME: Remove the rule from the priority queue too */
+    throw Exception("Rule set remove", "rule id", "id doesn't exist");
   }
 
   std::shared_ptr<Rule> RuleSet::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
-    return d_pointer->getFirstMatchingRule(device_rule, from_id);
+    (void)from_id; /* TODO */
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+    USBGUARD_LOG(Trace);
+
+    for (auto& rule_ptr : _rules) {
+      if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
+        return rule_ptr;
+      }
+    }
+
+    std::shared_ptr<Rule> default_rule = std::make_shared<Rule>();
+    default_rule->setRuleID(Rule::ImplicitID);
+    default_rule->setTarget(_default_target);
+    return default_rule;
   }
 
   std::vector<std::shared_ptr<const Rule>> RuleSet::getRules()
   {
-    return d_pointer->getRules();
+    std::vector<std::shared_ptr<const Rule>> rules;
+
+    for (auto const& rule : _rules) {
+      rules.push_back(rule);
+    }
+
+    return rules;
   }
 
   uint32_t RuleSet::assignID(std::shared_ptr<Rule> rule)
   {
-    return d_pointer->assignID(rule);
+    rule->setRuleID(assignID());
+    return rule->getRuleID();
   }
 
   uint32_t RuleSet::assignID()
   {
-    return d_pointer->assignID();
+    return _id_next++;
   }
 
+  void RuleSet::setWritable()
+  {
+    _writable = true;
+  }
+
+  void RuleSet::clearWritable()
+  {
+    _writable = false;
+  }
+
+  bool RuleSet::isWritable()
+  {
+    return _writable;
+  }
+
+  void RuleSet::load()
+  {
+    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be loaded";
+  }
+
+  void RuleSet::save()
+  {
+    if (!isWritable()) {
+      USBGUARD_LOG(Info) << "RuleSet is not writable";
+      return;
+    }
+
+    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be saved";
+  }
+
+  void RuleSet::serialize(std::ostream& stream) const
+  {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
+    for (auto const& rule : _rules) {
+      std::string rule_string = rule->toString();
+      stream << rule_string << std::endl;
+    }
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

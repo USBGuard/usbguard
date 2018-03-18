@@ -22,7 +22,7 @@
 #endif
 
 #include "usbguard/ConfigFile.hpp"
-#include "KeyValueParser.hpp"
+#include "usbguard/KeyValueParser.hpp"
 
 
 #include <fstream>

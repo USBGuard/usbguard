@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 Red Hat, Inc.
+// Copyright (C) 2017 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //          Jiri Vymazal   <jvymazal@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -24,10 +25,13 @@
 
 #include "Common/Thread.hpp"
 
+#include "NSHandler.hpp"
+#include "usbguard/RuleSet.hpp"
+#include "usbguard/Policy.hpp"
+
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/ConfigFile.hpp"
 #include "usbguard/IPCServer.hpp"
-#include "usbguard/RuleSet.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/Device.hpp"
 #include "usbguard/DeviceManager.hpp"
@@ -59,7 +63,7 @@ namespace usbguard
 
     int checkPermissions(const std::string& path, const mode_t permissions);
     void loadConfiguration(const std::string& path, const bool check_permissions);
-    void loadRules(const std::string& path, const bool check_permissions);
+    void loadRules();
     void loadIPCAccessControlFiles(const std::string& path);
     bool loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath);
     void checkIPCAccessControlName(const std::string& basename);
@@ -86,7 +90,7 @@ namespace usbguard
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id) override;
     void removeRule(uint32_t id) override;
-    const RuleSet listRules(const std::string& query) override;
+    const std::shared_ptr<RuleSet> listRules(const std::string& query) override;
 
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) override;
     const std::vector<Rule> listDevices(const std::string& query) override;
@@ -114,7 +118,9 @@ namespace usbguard
     std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 
     ConfigFile _config;
-    RuleSet _ruleset;
+
+    NSHandler _nss;
+    Policy _policy;
 
     int pid_fd;
 

@@ -46,7 +46,11 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.rws \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/private-with-build-config.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/public-without-build-config.sh \
-	$(top_srcdir)/src/Tests/Source/CheckScripts/code-style.sh
+	$(top_srcdir)/src/Tests/Source/CheckScripts/code-style.sh \
+	$(top_srcdir)/src/Tests/LDAP/ldap-sanity.sh \
+	$(top_srcdir)/src/Tests/LDAP/ldap.sh \
+	$(top_srcdir)/src/Tests/LDAP/setup.ldif \
+	$(top_srcdir)/src/Tests/LDAP/usbguard.ldif
 
 LOG_DRIVER=\
 	$(top_srcdir)/src/Tests/test-driver
@@ -58,7 +62,10 @@ TESTS_ENVIRONMENT=\
 	USBGUARD_TESTLIB_BASH=$(top_srcdir)/src/Tests/bash-testlib.sh \
 	USBGUARD=$(top_builddir)/usbguard \
 	USBGUARD_DAEMON=$(top_builddir)/usbguard-daemon \
-	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus
+	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus \
+	LDAP_UTIL=$(top_srcdir)/src/Tests/LDAP/ldap.sh \
+	USBGUARD_LDIF=$(top_srcdir)/src/Tests/LDAP/usbguard.ldif
+
 
 TESTS=\
 	test-unit \
@@ -74,6 +81,11 @@ TESTS+=\
 	UseCase/002_cli_devices.sh \
 	UseCase/003_cli_devices_dummy.sh \
 	UseCase/004_daemonize.sh
+endif
+
+if WITH_LDAP
+TESTS+=\
+	LDAP/ldap-sanity.sh
 endif
 
 check_PROGRAMS=\

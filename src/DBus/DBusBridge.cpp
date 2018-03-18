@@ -109,7 +109,7 @@ namespace usbguard
       g_variant_get(parameters, "(&s)", &query_cstr);
       std::string query(query_cstr);
       auto rule_set = listRules(query);
-      auto rules = rule_set.getRules();
+      auto rules = rule_set->getRules();
 
       if (rules.size() > 0) {
         auto gvbuilder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);

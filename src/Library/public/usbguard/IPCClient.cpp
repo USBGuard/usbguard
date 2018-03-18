@@ -72,7 +72,7 @@ namespace usbguard
     d_pointer->removeRule(id);
   }
 
-  const RuleSet IPCClient::listRules(const std::string& query)
+  const std::shared_ptr<RuleSet> IPCClient::listRules(const std::string& query)
   {
     return d_pointer->listRules(query);
   }

@@ -429,7 +429,7 @@ esac
 AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
 if test "x$with_dbus" = xyes; then
   #
-  # Check for required D-Bus modules 
+  # Check for required D-Bus modules
   #
   PKG_CHECK_MODULES([dbus], [dbus-1 dbus-glib-1 >= 0.100 gio-2.0],
   [AC_DEFINE([HAVE_DBUS], [1], [Required GLib DBus API available])
@@ -519,6 +519,35 @@ else
   polkit_summary="None; building without PolicyKit support"
   polkit_policy_dir="-"
 fi
+
+#
+# LDAP
+#
+AC_ARG_WITH([ldap], AC_HELP_STRING([--with-ldap], [Build USBGuard with ldap support]), [], [with_ldap=no])
+if test "x$with_ldap" = xyes; then
+  #
+  # Check for LDAP ldap.h
+  #
+  AC_CHECK_HEADER(
+      [ldap.h],
+      [
+        ldap_LIBS="-lldap"
+        ldap_CFLAGS=""
+        AC_DEFINE([HAVE_LDAP], [1], [ldap API available])
+        libldap_summary="system-wide; $ldap_CFLAGS $ldap_LIBS"
+      ],
+      [
+        ldap_LIBS=""
+        ldap_CFLAGS=""
+        AC_MSG_ERROR([Building with --with-ldap but ldap.h is not available])
+        libldap_summary="not found"
+      ]
+)
+else
+  libldap_summary="None; building without LDAP support"
+fi
+AC_SUBST(ldap_LIBS)
+AC_SUBST(ldap_CFLAGS)
 
 #
 # AddressSanitizer
@@ -719,6 +748,7 @@ AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
+AM_CONDITIONAL([WITH_LDAP], [test "x$with_ldap" = xyes])
 AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
@@ -756,6 +786,7 @@ echo
 echo "      libqb: $libqb_summary"
 echo "     crypto: $crypto_summary"
 echo "   libaudit: $libaudit_summary"
+echo "    libldap: $libldap_summary"
 echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"
@@ -783,4 +814,3 @@ echo "    LDFLAGS: $LDFLAGS"
 echo " ASAN_FLAGS: $ASAN_FLAGS"
 echo " TSAN_FLAGS: $TSAN_FLAGS"
 echo
-

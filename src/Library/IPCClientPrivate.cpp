@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Radovan Sroka <rsroka@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -24,6 +25,7 @@
 #include "IPCPrivate.hpp"
 
 #include "usbguard/Logger.hpp"
+#include "usbguard/RuleSet.hpp"
 
 #include <stdint.h>
 #include <unistd.h>
@@ -385,23 +387,23 @@ namespace usbguard
     auto message_in = qbIPCSendRecvMessage(message_out);
   }
 
-  const RuleSet IPCClientPrivate::listRules(const std::string& query)
+  const std::shared_ptr<RuleSet> IPCClientPrivate::listRules(const std::string& query)
   {
     IPC::listRules message_out;
     message_out.mutable_request()->set_query(query);
     auto message_in = qbIPCSendRecvMessage(message_out);
     const Rule::Target default_target = \
       Rule::targetFromInteger(message_in->response().default_target());
-    RuleSet rule_set(&_p_instance);
-    rule_set.setDefaultTarget(default_target);
+    auto rule_set = std::make_shared<RuleSet>(&_p_instance);
+    rule_set->setDefaultTarget(default_target);
 
     for (auto rule_message : message_in->response().rules()) {
       Rule rule = Rule::fromString(rule_message.rule());
       rule.setRuleID(rule_message.id());
-      rule_set.appendRule(rule);
+      rule_set->appendRule(rule);
     }
 
-    return rule_set;
+    return std::dynamic_pointer_cast<RuleSet>(rule_set);
   }
 
   uint32_t IPCClientPrivate::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
