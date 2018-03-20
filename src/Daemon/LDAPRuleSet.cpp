@@ -111,7 +111,7 @@ namespace usbguard
   std::shared_ptr<Rule> LDAPRuleSet::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
     USBGUARD_LOG(Trace);
-    std::future<void> ft = std::async(std::launch::deferred, &LDAPRuleSet::update, *this);
+    std::future<void> ft = std::async(std::launch::deferred, std::bind(&LDAPRuleSet::update, *this));
     ft.get();
     return RuleSet::getFirstMatchingRule(device_rule, from_id);
   }
