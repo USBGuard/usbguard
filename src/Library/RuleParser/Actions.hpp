@@ -24,7 +24,7 @@
 #include "Utility.hpp"
 #include "Common/Utility.hpp"
 
-#include <pegtl.hh>
+#include <tao/pegtl.hpp>
 
 namespace usbguard
 {
@@ -47,7 +47,7 @@ namespace usbguard
     struct str_if;
 
     template<typename Rule>
-    struct rule_parser_actions : pegtl::nothing<Rule> {};
+    struct rule_parser_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct rule_parser_actions<target> {
@@ -58,7 +58,7 @@ namespace usbguard
           rule.setTarget(Rule::targetFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -75,7 +75,7 @@ namespace usbguard
           rule.setDeviceID(device_id);
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -87,7 +87,7 @@ namespace usbguard
     }
 
     template<typename Rule>
-    struct name_actions : pegtl::nothing<Rule> {};
+    struct name_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct name_actions<str_name> {
@@ -95,7 +95,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeName().empty()) {
-          throw pegtl::parse_error("name attribute already defined", in);
+          throw tao::pegtl::parse_error("name attribute already defined", in);
         }
       }
     };
@@ -109,7 +109,7 @@ namespace usbguard
           rule.attributeName().append(stringValueFromRule(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -123,13 +123,13 @@ namespace usbguard
           rule.attributeName().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct id_actions : pegtl::nothing<Rule> {};
+    struct id_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct id_actions<str_id> {
@@ -137,7 +137,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeDeviceID().empty()) {
-          throw pegtl::parse_error("id attribute already defined", in);
+          throw tao::pegtl::parse_error("id attribute already defined", in);
         }
       }
     };
@@ -154,7 +154,7 @@ namespace usbguard
           rule.attributeDeviceID().append(device_id);
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -168,13 +168,13 @@ namespace usbguard
           rule.attributeDeviceID().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct hash_actions : pegtl::nothing<Rule> {};
+    struct hash_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct hash_actions<str_hash> {
@@ -182,7 +182,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeHash().empty()) {
-          throw pegtl::parse_error("hash attribute already defined", in);
+          throw tao::pegtl::parse_error("hash attribute already defined", in);
         }
       }
     };
@@ -196,7 +196,7 @@ namespace usbguard
           rule.attributeHash().append(stringValueFromRule(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -210,13 +210,13 @@ namespace usbguard
           rule.attributeHash().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct parent_hash_actions : pegtl::nothing<Rule> {};
+    struct parent_hash_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct parent_hash_actions<str_parent_hash> {
@@ -224,7 +224,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeParentHash().empty()) {
-          throw pegtl::parse_error("parent-hash attribute already defined", in);
+          throw tao::pegtl::parse_error("parent-hash attribute already defined", in);
         }
       }
     };
@@ -238,7 +238,7 @@ namespace usbguard
           rule.attributeParentHash().append(stringValueFromRule(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -252,13 +252,13 @@ namespace usbguard
           rule.attributeParentHash().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct serial_actions : pegtl::nothing<Rule> {};
+    struct serial_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct serial_actions<str_serial> {
@@ -266,7 +266,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeSerial().empty()) {
-          throw pegtl::parse_error("serial attribute already defined", in);
+          throw tao::pegtl::parse_error("serial attribute already defined", in);
         }
       }
     };
@@ -280,7 +280,7 @@ namespace usbguard
           rule.attributeSerial().append(stringValueFromRule(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -294,13 +294,13 @@ namespace usbguard
           rule.attributeSerial().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct via_port_actions : pegtl::nothing<Rule> {};
+    struct via_port_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct via_port_actions<str_via_port> {
@@ -308,7 +308,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeViaPort().empty()) {
-          throw pegtl::parse_error("via-port attribute already defined", in);
+          throw tao::pegtl::parse_error("via-port attribute already defined", in);
         }
       }
     };
@@ -322,7 +322,7 @@ namespace usbguard
           rule.attributeViaPort().append(stringValueFromRule(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -336,13 +336,13 @@ namespace usbguard
           rule.attributeViaPort().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct with_interface_actions : pegtl::nothing<Rule> {};
+    struct with_interface_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct with_interface_actions<str_with_interface> {
@@ -350,7 +350,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeWithInterface().empty()) {
-          throw pegtl::parse_error("with-interface attribute already defined", in);
+          throw tao::pegtl::parse_error("with-interface attribute already defined", in);
         }
       }
     };
@@ -365,7 +365,7 @@ namespace usbguard
           rule.attributeWithInterface().append(interface_type);
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -379,13 +379,13 @@ namespace usbguard
           rule.attributeWithInterface().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
     template<typename Rule>
-    struct condition_actions : pegtl::nothing<Rule> {};
+    struct condition_actions : tao::pegtl::nothing<Rule> {};
 
     template<>
     struct condition_actions<str_if> {
@@ -393,7 +393,7 @@ namespace usbguard
       static void apply(const Input& in, Rule& rule)
       {
         if (!rule.attributeConditions().empty()) {
-          throw pegtl::parse_error("conditions already defined", in);
+          throw tao::pegtl::parse_error("conditions already defined", in);
         }
       }
     };
@@ -407,7 +407,7 @@ namespace usbguard
           rule.attributeConditions().append(RuleCondition(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };
@@ -421,7 +421,7 @@ namespace usbguard
           rule.attributeConditions().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
-          throw pegtl::parse_error(ex.what(), in);
+          throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
     };

@@ -27,7 +27,9 @@
 #include "usbguard/Logger.hpp"
 
 #include <fstream>
-#include <pegtl/trace.hh>
+
+#include <tao/pegtl/contrib/tracer.hpp>
+using namespace tao;
 
 namespace usbguard
 {
@@ -114,25 +116,14 @@ namespace usbguard
   void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool trace)
   {
     try {
-#if HAVE_PEGTL_LTE_1_3_1
+      tao::pegtl::string_input<> in(uevent_string, std::string());
 
       if (!trace) {
-        pegtl::parse<G, UEventParser::actions>(uevent_string, std::string(), uevent);
+        tao::pegtl::parse<G, UEventParser::actions>(in, uevent);
       }
       else {
-        pegtl::parse<G, UEventParser::actions, pegtl::tracer>(uevent_string, std::string(), uevent);
+        tao::pegtl::parse<G, UEventParser::actions, tao::pegtl::tracer>(in, uevent);
       }
-
-#else
-
-      if (!trace) {
-        pegtl::parse_string<G, UEventParser::actions>(uevent_string, std::string(), uevent);
-      }
-      else {
-        pegtl::parse_string<G, UEventParser::actions, pegtl::tracer>(uevent_string, std::string(), uevent);
-      }
-
-#endif
     }
     catch (...) {
       throw;

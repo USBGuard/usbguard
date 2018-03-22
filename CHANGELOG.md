@@ -6,6 +6,7 @@
 
 - usbguard-daemon will now exit with an error if it fails to open
   a logging file or audit event file.
+- updated PEGTL submodule and dropped support for older PEGTL API
 
 ### Added
 

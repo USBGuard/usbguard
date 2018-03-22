@@ -34,7 +34,7 @@
 #include <stdexcept>
 #include <stdlib.h>
 
-#include <pegtl/trace.hh>
+#include <tao/pegtl/contrib/tracer.hpp>
 
 namespace usbguard
 {
@@ -42,35 +42,21 @@ namespace usbguard
   {
     try {
       Rule rule;
-#if HAVE_PEGTL_LTE_1_3_1
+      tao::pegtl::string_input<> input(rule_spec, file);
 
       if (!trace) {
-        pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
+        tao::pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(input, rule);
       }
       else {
-        pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
+        tao::pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions, tao::pegtl::tracer>(input, rule);
       }
 
-#else
-
-      if (!trace) {
-        pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(rule_spec, file, rule);
-      }
-      else {
-        pegtl::parse_string<RuleParser::rule_grammar, RuleParser::rule_parser_actions, pegtl::tracer>(rule_spec, file, rule);
-      }
-
-#endif
       return rule;
     }
-    catch (const pegtl::parse_error& ex) {
+    catch (const tao::pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
       error.setHint(ex.what());
-#if HAVE_PEGTL_LTE_1_3_1
-      error.setOffset(ex.positions[0].column);
-#else
       error.setOffset(ex.positions[0].byte_in_line);
-#endif
 
       if (!file.empty() || line != 0) {
         error.setFileInfo(file, line);

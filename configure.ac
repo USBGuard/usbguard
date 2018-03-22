@@ -290,54 +290,28 @@ AC_SUBST([catch_LIBS])
 #
 AC_ARG_WITH([bundled-pegtl], AS_HELP_STRING([--with-bundled-pegtl], [Build using the bundled PEGTL library]), [with_bundled_pegtl=$withval], [with_bundled_pegtl=no])
 if test "x$with_bundled_pegtl" = xyes; then
-	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL"
-	pegtl_AC_CFLAGS="-I$srcdir/src/ThirdParty/PEGTL"
+	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL/include"
+	pegtl_AC_CFLAGS="-I$srcdir/src/ThirdParty/PEGTL/include"
 	pegtl_LIBS=""
 	AC_MSG_NOTICE([Using bundled PEGTL library])
 	pegtl_summary="bundled; $pegtl_CFLAGS $pegtl_LIBS"
 else
-	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++11 $CPPFLAGS"
-	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([pegtl.hh], [], [AC_MSG_FAILURE(pegtl.hh not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
-	AC_LANG_POP
 	pegtl_CFLAGS=""
 	pegtl_AC_CFLAGS=""
 	pegtl_LIBS=""
-	CPPFLAGS=$SAVE_CPPFLAGS
 	pegtl_summary="system-wide; $pegtl_CFLAGS $pegtl_LIBS"
 fi
 AC_SUBST([pegtl_CFLAGS])
 AC_SUBST([pegtl_AC_CFLAGS])
 AC_SUBST([pegtl_LIBS])
 
-#
-# Check whether the available PEGTL library is compatible
-# with version 1.3.1 or older.
-#
 SAVE_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="-std=c++11 $pegtl_AC_CFLAGS"
+CPPFLAGS="-std=c++11 $CPPFLAGS $pegtl_AC_CFLAGS"
 AC_LANG_PUSH([C++])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-#include <pegtl.hh>
-#include <string>
-int main(void)
-{
-  struct grammar
-   : pegtl::one<'g'> {};
-  try {
-    pegtl::parse_string<grammar>(std::string(), std::string());
-  } catch(const pegtl::parse_error& ex) {
-    auto b = ex.positions[0].byte_in_line;
-  }
-  return 0;
-}
-]])],
-[have_pegtl_lte_131=no], [have_pegtl_lte_131=yes])
+AC_CHECK_HEADER([tao/pegtl.hpp],
+		[AC_DEFINE([HAVE_TAO_PEGTL_HPP], [1], [PEGTL header file with .hpp extension is present])],
+		[AC_MSG_FAILURE(PEGTL header file not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
 AC_LANG_POP
-if test "x$have_pegtl_lte_131" = xyes; then
-  AC_DEFINE([HAVE_PEGTL_LTE_1_3_1], [1], [PEGTL version less than or equal to 1.3.1])
-fi
 CPPFLAGS=$SAVE_CPPFLAGS
 
 #
