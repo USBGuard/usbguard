@@ -1,0 +1,15 @@
+# lgtm.yml configuration file for C/C++ analysis
+# of USBGuard on lgtm.com:
+# https://lgtm.com/projects/g/USBGuard/usbguard
+
+extraction:
+  cpp:
+    prepare:
+      packages:
+        - libdbus-glib-1-dev
+    
+    after_prepare:
+      - ./autogen.sh
+
+    configure:
+      command: ./configure --with-bundled-pegtl
