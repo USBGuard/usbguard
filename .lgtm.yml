@@ -1,0 +1,19 @@
+# lgtm.yml configuration file for C/C++ analysis
+# of USBGuard on lgtm.com:
+# https://lgtm.com/projects/g/USBGuard/usbguard
+
+extraction:
+  cpp:
+    prepare:
+      # Most Debian/Ubuntu package dependencies 
+      # are automatically detected, but this one
+      # is not. The team at lgtm.com are looking
+      # into it.
+      packages:
+        - libdbus-glib-1-dev
+    
+    after_prepare:
+      - ./autogen.sh
+
+    configure:
+      command: ./configure --with-bundled-pegtl
