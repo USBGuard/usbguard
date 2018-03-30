@@ -120,6 +120,7 @@ namespace usbguard
         nullptr, nullptr, nullptr, 0, &res);
 
     if (rc != LDAP_SUCCESS) {
+      ldap_msgfree(res);
       throw Exception("LDAPHandler query", "ldap_search_ext_s", ldap_err2string(rc));
     }
 
@@ -199,7 +200,7 @@ namespace usbguard
           }
 
           USBGUARD_LOG(Info) << LDAPUtil::_ldap_keys[i] << ": " << (*entry)[0].bv_val;
-          free((*entry)[0].bv_val);
+          ldap_value_free_len(entry);
         }
       }
 
