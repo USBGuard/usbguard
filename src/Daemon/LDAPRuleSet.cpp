@@ -40,7 +40,7 @@
 namespace usbguard
 {
   LDAPRuleSet::LDAPRuleSet(Interface* const interface_ptr, std::shared_ptr<LDAPHandler> ldap)
-    : RuleSetAbstract(interface_ptr),
+    : RuleSet(interface_ptr),
       _LDAP(ldap),
       _last_update(0)
 
@@ -50,7 +50,7 @@ namespace usbguard
   }
 
   LDAPRuleSet::LDAPRuleSet(const LDAPRuleSet& rhs)
-    : RuleSetAbstract(rhs._interface_ptr),
+    : RuleSet(rhs._interface_ptr),
       _LDAP(rhs._LDAP),
       _last_update(rhs._last_update)
   {

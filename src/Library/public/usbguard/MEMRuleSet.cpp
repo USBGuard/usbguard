@@ -16,42 +16,42 @@
 //
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
-#pragma once
+
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
-#include "usbguard/Typedefs.hpp"
-#include "usbguard/Rule.hpp"
-#include "usbguard/RuleSet.hpp"
-
-#include <istream>
-#include <ostream>
-#include <mutex>
+#include "RuleSet.hpp"
+#include "MEMRuleSet.hpp"
 
 namespace usbguard
 {
-  class Interface;
-  class FileRuleSet : public RuleSet
+  MEMRuleSet::MEMRuleSet(Interface* const interface_ptr)
+    : RuleSet(interface_ptr)
   {
-  public:
-    FileRuleSet(Interface* const interface_ptr, std::string const path);
-    FileRuleSet(const FileRuleSet& rhs);
-    const FileRuleSet& operator=(const FileRuleSet& rhs);
+    setWritable();
+    USBGUARD_LOG(Info) << "Creating MEMRuleSet";
+  }
 
-    void load() override;
-    void save() override;
+  MEMRuleSet::MEMRuleSet(const MEMRuleSet& rhs)
+    : RuleSet(rhs._interface_ptr)
+  {
+    *this = rhs;
+  }
 
-    void load(const std::string& path);
-    void load(std::istream& stream);
-    void save(const std::string& path) const;
-    void save(std::ostream& stream) const;
+  const MEMRuleSet& MEMRuleSet::operator=(const MEMRuleSet& rhs)
+  {
+    RuleSet::operator = (rhs);
+    return *this;
+  }
 
-    void setRulesPath(const std::string& path);
+  void MEMRuleSet::load()
+  {
+  }
 
-  private:
-    std::string _rulesPath;
-  };
+  void MEMRuleSet::save()
+  {
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

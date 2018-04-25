@@ -37,7 +37,7 @@
 namespace usbguard
 {
   class Interface;
-  class DLL_PUBLIC LDAPRuleSet : public RuleSetAbstract
+  class DLL_PUBLIC LDAPRuleSet : public RuleSet
   {
   public:
     LDAPRuleSet(Interface* const interface_ptr, std::shared_ptr<LDAPHandler> ldap);

@@ -240,21 +240,6 @@ namespace usbguard
     return _writable;
   }
 
-  void RuleSet::load()
-  {
-    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be loaded";
-  }
-
-  void RuleSet::save()
-  {
-    if (!isWritable()) {
-      USBGUARD_LOG(Info) << "RuleSet is not writable";
-      return;
-    }
-
-    USBGUARD_LOG(Debug) << "RuleSet is only in memory so it cannot be saved";
-  }
-
   void RuleSet::serialize(std::ostream& stream) const
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);

@@ -17,12 +17,8 @@
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
-#ifdef HAVE_BUILD_CONFIG_H
-  #include <build-config.h>
-#endif
 
 #include "usbguard/Typedefs.hpp"
-#include "usbguard/Rule.hpp"
 #include "usbguard/RuleSet.hpp"
 
 #include <istream>
@@ -32,26 +28,19 @@
 namespace usbguard
 {
   class Interface;
-  class FileRuleSet : public RuleSet
+  class DLL_PUBLIC MEMRuleSet : public RuleSet
   {
   public:
-    FileRuleSet(Interface* const interface_ptr, std::string const path);
-    FileRuleSet(const FileRuleSet& rhs);
-    const FileRuleSet& operator=(const FileRuleSet& rhs);
+
+    MEMRuleSet(Interface* const interface_ptr);
+    MEMRuleSet(const MEMRuleSet& rhs);
+    const MEMRuleSet& operator=(const MEMRuleSet& rhs);
 
     void load() override;
     void save() override;
 
-    void load(const std::string& path);
-    void load(std::istream& stream);
-    void save(const std::string& path) const;
-    void save(std::ostream& stream) const;
-
-    void setRulesPath(const std::string& path);
-
-  private:
-    std::string _rulesPath;
   };
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
