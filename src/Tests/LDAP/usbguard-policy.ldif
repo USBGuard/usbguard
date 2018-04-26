@@ -2,49 +2,49 @@ dn: cn=Rule1,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule1
-RuleType: allow
+RuleTarget: allow
 USBGuardHost: Axis
-USBGuardOrder: 0
-DeviceID: 1038:1702
-DeviceSerial: ""
-DeviceName: "SteelSeries Rival 100 Gaming Mouse"
-DeviceHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
-DeviceParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="
-DeviceViaPort: "2-3"
+RuleOrder: 0
+USBID: 1038:1702
+USBSerial: ""
+USBName: "SteelSeries Rival 100 Gaming Mouse"
+USBHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
+USBParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="
+USBViaPort: "2-3"
 
 
 dn: cn=Rule2,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule2
-RuleType: allow
+RuleTarget: allow
 USBGuardHost: *
 USBGuardHost: !Axis
-USBGuardOrder: 1
-DeviceID: 1038:1702
-DeviceSerial: ""
-DeviceName: "Keyboard..."
-DeviceHash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa="
-DeviceParentHash: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb="
-DeviceWithInterface: { 03:01:01 03:00:00 03:00:00 }
+RuleOrder: 1
+USBID: 1038:1702
+USBSerial: ""
+USBName: "Keyboard..."
+USBHash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa="
+USBParentHash: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb="
+USBWithInterface: { 03:01:01 03:00:00 03:00:00 }
 
 dn: cn=Rule3,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule3
-RuleType: allow
+RuleTarget: allow
 USBGuardHost: *
-USBGuardOrder: 6
-DeviceID: 1038:1702
-DeviceSerial: ""
-DeviceName: "Flash"
-DeviceHash: "ccccccccccccccccccccccccccccccccccccccccccccc="
-DeviceParentHash: "ddddddddddddddddddddddddddddddddddddddddddddd="
+RuleOrder: 6
+USBID: 1038:1702
+USBSerial: ""
+USBName: "Flash"
+USBHash: "ccccccccccccccccccccccccccccccccccccccccccccc="
+USBParentHash: "ddddddddddddddddddddddddddddddddddddddddddddd="
 
 dn: cn=Rule4,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule4
-RuleType: allow
+RuleTarget: allow
 USBGuardHost: *
-USBGuardOrder: 2
+RuleOrder: 2

@@ -33,16 +33,16 @@ namespace usbguard
   {
   public:
     enum class LDAP_KEY_INDEX {
-      RuleType = 0,
+      RuleTarget = 0,
       USBGuardHost,
-      USBGuardOrder,
-      DeviceID,
-      DeviceSerial,
-      DeviceName,
-      DeviceHash,
-      DeviceParentHash,
-      DeviceViaPort,
-      DeviceWithInterface,
+      RuleOrder,
+      USBID,
+      USBSerial,
+      USBName,
+      USBHash,
+      USBParentHash,
+      USBViaPort,
+      USBWithInterface,
       RuleCondition
     };
     static std::vector<std::string> _ldap_keys;

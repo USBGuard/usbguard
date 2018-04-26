@@ -77,7 +77,7 @@ namespace usbguard
     size_t rule_number = 1;
 
     for (auto _rule: v) {
-      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  USBGuardOrder: "<< _rule.first;
+      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  RuleOrder: "<< _rule.first;
       USBGUARD_LOG(Info) << _rule.second;
       auto rule = parseRuleFromString(_rule.second, "", rule_number);
       appendRule(rule, Rule::LastID, /*lock=*/false);

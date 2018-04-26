@@ -60,9 +60,9 @@ dn: cn=Rule1,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule1
-RuleType: allow
+RuleTarget: allow
 USBGuardHost: *
-USBGuardOrder: 1
+RuleOrder: 1
 EOF
 
 sudo -n cat > "$config_path" <<EOF
