@@ -15,6 +15,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 ## Authors: Daniel Kopecek <dkopecek@redhat.com>
+##          Radovan Sroka <rsroka@redhat.com>
 ##
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -46,7 +47,14 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Source/CheckScripts/spell-check.rws \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/private-with-build-config.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/public-without-build-config.sh \
-	$(top_srcdir)/src/Tests/Source/CheckScripts/code-style.sh
+	$(top_srcdir)/src/Tests/Source/CheckScripts/code-style.sh \
+	$(top_srcdir)/src/Tests/LDAP/Sanity/ldap-nsswitch.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-1.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-2.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-3.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-3.sh \
+	$(top_srcdir)/src/Tests/LDAP/ldap.sh \
+	$(top_srcdir)/src/Tests/LDAP/nsswitch.sh
 
 LOG_DRIVER=\
 	$(top_srcdir)/src/Tests/test-driver
@@ -58,7 +66,10 @@ TESTS_ENVIRONMENT=\
 	USBGUARD_TESTLIB_BASH=$(top_srcdir)/src/Tests/bash-testlib.sh \
 	USBGUARD=$(top_builddir)/usbguard \
 	USBGUARD_DAEMON=$(top_builddir)/usbguard-daemon \
-	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus
+	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus \
+	LDAP_UTIL=$(top_srcdir)/src/Tests/LDAP/ldap.sh \
+	NSSWITCH=$(top_srcdir)/src/Tests/LDAP/nsswitch.sh
+
 
 TESTS=\
 	test-unit \
@@ -74,6 +85,16 @@ TESTS+=\
 	UseCase/002_cli_devices.sh \
 	UseCase/003_cli_devices_dummy.sh \
 	UseCase/004_daemonize.sh
+endif
+
+if WITH_LDAP
+TESTS+=\
+	LDAP/Sanity/ldap-nsswitch.sh \
+	LDAP/UseCase/ldap-test-1.sh \
+	LDAP/UseCase/ldap-test-2.sh \
+	LDAP/UseCase/ldap-test-3.sh \
+	LDAP/UseCase/ldap-test-4.sh
+	
 endif
 
 check_PROGRAMS=\

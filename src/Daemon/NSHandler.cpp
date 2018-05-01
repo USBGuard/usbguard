@@ -39,9 +39,14 @@
 #include "usbguard/KeyValueParser.hpp"
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleSet.hpp"
+#include "usbguard/MEMRuleSet.hpp"
+
+#include "RuleSetFactory.hpp"
 
 namespace usbguard
 {
+
+  NSHandler* NSHandler::_self = nullptr;
 
   NSHandler::NSHandler()
     : _parser( {"usbguard"}, ":", /*case_sensitive?*/false, /*validate_keys?*/false),
@@ -51,6 +56,7 @@ namespace usbguard
     USBGUARD_LOG(Info) << "NSHandler Loading...";
     _source = SourceType::LOCAL;
     _parser.viewConfig();
+    _self = this;
     USBGUARD_LOG(Info) << "NSHandler Loaded";
   }
 
@@ -96,68 +102,40 @@ namespace usbguard
     return ret;
   }
 
-  std::shared_ptr<RuleSet> NSHandler::generateMEMRuleSet(Interface* const interface_ptr)
+#if HAVE_LDAP
+  std::shared_ptr<LDAPHandler> NSHandler::getLDAPHandler()
   {
-    auto rule_set = std::make_shared<RuleSet>(interface_ptr);
-    return rule_set;
-  }
+    if (!_ldap.get()) {
+      _ldap = _ldap = std::make_shared<LDAPHandler>();
+    }
 
-  std::shared_ptr<RuleSet> NSHandler::generateLOCAL(Interface* const interface_ptr)
-  {
-    auto rule_set = std::make_shared<FileRuleSet>(interface_ptr, _rulesPath);
-    return std::dynamic_pointer_cast<RuleSet>(rule_set);
-  }
-
-#ifdef HAVE_LDAP
-  std::shared_ptr<RuleSet> NSHandler::generateLDAP(Interface* const interface_ptr)
-  {
-    _ldap = std::make_shared<LDAPHandler>();
-    auto rule_set = std::make_shared<LDAPRuleSet>(interface_ptr, _ldap);
-    return std::dynamic_pointer_cast<RuleSet>(rule_set);
+    return _ldap;
   }
 #endif
 
-  // std::shared_ptr<RuleSet> NSHandler::generateSSSD(Interface* const interface_ptr)
-  // {
-  //   auto rule_set = std::make_shared<RuleSet>(interface_ptr);
-  //   return rule_set;
-  // }
+  NSHandler& NSHandler::getRef()
+  {
+    if (!NSHandler::_self) {
+      throw Exception("NSHandler", "getRef", "uninitialized static _self parameter");
+    }
+
+    return *NSHandler::_self;
+  }
 
   std::shared_ptr<RuleSet> NSHandler::getRuleSet(Interface* const interface_ptr)
   {
-    switch (_source) {
-    case SourceType::LOCAL:
-      if (_rulesPath != "") {
-        return generateLOCAL(interface_ptr);
-      }
-      else {
-        USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
-        return generateMEMRuleSet(interface_ptr);
-      }
-
-      break;
-#ifdef HAVE_LDAP
-
-    case SourceType::LDAP:
-      return generateLDAP(interface_ptr);
-      break;
-#endif
-
-    // case SourceType::SSSD:
-    //   return generateSSSD(interface_ptr);
-    //   break;
-
-    default:
-      return generateMEMRuleSet(interface_ptr);
-      break;
-    }
-
-    return std::shared_ptr<RuleSet>(nullptr);
+    RuleSetFactory::setInterface(interface_ptr);
+    return RuleSetFactory::generateRuleSetBySource(_source);
   }
 
   void NSHandler::setRulesPath(const std::string& path)
   {
     _rulesPath = path;
+  }
+
+  std::string& NSHandler::getRulesPath()
+  {
+    return _rulesPath;
   }
 
   void NSHandler::parseNSSwitch()

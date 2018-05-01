@@ -1,0 +1,7 @@
+- hosts: all
+  sudo: true
+  roles:
+    - role: bennojoy.openldap_server
+      openldap_server_domain_name: example.com
+      openldap_server_rootpw: passme
+      openldap_server_enable_ssl: false

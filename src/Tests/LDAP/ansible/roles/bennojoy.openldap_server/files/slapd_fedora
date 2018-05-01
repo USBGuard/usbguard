@@ -1,0 +1,15 @@
+# OpenLDAP server configuration
+# see 'man slapd' for additional information
+
+# Where the server will run (-h option)
+# - ldapi:/// is required for on-the-fly configuration using client tools
+#   (use SASL with EXTERNAL mechanism for authentication)
+# - default: ldapi:/// ldap:///
+# - example: ldapi:/// ldap://127.0.0.1/ ldap://10.0.0.1:1389/ ldaps:///
+SLAPD_URLS="ldapi:/// ldaps:///"
+
+# Any custom options
+#SLAPD_OPTIONS=""
+
+# Keytab location for GSSAPI Kerberos authentication
+#KRB5_KTNAME="FILE:/etc/openldap/ldap.keytab"

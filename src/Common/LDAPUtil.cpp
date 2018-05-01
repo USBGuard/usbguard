@@ -28,21 +28,21 @@
 namespace usbguard
 {
   std::vector<std::string> LDAPUtil::_ldap_keys = {
-    "RuleType",
+    "RuleTarget",
     "USBGuardHost",
-    "USBGuardOrder",
-    "DeviceID",
-    "DeviceSerial",
-    "DeviceName",
-    "DeviceHash",
-    "DeviceParentHash",
-    "DeviceViaPort",
-    "DeviceWithInterface",
+    "RuleOrder",
+    "USBID",
+    "USBSerial",
+    "USBName",
+    "USBHash",
+    "USBParentHash",
+    "USBViaPort",
+    "USBWithInterface",
     "RuleCondition"
   };
 
   std::vector<std::string> LDAPUtil::_rule_keys = {
-    "RuleType", /* just for indexing */
+    "RuleTarget", /* just for indexing */
     "USBGuardHost", /* just for indexing */
     "USBGuardOrder", /* just for indexing */
     "id",
@@ -74,7 +74,16 @@ namespace usbguard
 
     rule_string.append("\n");
     rule_string.append(ldif_name + ": ");
-    rule_string.append(attribute.toRuleString());
+    std::string tmp = attribute.toRuleString();
+    size_t index = tmp.find_first_of(' ');
+
+    if (index == std::string::npos) {
+      rule_string.append(tmp);
+    }
+    else {
+      rule_string.append(tmp.substr(index));
+    }
+
     return;
   }
 
@@ -87,7 +96,7 @@ namespace usbguard
     rule_string += "objectClass: " + values["OBJCLASS"] + "\n";
     rule_string += "objectClass: top\n";
     rule_string += "cn: " + name + "\n";
-    rule_string += "RuleType: ";
+    rule_string += LDAPUtil::_ldap_keys[static_cast<unsigned>(LDAPUtil::LDAP_KEY_INDEX::RuleTarget)] + ": ";
 
     try {
       rule_string.append(Rule::targetToString(rule->getTarget()));

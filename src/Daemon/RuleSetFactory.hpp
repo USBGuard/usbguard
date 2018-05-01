@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 Red Hat, Inc.
+// Copyright (C) 2015 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,41 +17,42 @@
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
 #pragma once
+
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
-#include <vector>
-#include <map>
+#include <iostream>
 
-#include "usbguard/Rule.hpp"
+#include "usbguard/Typedefs.hpp"
 #include "usbguard/RuleSet.hpp"
+#include "usbguard/MEMRuleSet.hpp"
+
+#include "FileRuleSet.hpp"
+
+#ifdef HAVE_LDAP
+  #include "LDAPRuleSet.hpp"
+#endif
+
+#include "NSHandler.hpp"
+#include "usbguard/Interface.hpp"
 
 namespace usbguard
 {
-  class DLL_PUBLIC LDAPUtil
+  class DLL_PUBLIC RuleSetFactory
   {
   public:
-    enum class LDAP_KEY_INDEX {
-      RuleTarget = 0,
-      USBGuardHost,
-      RuleOrder,
-      USBID,
-      USBSerial,
-      USBName,
-      USBHash,
-      USBParentHash,
-      USBViaPort,
-      USBWithInterface,
-      RuleCondition
-    };
-    static std::vector<std::string> _ldap_keys;
-    static std::vector<std::string> _rule_keys;
 
-    static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values, bool invalid);
-    static void serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream,
-      std::map<std::string, std::string>& values);
+    static void setInterface(Interface* ptr);
+
+    static std::shared_ptr<RuleSet> generateDefaultRuleSet();
+    static std::shared_ptr<RuleSet> generateRuleSetBySource(NSHandler::SourceType type);
+
+  private:
+    static Interface* interface_ptr;
+
   };
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

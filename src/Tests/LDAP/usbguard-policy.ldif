@@ -1,0 +1,50 @@
+dn: cn=Rule1,ou=USBGuard,dc=example,dc=com
+objectClass: USBGuardPolicy
+objectClass: top
+cn: Rule1
+RuleTarget: allow
+USBGuardHost: Axis
+RuleOrder: 0
+USBID: 1038:1702
+USBSerial: ""
+USBName: "SteelSeries Rival 100 Gaming Mouse"
+USBHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
+USBParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="
+USBViaPort: "2-3"
+
+
+dn: cn=Rule2,ou=USBGuard,dc=example,dc=com
+objectClass: USBGuardPolicy
+objectClass: top
+cn: Rule2
+RuleTarget: allow
+USBGuardHost: *
+USBGuardHost: !Axis
+RuleOrder: 1
+USBID: 1038:1702
+USBSerial: ""
+USBName: "Keyboard..."
+USBHash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa="
+USBParentHash: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb="
+USBWithInterface: { 03:01:01 03:00:00 03:00:00 }
+
+dn: cn=Rule3,ou=USBGuard,dc=example,dc=com
+objectClass: USBGuardPolicy
+objectClass: top
+cn: Rule3
+RuleTarget: allow
+USBGuardHost: *
+RuleOrder: 6
+USBID: 1038:1702
+USBSerial: ""
+USBName: "Flash"
+USBHash: "ccccccccccccccccccccccccccccccccccccccccccccc="
+USBParentHash: "ddddddddddddddddddddddddddddddddddddddddddddd="
+
+dn: cn=Rule4,ou=USBGuard,dc=example,dc=com
+objectClass: USBGuardPolicy
+objectClass: top
+cn: Rule4
+RuleTarget: allow
+USBGuardHost: *
+RuleOrder: 2

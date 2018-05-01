@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2017 Red Hat, Inc.
+// Copyright (C) 2015 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,42 +16,42 @@
 //
 // Authors: Radovan Sroka <rsroka@redhat.com>
 //
-#pragma once
+
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
-#include <vector>
-#include <map>
-
-#include "usbguard/Rule.hpp"
-#include "usbguard/RuleSet.hpp"
+#include "RuleSet.hpp"
+#include "MEMRuleSet.hpp"
 
 namespace usbguard
 {
-  class DLL_PUBLIC LDAPUtil
+  MEMRuleSet::MEMRuleSet(Interface* const interface_ptr)
+    : RuleSet(interface_ptr)
   {
-  public:
-    enum class LDAP_KEY_INDEX {
-      RuleTarget = 0,
-      USBGuardHost,
-      RuleOrder,
-      USBID,
-      USBSerial,
-      USBName,
-      USBHash,
-      USBParentHash,
-      USBViaPort,
-      USBWithInterface,
-      RuleCondition
-    };
-    static std::vector<std::string> _ldap_keys;
-    static std::vector<std::string> _rule_keys;
+    setWritable();
+    USBGUARD_LOG(Info) << "Creating MEMRuleSet";
+  }
 
-    static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values, bool invalid);
-    static void serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream,
-      std::map<std::string, std::string>& values);
-  };
+  MEMRuleSet::MEMRuleSet(const MEMRuleSet& rhs)
+    : RuleSet(rhs._interface_ptr)
+  {
+    *this = rhs;
+  }
+
+  const MEMRuleSet& MEMRuleSet::operator=(const MEMRuleSet& rhs)
+  {
+    RuleSet::operator = (rhs);
+    return *this;
+  }
+
+  void MEMRuleSet::load()
+  {
+  }
+
+  void MEMRuleSet::save()
+  {
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

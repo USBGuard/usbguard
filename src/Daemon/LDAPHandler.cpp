@@ -120,6 +120,7 @@ namespace usbguard
         nullptr, nullptr, nullptr, 0, &res);
 
     if (rc != LDAP_SUCCESS) {
+      ldap_msgfree(res);
       throw Exception("LDAPHandler query", "ldap_search_ext_s", ldap_err2string(rc));
     }
 
@@ -166,26 +167,26 @@ namespace usbguard
           size_t index = 0;
 
           switch (static_cast<LDAPUtil::LDAP_KEY_INDEX>(i)) {
-          case LDAPUtil::LDAP_KEY_INDEX::RuleType:
+          case LDAPUtil::LDAP_KEY_INDEX::RuleTarget:
             rule.second += value;
             break;
 
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceID:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceSerial:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceName:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceHash:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceParentHash:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceViaPort:
-          case LDAPUtil::LDAP_KEY_INDEX::DeviceWithInterface:
+          case LDAPUtil::LDAP_KEY_INDEX::USBID:
+          case LDAPUtil::LDAP_KEY_INDEX::USBSerial:
+          case LDAPUtil::LDAP_KEY_INDEX::USBName:
+          case LDAPUtil::LDAP_KEY_INDEX::USBHash:
+          case LDAPUtil::LDAP_KEY_INDEX::USBParentHash:
+          case LDAPUtil::LDAP_KEY_INDEX::USBViaPort:
+          case LDAPUtil::LDAP_KEY_INDEX::USBWithInterface:
           case LDAPUtil::LDAP_KEY_INDEX::RuleCondition:
             rule.second += " " + LDAPUtil::_rule_keys[i] + " " + value;
             break;
 
-          case LDAPUtil::LDAP_KEY_INDEX::USBGuardOrder:
+          case LDAPUtil::LDAP_KEY_INDEX::RuleOrder:
             rule.first = std::stol(value, &index);
 
             if (value[index] != 0) {
-              throw Exception("ldapToRules", "stol", "cannot convert USBGuardOrder to number: " + value);
+              throw Exception("ldapToRules", "stol", "cannot convert RuleOrder to number: " + value);
             }
 
             break;
@@ -199,7 +200,7 @@ namespace usbguard
           }
 
           USBGUARD_LOG(Info) << LDAPUtil::_ldap_keys[i] << ": " << (*entry)[0].bv_val;
-          free((*entry)[0].bv_val);
+          ldap_value_free_len(entry);
         }
       }
 

@@ -36,8 +36,8 @@ namespace usbguard
     RuleSet(const RuleSet& rhs);
     const RuleSet& operator=(const RuleSet& rhs);
 
-    virtual void load();
-    virtual void save();
+    virtual void load() = 0;
+    virtual void save() = 0;
 
     void serialize(std::ostream& stream) const;
 
@@ -71,17 +71,6 @@ namespace usbguard
     std::vector<std::shared_ptr<Rule>> _rules;
   };
 
-  class DLL_PUBLIC RuleSetAbstract : public RuleSet
-  {
-  public:
-    RuleSetAbstract(Interface* const interface_ptr)
-      : RuleSet(interface_ptr) {};
-    RuleSetAbstract(const RuleSetAbstract& rhs)
-      : RuleSet(rhs._interface_ptr) {};
-
-    virtual void load() = 0;
-    virtual void save() = 0;
-  };
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -33,7 +33,7 @@ namespace usbguard
 {
 
   FileRuleSet::FileRuleSet(Interface* const interface_ptr, std::string const path)
-    : RuleSetAbstract(interface_ptr),
+    : RuleSet(interface_ptr),
       _rulesPath(path)
   {
     setWritable();
@@ -41,7 +41,7 @@ namespace usbguard
   }
 
   FileRuleSet::FileRuleSet(const FileRuleSet& rhs)
-    : RuleSetAbstract(rhs._interface_ptr)
+    : RuleSet(rhs._interface_ptr)
   {
     *this = rhs;
   }

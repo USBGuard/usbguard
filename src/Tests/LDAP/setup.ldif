@@ -1,0 +1,10 @@
+dn: dc=example,dc=com
+objectclass: dcObject
+objectclass: organization
+dc: example
+o: "Test server"
+
+dn: ou=USBGuard,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: USBGuard

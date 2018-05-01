@@ -40,8 +40,9 @@
 namespace usbguard
 {
   LDAPRuleSet::LDAPRuleSet(Interface* const interface_ptr, std::shared_ptr<LDAPHandler> ldap)
-    : RuleSetAbstract(interface_ptr),
-      _LDAP(ldap)
+    : RuleSet(interface_ptr),
+      _LDAP(ldap),
+      _last_update(0)
 
   {
     clearWritable();
@@ -49,8 +50,9 @@ namespace usbguard
   }
 
   LDAPRuleSet::LDAPRuleSet(const LDAPRuleSet& rhs)
-    : RuleSetAbstract(rhs._interface_ptr),
-      _LDAP(rhs._LDAP)
+    : RuleSet(rhs._interface_ptr),
+      _LDAP(rhs._LDAP),
+      _last_update(rhs._last_update)
   {
     *this = rhs;
   }
@@ -75,7 +77,7 @@ namespace usbguard
     size_t rule_number = 1;
 
     for (auto _rule: v) {
-      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  USBGuardOrder: "<< _rule.first;
+      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  RuleOrder: "<< _rule.first;
       USBGUARD_LOG(Info) << _rule.second;
       auto rule = parseRuleFromString(_rule.second, "", rule_number);
       appendRule(rule, Rule::LastID, /*lock=*/false);
@@ -111,7 +113,7 @@ namespace usbguard
   std::shared_ptr<Rule> LDAPRuleSet::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
     USBGUARD_LOG(Trace);
-    std::future<void> ft = std::async(std::launch::deferred, &LDAPRuleSet::update, *this);
+    std::future<void> ft = std::async(std::launch::deferred, std::bind(&LDAPRuleSet::update, *this));
     ft.get();
     return RuleSet::getFirstMatchingRule(device_rule, from_id);
   }

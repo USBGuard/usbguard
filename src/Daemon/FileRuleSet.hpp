@@ -32,7 +32,7 @@
 namespace usbguard
 {
   class Interface;
-  class FileRuleSet : public RuleSetAbstract
+  class FileRuleSet : public RuleSet
   {
   public:
     FileRuleSet(Interface* const interface_ptr, std::string const path);

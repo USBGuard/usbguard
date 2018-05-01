@@ -1,0 +1,11 @@
+openldap_server_pkgs:
+  - slapd
+  - ldap-utils
+  - python-selinux
+  - openssl
+
+openldap_server_app_path: "/etc/ldap/"
+openldap_server_user: "openldap"
+
+openldap_server_slapd_init: slapd.ubuntu.ldif.j2
+

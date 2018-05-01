@@ -259,6 +259,7 @@ libusbguard_la_SOURCES=\
 	src/Library/public/usbguard/IPCServer.cpp \
 	src/Library/public/usbguard/KeyValueParser.cpp \
 	src/Library/public/usbguard/Logger.cpp \
+	src/Library/public/usbguard/MEMRuleSet.cpp \
 	src/Library/public/usbguard/Policy.cpp \
 	src/Library/public/usbguard/Rule.cpp \
 	src/Library/public/usbguard/RuleCondition.cpp \
@@ -281,6 +282,7 @@ pkginclude_HEADERS=\
 	src/Library/public/usbguard/Interface.hpp \
 	src/Library/public/usbguard/KeyValueParser.hpp \
 	src/Library/public/usbguard/Logger.hpp \
+	src/Library/public/usbguard/MEMRuleSet.hpp \
 	src/Library/public/usbguard/Policy.hpp \
 	src/Library/public/usbguard/Predicates.hpp \
 	src/Library/public/usbguard/Rule.hpp \
@@ -318,6 +320,8 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/LDAPRuleSet.hpp \
 	src/Daemon/NSHandler.cpp \
 	src/Daemon/NSHandler.hpp \
+	src/Daemon/RuleSetFactory.cpp \
+	src/Daemon/RuleSetFactory.hpp \
 	src/Daemon/Seccomp.c \
 	src/Daemon/Seccomp.h \
 	src/Common/Utility.hpp \

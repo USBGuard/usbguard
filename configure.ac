@@ -748,6 +748,7 @@ AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
+AM_CONDITIONAL([WITH_LDAP], [test "x$with_ldap" = xyes])
 AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"

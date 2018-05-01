@@ -26,6 +26,7 @@
 
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleSet.hpp"
+#include "usbguard/MEMRuleSet.hpp"
 
 #include <stdint.h>
 #include <unistd.h>
@@ -394,7 +395,7 @@ namespace usbguard
     auto message_in = qbIPCSendRecvMessage(message_out);
     const Rule::Target default_target = \
       Rule::targetFromInteger(message_in->response().default_target());
-    auto rule_set = std::make_shared<RuleSet>(&_p_instance);
+    auto rule_set = std::make_shared<MEMRuleSet>(&_p_instance);
     rule_set->setDefaultTarget(default_target);
 
     for (auto rule_message : message_in->response().rules()) {

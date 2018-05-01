@@ -26,6 +26,7 @@
 
 #include "usbguard/KeyValueParser.hpp"
 #include "usbguard/RuleSet.hpp"
+#include "usbguard/MEMRuleSet.hpp"
 #include "usbguard/Typedefs.hpp"
 
 #ifdef HAVE_LDAP
@@ -51,6 +52,7 @@ namespace usbguard
     ~NSHandler();
 
     void setRulesPath(const std::string& path);
+    std::string& getRulesPath();
     std::shared_ptr<RuleSet> getRuleSet(Interface* const interface_ptr);
     void parseNSSwitch();
 
@@ -58,26 +60,25 @@ namespace usbguard
 
     std::string getSourceInfo();
 
-  private:
-    std::shared_ptr<RuleSet> generateMEMRuleSet(Interface* const interface_ptr);
-    std::shared_ptr<RuleSet> generateLOCAL(Interface* const interface_ptr);
 #ifdef HAVE_LDAP
-    std::shared_ptr<RuleSet> generateLDAP(Interface* const interface_ptr);
+    std::shared_ptr<LDAPHandler> getLDAPHandler();
 #endif
-    // std::shared_ptr<RuleSet> generateSSSD(Interface* const interface_ptr);
 
+    static NSHandler& getRef();
+
+  private:
     KeyValueParser _parser;
     std::map<std::string, std::string> _parsedOptions;
 
     std::string _nsswitch_path;
-
     SourceType _source;
-
     std::string _rulesPath;
 
 #ifdef HAVE_LDAP
     std::shared_ptr<LDAPHandler> _ldap = nullptr;
 #endif
+
+    static NSHandler* _self;
   };
 } /* namespace usbguard */
 

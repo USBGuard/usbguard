@@ -1,29 +1,45 @@
 #!/bin/bash
 
-set -e
+#set -xe
 
 BASE="dc=example,dc=com"
 USER="cn=Manager,$BASE"
 
-HOST="192.168.122.83"
+USBGUARD_BASE="ou=USBGuard,$BASE"
+
+HOST="127.0.0.1"
 PASS="passme"
 
-ping -q -c 1 $HOST 2>&1 >/dev/null
+#ping -q -c 1 $HOST 2>&1 >/dev/null
 
 if [ "$1" = "delete" ]; then
-  ldapdelete -h $HOST -D $USER -w $PASS -r $BASE
+  ldapdelete -h $HOST -D $USER -w $PASS -r $USBGUARD_BASE
   exit
 fi
 
 if [ "$1" = "setup" ]; then
-  ldapadd -v -h $HOST -D $USER -w $PASS -f ./setup.ldif
+  ldapadd -v -h $HOST -D $USER -w $PASS <<EOF
+#dn: dc=example,dc=com
+#objectclass: dcObject
+#objectclass: organization
+#dc: example
+#o: "Test server"
+
+dn: ou=USBGuard,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: USBGuard
+EOF
+
   exit
 fi
 
 if [ "$1" = "policy" ]; then
-  POLICY='./usbguard-policy.ldif'
+  POLICY=""
   if [ "$2" ]; then
     POLICY=$2
+  else
+    exit
   fi
   ldapadd -v -h $HOST -D $USER -w $PASS -f $POLICY
   exit

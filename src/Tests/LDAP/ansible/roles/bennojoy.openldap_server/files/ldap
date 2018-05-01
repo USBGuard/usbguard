@@ -1,0 +1,30 @@
+# Options of slapd (see man slapd)
+#SLAPD_OPTIONS=
+
+# At least one of SLAPD_LDAP, SLAPD_LDAPI and SLAPD_LDAPS must be set to 'yes'!
+#
+# Run slapd with -h "... ldap:/// ..."
+#   yes/no, default: yes
+SLAPD_LDAP=no
+
+# Run slapd with -h "... ldapi:/// ..."
+#   yes/no, default: yes
+SLAPD_LDAPI=yes
+
+# Run slapd with -h "... ldaps:/// ..."
+#   yes/no, default: no
+SLAPD_LDAPS=yes
+
+# Run slapd with -h "... $SLAPD_URLS ..."
+# This option could be used instead of previous three ones, but:
+# - it doesn't overwrite settings of $SLAPD_LDAP, $SLAPD_LDAPS and $SLAPD_LDAPI options
+# - it isn't overwritten by settings of $SLAPD_LDAP, $SLAPD_LDAPS and $SLAPD_LDAPI options
+# example: SLAPD_URLS="ldapi:///var/lib/ldap_root/ldapi ldapi:/// ldaps:///"
+# default: empty
+#SLAPD_URLS=""
+
+# Maximum allowed time to wait for slapd shutdown on 'service ldap stop' (in seconds)
+#SLAPD_SHUTDOWN_TIMEOUT=3
+
+# Parameters to ulimit, use to change system limits for slapd
+#SLAPD_ULIMIT_SETTINGS=""
