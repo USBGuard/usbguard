@@ -58,6 +58,7 @@ man_ADOC_FILES=\
 	doc/man/usbguard-applet-qt.1.adoc \
 	doc/man/usbguard-daemon.8.adoc \
 	doc/man/usbguard-daemon.conf.5.adoc \
+	doc/man/usbguard-ldap.conf.5.adoc \
 	doc/man/usbguard-rules.conf.5.adoc
 
 man_ROFF_FILES=\

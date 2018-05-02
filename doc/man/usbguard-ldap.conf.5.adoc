@@ -1,0 +1,68 @@
+usbguard-ldap.conf(5)
+=====================
+:doctype: manpage
+
+
+== NAME
+usbguard-ldap.conf - USBGuard daemon ldap configuration file
+
+
+[[description]]
+== DESCRIPTION
+The *usbguard-ldap.conf* file is loaded by the USBGuard daemon after it parses */etc/nsswitch.conf* and result source is LDAP.
+It is used to configure LDAP client configuration.
+The default search path is '/etc/usbguard/usbguard-ldap.conf'.
+The USBGuard daemon in LDAP mode strictly requires this file and it won't start without file present.
+This file was inspired be standard *ldap.conf* syntax. Keys are case insensitive but values are not.
+
+
+[[options]]
+== OPTIONS
+*URI* 'address'::
+    The USBGuard Daemon will use this address to connect to this LDAP server.
+    
+    URI ldap://127.0.0.1/
+
+*ROOTDN* 'root domain name'::
+    Domain name of the user that has access rights to LDAP.
+
+    ROOTDN cn=Manager,dc=example,dc=com
+
+*BASE* 'standard LDAP base'::
+    LDAP base of the server.
+
+    BASE dc=example,dc=com
+
+*ROOTPW* 'password'::
+    The password for given *ROOTDN*.
+
+    ROOTPW passme
+
+*USBGUARDBASE* 'usbguard base'::
+    This is supposed to be domain name of the USBGuard organizational unit. This option helps to the daemon found the right sub-tree with rules.
+    If not set the daemon will use the default (ou=USBGuard,dc=example,dc=com).
+    
+    USBGUARDBASE ou=USBGuard,dc=example,dc=com
+
+*RULEQUERY* 'query string'::
+    This query is used for fetching of rules from LDAP so it needs to match all rules for the machine and nothing else.
+    It is suggested to use a default query because it is very simple to broke something with bad one.
+    The default matches all object with common name starting with *Rule* prefix that contain our hostname as USBGuardHost and they don't contain negation of
+    our hostname. If the USBGuard host is asterisk it will match but this same rule must not contain negation of matched host. 
+
+    RULEQUERY (&(cn=Rule*)(|(&(USBGuardHost=host)(!(USBGuardHost=!host)))(&(USBGuardHost=\*)(!(USBGuardHost=!host)))))
+    
+*UPDATEINTERVAL* 'interval'::
+    This is an interval that defines periodicity of update. The default is one hour.
+
+    UPDATEINTERVAL 1
+
+
+[[see-also]]
+== SEE ALSO
+<<usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>,
+<<usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>
+<<usbguard-rules.conf.5.adoc#name, usbguard-rules.conf(5)>>
+
+
+include::footer.adoc[]

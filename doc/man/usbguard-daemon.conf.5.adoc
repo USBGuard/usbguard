@@ -44,7 +44,7 @@ Target should be one of `allow`, `block` or `reject` (logically remove the devic
    Which device manager backend implementation to use.
    Backend should be one of `uevent` (default) or `dummy`.
 
-*IPCAllowedUsers**='username' ['username' ...]::
+*IPCAllowedUsers*='username' ['username' ...]::
    A space delimited list of usernames that the daemon will accept IPC connections from.
 
 *IPCAllowedGroups*='groupname' ['groupname' ...]::
