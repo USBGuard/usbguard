@@ -52,7 +52,8 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-1.sh \
 	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-2.sh \
 	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-3.sh \
-	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-3.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-4.sh \
+	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-5.sh \
 	$(top_srcdir)/src/Tests/LDAP/ldap.sh \
 	$(top_srcdir)/src/Tests/LDAP/nsswitch.sh
 
@@ -93,7 +94,8 @@ TESTS+=\
 	LDAP/UseCase/ldap-test-1.sh \
 	LDAP/UseCase/ldap-test-2.sh \
 	LDAP/UseCase/ldap-test-3.sh \
-	LDAP/UseCase/ldap-test-4.sh
+	LDAP/UseCase/ldap-test-4.sh \
+	LDAP/UseCase/ldap-test-5.sh
 	
 endif
 

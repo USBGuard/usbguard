@@ -3,7 +3,7 @@ objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule1
 RuleTarget: allow
-USBGuardHost: Axis
+USBGuardHost: *
 RuleOrder: 0
 USBID: 1038:1702
 USBSerial: ""
@@ -19,7 +19,7 @@ objectClass: top
 cn: Rule2
 RuleTarget: allow
 USBGuardHost: *
-USBGuardHost: !Axis
+USBGuardHost: !RandomHOSt
 RuleOrder: 1
 USBID: 1038:1702
 USBSerial: ""
