@@ -191,13 +191,13 @@ int main(int argc, char* argv[])
     ret = EXIT_SUCCESS;
   }
   catch (const usbguard::Exception& ex) {
-    USBGUARD_LOG(Error) << "ERROR: " << ex.message();
+    USBGUARD_LOG(Error) << ex.message();
   }
   catch (const std::exception& ex) {
-    USBGUARD_LOG(Error) << "EXCEPTION: " << ex.what();
+    USBGUARD_LOG(Error) << ex.what();
   }
   catch (...) {
-    USBGUARD_LOG(Error) << "EXCEPTION: Unknown excepton caught while starting the process";
+    USBGUARD_LOG(Error) << "Unknown excepton caught while starting the process";
   }
 
   return ret;

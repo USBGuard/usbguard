@@ -192,12 +192,12 @@ namespace usbguard
 
   void IPCServerPrivate::qbIPCConnectionDestroyedFn(qb_ipcs_connection_t* conn)
   {
-    USBGUARD_LOG(Trace) << "conn=" << conn;
-    IPCServer::AccessControl* const access_control = \
-      static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(conn));
+    USBGUARD_LOG(Trace) << "Deleting client context: conn=" << conn;
+    ClientContext* const client_context =      \
+      static_cast<ClientContext*>(qb_ipcs_context_get(conn));
 
-    if (access_control != nullptr) {
-      delete access_control;
+    if (client_context != nullptr) {
+      delete client_context;
     }
   }
 
@@ -247,9 +247,9 @@ namespace usbguard
     try {
       IPCServerPrivate* server = \
         static_cast<IPCServerPrivate*>(qb_ipcs_connection_service_context_get(conn));
-      std::unique_ptr<IPCServer::AccessControl> access_control(new IPCServer::AccessControl());
-      const bool auth = server->qbIPCConnectionAllowed(uid, gid, access_control.get());
-      qb_ipcs_context_set(conn, access_control.release());
+      std::unique_ptr<ClientContext> client_context(new ClientContext());
+      const bool auth = server->qbIPCConnectionAllowed(uid, gid, &client_context->access_control);
+      qb_ipcs_context_set(conn, client_context.release());
 
       if (auth) {
         USBGUARD_LOG(Info) << "IPC connection accepted: uid=" << uid
@@ -317,6 +317,14 @@ namespace usbguard
     iov[1].iov_base = (void*)payload.data();
     iov[1].iov_len = payload.size();
     const size_t total_size = hdr.size;
+    ClientContext* const client_context =        \
+      static_cast<ClientContext*>(qb_ipcs_context_get(qb_conn));
+
+    if (client_context == nullptr) {
+      throw USBGUARD_BUG("NULL client context");
+    }
+
+    std::unique_lock<std::mutex> lock(client_context->mutex);
     const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, 2);
 
     if (rc < 0 || (size_t)rc != total_size) {
@@ -328,7 +336,8 @@ namespace usbguard
       }
 
       if (rc < 0) {
-        USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+        USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(
+            qb_conn) << " errno=" << -rc;
         /* FALLTHROUGH */
       }
       else if ((size_t)rc != total_size) {
@@ -397,8 +406,9 @@ namespace usbguard
       const char* const payload_data = reinterpret_cast<const char*>(data) + sizeof(struct qb_ipc_request_header);
       const size_t payload_size = size - sizeof(struct qb_ipc_request_header);
       const std::string payload(payload_data, payload_size);
-      const IPCServer::AccessControl* const access_control = \
-        static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(conn));
+      ClientContext* const client_context = \
+        static_cast<ClientContext*>(qb_ipcs_context_get(conn));
+      const IPCServer::AccessControl* const access_control = &client_context->access_control;
 
       if (access_control == nullptr) {
         throw USBGUARD_BUG("IPC access control not set");
@@ -462,14 +472,18 @@ namespace usbguard
     }
 
     while (qb_conn != nullptr) {
-      const IPCServer::AccessControl* const access_control = \
-        static_cast<IPCServer::AccessControl*>(qb_ipcs_context_get(qb_conn));
+      ClientContext* const client_context =      \
+        static_cast<ClientContext*>(qb_ipcs_context_get(qb_conn));
 
-      if (access_control == nullptr) {
-        throw USBGUARD_BUG("");
+      if (client_context == nullptr) {
+        throw USBGUARD_BUG("NULL client context");
       }
 
+      const IPCServer::AccessControl* const access_control = \
+        &client_context->access_control;
+
       if (access_control->hasPrivilege(section, IPCServer::AccessControl::Privilege::LISTEN)) {
+        std::unique_lock<std::mutex> lock(client_context->mutex);
         /* Send the data */
         const ssize_t rc = qb_ipcs_event_sendv(qb_conn, iov, iov_len);
 
@@ -482,7 +496,8 @@ namespace usbguard
           }
 
           if (rc < 0) {
-            USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(qb_conn);
+            USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(
+                qb_conn) << " errno=" << -rc;
           }
           else if ((size_t)rc != total_size) {
             USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)

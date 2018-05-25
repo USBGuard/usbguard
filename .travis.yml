@@ -80,6 +80,7 @@ before_install:
 - sudo apt-get install -y aspell aspell-en
 - sudo apt-get install -y libprotobuf-dev protobuf-compiler
 - sudo apt-get install -y valgrind
+- sudo apt-get install -y umockdev libumockdev-dev
 - sudo gem install asciidoctor
 - sudo gem install coveralls-lcov
 - curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netix.dl.sourceforge.net/project/astyle/astyle/astyle%203.0.1/astyle_3.0.1_linux.tar.gz'

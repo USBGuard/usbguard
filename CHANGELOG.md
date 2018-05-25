@@ -10,6 +10,9 @@
 
 ### Added
 
+- umockdev based device manager capable of simulating devices based
+  on umockdev-record files.
+
 ### Removed
 
 ## 0.7.2 - 2018-01-22

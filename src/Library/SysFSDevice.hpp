@@ -43,11 +43,14 @@ namespace usbguard
     const UEvent& getUEvent() const;
     const std::string& getParentPath() const;
     bool hasAttribute(const std::string& name) const;
-    std::string readAttribute(const std::string& name, bool strip_last_null = false, bool optional = false) const;
+    std::string readAttribute(const std::string& name, bool trim = false, bool optional = false) const;
     void setAttribute(const std::string& name, const std::string& value);
     int openAttribute(const std::string& name) const;
 
     void reload();
+
+    static void setSysfsRoot(const std::string& sysfs_root);
+    static const std::string& getSysfsRoot();
   private:
     void reloadUEvent();
 

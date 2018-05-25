@@ -85,11 +85,11 @@ RestoreControllerDeviceState=false
 #
 # Which device manager backend implementation to use. One of:
 #
-# * uevent - Netlink based implementation which uses sysfs to scan for present
-#            devices and an uevent netlink socket for receiving USB device
-#            related events.
-# * dummy  - A dummy device manager which simulates several devices and device
-#            events. Useful for testing.
+# * uevent   - Netlink based implementation which uses sysfs to scan for present
+#              devices and an uevent netlink socket for receiving USB device
+#              related events.
+# * umockdev - umockdev based device manager capable of simulating devices based
+#              on umockdev-record files. Useful for testing.
 #
 DeviceManagerBackend=uevent
 

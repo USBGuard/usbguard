@@ -33,6 +33,7 @@ COMMON_WARNING_FLAGS+=" -Wswitch-enum"
 COMMON_WARNING_FLAGS+=" -Wswitch-default"
 COMMON_WARNING_FLAGS+=" -Winvalid-pch"
 COMMON_WARNING_FLAGS+=" -Wformat-nonliteral"
+COMMON_WARNING_FLAGS+=" -Wno-deprecated-register"
 #COMMON_WARNING_FLAGS+=" -flto -Wodr"
 
 #
@@ -250,6 +251,13 @@ PKG_CHECK_MODULES([libcapng], [libcap-ng >= 0.7.0],
 libcap_ng_summary="system-wide; $libcapng_LIBS"],
 [AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])
 libcap_ng_summary="not found"]
+)
+
+PKG_CHECK_MODULES([umockdev], [umockdev-1.0 >= 0.8.0],
+[AC_DEFINE([HAVE_UMOCKDEV], [1], [umockdev API usable])
+umockdev_summary="system-wide; $umockdev_LIBS"],
+[AC_MSG_NOTICE([umockdev development files not found! umockdev device manager won't be available])
+umockdev_summary="not found"]
 )
 
 PKG_CHECK_MODULES([protobuf], [protobuf >= 2.5.0],
@@ -737,6 +745,7 @@ echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 1.3.1: $have_pegtl_lte_131"
 echo "         Qt: $qt_summary"
 echo " GLib D-Bus: $dbus_summary"
+echo "   umockdev: $umockdev_summary"
 echo
 echo "## Directories"
 echo

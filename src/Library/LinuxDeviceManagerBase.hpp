@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2018 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
   #include <build-config.h>
 #endif
 
-#if defined(HAVE_UEVENT)
+#if defined(HAVE_LINUX)
 
 #include "Common/Thread.hpp"
 #include "SysFSDevice.hpp"
@@ -38,14 +38,16 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include <umockdev.h>
+
 namespace usbguard
 {
-  class UEventDeviceManager;
+  class LinuxDeviceManager;
 
-  class UEventDevice : public Device, public USBDescriptorParserHooks
+  class LinuxDevice : public Device, public USBDescriptorParserHooks
   {
   public:
-    UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device);
+    LinuxDevice(LinuxDeviceManager& device_manager, SysFSDevice& sysfs_device);
 
     SysFSDevice& sysfsDevice();
     const std::string& getSysPath() const;
@@ -62,64 +64,91 @@ namespace usbguard
     SysFSDevice _sysfs_device;
   };
 
-  class UEventDeviceManager : public DeviceManager
+  /*
+   * TODO: Create a base class template that provides
+   *       a shared implementation for Linux based device manager.
+   */
+  class LinuxDeviceManager : public DeviceManager
   {
     using DeviceManager::insertDevice;
 
   public:
-    UEventDeviceManager(DeviceManagerHooks& hooks);
-    ~UEventDeviceManager();
+    LinuxDeviceManager(DeviceManagerHooks& hooks);
+    ~LinuxDeviceManager();
 
     void setDefaultBlockedState(bool state) override;
     void setEnumerationOnlyMode(bool state) override;
+
+    void setProcessLibudevUEvents(bool state);
+    void setProcessKernelUEvents(bool state);
+    void setRestrictUEventOrigin(bool state);
 
     void start() override;
     void stop() override;
     void scan() override;
 
     std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
-    void insertDevice(std::shared_ptr<UEventDevice> device);
+    void insertDevice(std::shared_ptr<LinuxDevice> device);
     std::shared_ptr<Device> removeDevice(const std::string& syspath);
 
-    uint32_t getIDFromSysfsPath(const std::string& syspath) const;
-
-  private:
-    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
-      const std::pair<std::string, std::string>& b);
-    static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
-
-    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
-    void thread();
+    uint32_t getIDFromSysfsPath(const std::string& sysfs_path) const;
 
     int ueventOpen();
+    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
+
+    void thread();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
+    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
+      const std::pair<std::string, std::string>& b);
     int ueventEnumerateDevices();
-    int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
+
+    static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
+    int ueventEnumerateTriggerAndWaitForDevice(const std::string& devpath, const std::string& buspath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
     void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
     void processDevicePresence(uint32_t id);
     void processDeviceRemoval(const std::string& sysfs_devpath);
 
-    Thread<UEventDeviceManager> _thread;
-    int _uevent_fd;
-    int _wakeup_fd;
+    struct GObjectDeleter {
+      void operator()(void* gobject)
+      {
+        if (gobject != nullptr) {
+          g_object_unref(gobject);
+        }
+      }
+    };
+
+    Thread<LinuxDeviceManager> _thread;
+
+    int _uevent_fd{-1};
+    int _wakeup_fd{-1};
+
+    /*
+     * The following maps sysfs devices paths to their IDs.
+     * The key must not contain the sysfs (/sys) directory
+     * root prefix in the path and must be normalized to not
+     * contain ./ and ../ path components.
+     */
+    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
 
     bool isPresentSysfsPath(const std::string& sysfs_path) const;
     bool knownSysfsPath(const std::string& sysfs_path, uint32_t* id = nullptr) const;
     void learnSysfsPath(const std::string& sysfs_path, uint32_t id = 0);
     void forgetSysfsPath(const std::string& sysfs_path);
 
-    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
+    bool _default_blocked_state{true};
+    bool _process_libudev_uevents{false};
+    bool _process_kernel_uevents{true};
+    bool _restrict_uevent_origin{true};
+    bool _enumeration_only_mode{false};
 
-    bool _default_blocked_state;
-    bool _enumeration_only_mode;
-    std::atomic<bool> _enumeration;
+    std::atomic<bool> _enumeration{false};
     std::condition_variable _enumeration_complete;
     std::mutex _enumeration_mutex;
   };
 } /* namespace usbguard */
-#endif /* HAVE_UEVENT */
+#endif /* HAVE_LINUX */
 
 /* vim: set ts=2 sw=2 et */

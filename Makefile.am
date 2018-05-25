@@ -156,7 +156,8 @@ libusbguard_la_CPPFLAGS=\
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
 	@crypto_CFLAGS@ \
-	@pegtl_CFLAGS@
+	@pegtl_CFLAGS@ \
+	@umockdev_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
@@ -167,7 +168,8 @@ libusbguard_la_LIBADD=\
 	@protobuf_LIBS@ \
 	@crypto_LIBS@ \
 	@pegtl_LIBS@ \
-	@atomic_LIBS@
+	@atomic_LIBS@ \
+	@umockdev_LIBS@
 
 EXTRA_DIST+=\
 	src/Library/IPC/Devices.proto \
@@ -248,6 +250,10 @@ libusbguard_la_SOURCES=\
 	src/Library/UEventDeviceManager.hpp \
 	src/Library/UEventParser.cpp \
 	src/Library/UEventParser.hpp \
+	src/Library/UMockdevDeviceManager.cpp \
+	src/Library/UMockdevDeviceManager.hpp \
+	src/Library/UMockdevDeviceDefinition.cpp \
+	src/Library/UMockdevDeviceDefinition.hpp \
 	src/Library/Utility.cpp \
 	src/Library/Utility.hpp \
 	src/Library/public/usbguard/Audit.cpp \

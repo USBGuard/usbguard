@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-#
-# Copyright (C) 2016 Red Hat, Inc.
+# Copyright (C) 2018 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,20 +34,43 @@ function test_cli_devices()
   set -e
   sleep 4
 
+  export USBGUARD_DEBUG=1
+  
   ${USBGUARD} list-devices
   ${USBGUARD} list-devices -a
   ${USBGUARD} list-devices -b
 
-  local id="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "FSgk48/lKiTJWdqOqkHLuMQr155m+ux+ozIb17HHcKs=".*$|\1|p')"
+  local id_dock="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "2y2qS3rcuMr1Ye5knWsbD8CGzPtrs+eiRR/haro7+Ng=".*$|\1|p')"
 
-  if [ -z "$id" ]; then
-    echo "Test error: Unable to find/parse device ID"
+  if [ -z "$id_dock" ]; then
+    echo "Test error: Unable to parse device ID"
     exit 1
   fi
 
-  ${USBGUARD} block-device "$id"
-  ${USBGUARD} allow-device "$id"
-  ${USBGUARD} block-device "$id"
+
+  ${USBGUARD} block-device "$id_dock"
+  ${USBGUARD} allow-device "$id_dock"
+
+  local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
+  
+  if [ -z "$id_dock_child" ]; then
+    echo "Test error: Unable to parse device ID"
+    exit 1
+  fi
+
+  ${USBGUARD} block-device "$id_dock_child"
+  ${USBGUARD} block-device "$id_dock"
+  ${USBGUARD} allow-device "$id_dock"
+
+  local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
+  
+  if [ -z "$id_dock_child" ]; then
+    echo "Test error: Unable to parse device ID"
+    exit 1
+  fi
+
+  ${USBGUARD} allow-device "$id_dock_child"
+  ${USBGUARD} list-devices
 
   set +e
   return 0
@@ -56,12 +78,12 @@ function test_cli_devices()
 
 cat > "$config_path" <<EOF
 RuleFile=$policy_path
-ImplicitPolicyTarget=allow
-PresentDevicePolicy=allow
+ImplicitPolicyTarget=block
+PresentDevicePolicy=apply-policy
 PresentControllerPolicy=allow
 InsertedDevicePolicy=apply-policy
 RestoreControllerDeviceState=false
-DeviceManagerBackend=dummy
+DeviceManagerBackend=umockdev
 IPCAllowedUsers=$(id -un)
 IPCAllowedGroups=$(id -gn)
 DeviceRulesWithPort=false
@@ -70,24 +92,17 @@ EOF
 cat > "$policy_path" <<EOF
 EOF
 
-rm -f /tmp/usbguard-dummy.sock
-set +e
-export USBGUARD_DUMMY_DEVICE_ROOT=/tmp/usbguard-dummy
-mkdir "$USBGUARD_DUMMY_DEVICE_ROOT"
-tar Jxvf "${srcdir}/src/Tests/UseCase/DummyDevices/root.tar.xz" -C "${USBGUARD_DUMMY_DEVICE_ROOT}"
-set -e
+export USBGUARD_UMOCKDEV_DEVICEDIR=/tmp/usbguard-dummy
 
-#
-# temporarily disabled
-#
-exit 77
+rm -rf "$USBGUARD_UMOCKDEV_DEVICEDIR"
+mkdir -p "$USBGUARD_UMOCKDEV_DEVICEDIR"
+cp "${srcdir}/src/Tests/UseCase/devices.umockdev" "${USBGUARD_UMOCKDEV_DEVICEDIR}"
 
-schedule "${USBGUARD_DAEMON} -d -k -P -c $config_path" :service
-#schedule "test_cli_devices"
+schedule "umockdev-wrapper ${USBGUARD_DAEMON} -d -k -P -c $config_path" :service
+schedule "test_cli_devices"
 execute 60
 retval=$?
 
-rm -f /tmp/usbguard-dummy.sock
-rm -rf "$USBGUARD_DUMMY_DEVICE_ROOT"
+rm -rf "$USBGUARD_UMOCKDEV_DEVICEDIR"
 
 exit $retval
