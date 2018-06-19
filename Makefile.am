@@ -52,6 +52,7 @@ DISTCLEANFILES=\
 
 CLEANFILES=
 
+if DOCS_ENABLED
 man_ADOC_FILES=\
 	doc/man/usbguard.1.adoc \
 	doc/man/usbguard-dbus.8.adoc \
@@ -59,6 +60,9 @@ man_ADOC_FILES=\
 	doc/man/usbguard-daemon.8.adoc \
 	doc/man/usbguard-daemon.conf.5.adoc \
 	doc/man/usbguard-rules.conf.5.adoc
+else
+man_ADOC_FILES=
+endif
 
 man_ROFF_FILES=\
 	$(man_ADOC_FILES:.adoc=.roff)
@@ -127,6 +131,7 @@ install-systemd-service:
 uninstall-systemd-service:
 endif
 
+if DOCS_ENABLED
 man8_MANS=\
 	$(top_builddir)/doc/man/usbguard-daemon.8
 
@@ -136,6 +141,11 @@ man5_MANS=\
 
 man1_MANS=\
 	$(top_builddir)/doc/man/usbguard.1
+else
+man8_MANS=
+man5_MANS=
+man1_MANS=
+endif
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -406,8 +416,10 @@ usbguard_rule_parser_LDADD=\
 if DBUS_ENABLED
 sbin_PROGRAMS+= usbguard-dbus
 
+if DOCS_ENABLED
 man8_MANS+=\
 	$(top_builddir)/doc/man/usbguard-dbus.8
+endif
 
 BUILT_SOURCES+=\
 	src/DBus/DBusInterface.xml.cstr \
@@ -558,8 +570,10 @@ desktop_DATA = $(top_builddir)/src/GUI.Qt/usbguard-applet-qt.desktop
 appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt/resources/usbguard-icon.svg
 
+if DOCS_ENABLED
 man1_MANS +=\
 	$(top_builddir)/doc/man/usbguard-applet-qt.1
+endif
 
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \
