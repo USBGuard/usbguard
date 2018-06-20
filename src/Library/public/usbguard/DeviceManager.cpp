@@ -69,12 +69,12 @@ namespace usbguard
   }
 
   DeviceManager::DeviceManager(DeviceManagerHooks& hooks)
-    : d_pointer(make_unique<DeviceManagerPrivate>(*this, hooks))
+    : d_pointer(usbguard::make_unique<DeviceManagerPrivate>(*this, hooks))
   {
   }
 
   DeviceManager::DeviceManager(const DeviceManager& rhs)
-    : d_pointer(make_unique<DeviceManagerPrivate>(*this, *rhs.d_pointer))
+    : d_pointer(usbguard::make_unique<DeviceManagerPrivate>(*this, *rhs.d_pointer))
   {
   }
 

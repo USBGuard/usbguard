@@ -251,7 +251,7 @@ namespace usbguard
   }
 
   IPCServer::IPCServer()
-    : d_pointer(make_unique<IPCServerPrivate>(*this))
+    : d_pointer(usbguard::make_unique<IPCServerPrivate>(*this))
   {
   }
 
