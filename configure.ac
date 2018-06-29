@@ -444,10 +444,10 @@ if test "x$with_dbus" = xyes; then
     #
     case "$dbus_services_dir" in
       /usr/share/*|/usr/local/share/*)
-        dbus_services_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$dbus_services_dir)
+        dbus_services_dir=$(echo "$dbus_services_dir" | sed -r 's,^(/usr/share|/usr/local/share),${datadir},')
       ;;
       /usr/*|/usr/local/*)
-        dbus_services_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$dbus_services_dir)
+        dbus_services_dir=$(echo "$dbus_services_dir" | sed -r 's,^(/usr|/usr/local),${prefix},')
       ;;
       /*)
         dbus_services_dir='${prefix}'"$dbus_services_dir"
@@ -676,10 +676,10 @@ AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
 
 case "$bash_completion_dir" in
   /usr/share/*|/usr/local/share/*)
-    bash_completion_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$bash_completion_dir)
+    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr/share|/usr/local/share),${datadir},')
     ;;
   /usr/*|/usr/local/*)
-    bash_completion_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$bash_completion_dir)
+    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr|/usr/local),${prefix},')
     ;;
   /*)
     bash_completion_dir='${prefix}'"$bash_completion_dir"
