@@ -21,7 +21,12 @@
   #include <build-config.h>
 #endif
 
-#include <ext/stdio_filebuf.h>
+#if HAVE_EXT_STDIO_FILEBUF_H
+  #include <ext/stdio_filebuf.h>
+#else
+  #include <boost/iostreams/device/file_descriptor.hpp>
+  #include <boost/iostreams/stream.hpp>
+#endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 #include <fstream>
 #include <memory>
 
@@ -47,7 +52,20 @@ namespace usbguard
     std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
   };
 #else
-#error "Required header file ext/stdio_filebuf.h not available."
+  class FDInputStream :
+    public boost::iostreams::stream<boost::iostreams::file_descriptor_source,
+    std::char_traits<char>,
+    std::allocator<char>>
+  {
+  public:
+    FDInputStream(int fd)
+      : boost::iostreams::stream<boost::iostreams::file_descriptor_source,
+        std::char_traits<char>,
+        std::allocator<char>>(
+          fd, boost::iostreams::close_handle)
+    {
+    }
+  };
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 } /* namespace usbguard */
 

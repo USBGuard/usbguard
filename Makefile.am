@@ -163,6 +163,7 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src/Library \
 	-I$(top_srcdir)/src/Library/public \
 	-I$(top_builddir)/src/Library/IPC \
+	${BOOST_CPPFLAGS} \
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
 	@crypto_CFLAGS@ \
@@ -170,14 +171,16 @@ libusbguard_la_CPPFLAGS=\
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+	${BOOST_LDFLAGS}
 
 libusbguard_la_LIBADD=\
 	@qb_LIBS@ \
 	@protobuf_LIBS@ \
 	@crypto_LIBS@ \
 	@pegtl_LIBS@ \
-	@atomic_LIBS@
+	@atomic_LIBS@ \
+	${BOOST_IOSTREAMS_LIB}
 
 EXTRA_DIST+=\
 	src/Library/IPC/Devices.proto \
