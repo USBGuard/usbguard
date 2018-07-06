@@ -26,7 +26,7 @@
 namespace usbguard
 {
   ConfigFile::ConfigFile(const std::vector<std::string>& known_names)
-    : d_pointer(make_unique<ConfigFilePrivate>(*this, known_names))
+    : d_pointer(usbguard::make_unique<ConfigFilePrivate>(*this, known_names))
   {
   }
 

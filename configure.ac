@@ -555,11 +555,11 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
-# Require asciidoctor.
+# Check whether asciidoctor is present.
 #
 AC_CHECK_PROGS(ASCIIDOCTOR, [asciidoctor])
 if test -z "$ASCIIDOCTOR"; then
-  AC_MSG_FAILURE([Unable to find documentation generator (asciidoctor)])
+  AC_MSG_WARN([Unable to find documentation generator (asciidoctor). Documentation will not be generated.])
 fi
 
 #
@@ -691,6 +691,7 @@ AC_SUBST([BASH_COMPLETION_DIR], $bash_completion_dir)
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
+AM_CONDITIONAL([DOCS_ENABLED], [! test -z "$ASCIIDOCTOR" ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
 AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])

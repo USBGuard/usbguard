@@ -27,14 +27,14 @@
 namespace usbguard
 {
   RuleSet::RuleSet(Interface* const interface_ptr)
-    : d_pointer(make_unique<RuleSetPrivate>(*this, interface_ptr))
+    : d_pointer(usbguard::make_unique<RuleSetPrivate>(*this, interface_ptr))
   {
   }
 
   RuleSet::~RuleSet() = default;
 
   RuleSet::RuleSet(const RuleSet& rhs)
-    : d_pointer(make_unique<RuleSetPrivate>(*this, *rhs.d_pointer))
+    : d_pointer(usbguard::make_unique<RuleSetPrivate>(*this, *rhs.d_pointer))
   {
   }
 
