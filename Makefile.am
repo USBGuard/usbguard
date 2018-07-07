@@ -79,8 +79,8 @@ CLEANFILES+=\
 
 $(top_builddir)/%.roff: %.adoc
 	$(MKDIR_P) $$(dirname $@)
-	$(ASCIIDOCTOR) -v -b manpage $^ -o $(top_builddir)/$@
-	$(INSTALL) -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
+	$(A2X) -v -f manpage $^ -D $(top_builddir)/$$(dirname $@)
+	$(INSTALL) -m 644 $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
 
 install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
 uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus

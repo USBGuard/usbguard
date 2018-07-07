@@ -1,20 +1,16 @@
-[[bugs]]
 == BUGS
 If you find a bug in this software or if you'd like to request a feature to be implemented, please file a ticket at <https://github.com/USBGuard/usbguard/issues/new>.
 
 
-[[author]]
 == AUTHOR
 USBGuard was originally written by Daniel Kopeček.
 Many people have contributed to it.
 
 
-[[resources]]
 == RESOURCES
 Main web site: <https://usbguard.github.io/>
 
 
-[[copying]]
 == COPYING
 Copyright © 2015-{docyear} Red Hat, Inc. +
 License GPLv2+: GNU GPL version 2 or later http://gnu.org/licenses/gpl.html. +

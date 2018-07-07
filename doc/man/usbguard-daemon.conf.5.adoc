@@ -7,7 +7,6 @@ usbguard-daemon.conf(5)
 usbguard-daemon.conf - USBGuard daemon configuration file
 
 
-[[description]]
 == DESCRIPTION
 The *usbguard-daemon.conf* file is loaded by the USBGuard daemon after it parses its command-line options.
 It is used to configure runtime parameters of the daemon.
@@ -15,7 +14,6 @@ The default search path is '/etc/usbguard/usbguard-daemon.conf'.
 It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8) for further details.
 
 
-[[options]]
 == OPTIONS
 *RuleFile*='path'::
     The USBGuard daemon will use this file to load the policy rule set from it and to write new rules received via the IPC interface.
@@ -64,17 +62,14 @@ Target should be one of `allow`, `block` or `reject` (logically remove the devic
    USBGuard audit events log file path. Required if AuditBackend is set to `FileAudit`.
 
 
-[[security-considerations]]
 == SECURITY CONSIDERATIONS
 
-[[ipc]]
 === IPC
 The daemon provides the USBGuard public IPC interface.
 Depending on your distribution defaults, access to this interface is limited to a certain group or a specific user only.
 Please set either the *IPCAllowedUsers*, *IPCAllowedGroups* or *IPCAccessControlFiles* options to limit access to the IPC interface.
 *Do not leave the ACL unconfigured as that will expose the IPC interface to all local users and will allow them to manipulate the authorization state of USB devices and modify the USBGuard policy*.
 
-[[restorecontrollerdevicestate-configuration-option]]
 === RestoreControllerDeviceState configuration option
 If set to true, the USB authorization policy could be bypassed by performing some sort of attack on the daemon (via a local exploit or via
 a USB device) to make it shutdown and restore to the operating-system default state (known to be permissive).
@@ -85,7 +80,6 @@ a USB device) to make it shutdown and restore to the operating-system default st
 Access to the USBGuard IPC interface can be limited per user or group.
 Furthermore, by using the IPC Access Control files, it is possible to limit the access down to the level of Sections and Privileges as explained below.
 
-[[recommended-ipcaccesscontrolfiles]]
 === *Recommended*: *IPCAccessControlFiles*
 When you set *IPCAccessControlFiles* option, the daemon will look for IPC access control files in the directory specified by the setting value.
 Each file in the directory is processed as follows:
@@ -132,7 +126,6 @@ Instead of creating the access control files by yourself, you can use the `usbgu
 See usbguard(1) for more details.
 
 
-[[legacy-ipcallowedusers-and-ipcallowedgroups]]
 === Legacy: *IPCAllowedUsers* and *IPCAllowedGroups*
 Example configuration allowing full IPC access to users 'root', 'joe' and members of the group 'wheel':
 
@@ -142,10 +135,9 @@ IPCAllowedGroups=wheel
 ....
 
 
-[[see-also]]
 == SEE ALSO
-<<usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>,
-<<usbguard-rules.conf.5.adoc#name, usbguard-rules.conf(5)>>
+link:usbguard-daemon.8.adoc#name[usbguard-daemon(8)],
+link:usbguard-rules.conf.5.adoc#name[usbguard-rules.conf(5)]
 
 
 include::footer.adoc[]

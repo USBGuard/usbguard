@@ -7,12 +7,10 @@ usbguard-daemon(8)
 usbguard-daemon - USBGuard daemon
 
 
-[[synopsis]]
 == SYNOPSIS
-*usbguard-daemon* ['OPTIONS']
+usbguard-daemon [OPTIONS]
 
 
-[[description]]
 == DESCRIPTION
 The *usbguard-daemon* is the main component of the USBGuard software framework.
 It runs as a service in the background and enforces the USB device authorization policy for all USB devices.
@@ -20,7 +18,6 @@ The policy is defined by a set of rules using a rule language described in *usbg
 The policy and the authorization state of USB devices can be modified during runtime using the *usbguard*(1) tool.
 
 
-[[options]]
 == OPTIONS
 *-d*::
     Enable debugging messages in the log.
@@ -50,7 +47,6 @@ The policy and the authorization state of USB devices can be modified during run
     Show the help/usage screen.
 
 
-[[security-considerations]]
 == SECURITY CONSIDERATIONS
 The daemon provides the USBGuard public IPC interface.
 Depending on your distribution defaults, the access to this interface is limited to a certain group or a specific user only.
@@ -59,12 +55,11 @@ Please refer to the usbguard-daemon.conf(5) man page for more information on how
 That will allow them to manipulate the authorization state of USB devices and modify the USBGuard policy*.
 
 
-[[see-also]]
 == SEE ALSO
-<<usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>,
-<<usbguard-rules.conf.5.adoc#name, usbguard-rules.conf(5)>>,
-<<usbguard.1.adoc#name, usbguard(1)>>,
-<<usbguard-applet-qt.1.adoc#name, usbguard-applet-qt(1)>>
+link:usbguard-daemon.conf.5.adoc#name[usbguard-daemon.conf(5)],
+link:usbguard-rules.conf.5.adoc#name[usbguard-rules.conf(5)],
+link:usbguard.1.adoc#name[usbguard(1)],
+link:usbguard-applet-qt.1.adoc#name[usbguard-applet-qt(1)]
 
 
 include::footer.adoc[]

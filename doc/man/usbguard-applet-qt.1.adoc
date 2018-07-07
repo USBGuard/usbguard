@@ -7,22 +7,18 @@ usbguard-applet-qt(1)
 usbguard-applet-qt - USBGuard Qt Applet
 
 
-[[synopsis]]
 == SYNOPSIS
-*usbguard-applet-qt*
+usbguard-applet-qt
 
 
-[[description]]
 == DESCRIPTION
 USBGuard Qt Applet for interacting with USBGuard daemon.
 
 
-[[options]]
 == OPTIONS
 There are currently no command-line options recognized by usbguard-applet-qt.
 
 
-[[security-considerations]]
 == SECURITY CONSIDERATIONS
 The applet uses the USBGuard public IPC interface to talk to the daemon component.
 Depending on your distribution defaults, the access to this interface is limited to a certain group or a specific user only.
@@ -31,10 +27,9 @@ Do not leave the ACL unconfigured as that will expose the IPC interface to all l
 That will allow them to manipulate the authorization state of USB devices and modify the USBGuard policy.
 
 
-[[see-also]]
 == SEE ALSO
-<<usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>,
-<<usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>
+link:usbguard-daemon.8.adoc#name[usbguard-daemon(8)],
+link:usbguard-daemon.conf.5.adoc#name[usbguard-daemon.conf(5)]
 
 
 include::footer.adoc[]

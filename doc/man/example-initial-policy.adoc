@@ -1,0 +1,7 @@
+....
+    $ sudo usbguard generate-policy > rules.conf
+    $ vi rules.conf
+    (review/modify the rule set)
+    $ sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
+    $ sudo systemctl restart usbguard
+....
