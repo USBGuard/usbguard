@@ -555,7 +555,7 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
-# Check whether asciidoctor is present.
+# Check whether asciidoc (a2x) is present.
 #
 AC_CHECK_PROGS(A2X, [a2x])
 if test -z "$A2X"; then

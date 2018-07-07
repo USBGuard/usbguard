@@ -1,28 +1,9 @@
 USBGuard DBus
 =============
 
-## Generating DBus documentation
+== Generating DBus documentation
 
 [source,bash]
 ----
-
-  mkdir doc/
-  gdbus-codegen --generate-docbook=doc --output-directory=doc/ DBusInterface.xml
-  pushd doc/
-
-  echo "USBGuard DBus Interface Documentation"  > usbguard-dbus.adoc
-  echo "=====================================" >> usbguard-dbus.adoc
-  echo "" >> usbguard-dbus.adoc
-
-  for doc in doc-*.xml; do \
-   docbook2html -u $doc
-
-   html_file=$(echo $doc | sed 's/\.xml$/.html/')
-   html_title=$(echo $doc | sed -n 's/^doc-\(.*\)\.xml$/\1/p')
-   echo "* link:$html_file[$html_title]" >> usbguard-dbus.adoc
- 
-  done
-  asciidoctor -b html5 usbguard-dbus.adoc
-  popd
-
+include::generate-documentation.sh[]
 ----

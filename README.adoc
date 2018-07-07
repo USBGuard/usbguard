@@ -41,7 +41,7 @@ To compile the sources from a release tarball, you'll need the development files
  * https://github.com/ClusterLabs/libqb[libqb] - used for local UNIX socket based IPC
  * https://github.com/google/protobuf[protobuf] - used for IPC message (de)serialization
  * https://download.libsodium.org[libsodium] or https://www.gnupg.org/software/libgcrypt[libgcrypt] - used for hashing
- * https://asciidoctor.org[asciidoctor] - needed to generate documentation
+ * https://asciidoc.org[asciidoc (a2x)] - needed to generate documentation
 
 Optionally, you may want to install:
 
