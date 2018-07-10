@@ -147,7 +147,7 @@
        @id: Device id of the device.
        @event: Type of the presence change event in numerical form.
                0 = Present, 1 = Insert, 2 = Update, 3 = Remove.
-       @target: The current authorization target of the device.
+       @target: The current authorization target of the device in numerical form.
        @device_rule: Device specific rule.
        @attributes: A dictionary of device attributes and their values.
  
@@ -175,7 +175,7 @@
     <signal name="DevicePresenceChanged">
       <arg name="id" direction="out" type="u"/>
       <arg name="event" direction="out" type="u"/>
-      <arg name="target" direction="out" type="s"/>
+      <arg name="target" direction="out" type="u"/>
       <arg name="device_rule" direction="out" type="s"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
     </signal>
@@ -185,9 +185,9 @@
        @id: Device id of the device
        @target_old: Previous authorization target in numerical form.
        @target_new: Current authorization target in numerical form.
-       @attributes: A dictionary of device attributes and their values.
-       @rule_match: A boolean flag specifying whether the device matched a rule in the policy.
+       @device_rule: Device specific rule.
        @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
+       @attributes: A dictionary of device attributes and their values.
 
       Notify about a change of a USB device authorization target.
 
@@ -205,7 +205,7 @@
       <arg name="id" direction="out" type="u"/>
       <arg name="target_old" direction="out" type="u"/>
       <arg name="target_new" direction="out" type="u"/>
-      <arg name="device_rule" direction="out" type="u"/>
+      <arg name="device_rule" direction="out" type="s"/>
       <arg name="rule_id" direction="out" type="u"/>
       <arg name="attributes" direction="out" type="a{ss}"/>
     </signal>
