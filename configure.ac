@@ -590,6 +590,13 @@ AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.hi locale.h netdb.h stdint.h stdlib.h])
 AC_CHECK_HEADERS([string.h sys/time.h syslog.h unistd.h wchar.h ext/stdio_filebuf.h])
 
+AC_CHECK_HEADER([ext/stdio_filebuf.h], [has_stdio_filebuf=yes;])
+
+if ! test "x$has_stdio_filebuf" = xyes; then
+   AX_BOOST_BASE([1.44.0], [], AC_MSG_ERROR(["Either stdio_filebuf or Boost iostreams are required!"]))
+   AX_BOOST_IOSTREAMS
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
