@@ -131,24 +131,24 @@ on_bus_acquired (GDBusConnection* connection,
 {
   (void)name;
   (void)user_data;
+  auto usbguard_rid = g_dbus_connection_register_object(connection,
+      "/org/usbguard",
+      introspection_data->interfaces[0],
+      &usbguard_interface_vtable,
+      /*user_data=*/dbus_bridge,
+      /*user_data_free_func=*/nullptr,
+      /*GError=*/nullptr);
   auto policy_rid = g_dbus_connection_register_object(connection,
       "/org/usbguard/Policy",
-      introspection_data->interfaces[0],
+      introspection_data->interfaces[1],
       &policy_interface_vtable,
       /*user_data=*/dbus_bridge,
       /*user_data_free_func=*/nullptr,
       /*GError=*/nullptr);
   auto devices_rid = g_dbus_connection_register_object(connection,
       "/org/usbguard/Devices",
-      introspection_data->interfaces[1],
-      &devices_interface_vtable,
-      /*user_data=*/dbus_bridge,
-      /*user_data_free_func=*/nullptr,
-      /*GError=*/nullptr);
-  auto usbguard_rid = g_dbus_connection_register_object(connection,
-      "/org/usbguard",
       introspection_data->interfaces[2],
-      &usbguard_interface_vtable,
+      &devices_interface_vtable,
       /*user_data=*/dbus_bridge,
       /*user_data_free_func=*/nullptr,
       /*GError=*/nullptr);
