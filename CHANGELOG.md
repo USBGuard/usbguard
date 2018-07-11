@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.7.4 - 2018-07-11
+
+### Fixed/Changed
+
+- Fixed conditional manual page generation & installation
+- Replaced Boost library based ext/stdio_filebuf.h implementation
+  with a custom FDStreamBuf implementation
+
 ## 0.7.3 - 2018-07-11
 
 ### Changed
