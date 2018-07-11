@@ -75,7 +75,7 @@ PresentDevicePolicy=keep
 PresentControllerPolicy=keep
 InsertedDevicePolicy=apply-policy
 RestoreControllerDeviceState=false
-DeviceManagerBackend=uevent
+DeviceManagerBackend=umockdev
 IPCAllowedUsers=$(id -un)
 IPCAllowedGroups=$(id -gn)
 DeviceRulesWithPort=false
@@ -84,7 +84,11 @@ EOF
 cat > "$policy_path" <<EOF
 EOF
 
-schedule "${USBGUARD_DAEMON} -d -k -P -c $config_path" :service
+export USBGUARD_UMOCKDEV_DEVICEDIR=/tmp/usbguard-dummy
+
+rm -rf "$USBGUARD_UMOCKDEV_DEVICEDIR"
+mkdir -p "$USBGUARD_UMOCKDEV_DEVICEDIR"
+
+schedule "umockdev-wrapper ${USBGUARD_DAEMON} -d -k -P -c $config_path" :service
 schedule "test_cli_policy"
 execute 60
-

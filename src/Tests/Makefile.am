@@ -36,9 +36,9 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/UseCase/000_executable.sh \
 	$(top_srcdir)/src/Tests/UseCase/001_cli_policy.sh \
 	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \
-	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_dummy.sh \
+	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_umockdev.sh \
 	$(top_srcdir)/src/Tests/UseCase/004_daemonize.sh \
-	$(top_srcdir)/src/Tests/UseCase/DummyDevices \
+	$(top_srcdir)/src/Tests/UseCase/devices.umockdev \
 	$(top_srcdir)/src/Tests/Source/check-driver.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/copyright.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/vim-modeline.sh \
@@ -72,7 +72,7 @@ TESTS+=\
 	UseCase/000_executable.sh \
 	UseCase/001_cli_policy.sh \
 	UseCase/002_cli_devices.sh \
-	UseCase/003_cli_devices_dummy.sh \
+	UseCase/003_cli_devices_umockdev.sh \
 	UseCase/004_daemonize.sh
 endif
 
@@ -89,7 +89,9 @@ test_unit_SOURCES=\
 	Unit/test_UEventParser.cpp \
 	Unit/test_Utility.cpp \
 	Unit/test_RuleAttribute_id.cpp \
-	Unit/test_IPCServer_AccessControl.cpp
+	Unit/test_IPCServer_AccessControl.cpp \
+	Unit/test_UMockdevDeviceDefinition.cpp \
+	Unit/test_UMockdevDeviceDefinition.data.hpp
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la

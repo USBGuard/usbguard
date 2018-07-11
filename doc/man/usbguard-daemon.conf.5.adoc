@@ -20,11 +20,11 @@ It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8
 
 *ImplicitPolicyTarget*='target'::
     How to treat USB devices that don't match any rule in the policy.
-Target should be one of `allow`, `block` or `reject` (logically remove the device node from the system).
+    Target should be one of `allow`, `block` or `reject` (logically remove the device node from the system).
 
 *PresentDevicePolicy*='policy'::
-    How to treat USB devices that are already connected when the daemon starts.
-    Policy should be one of `allow`, `block`, `reject`, `keep` (keep whatever state the device is currently in) or `apply-policy` (evaluate the rule set for every present device).
+   How to treat USB devices that are already connected when the daemon starts.
+   Policy should be one of `allow`, `block`, `reject`, `keep` (keep whatever state the device is currently in) or `apply-policy` (evaluate the rule set for every present device).
 
 *PresentControllerPolicy*='policy'::
    How to treat USB *controller* devices that are already connected when the daemon starts.
@@ -40,7 +40,7 @@ Target should be one of `allow`, `block` or `reject` (logically remove the devic
 
 *DeviceManagerBackend*='backend'::
    Which device manager backend implementation to use.
-   Backend should be one of `uevent` (default) or `dummy`.
+   Backend should be one of `uevent` (default) or `umockdev`.
 
 *IPCAllowedUsers**='username' ['username' ...]::
    A space delimited list of usernames that the daemon will accept IPC connections from.

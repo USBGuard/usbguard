@@ -161,6 +161,11 @@ namespace usbguard
   std::string parentPath(const std::string& path);
 
   /**
+   * Retrun the number of path components.
+   */
+  std::size_t countPathComponents(const std::string& path);
+
+  /**
    * Remove whitespace characters from the right side of a string.
    */
   std::string trimRight(const std::string& s, const std::string& delimiters = " \f\n\r\t\v");
@@ -187,7 +192,8 @@ namespace usbguard
       [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b)
   {
     return a.first < b.first;
-  });
+  },
+  bool directory_required = false);
 
   /**
    * Remove prefix from string.
@@ -204,6 +210,15 @@ namespace usbguard
    * Read symlink destination.
    */
   std::string symlinkPath(const std::string& linkpath, struct stat* st_user = nullptr);
+
+  /*
+   * Normalize path string:
+   *  - remove //
+   *  - remove ./
+   *  - resolve foo/../bar/ to bar
+   *  - resolve /foo/../bar/ to /bar
+   */
+  std::string normalizePath(const std::string& path);
 
   /*
    * Restorer class

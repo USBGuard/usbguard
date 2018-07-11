@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2018 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,10 +21,11 @@
   #include <build-config.h>
 #endif
 
-#if defined(HAVE_UEVENT)
+#if defined(HAVE_UMOCKDEV)
 
 #include "Common/Thread.hpp"
 #include "SysFSDevice.hpp"
+#include "UMockdevDeviceDefinition.hpp"
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/DeviceManager.hpp"
@@ -38,14 +39,16 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include <umockdev.h>
+
 namespace usbguard
 {
-  class UEventDeviceManager;
+  class UMockdevDeviceManager;
 
-  class UEventDevice : public Device, public USBDescriptorParserHooks
+  class UMockdevDevice : public Device, public USBDescriptorParserHooks
   {
   public:
-    UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device);
+    UMockdevDevice(UMockdevDeviceManager& device_manager, SysFSDevice& sysfs_device);
 
     SysFSDevice& sysfsDevice();
     const std::string& getSysPath() const;
@@ -62,13 +65,17 @@ namespace usbguard
     SysFSDevice _sysfs_device;
   };
 
-  class UEventDeviceManager : public DeviceManager
+  /*
+   * TODO: Create a base class template that provides
+   *       a shared implementation for Linux based device manager.
+   */
+  class UMockdevDeviceManager : public DeviceManager
   {
     using DeviceManager::insertDevice;
 
   public:
-    UEventDeviceManager(DeviceManagerHooks& hooks);
-    ~UEventDeviceManager();
+    UMockdevDeviceManager(DeviceManagerHooks& hooks);
+    ~UMockdevDeviceManager();
 
     void setDefaultBlockedState(bool state) override;
     void setEnumerationOnlyMode(bool state) override;
@@ -78,48 +85,84 @@ namespace usbguard
     void scan() override;
 
     std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
-    void insertDevice(std::shared_ptr<UEventDevice> device);
+    void insertDevice(std::shared_ptr<UMockdevDevice> device);
     std::shared_ptr<Device> removeDevice(const std::string& syspath);
 
-    uint32_t getIDFromSysfsPath(const std::string& syspath) const;
+    uint32_t getIDFromSysfsPath(const std::string& sysfs_path) const;
 
-  private:
-    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
-      const std::pair<std::string, std::string>& b);
-    static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
-
-    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
-    void thread();
+  protected:
+    void umockdevInit();
+    std::vector<std::string> umockdevLoadFromFile(const std::string& definitions_path);
+    std::vector<std::string> umockdevRemoveByFile(const std::string& definitions_path);
+    void umockdevRemoveBySysfsPath(const std::string& sysfs_path);
+    void umockdevProcessInotify();
+    std::vector<std::string> umockdevGetChildrenBySysfsPath(const std::string& sysfs_path);
+    void umockdevAuthorizeBySysfsPath(const std::string& sysfs_path);
+    void umockdevDeauthorizeBySysfsPath(const std::string& sysfs_path);
+    void umockdevAdd(const std::shared_ptr<UMockdevDeviceDefinition>& definition);
+    void umockdevRemove(const std::shared_ptr<UMockdevDeviceDefinition>& definition);
+    void umockdevRemove(const std::string& sysfs_path);
 
     int ueventOpen();
+    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
+
+    void thread();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
+    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
+      const std::pair<std::string, std::string>& b);
     int ueventEnumerateDevices();
-    int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
+
+    static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
+    int ueventEnumerateTriggerAndWaitForDevice(const std::string& devpath, const std::string& buspath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
+
     void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
     void processDevicePresence(uint32_t id);
     void processDeviceRemoval(const std::string& sysfs_devpath);
 
-    Thread<UEventDeviceManager> _thread;
-    int _uevent_fd;
-    int _wakeup_fd;
+  private:
+    struct GObjectDeleter {
+      void operator()(void* gobject)
+      {
+        if (gobject != nullptr) {
+          g_object_unref(gobject);
+        }
+      }
+    };
+
+    Thread<UMockdevDeviceManager> _thread;
+    std::unique_ptr<UMockdevTestbed, GObjectDeleter> _testbed{nullptr};
+    std::string _umockdev_deviceroot;
+    int _inotify_fd{-1};
+    int _uevent_fd{-1};
+    int _wakeup_fd{-1};
+
+    /*
+     * The following maps sysfs devices paths to their IDs.
+     * The key must not contain the sysfs (/sys) directory
+     * root prefix in the path and must be normalized to not
+     * contain ./ and ../ path components.
+     */
+    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
 
     bool isPresentSysfsPath(const std::string& sysfs_path) const;
     bool knownSysfsPath(const std::string& sysfs_path, uint32_t* id = nullptr) const;
     void learnSysfsPath(const std::string& sysfs_path, uint32_t id = 0);
     void forgetSysfsPath(const std::string& sysfs_path);
 
-    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
+    std::map<std::string, std::shared_ptr<UMockdevDeviceDefinition>> _sysfs_path_map;
+    std::multimap<std::string, std::weak_ptr<UMockdevDeviceDefinition>> _umockdev_file_map;
 
-    bool _default_blocked_state;
-    bool _enumeration_only_mode;
-    std::atomic<bool> _enumeration;
+    bool _default_blocked_state{true};
+
+    bool _enumeration_only_mode{false};
+    std::atomic<bool> _enumeration{false};
     std::condition_variable _enumeration_complete;
     std::mutex _enumeration_mutex;
   };
 } /* namespace usbguard */
-#endif /* HAVE_UEVENT */
+#endif /* HAVE_UMOCKDEV */
 
 /* vim: set ts=2 sw=2 et */

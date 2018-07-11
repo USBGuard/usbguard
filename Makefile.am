@@ -167,7 +167,8 @@ libusbguard_la_CPPFLAGS=\
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
 	@crypto_CFLAGS@ \
-	@pegtl_CFLAGS@
+	@pegtl_CFLAGS@ \
+	@umockdev_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
@@ -180,6 +181,7 @@ libusbguard_la_LIBADD=\
 	@crypto_LIBS@ \
 	@pegtl_LIBS@ \
 	@atomic_LIBS@ \
+	@umockdev_LIBS@ \
 	${BOOST_IOSTREAMS_LIB}
 
 EXTRA_DIST+=\
@@ -261,6 +263,10 @@ libusbguard_la_SOURCES=\
 	src/Library/UEventDeviceManager.hpp \
 	src/Library/UEventParser.cpp \
 	src/Library/UEventParser.hpp \
+	src/Library/UMockdevDeviceManager.cpp \
+	src/Library/UMockdevDeviceManager.hpp \
+	src/Library/UMockdevDeviceDefinition.cpp \
+	src/Library/UMockdevDeviceDefinition.hpp \
 	src/Library/Utility.cpp \
 	src/Library/Utility.hpp \
 	src/Library/public/usbguard/Audit.cpp \

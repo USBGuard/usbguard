@@ -58,8 +58,16 @@ namespace usbguard
           "ACTION", "DEVPATH"
         }) {
             if (key == header_key) {
-              if (value != uevent.getAttribute(header_key)) {
-                throw pegtl::parse_error("header value mismatch", in);
+              /*
+               * Sanity check the value only if the value is already assigned,
+               * because with umockdev device manager we need to parse ACTION
+               * and DEVPATH from the uevent data and we don't know it before
+               * that.
+               */
+              if (!uevent.getAttribute(header_key).empty()) {
+                if (value != uevent.getAttribute(header_key)) {
+                  throw pegtl::parse_error("header value mismatch", in);
+                }
               }
             }
           }

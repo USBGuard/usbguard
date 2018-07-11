@@ -74,6 +74,11 @@ namespace usbguard
     void addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac);
 
   private:
+    struct ClientContext {
+      IPCServer::AccessControl access_control;
+      std::mutex mutex;
+    };
+
     void initIPC();
     void finiIPC();
 
