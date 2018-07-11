@@ -24,8 +24,8 @@
 #if HAVE_EXT_STDIO_FILEBUF_H
   #include <ext/stdio_filebuf.h>
 #else
-  #include <boost/iostreams/device/file_descriptor.hpp>
-  #include <boost/iostreams/stream.hpp>
+  #include <cstdio>
+  #include <streambuf>
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 #include <fstream>
 #include <memory>
@@ -52,19 +52,59 @@ namespace usbguard
     std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
   };
 #else
-  class FDInputStream :
-    public boost::iostreams::stream<boost::iostreams::file_descriptor_source,
-    std::char_traits<char>,
-    std::allocator<char>>
+  class FDStreamBuf : public std::streambuf
   {
   public:
-    FDInputStream(int fd)
-      : boost::iostreams::stream<boost::iostreams::file_descriptor_source,
-        std::char_traits<char>,
-        std::allocator<char>>(
-          fd, boost::iostreams::close_handle)
+    FDStreamBuf(int fd) : fd_(fd) { }
+
+    std::streamsize xsgetn(char* s, std::streamsize n)
     {
+      ssize_t ret;
+
+      do {
+        ret = read(fd_, s, n);
+      }
+      while (ret == -1 && (errno == EAGAIN || errno ==EINTR));
+
+      if (ret < 0) {
+        return EOF;
+      }
+
+      return ret;
     }
+
+    int underflow()
+    {
+      char c;
+      ssize_t result = xsgetn(&c, 1);
+
+      if (result != 1) {
+        return EOF;
+      }
+
+      return c;
+    }
+  private:
+    int fd_;
+  };
+
+  class FDInputStream : public std::istream
+  {
+  public:
+    FDInputStream(int fd) : std::istream(nullptr),
+      _filebuf_ptr(new FDStreamBuf(fd))
+    {
+      std::ios::rdbuf(_filebuf_ptr.get());
+    }
+
+    FDInputStream(FDInputStream&& stream) : std::istream(nullptr),
+      _filebuf_ptr(std::move(stream._filebuf_ptr))
+    {
+      std::ios::rdbuf(_filebuf_ptr.get());
+    }
+
+  private:
+    std::unique_ptr<FDStreamBuf> _filebuf_ptr;
   };
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 } /* namespace usbguard */
