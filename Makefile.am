@@ -666,7 +666,7 @@ $(DIST_ARCHIVES):
 
 release-files: $(DIST_ARCHIVES)
 	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
-	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
+	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client-wrapper || echo gpg2))
 	$(MKDIR_P) $(RELEASE_DIR)
 	cp $(DIST_ARCHIVES) $(RELEASE_DIR)
 	cd $(RELEASE_DIR) && $(GPG) -b -a -o - $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig
