@@ -52,7 +52,6 @@ DISTCLEANFILES=\
 
 CLEANFILES=
 
-if DOCS_ENABLED
 man_ADOC_FILES=\
 	doc/man/usbguard.1.adoc \
 	doc/man/usbguard-dbus.8.adoc \
@@ -60,9 +59,6 @@ man_ADOC_FILES=\
 	doc/man/usbguard-daemon.8.adoc \
 	doc/man/usbguard-daemon.conf.5.adoc \
 	doc/man/usbguard-rules.conf.5.adoc
-else
-man_ADOC_FILES=
-endif
 
 man_ROFF_FILES=\
 	$(man_ADOC_FILES:.adoc=.roff)
@@ -70,17 +66,19 @@ man_ROFF_FILES=\
 EXTRA_DIST+=\
 	$(man_ADOC_FILES)
 
-BUILT_SOURCES+=\
-	$(man_ROFF_FILES)
-
 CLEANFILES+=\
 	$(man_ROFF_FILES) \
 	$(man_ROFF_FILES:.roff=)
+
+if DOCS_ENABLED
+BUILT_SOURCES+=\
+	$(man_ROFF_FILES)
 
 $(top_builddir)/%.roff: %.adoc
 	$(MKDIR_P) $$(dirname $@)
 	$(A2X) -v -f manpage $^ -D $(top_builddir)/$$(dirname $@)
 	$(INSTALL) -m 644 $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
+endif
 
 install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
 uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus
