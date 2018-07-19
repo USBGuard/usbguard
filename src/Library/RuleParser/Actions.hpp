@@ -30,6 +30,7 @@ namespace usbguard
 {
   namespace RuleParser
   {
+    struct comment;
     struct target;
     struct device_id;
     struct device_id_value;
@@ -48,6 +49,16 @@ namespace usbguard
 
     template<typename Rule>
     struct rule_parser_actions : tao::pegtl::nothing<Rule> {};
+
+    template<>
+    struct rule_parser_actions<comment> {
+      static void apply0(Rule& rule)
+      {
+        if (rule.getTarget() == Rule::Target::Invalid) {
+          rule.setTarget(Rule::Target::Empty);
+        }
+      }
+    };
 
     template<>
     struct rule_parser_actions<target> {

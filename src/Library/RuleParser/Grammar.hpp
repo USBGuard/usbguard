@@ -189,18 +189,26 @@ namespace usbguard
       : sor<str_allow, str_block, str_reject, str_match, str_device> {};
 
     /*
+     * Comment
+     */
+    struct comment
+      : seq<star<ascii::blank>, if_must<one<'#'>,
+        star<seq<not_at<eof>, any>>>> {};
+
+    /*
      * Rule
      */
     struct rule
       : seq<target,
         opt<plus<ascii::blank>, device_id>,
-        opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>> {};
+        opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>,
+        opt<comment>> {};
 
     /*
      * Grammar entry point
      */
     struct rule_grammar
-      : until<eof, must<rule>> {};
+      : until<eof, must<sor<comment, rule>>> {};
   } /* namespace RuleParser */
 } /* namespace usbguard */
 

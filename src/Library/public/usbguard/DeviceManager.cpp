@@ -134,6 +134,7 @@ namespace usbguard
 
         case Rule::Target::Reject:
         case Rule::Target::Unknown:
+        case Rule::Target::Empty:
         case Rule::Target::Invalid:
         default:
           throw std::runtime_error("Invalid device query target");

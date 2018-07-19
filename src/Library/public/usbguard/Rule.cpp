@@ -239,7 +239,8 @@ namespace usbguard
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||
-        getTarget() == Target::Invalid);
+        getTarget() == Target::Invalid ||
+        getTarget() == Target::Empty);
   }
 
   std::string Rule::toString(bool invalid) const
@@ -272,7 +273,8 @@ namespace usbguard
     { "block", Rule::Target::Block },
     { "reject", Rule::Target::Reject },
     { "match", Rule::Target::Match },
-    { "device", Rule::Target::Device }
+    { "device", Rule::Target::Device },
+    { "", Rule::Target::Empty }
   };
 
   const std::string Rule::targetToString(const Rule::Target target)

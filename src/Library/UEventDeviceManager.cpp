@@ -383,6 +383,7 @@ namespace usbguard
     case Rule::Target::Match:
     case Rule::Target::Device:
     case Rule::Target::Unknown:
+    case Rule::Target::Empty:
     case Rule::Target::Invalid:
     default:
       throw std::runtime_error("Unknown rule target in applyDevicePolicy");

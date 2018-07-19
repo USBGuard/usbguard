@@ -733,3 +733,7 @@ reject with-interface equals { 6F:dD:1b 83:dB:96 b4:*:* } parent-hash equals { "
 reject with-interface equals { E6:4c:* 4F:8F:24 A8:c1:C8 5e:eB:Fb ED:*:* A1:3d:* fA:*:* } hash "rJjT-`yo" id 26a5:0e6F
 reject with-interface none-of { C8:3C:* 4b:*:* 5c:2e:4c 7f:*:* BA:F7:* d3:4D:cb } parent-hash none-of { ":m_H'h`:" } id all-of { ADc6:* 332d:* } via-port equals-ordered { "vHE?ZN;x" "Ga:kiC`N" "PlOjBwj0" } name "GQu<K$g:"  if !true
 reject with-interface one-of { e5:*:* 2A:*:* AC:c7:* 4B:*:* f2:*:* }  if equals-ordered { true false !true false }
+#
+# this is a comment
+reject with-interface one-of { e6:*:* } # comment about this rule
+ # reject with-interface one-of { e6:*:* }
