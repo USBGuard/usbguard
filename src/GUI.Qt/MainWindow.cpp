@@ -331,6 +331,7 @@ void MainWindow::notifyDevicePolicyChanged(const usbguard::Rule& device_rule, qu
     break;
 
   case usbguard::Rule::Target::Invalid:
+  case usbguard::Rule::Target::Empty:
   case usbguard::Rule::Target::Match:
   case usbguard::Rule::Target::Device:
   case usbguard::Rule::Target::Unknown:
@@ -665,6 +666,7 @@ void MainWindow::commitDeviceListChanges()
 
     case usbguard::Rule::Target::Match:
     case usbguard::Rule::Target::Invalid:
+    case usbguard::Rule::Target::Empty:
     case usbguard::Rule::Target::Unknown:
     case usbguard::Rule::Target::Device:
     default:

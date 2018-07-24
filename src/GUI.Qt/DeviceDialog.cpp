@@ -95,6 +95,7 @@ void DeviceDialog::setDefaultDecision(usbguard::Rule::Target target)
 
   case usbguard::Rule::Target::Reject:
   case usbguard::Rule::Target::Unknown:
+  case usbguard::Rule::Target::Empty:
   case usbguard::Rule::Target::Invalid:
   case usbguard::Rule::Target::Match:
   case usbguard::Rule::Target::Device:
@@ -206,6 +207,7 @@ void DeviceDialog::updateDialog()
   case usbguard::Rule::Target::Match:
   case usbguard::Rule::Target::Device:
   case usbguard::Rule::Target::Invalid:
+  case usbguard::Rule::Target::Empty:
   case usbguard::Rule::Target::Unknown:
   default:
     button = ui->reject_button;
@@ -237,6 +239,7 @@ void DeviceDialog::executeDefaultDecision()
 
   case usbguard::Rule::Target::Reject:
   case usbguard::Rule::Target::Unknown:
+  case usbguard::Rule::Target::Empty:
   case usbguard::Rule::Target::Invalid:
   case usbguard::Rule::Target::Device:
   case usbguard::Rule::Target::Match:
