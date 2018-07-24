@@ -53,4 +53,25 @@ while read -r rule; do
   fi
 done <"$DATADIR/test-rules.bad"
 
+echo
+echo "Parsing rules file:"
+echo "###################"
+echo
+$PARSER -f "$DATADIR/test-rules.file" | (
+  file_rules=0
+  while read -r type rule; do
+    if [ "$type" = OUTPUT: ] && [ -n "$rule" ]; then
+      echo "FOUND: $rule"
+      file_rules=$((file_rules + 1))
+    fi
+  done
+
+  if [ "$file_rules" -eq 0 ]; then
+    echo "======================"
+    echo "FAILED: no rules found"
+    echo "^^^^^^^^^^^^^^^^^^^^^^"
+    exit 1
+  fi
+) || RETVAL=1
+
 exit $RETVAL

@@ -1,0 +1,11 @@
+# This file should have an empty line before the first rule
+# to be meaningful in the context of the test suite.
+
+# And then after that blank line we should get at least some
+# results from the output of usbguard-rule-parser.
+reject with-interface one-of { e5:*:* 2A:*:* AC:c7:* 4B:*:* f2:*:* }  if equals-ordered { true false !true false }
+#
+# this is a comment followed by an empty line
+
+reject with-interface one-of { e6:*:* } # comment about this rule
+ # reject with-interface one-of { e6:*:* }
