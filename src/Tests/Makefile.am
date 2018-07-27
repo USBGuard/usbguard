@@ -16,6 +16,8 @@
 ##
 ## Authors: Daniel Kopecek <dkopecek@redhat.com>
 ##
+SUBDIRS=Fuzzers
+
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
