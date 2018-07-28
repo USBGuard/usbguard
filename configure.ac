@@ -724,6 +724,7 @@ AC_DEFINE_UNQUOTED([USBGUARD_DAEMON_CONF_PATH], ["$sysconfdir/usbguard/usbguard-
 
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc
+                 src/Tests/Fuzzers/Makefile
                  src/Tests/Makefile
                  src/GUI.Qt/usbguard-applet-qt.desktop])
 AC_OUTPUT
