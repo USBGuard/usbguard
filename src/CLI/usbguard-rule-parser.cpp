@@ -100,12 +100,12 @@ int main(int argc, char** argv)
       while (stream.good()) {
         rule_spec.clear();
         std::getline(stream, rule_spec);
+        ++line;
 
         if (rule_spec.empty()) {
-          break;
+          continue;
         }
 
-        ++line;
         std::cout << "INPUT: " << rule_spec << std::endl;
         const usbguard::Rule rule = usbguard::parseRuleFromString(rule_spec, rule_file, line, trace);
         std::cout << "OUTPUT: " << rule.toString() << std::endl;

@@ -35,6 +35,7 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/Rules/test-rules.sh \
 	$(top_srcdir)/src/Tests/Rules/test-rules.good \
 	$(top_srcdir)/src/Tests/Rules/test-rules.bad \
+	$(top_srcdir)/src/Tests/Rules/test-rules.file \
 	$(top_srcdir)/src/Tests/UseCase/000_executable.sh \
 	$(top_srcdir)/src/Tests/UseCase/001_cli_policy.sh \
 	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \

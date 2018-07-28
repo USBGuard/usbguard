@@ -17,52 +17,61 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-# Usage: test-rules.sh <parser-binary-path> <test-data-dir>
-#        test-rules.sh
+# Usage: test-rules.sh [<parser-binary-path>] [<test-data-dir>]
 #
 
-if [ -z "$1" -o -z "$2" ]; then
-  PARSER="$builddir/usbguard-rule-parser"
-  DATADIR="$srcdir/src/Tests/Rules/"
-else
-  USBGUARD="$1"
-  DATADIR="$2"
-fi
+PARSER=${1:-"$builddir/usbguard-rule-parser"}
+DATADIR=${2:-"$srcdir/src/Tests/Rules/"}
 
-#TEMPDIR="$(mktemp -d --tmpdir usbguard-test-descriptor-parser.XXXXXX)"
 RETVAL=0
-export IFS=
+IFS=' 	
+' # Explicit default IFS (SP HT LN)
 
 echo
 echo "Parsing GOOD rules:"
 echo "###################"
 echo
 while read -r rule; do
-  $PARSER "$rule"
-  if [ $? -ne 0 ]; then
+  if ! $PARSER "$rule"; then
     echo "============="
     echo "FAILED: $rule"
     echo "^^^^^^^^^^^^^"
     RETVAL=1
   fi
-done <<EOF
-$(cat $DATADIR/test-rules.good)
-EOF
+done <"$DATADIR/test-rules.good"
 
 echo
 echo "Parsing BAD rules:"
 echo "##################"
 echo
 while read -r rule; do
-  $PARSER "$rule"
-  if [ $? -eq 0 ]; then
+  if $PARSER "$rule"; then
     echo "============="
     echo "FAILED: $rule"
     echo "^^^^^^^^^^^^^"
     RETVAL=1
   fi
-done <<EOF
-$(cat $DATADIR/test-rules.bad)
-EOF
+done <"$DATADIR/test-rules.bad"
+
+echo
+echo "Parsing rules file:"
+echo "###################"
+echo
+$PARSER -f "$DATADIR/test-rules.file" | (
+  file_rules=0
+  while read -r type rule; do
+    if [ "$type" = OUTPUT: ] && [ -n "$rule" ]; then
+      echo "FOUND: $rule"
+      file_rules=$((file_rules + 1))
+    fi
+  done
+
+  if [ "$file_rules" -eq 0 ]; then
+    echo "======================"
+    echo "FAILED: no rules found"
+    echo "^^^^^^^^^^^^^^^^^^^^^^"
+    exit 1
+  fi
+) || RETVAL=1
 
 exit $RETVAL
