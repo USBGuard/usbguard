@@ -62,9 +62,9 @@ namespace usbguard
   protected:
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
 
-    bool _writable;
+    bool _writable{false};
 
-    Interface* const _interface_ptr;
+    Interface* _interface_ptr{nullptr};
     Rule::Target _default_target;
     std::string _default_action;
     Atomic<uint32_t> _id_next;
