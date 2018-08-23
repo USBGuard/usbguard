@@ -26,7 +26,7 @@
 namespace usbguard
 {
   IPCClient::IPCClient(bool connected)
-    : d_pointer(make_unique<IPCClientPrivate>(*this, connected))
+    : d_pointer(usbguard::make_unique<IPCClientPrivate>(*this, connected))
   {
   }
 

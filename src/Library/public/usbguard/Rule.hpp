@@ -63,7 +63,8 @@ namespace usbguard
       Match = 3, /**< Special target which can be used to trigger actions. The rule wont affect the final decision. */
       Unknown = 4, /**< Unknown target. Used for default constructed rules. */
       Device = 5, /**< Special target which can only be used for a rule that represents a single device */
-      Invalid = 6
+      Empty = 6, /**< Special target to represent the case the parser reaches a comment only line. */
+      Invalid = 7
     };
 
     static const std::string targetToString(Target target);

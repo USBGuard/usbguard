@@ -27,7 +27,9 @@
 #include "usbguard/Logger.hpp"
 
 #include <fstream>
-#include <pegtl/trace.hh>
+
+#include <tao/pegtl/contrib/tracer.hpp>
+using namespace tao;
 
 namespace usbguard
 {
@@ -56,8 +58,16 @@ namespace usbguard
           "ACTION", "DEVPATH"
         }) {
             if (key == header_key) {
-              if (value != uevent.getAttribute(header_key)) {
-                throw pegtl::parse_error("header value mismatch", in);
+              /*
+               * Sanity check the value only if the value is already assigned,
+               * because with umockdev device manager we need to parse ACTION
+               * and DEVPATH from the uevent data and we don't know it before
+               * that.
+               */
+              if (!uevent.getAttribute(header_key).empty()) {
+                if (value != uevent.getAttribute(header_key)) {
+                  throw pegtl::parse_error("header value mismatch", in);
+                }
               }
             }
           }
@@ -114,25 +124,14 @@ namespace usbguard
   void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool trace)
   {
     try {
-#if HAVE_PEGTL_LTE_1_3_1
+      tao::pegtl::string_input<> in(uevent_string, std::string());
 
       if (!trace) {
-        pegtl::parse<G, UEventParser::actions>(uevent_string, std::string(), uevent);
+        tao::pegtl::parse<G, UEventParser::actions>(in, uevent);
       }
       else {
-        pegtl::parse<G, UEventParser::actions, pegtl::tracer>(uevent_string, std::string(), uevent);
+        tao::pegtl::parse<G, UEventParser::actions, tao::pegtl::tracer>(in, uevent);
       }
-
-#else
-
-      if (!trace) {
-        pegtl::parse_string<G, UEventParser::actions>(uevent_string, std::string(), uevent);
-      }
-      else {
-        pegtl::parse_string<G, UEventParser::actions, pegtl::tracer>(uevent_string, std::string(), uevent);
-      }
-
-#endif
     }
     catch (...) {
       throw;

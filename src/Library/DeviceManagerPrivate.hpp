@@ -60,7 +60,7 @@ namespace usbguard
     DeviceManagerHooks& _hooks;
     mutable std::mutex _device_map_mutex;
     std::map<uint32_t, std::shared_ptr<Device>> _device_map;
-    bool _restore_controller_device_state;
+    bool _restore_controller_device_state{false};
   };
 
 } /* namespace usbguard */

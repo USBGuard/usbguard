@@ -33,6 +33,7 @@ COMMON_WARNING_FLAGS+=" -Wswitch-enum"
 COMMON_WARNING_FLAGS+=" -Wswitch-default"
 COMMON_WARNING_FLAGS+=" -Winvalid-pch"
 COMMON_WARNING_FLAGS+=" -Wformat-nonliteral"
+COMMON_WARNING_FLAGS+=" -Wno-deprecated-register"
 #COMMON_WARNING_FLAGS+=" -flto -Wodr"
 
 #
@@ -252,6 +253,13 @@ libcap_ng_summary="system-wide; $libcapng_LIBS"],
 libcap_ng_summary="not found"]
 )
 
+PKG_CHECK_MODULES([umockdev], [umockdev-1.0 >= 0.8.0],
+[AC_DEFINE([HAVE_UMOCKDEV], [1], [umockdev API usable])
+umockdev_summary="system-wide; $umockdev_LIBS"],
+[AC_MSG_NOTICE([umockdev development files not found! umockdev device manager won't be available])
+umockdev_summary="not found"]
+)
+
 PKG_CHECK_MODULES([protobuf], [protobuf >= 2.5.0],
 [protobuf_summary="system-wide; $protobuf_CFLAGS $protobuf_LIBS"],
 [AC_MSG_ERROR([Required protobuf development files not found!])]
@@ -290,54 +298,28 @@ AC_SUBST([catch_LIBS])
 #
 AC_ARG_WITH([bundled-pegtl], AS_HELP_STRING([--with-bundled-pegtl], [Build using the bundled PEGTL library]), [with_bundled_pegtl=$withval], [with_bundled_pegtl=no])
 if test "x$with_bundled_pegtl" = xyes; then
-	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL"
-	pegtl_AC_CFLAGS="-I$srcdir/src/ThirdParty/PEGTL"
+	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL/include"
+	pegtl_AC_CFLAGS="-I$srcdir/src/ThirdParty/PEGTL/include"
 	pegtl_LIBS=""
 	AC_MSG_NOTICE([Using bundled PEGTL library])
 	pegtl_summary="bundled; $pegtl_CFLAGS $pegtl_LIBS"
 else
-	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++11 $CPPFLAGS"
-	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([pegtl.hh], [], [AC_MSG_FAILURE(pegtl.hh not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
-	AC_LANG_POP
 	pegtl_CFLAGS=""
 	pegtl_AC_CFLAGS=""
 	pegtl_LIBS=""
-	CPPFLAGS=$SAVE_CPPFLAGS
 	pegtl_summary="system-wide; $pegtl_CFLAGS $pegtl_LIBS"
 fi
 AC_SUBST([pegtl_CFLAGS])
 AC_SUBST([pegtl_AC_CFLAGS])
 AC_SUBST([pegtl_LIBS])
 
-#
-# Check whether the available PEGTL library is compatible
-# with version 1.3.1 or older.
-#
 SAVE_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="-std=c++11 $pegtl_AC_CFLAGS"
+CPPFLAGS="-std=c++11 $CPPFLAGS $pegtl_AC_CFLAGS"
 AC_LANG_PUSH([C++])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-#include <pegtl.hh>
-#include <string>
-int main(void)
-{
-  struct grammar
-   : pegtl::one<'g'> {};
-  try {
-    pegtl::parse_string<grammar>(std::string(), std::string());
-  } catch(const pegtl::parse_error& ex) {
-    auto b = ex.positions[0].byte_in_line;
-  }
-  return 0;
-}
-]])],
-[have_pegtl_lte_131=no], [have_pegtl_lte_131=yes])
+AC_CHECK_HEADER([tao/pegtl.hpp],
+		[AC_DEFINE([HAVE_TAO_PEGTL_HPP], [1], [PEGTL header file with .hpp extension is present])],
+		[AC_MSG_FAILURE(PEGTL header file not found or not usable. Re-run with --with-bundled-pegtl to use the bundled library.)])
 AC_LANG_POP
-if test "x$have_pegtl_lte_131" = xyes; then
-  AC_DEFINE([HAVE_PEGTL_LTE_1_3_1], [1], [PEGTL version less than or equal to 1.3.1])
-fi
 CPPFLAGS=$SAVE_CPPFLAGS
 
 #
@@ -470,10 +452,10 @@ if test "x$with_dbus" = xyes; then
     #
     case "$dbus_services_dir" in
       /usr/share/*|/usr/local/share/*)
-        dbus_services_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$dbus_services_dir)
+        dbus_services_dir=$(echo "$dbus_services_dir" | sed -r 's,^(/usr/share|/usr/local/share),${datadir},')
       ;;
       /usr/*|/usr/local/*)
-        dbus_services_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$dbus_services_dir)
+        dbus_services_dir=$(echo "$dbus_services_dir" | sed -r 's,^(/usr|/usr/local),${prefix},')
       ;;
       /*)
         dbus_services_dir='${prefix}'"$dbus_services_dir"
@@ -610,11 +592,11 @@ if test "x$enable_tsan" = xyes; then
 fi
 
 #
-# Require asciidoctor.
+# Check whether asciidoc (a2x) is present.
 #
-AC_CHECK_PROGS(ASCIIDOCTOR, [asciidoctor])
-if test -z "$ASCIIDOCTOR"; then
-  AC_MSG_FAILURE([Unable to find documentation generator (asciidoctor)])
+AC_CHECK_PROGS(A2X, [a2x])
+if test -z "$A2X"; then
+  AC_MSG_WARN([Unable to find documentation generator (asciidoc / a2x). Documentation will not be generated.])
 fi
 
 #
@@ -731,10 +713,10 @@ AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
 
 case "$bash_completion_dir" in
   /usr/share/*|/usr/local/share/*)
-    bash_completion_dir=$(sed -r 's,^(/usr/share|/usr/local/share),${datadir},'<<<$bash_completion_dir)
+    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr/share|/usr/local/share),${datadir},')
     ;;
   /usr/*|/usr/local/*)
-    bash_completion_dir=$(sed -r 's,^(/usr|/usr/local),${prefix},'<<<$bash_completion_dir)
+    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr|/usr/local),${prefix},')
     ;;
   /*)
     bash_completion_dir='${prefix}'"$bash_completion_dir"
@@ -746,6 +728,7 @@ AC_SUBST([BASH_COMPLETION_DIR], $bash_completion_dir)
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
+AM_CONDITIONAL([DOCS_ENABLED], [! test -z "$A2X" ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
 AM_CONDITIONAL([WITH_LDAP], [test "x$with_ldap" = xyes])
@@ -771,6 +754,7 @@ AC_DEFINE_UNQUOTED([USBGUARD_DAEMON_CONF_PATH], ["$sysconfdir/usbguard/usbguard-
 
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc
+                 src/Tests/Fuzzers/Makefile
                  src/Tests/Makefile
                  src/GUI.Qt/usbguard-applet-qt.desktop])
 AC_OUTPUT
@@ -794,6 +778,7 @@ echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 1.3.1: $have_pegtl_lte_131"
 echo "         Qt: $qt_summary"
 echo " GLib D-Bus: $dbus_summary"
+echo "   umockdev: $umockdev_summary"
 echo
 echo "## Directories"
 echo

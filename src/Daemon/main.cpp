@@ -145,13 +145,19 @@ int main(int argc, char* argv[])
   }
 
   /* Initialize logging */
-  USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
-      LogStream::Level::Trace
-      :
-      LogStream::Level::Warning));
-  USBGUARD_LOGGER.setOutputConsole(log_console);
-  USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
-  USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);
+  try {
+    USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
+        LogStream::Level::Trace
+        :
+        LogStream::Level::Warning));
+    USBGUARD_LOGGER.setOutputConsole(log_console);
+    USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
+    USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);
+  }
+  catch (const Exception& ex) {
+    USBGUARD_LOG(Error) << "Unable to initialize logging: " << ex.message();
+    return EXIT_FAILURE;
+  }
 
   /* Setup seccomp whitelist & drop capabilities */
   if (use_seccomp_whitelist) {
@@ -191,13 +197,13 @@ int main(int argc, char* argv[])
     ret = EXIT_SUCCESS;
   }
   catch (const usbguard::Exception& ex) {
-    USBGUARD_LOG(Error) << "ERROR: " << ex.message();
+    USBGUARD_LOG(Error) << ex.message();
   }
   catch (const std::exception& ex) {
-    USBGUARD_LOG(Error) << "EXCEPTION: " << ex.what();
+    USBGUARD_LOG(Error) << ex.what();
   }
   catch (...) {
-    USBGUARD_LOG(Error) << "EXCEPTION: Unknown excepton caught while starting the process";
+    USBGUARD_LOG(Error) << "Unknown excepton caught while starting the process";
   }
 
   return ret;

@@ -23,9 +23,7 @@
 
 #include "usbguard/Typedefs.hpp"
 
-#include <pegtl.hh>
-
-using namespace pegtl;
+#include <tao/pegtl.hpp>
 
 namespace usbguard
 {
@@ -33,6 +31,8 @@ namespace usbguard
 
   namespace UEventParser
   {
+    using namespace tao::pegtl;
+
     struct value
       : seq<not_one<'\0', '\n'>, star<not_one<'\0', '\n'>>> {};
 

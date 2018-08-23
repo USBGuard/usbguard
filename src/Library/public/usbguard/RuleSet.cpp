@@ -34,7 +34,7 @@ namespace usbguard
 {
 
   RuleSet::RuleSet(Interface* const interface_ptr)
-    : _interface_ptr(interface_ptr)
+    : d_pointer(usbguard::make_unique<RuleSetPrivate>(*this, interface_ptr))
   {
     clearWritable();
     _default_target = Rule::Target::Block;
@@ -43,7 +43,7 @@ namespace usbguard
   }
 
   RuleSet::RuleSet(const RuleSet& rhs)
-    : _interface_ptr(rhs._interface_ptr)
+    : d_pointer(usbguard::make_unique<RuleSetPrivate>(*this, *rhs.d_pointer))
   {
   }
 

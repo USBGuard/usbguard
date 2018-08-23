@@ -26,14 +26,14 @@
 namespace usbguard
 {
   Device::Device(DeviceManager& manager)
-    : d_pointer(make_unique<DevicePrivate>(*this, manager))
+    : d_pointer(usbguard::make_unique<DevicePrivate>(*this, manager))
   {
   }
 
   Device::~Device() = default;
 
   Device::Device(const Device& rhs)
-    : d_pointer(make_unique<DevicePrivate>(*this, *rhs.d_pointer))
+    : d_pointer(usbguard::make_unique<DevicePrivate>(*this, *rhs.d_pointer))
   {
   }
 

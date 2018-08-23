@@ -7,43 +7,40 @@ usbguard(1)
 usbguard - USBGuard command-line interface
 
 
-[[synopsis]]
 == SYNOPSIS
 
-*usbguard* 'OPTIONS' 'command' ['COMMAND-OPTIONS'] ...
+usbguard [OPTIONS] <subcommand> [SUBCOMMAND-OPTIONS] ...
 
-*usbguard list-devices*
+usbguard list-devices
 
-*usbguard allow-device* 'id'
+usbguard allow-device 'id'
 
-*usbguard block-device* 'id'
+usbguard block-device 'id'
 
-*usbguard reject-device* 'id'
+usbguard reject-device 'id'
 
-*usbguard list-rules*
+usbguard list-rules
 
-*usbguard append-rule* 'rule'
+usbguard append-rule 'rule'
 
-*usbguard remove-rule* 'id'
+usbguard remove-rule 'id'
 
-*usbguard generate-policy*
+usbguard generate-policy
 
-*usbguard watch*
+usbguard watch
 
-*usbguard read-descriptor* 'file'
+usbguard read-descriptor 'file'
 
-*usbguard add-user* 'name'
+usbguard add-user 'name'
 
-*usbguard remove-user* 'name'
+usbguard remove-user 'name'
 
 
-[[description]]
 == DESCRIPTION
 The usbguard command provides a command-line interface (CLI) to a running usbguard-daemon(8) instance.
 It also provides a tool for generating initial USBGuard policies based on USB devices connected to the system.
 
 
-[[subcommands]]
 == SUBCOMMANDS
 
 === *list-devices*
@@ -245,19 +242,17 @@ Available options:
     Show help.
 
 
-[[examples]]
 == EXAMPLES
 
 Generating an initial policy:
 
-include::usbguard-rules.conf.5.adoc[tags=example-initial-policy]
+include::example-initial-policy.adoc[]
 
 
-[[see-also]]
 == SEE ALSO
-<<usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>,
-<<usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>,
-<<usbguard-rules.conf.5.adoc#name, usbguard-rules.conf(5)>>
+link:usbguard-daemon.8.adoc#name[usbguard-daemon(8)],
+link:usbguard-daemon.conf.5.adoc#name[usbguard-daemon.conf(5)],
+link:usbguard-rules.conf.5.adoc#name[usbguard-rules.conf(5)]
 
 
 include::footer.adoc[]

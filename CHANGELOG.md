@@ -1,15 +1,38 @@
 # Change Log
 
-## 0.7.3 - unreleased
+## 0.7.4 - 2018-07-12
+
+### Fixed/Changed
+
+- Fixed conditional manual page generation & installation
+- Replaced Boost library based ext/stdio_filebuf.h implementation
+  with a custom FDStreamBuf implementation
+
+## 0.7.3 - 2018-07-11
 
 ### Changed
 
 - usbguard-daemon will now exit with an error if it fails to open
   a logging file or audit event file.
+- Updated PEGTL submodule and dropped support for older PEGTL API
+- Modified the present device enumeration algorithm to be more
+  reliable. Enumeration timeouts won't cause usbguard-daemon process
+  to exit anymore.
+- Manual pages are now generated using asciidoc (a2x) instead of
+  asciidoctor.
+- Generation and installation of manual pages is now optional.
+- Fixed several bugs D-Bus interface XML specification
 
 ### Added
 
+- umockdev based device manager capable of simulating devices based
+  on umockdev-record files.
+- Boost libraries can be used as ext/stdio_filebuf.h header file source.
+
 ### Removed
+
+- Removed DummyDevices.tar.xz tarball that was supposed to be used for
+  testing.
 
 ## 0.7.2 - 2018-01-22
 

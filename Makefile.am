@@ -67,17 +67,19 @@ man_ROFF_FILES=\
 EXTRA_DIST+=\
 	$(man_ADOC_FILES)
 
-BUILT_SOURCES+=\
-	$(man_ROFF_FILES)
-
 CLEANFILES+=\
 	$(man_ROFF_FILES) \
 	$(man_ROFF_FILES:.roff=)
 
+if DOCS_ENABLED
+BUILT_SOURCES+=\
+	$(man_ROFF_FILES)
+
 $(top_builddir)/%.roff: %.adoc
 	$(MKDIR_P) $$(dirname $@)
-	$(ASCIIDOCTOR) -v -b manpage $^ -o $(top_builddir)/$@
-	$(INSTALL) -m 644 $(top_builddir)/$@ $(top_builddir)/$(@:.roff=)
+	$(A2X) -v -f manpage $^ -D $(top_builddir)/$$(dirname $@)
+	$(INSTALL) -m 644 $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
+endif
 
 install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
 uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus
@@ -128,6 +130,7 @@ install-systemd-service:
 uninstall-systemd-service:
 endif
 
+if DOCS_ENABLED
 man8_MANS=\
 	$(top_builddir)/doc/man/usbguard-daemon.8
 
@@ -137,6 +140,11 @@ man5_MANS=\
 
 man1_MANS=\
 	$(top_builddir)/doc/man/usbguard.1
+else
+man8_MANS=
+man5_MANS=
+man1_MANS=
+endif
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
@@ -154,21 +162,26 @@ libusbguard_la_CPPFLAGS=\
 	-I$(top_srcdir)/src/Library \
 	-I$(top_srcdir)/src/Library/public \
 	-I$(top_builddir)/src/Library/IPC \
+	${BOOST_CPPFLAGS} \
 	@qb_CFLAGS@ \
 	@protobuf_CFLAGS@ \
 	@crypto_CFLAGS@ \
-	@pegtl_CFLAGS@
+	@pegtl_CFLAGS@ \
+	@umockdev_CFLAGS@
 
 libusbguard_la_LDFLAGS=\
 	-no-undefined \
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+	${BOOST_LDFLAGS}
 
 libusbguard_la_LIBADD=\
 	@qb_LIBS@ \
 	@protobuf_LIBS@ \
 	@crypto_LIBS@ \
 	@pegtl_LIBS@ \
-	@atomic_LIBS@
+	@atomic_LIBS@ \
+	@umockdev_LIBS@ \
+	${BOOST_IOSTREAMS_LIB}
 
 EXTRA_DIST+=\
 	src/Library/IPC/Devices.proto \
@@ -249,6 +262,10 @@ libusbguard_la_SOURCES=\
 	src/Library/UEventDeviceManager.hpp \
 	src/Library/UEventParser.cpp \
 	src/Library/UEventParser.hpp \
+	src/Library/UMockdevDeviceManager.cpp \
+	src/Library/UMockdevDeviceManager.hpp \
+	src/Library/UMockdevDeviceDefinition.cpp \
+	src/Library/UMockdevDeviceDefinition.hpp \
 	src/Library/Utility.cpp \
 	src/Library/Utility.hpp \
 	src/Library/public/usbguard/Audit.cpp \
@@ -422,8 +439,10 @@ usbguard_rule_parser_LDADD=\
 if DBUS_ENABLED
 sbin_PROGRAMS+= usbguard-dbus
 
+if DOCS_ENABLED
 man8_MANS+=\
 	$(top_builddir)/doc/man/usbguard-dbus.8
+endif
 
 BUILT_SOURCES+=\
 	src/DBus/DBusInterface.xml.cstr \
@@ -574,8 +593,10 @@ desktop_DATA = $(top_builddir)/src/GUI.Qt/usbguard-applet-qt.desktop
 appicondir = $(datadir)/icons/hicolor/scalable/apps
 appicon_DATA = src/GUI.Qt/resources/usbguard-icon.svg
 
+if DOCS_ENABLED
 man1_MANS +=\
 	$(top_builddir)/doc/man/usbguard-applet-qt.1
+endif
 
 BUILT_SOURCES+=\
 	$(usbguard_applet_qt_UIHEADERS) \
@@ -659,7 +680,7 @@ $(DIST_ARCHIVES):
 
 release-files: $(DIST_ARCHIVES)
 	$(eval RELEASE_DIR:="release.$(PACKAGE)-$(VERSION)")
-	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client || echo gpg2))
+	$(eval GPG:=$(shell test -n "$$QUBES_GPG_DOMAIN" && echo qubes-gpg-client-wrapper || echo gpg2))
 	$(MKDIR_P) $(RELEASE_DIR)
 	cp $(DIST_ARCHIVES) $(RELEASE_DIR)
 	cd $(RELEASE_DIR) && $(GPG) -b -a -o - $(DIST_ARCHIVES) > $(DIST_ARCHIVES).sig

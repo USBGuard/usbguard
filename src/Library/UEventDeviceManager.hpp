@@ -62,16 +62,12 @@ namespace usbguard
     SysFSDevice _sysfs_device;
   };
 
-#if !defined(USBGUARD_SYSFS_ROOT)
-  #define USBGUARD_SYSFS_ROOT "/sys"
-#endif
-
   class UEventDeviceManager : public DeviceManager
   {
     using DeviceManager::insertDevice;
 
   public:
-    UEventDeviceManager(DeviceManagerHooks& hooks, const std::string& sysfs_root = USBGUARD_SYSFS_ROOT, bool dummy_mode = false);
+    UEventDeviceManager(DeviceManagerHooks& hooks);
     ~UEventDeviceManager();
 
     void setDefaultBlockedState(bool state) override;
@@ -85,45 +81,41 @@ namespace usbguard
     void insertDevice(std::shared_ptr<UEventDevice> device);
     std::shared_ptr<Device> removeDevice(const std::string& syspath);
 
-    uint32_t getIDFromSysPath(const std::string& syspath) const;
+    uint32_t getIDFromSysfsPath(const std::string& syspath) const;
 
-  protected:
-    int ueventOpen();
-    int ueventDummyOpen();
-    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
-
-    bool knownSysPath(const std::string& syspath, uint32_t* id = nullptr) const;
-    void learnSysPath(const std::string& syspath, uint32_t id = 0);
-    void forgetSysPath(const std::string& syspath);
-
-    void thread();
-    void ueventProcessRead();
-    void ueventProcessUEvent(const UEvent& uevent);
+  private:
     static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
       const std::pair<std::string, std::string>& b);
-    int ueventEnumerateDevices();
-    int ueventEnumerateDummyDevices();
-
     static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
+
+    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
+    void thread();
+
+    int ueventOpen();
+    void ueventProcessRead();
+    void ueventProcessUEvent(const UEvent& uevent);
+    int ueventEnumerateDevices();
     int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
 
     void processDevicePresence(SysFSDevice& sysfs_device);
-
     void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
     void processDevicePresence(uint32_t id);
     void processDeviceRemoval(const std::string& sysfs_devpath);
 
-  private:
     Thread<UEventDeviceManager> _thread;
     int _uevent_fd;
     int _wakeup_fd;
-    std::map<std::string, uint32_t> _syspath_map;
-    std::string _sysfs_root;
+
+    bool isPresentSysfsPath(const std::string& sysfs_path) const;
+    bool knownSysfsPath(const std::string& sysfs_path, uint32_t* id = nullptr) const;
+    void learnSysfsPath(const std::string& sysfs_path, uint32_t id = 0);
+    void forgetSysfsPath(const std::string& sysfs_path);
+
+    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
+
     bool _default_blocked_state;
     bool _enumeration_only_mode;
-    bool _dummy_mode;
     std::atomic<bool> _enumeration;
-    std::atomic<int> _enumeration_count;
     std::condition_variable _enumeration_complete;
     std::mutex _enumeration_mutex;
   };

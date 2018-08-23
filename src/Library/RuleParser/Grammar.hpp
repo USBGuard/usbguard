@@ -22,37 +22,37 @@
 #endif
 
 #include "Actions.hpp"
-#include <pegtl.hh>
 
-using namespace pegtl;
+#include <tao/pegtl.hpp>
 
 namespace usbguard
 {
   namespace RuleParser
   {
+    using namespace tao::pegtl;
     /*
      * Rule language keywords
      */
-    struct str_allow : pegtl_string_t("allow") {};
-    struct str_block : pegtl_string_t("block") {};
-    struct str_reject : pegtl_string_t("reject") {};
-    struct str_match : pegtl_string_t("match") {};
-    struct str_device : pegtl_string_t("device") {};
+    struct str_allow : TAOCPP_PEGTL_STRING("allow") {};
+    struct str_block : TAOCPP_PEGTL_STRING("block") {};
+    struct str_reject : TAOCPP_PEGTL_STRING("reject") {};
+    struct str_match : TAOCPP_PEGTL_STRING("match") {};
+    struct str_device : TAOCPP_PEGTL_STRING("device") {};
 
-    struct str_name : pegtl_string_t("name") {};
-    struct str_hash : pegtl_string_t("hash") {};
-    struct str_parent_hash : pegtl_string_t("parent-hash") {};
-    struct str_via_port : pegtl_string_t("via-port") {};
-    struct str_with_interface : pegtl_string_t("with-interface") {};
-    struct str_serial : pegtl_string_t("serial") {};
-    struct str_if : pegtl_string_t("if") {};
-    struct str_id : pegtl_string_t("id") {};
+    struct str_name : TAOCPP_PEGTL_STRING("name") {};
+    struct str_hash : TAOCPP_PEGTL_STRING("hash") {};
+    struct str_parent_hash : TAOCPP_PEGTL_STRING("parent-hash") {};
+    struct str_via_port : TAOCPP_PEGTL_STRING("via-port") {};
+    struct str_with_interface : TAOCPP_PEGTL_STRING("with-interface") {};
+    struct str_serial : TAOCPP_PEGTL_STRING("serial") {};
+    struct str_if : TAOCPP_PEGTL_STRING("if") {};
+    struct str_id : TAOCPP_PEGTL_STRING("id") {};
 
-    struct str_all_of : pegtl_string_t("all-of") {};
-    struct str_one_of : pegtl_string_t("one-of") {};
-    struct str_none_of : pegtl_string_t("none-of") {};
-    struct str_equals : pegtl_string_t("equals") {};
-    struct str_equals_ordered : pegtl_string_t("equals-ordered") {};
+    struct str_all_of : TAOCPP_PEGTL_STRING("all-of") {};
+    struct str_one_of : TAOCPP_PEGTL_STRING("one-of") {};
+    struct str_none_of : TAOCPP_PEGTL_STRING("none-of") {};
+    struct str_equals : TAOCPP_PEGTL_STRING("equals") {};
+    struct str_equals_ordered : TAOCPP_PEGTL_STRING("equals-ordered") {};
 
     /*
      * Generic rule attribute
@@ -189,18 +189,26 @@ namespace usbguard
       : sor<str_allow, str_block, str_reject, str_match, str_device> {};
 
     /*
+     * Comment
+     */
+    struct comment
+      : seq<star<ascii::blank>, if_must<one<'#'>,
+        star<seq<not_at<eof>, any>>>> {};
+
+    /*
      * Rule
      */
     struct rule
       : seq<target,
         opt<plus<ascii::blank>, device_id>,
-        opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>> {};
+        opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>,
+        opt<comment>> {};
 
     /*
      * Grammar entry point
      */
     struct rule_grammar
-      : until<eof, must<rule>> {};
+      : until<eof, must<sor<comment, rule>>> {};
   } /* namespace RuleParser */
 } /* namespace usbguard */
 

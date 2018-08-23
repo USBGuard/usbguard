@@ -932,6 +932,7 @@ namespace usbguard
       break;
 
     case Rule::Target::Invalid:
+    case Rule::Target::Empty:
     case Rule::Target::Unknown:
     case Rule::Target::Match:
     case Rule::Target::Device:

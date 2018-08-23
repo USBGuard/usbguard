@@ -150,6 +150,9 @@ namespace usbguard
       USBGUARD_LOG(Trace) << "Signaling IPCDisconnected";
       _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
     }
+    else if (_thread.running()) {
+      stop(do_wait);
+    }
   }
 
   void IPCClientPrivate::disconnect(bool do_wait)
@@ -239,7 +242,7 @@ namespace usbguard
      */
     return_map_lock.unlock();
     /* Wait for some time for the reply to be received */
-    const std::chrono::milliseconds timeout_ms(5*1000); /* TODO: make this configurable */
+    const std::chrono::milliseconds timeout_ms(15*1000); /* TODO: make this configurable */
     const bool timed_out = \
       future.wait_for(timeout_ms) == std::future_status::timeout;
     IPC::MessagePointer response;
@@ -345,10 +348,14 @@ namespace usbguard
     try {
       auto& handler = _handlers.at(payload_type);
       auto message = handler.payloadToMessage(payload);
+      USBGUARD_LOG(Debug) << "Message: " << message->DebugString();
       handler.run(message);
     }
     catch (const IPCException& exception) {
       throw;
+    }
+    catch (const std::exception& exception) {
+      throw Exception("IPC connection", "message", exception.what());
     }
     catch (...) {
       throw Exception("IPC connection", "message", "Unknown payload type");

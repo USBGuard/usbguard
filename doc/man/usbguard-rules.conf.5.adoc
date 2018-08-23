@@ -6,11 +6,10 @@ usbguard-rules.conf(5)
 == NAME
 usbguard-rules.conf - USBGuard rule set file.
 
-[[description]]
+
 == DESCRIPTION
 The *usbguard-rules.conf* file is loaded by the USBGuard daemon after it parses the main configuration file, usbguard-daemon.conf(5).
 The daemon expects the file to contain rules written in a language which is described in the <<rule-language,Rule Language>> section below.
-
 
 [[rule-language]]
 == Rule Language
@@ -31,10 +30,9 @@ The rule language grammar, expressed in a BNF-like syntax, is the following:
 ....
 
 Rule attributes specify which devices to match or what condition have to be met for the rule to be applicable.
-See the <<device-attributes,Device Attributes>> section for the list of available attributes and <<conditions,Conditions>> for the list of supported rule rule conditions.
+See the <<device-specification,Device Specification>> section for the list of available attributes and <<conditions,Conditions>> for the list of supported rule rule conditions.
 
 
-[[targets]]
 === Targets
 The target of a rule specifies whether the device will be authorized for use or not.
 Three types of target are recognized:
@@ -60,8 +58,6 @@ That allows the policy administator to write an explicit default target.
 If no rule from the policy is applicable to the device, an implicit target configured in usbguard-daemon.conf(5) will be used.
 However, if one wants to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with device attributes and rule conditions.
 
-
-[[device-attributes]]
 ==== Device Attributes
 Device attributes are specific values read from the USB device after it's inserted to the system.
 Which attributes are available is defined below.
@@ -161,7 +157,6 @@ See the http://www.usb.org/developers/defined_class[list of assigned classes, su
 Instead of the subclass and protocol number, you may write an asterisk character (`*`) to match all subclasses or protocols.
 Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
-
 [[conditions]]
 === Conditions
 Whether a rule that matches a device will be applied or not can be further restricted using rule conditions.
@@ -232,7 +227,6 @@ List of conditions:
     Evaluates always to false.
 
 
-[[initial-policy]]
 == Initial policy
 Using the *usbguard* CLI tool and its *generate-policy* subcommand, you can generate an initial policy for your system instead of writing one from scratch.
 The tool generates an *allow* policy for all devices connected to the system at the time of execution.
@@ -242,17 +236,9 @@ The policy will be printed out on the standard output.
 It's a good idea to review the generated rules before using them on a system.
 The typical workflow for generating an initial policy could look like this:
 
-// tag::example-initial-policy[]
-....
-    $ sudo usbguard generate-policy > rules.conf
-    $ vi rules.conf
-    (review/modify the rule set)
-    $ sudo install -m 0600 -o root -g root rules.conf /etc/usbguard/rules.conf
-    $ sudo systemctl restart usbguard
-....
-// end::example-initial-policy[]
+include::example-initial-policy.adoc[]
 
-[[example-policies]]
+
 == Example Policies
 The following examples show what to put into the *rules.conf* file in order to implement the given policy.
 
@@ -315,10 +301,9 @@ Rejecting a set of devices considered as "bad" is a good approach how to limit t
 ....
 
 
-[[see-also]]
 == SEE ALSO
-<<usbguard-daemon.8.adoc#name, usbguard-daemon(8)>>,
-<<usbguard-daemon.conf.5.adoc#name, usbguard-daemon.conf(5)>>
+link:usbguard-daemon.8.adoc#name[usbguard-daemon(8)],
+link:usbguard-daemon.conf.5.adoc#name[usbguard-daemon.conf(5)]
 
 
 include::footer.adoc[]

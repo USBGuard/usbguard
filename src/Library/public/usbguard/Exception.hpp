@@ -174,7 +174,7 @@ namespace usbguard
     }
 
   private:
-    uint64_t _message_id;
+    uint64_t _message_id{0};
   };
 } /* namespace usbguard */
 

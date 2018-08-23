@@ -314,14 +314,21 @@ namespace usbguard
   int loadFiles(const std::string& directory,
     std::function<std::string(const std::string&, const struct dirent*)> filter,
     std::function<int(const std::string&, const std::string&)> loader,
-    std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter)
+    std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter,
+    bool directory_required)
   {
     DIR* dirobj = opendir(directory.c_str());
-    int retval = 0;
 
     if (dirobj == nullptr) {
-      throw ErrnoException("loadFiles", directory, errno);
+      if (!directory_required && errno == ENOENT) {
+        return 0;
+      }
+      else {
+        throw ErrnoException("loadFiles", directory, errno);
+      }
     }
+
+    int retval = 0;
 
     try {
       std::vector<std::pair<std::string, std::string>> loadpaths;
@@ -348,7 +355,7 @@ namespace usbguard
         }
       }
 
-      std::stable_sort(loadpaths.begin(), loadpaths.end(), sorter);
+      std::sort(loadpaths.begin(), loadpaths.end(), sorter);
 
       for (const auto& loadpath : loadpaths) {
         USBGUARD_LOG(Trace) << "L: " << loadpath.first << " : " << loadpath.second;
@@ -447,6 +454,65 @@ namespace usbguard
       /* Relative path */
       return parentPath(linkpath) + "/" + buffer;
     }
+  }
+
+  std::size_t countPathComponents(const std::string& path)
+  {
+    bool was_component = false;
+    std::size_t count = 0;
+
+    for (std::size_t i = 0; i < path.size(); ++i) {
+      const char c = path[i];
+
+      if (c == '/') {
+        if (was_component) {
+          ++count;
+          was_component = false;
+        }
+      }
+      else {
+        was_component = true;
+      }
+    }
+
+    return count;
+  }
+
+  std::string normalizePath(const std::string& path)
+  {
+    std::vector<std::string> components;
+    const bool is_absolute = (path[0] == '/');
+    tokenizeString(path, components, "/", /*trim_empty=*/true);
+
+    for (auto it = components.begin(); it != components.end();) {
+      if (*it == ".") {
+        /* remove this component */
+        it = components.erase(it);
+      }
+      else if (*it == "..") {
+        /* remove this and previous component (if any) */
+        if (it != components.begin()) {
+          it = components.erase(it - 1);
+        }
+
+        it = components.erase(it);
+      }
+      else {
+        ++it;
+      }
+    }
+
+    std::string normalized_path(is_absolute ? "/" : "");
+
+    for (auto it = components.cbegin(); it != components.cend(); ++it) {
+      normalized_path.append(*it);
+
+      if ((it+1) != components.cend()) {
+        normalized_path.append("/");
+      }
+    }
+
+    return normalized_path;
   }
 } /* namespace usbguard */
 

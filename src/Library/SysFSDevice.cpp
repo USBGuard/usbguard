@@ -36,6 +36,18 @@
 
 namespace usbguard
 {
+  static std::string G_sysfs_root = "/sys";
+
+  void SysFSDevice::setSysfsRoot(const std::string& sysfs_root)
+  {
+    G_sysfs_root = sysfs_root;
+  }
+
+  const std::string& SysFSDevice::getSysfsRoot()
+  {
+    return G_sysfs_root;
+  }
+
   SysFSDevice::SysFSDevice()
     : _sysfs_dirfd(-1)
   {
@@ -60,7 +72,7 @@ namespace usbguard
     }
 
     USBGUARD_SYSCALL_THROW("SysFSDevice",
-      (_sysfs_dirfd = open(_sysfs_path.c_str(), O_PATH|O_DIRECTORY)) < 0);
+      (_sysfs_dirfd = open((G_sysfs_root + _sysfs_path).c_str(), O_PATH|O_DIRECTORY)) < 0);
 
     try {
       reloadUEvent();
@@ -146,7 +158,7 @@ namespace usbguard
     return fd;
   }
 
-  std::string SysFSDevice::readAttribute(const std::string& name, bool strip_last_null, bool optional) const
+  std::string SysFSDevice::readAttribute(const std::string& name, bool trim, bool optional) const
   {
     USBGUARD_LOG(Trace) << "name=" << name;
     const ScopedFD fd(openat(_sysfs_dirfd, name.c_str(), O_RDONLY));
@@ -165,19 +177,44 @@ namespace usbguard
     USBGUARD_SYSCALL_THROW("SysFSDevice",
       (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
 
-    if (strip_last_null) {
-      if (rc > 0) {
-        buffer.resize(static_cast<size_t>(rc) - 1);
-      }
-      else {
-        return std::string();
-      }
-    }
-    else {
-      buffer.resize(static_cast<size_t>(rc));
+    if (rc <= 0) {
+      return std::string();
     }
 
-    USBGUARD_LOG(Debug) << "value=" << buffer << " size=" << buffer.size();
+    const size_t read_size = static_cast<size_t>(rc);
+
+    if (trim) {
+      size_t trimmed_size = read_size;
+
+      while (trimmed_size > 0) {
+        bool stop = false;
+
+        switch (buffer[trimmed_size - 1]) {
+        case '\0':
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\b':
+          break;
+
+        default:
+          stop = true;
+        }
+
+        if (stop) {
+          break;
+        }
+        else {
+          --trimmed_size;
+        }
+      }
+
+      buffer.resize(trimmed_size);
+    }
+    else {
+      buffer.resize(read_size);
+    }
+
     return buffer;
   }
 
