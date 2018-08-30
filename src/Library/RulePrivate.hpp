@@ -121,7 +121,7 @@ namespace usbguard
     const Rule::Attribute<RuleCondition>& attributeConditions() const;
     Rule::Attribute<RuleCondition>& attributeConditions();
 
-    std::string toString(bool invalid = false) const;
+    std::string toString(bool invalid = false, bool hide_pii = false) const;
 
     MetaData& metadata();
     const MetaData& metadata() const;

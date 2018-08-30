@@ -67,7 +67,8 @@ namespace usbguard
     "DeviceManagerBackend",
     "IPCAccessControlFiles",
     "AuditFilePath",
-    "AuditBackend"
+    "AuditBackend",
+    "HidePII"
   };
 
   static const std::vector<std::pair<std::string, Daemon::DevicePolicyMethod>> device_policy_method_strings = {
@@ -332,6 +333,18 @@ namespace usbguard
       else {
         USBGUARD_LOG(Info) << "Audit logging disabled. Set AuditBackend and/or AuditFilePath to enable.";
         _audit.setBackend(nullptr);
+      }
+    }
+
+    /* HidePII */
+    if (_config.hasSettingValue("HidePII")) {
+      const std::string value = _config.getSettingValue("HidePII");
+
+      if (value == "true") {
+        _audit.setHidePII(true);
+      }
+      else if (value != "false") {
+        throw Exception("Configuration", "HidePII", "Invalid value");
       }
     }
 
