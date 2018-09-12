@@ -93,7 +93,7 @@ COUNTER="0"
 declare -A BAD
 PIDFILE="/var/run/usbguard.pid"
 
-function test ()
+function grep_and_fail ()
 {
     grep "$1" $TMPDIR/usbguard.log
     GREP=$?
@@ -168,7 +168,7 @@ do
 
     echo "line: ${lines[$i]} | pattern: ${results[$i]}"
 
-    test "${results[$i]}"
+    grep_and_fail "${results[$i]}"
 
     # for sure, it should be already dead because there is no data in LDAP
     PID=$(sudo -n cat $PIDFILE)
@@ -191,7 +191,7 @@ sudo -n kill $PID
 rckilla=$?
 sudo -n rm -f $PIDFILE
 
-test "Value is not valid or not set, using default FILES"
+grep_and_fail "Value is not valid or not set, using default FILES"
 
 # removed nsswitch #####################################################################################
 sudo -n rm -rf /etc/nsswitch.conf
@@ -207,7 +207,7 @@ sudo -n kill $PID
 rckillb=$?
 sudo -n rm -f $PIDFILE
 
-test "ERROR: NSSwitch parsing: /etc/nsswitch.conf: No such file or directory"
+grep_and_fail '(E) NSSwitch parsing: /etc/nsswitch.conf: No such file or directory'
 
 if [ $rckillb -eq "1" ] # expected to fail
 then

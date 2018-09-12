@@ -120,7 +120,7 @@ then
     KILLRC="0"
 fi
 
-grep "ERROR: Rules: SourceLDAP: usbguard::Exception" $TMPDIR/usbguard.log
+grep "Rules: SourceLDAP: usbguard::Exception" $TMPDIR/usbguard.log
 GREP1=$?
 
 grep -i "Sanitizer" $TMPDIR/usbguard.log
