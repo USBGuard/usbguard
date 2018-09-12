@@ -413,7 +413,7 @@ namespace usbguard
           }
         }
 
-        return false;
+        return true;
       }
 
       std::string _name;
