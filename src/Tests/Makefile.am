@@ -99,7 +99,7 @@ TESTS+=\
 	LDAP/UseCase/ldap-test-3.sh \
 	LDAP/UseCase/ldap-test-4.sh \
 	LDAP/UseCase/ldap-test-5.sh
-	
+
 endif
 
 check_PROGRAMS=\
