@@ -167,7 +167,7 @@ namespace usbguard
           size_t index = 0;
 
           switch (static_cast<LDAPUtil::LDAP_KEY_INDEX>(i)) {
-          case LDAPUtil::LDAP_KEY_INDEX::RuleTarget:
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardRuleTarget:
             rule.second += value;
             break;
 
@@ -178,15 +178,15 @@ namespace usbguard
           case LDAPUtil::LDAP_KEY_INDEX::USBParentHash:
           case LDAPUtil::LDAP_KEY_INDEX::USBViaPort:
           case LDAPUtil::LDAP_KEY_INDEX::USBWithInterface:
-          case LDAPUtil::LDAP_KEY_INDEX::RuleCondition:
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardRuleCondition:
             rule.second += " " + LDAPUtil::_rule_keys[i] + " " + value;
             break;
 
-          case LDAPUtil::LDAP_KEY_INDEX::RuleOrder:
+          case LDAPUtil::LDAP_KEY_INDEX::USBGuardRuleOrder:
             rule.first = std::stol(value, &index);
 
             if (value[index] != 0) {
-              throw Exception("ldapToRules", "stol", "cannot convert RuleOrder to number: " + value);
+              throw Exception("ldapToRules", "stol", "cannot convert USBGuardRuleOrder to number: " + value);
             }
 
             break;

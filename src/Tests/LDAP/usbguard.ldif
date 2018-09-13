@@ -1,13 +1,13 @@
 dn: cn=usbguard,cn=schema,cn=config
 objectClass: olcSchemaConfig
 cn: usbguard
-olcAttributeTypes: {0}( 1.3.6.1.4.1.15955.9.1.1 NAME 'RuleTarget' DESC 'Hostna
+olcAttributeTypes: {0}( 1.3.6.1.4.1.15955.9.1.1 NAME 'USBGuardRuleTarget' DESC 'Hostna
  me for USBGuard host' EQUALITY caseExactIA5Match SUBSTR caseExactIA5Substri
  ngsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 olcAttributeTypes: {1}( 1.3.6.1.4.1.15955.9.1.2 NAME 'USBGuardHost' DESC 'Ho
  stname for USBGuard host' EQUALITY caseExactIA5Match SUBSTR caseExactIA5Sub
  stringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
-olcAttributeTypes: {2}( 1.3.6.1.4.1.15955.9.1.3 NAME 'RuleOrder' DESC 'a
+olcAttributeTypes: {2}( 1.3.6.1.4.1.15955.9.1.3 NAME 'USBGuardRuleOrder' DESC 'a
  n integer to order the USBGuard Policy entries' EQUALITY integerMatch ORDER
  ING integerOrderingMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 )
 olcAttributeTypes: {3}( 1.3.6.1.4.1.15955.9.1.4 NAME 'USBID' DESC 'USB de
@@ -31,10 +31,10 @@ olcAttributeTypes: {8}( 1.3.6.1.4.1.15955.9.1.9 NAME 'USBViaPort' DESC 'U
 olcAttributeTypes: {9}( 1.3.6.1.4.1.15955.9.1.10 NAME 'USBWithInterface' 
  DESC 'USB device With-Interface' EQUALITY caseExactIA5Match SUBSTR caseExac
  tIA5SubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
-olcAttributeTypes: {10}( 1.3.6.1.4.1.15955.9.1.11 NAME 'RuleCondition' DESC 
+olcAttributeTypes: {10}( 1.3.6.1.4.1.15955.9.1.11 NAME 'USBGuardRuleCondition' DESC 
  'Condition' EQUALITY caseExactIA5Match SUBSTR caseExactIA5SubstringsMatch S
  YNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 olcObjectClasses: {0}( 1.3.6.1.4.1.15955.9.1.1 NAME 'USBGuardPolicy' DESC 'U
- SBGuard Policy' SUP top STRUCTURAL MUST ( cn $ RuleTarget $ USBGuardHost $
- RuleOrder ) MAY ( USBID $ USBSerial $ USBName $ USBHash $ USBParentHash $
- USBViaPort $ USBWithInterface $ RuleCondition $ description ) )
+ SBGuard Policy' SUP top STRUCTURAL MUST ( cn $ USBGuardRuleTarget $ USBGuardHost $ 
+ USBGuardRuleOrder ) MAY ( USBID $ USBSerial $ USBName $ USBHash $ USBParentHash $ 
+ USBViaPort $ USBWithInterface $ USBGuardRuleCondition $ description ) )
