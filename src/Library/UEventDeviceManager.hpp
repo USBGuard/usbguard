@@ -76,6 +76,7 @@ namespace usbguard
     void start() override;
     void stop() override;
     void scan() override;
+    void scan(const std::string& devpath) override;
 
     std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
     void insertDevice(std::shared_ptr<UEventDevice> device);
@@ -94,6 +95,7 @@ namespace usbguard
     int ueventOpen();
     void ueventProcessRead();
     void ueventProcessUEvent(const UEvent& uevent);
+    void ueventProcessAction(const std::string& action, const std::string& sysfs_devpath);
     int ueventEnumerateDevices();
     int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
 

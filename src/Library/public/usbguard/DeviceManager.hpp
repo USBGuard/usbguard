@@ -59,6 +59,7 @@ namespace usbguard
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
+    virtual void scan(const std::string& devpath) = 0;
 
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;

@@ -38,6 +38,7 @@ namespace usbguard
     void setHashOnly(bool state);
     void setPortSpecificRules(bool state);
     void setPortSpecificNoSerialRules(bool state);
+    void setDevpath(const std::string& devpath);
     void setExplicitCatchAllRule(bool state, Rule::Target target = Rule::Target::Block);
 
     void generate();
@@ -55,6 +56,7 @@ namespace usbguard
     bool _hash_only;
     bool _port_specific;
     bool _port_specific_noserial;
+    std::string _devpath;
     bool _with_catchall;
     Rule::Target _catchall_target;
   };

@@ -33,6 +33,7 @@ namespace usbguard
     _hash_only = false;
     _port_specific = false;
     _port_specific_noserial = true;
+    _devpath = "";
     _with_catchall = false;
     _catchall_target = Rule::Target::Block;
     _dm = DeviceManager::create(*this, "uevent");
@@ -62,7 +63,12 @@ namespace usbguard
 
   void PolicyGenerator::generate()
   {
-    _dm->scan();
+    if (_devpath.empty()) {
+      _dm->scan();
+    }
+    else {
+      _dm->scan(_devpath);
+    }
 
     if (_with_catchall) {
       Rule catchall_rule;
@@ -74,6 +80,11 @@ namespace usbguard
   const std::shared_ptr<RuleSet> PolicyGenerator::refRuleSet() const
   {
     return _ruleset;
+  }
+
+  void PolicyGenerator::setDevpath(const std::string& devpath)
+  {
+    _devpath = devpath;
   }
 
   void PolicyGenerator::setExplicitCatchAllRule(bool state, Rule::Target target)

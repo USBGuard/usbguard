@@ -34,12 +34,13 @@
 
 namespace usbguard
 {
-  static const char* options_short = "hpPt:HXLb:o:n:";
+  static const char* options_short = "hpPd:t:HXLb:o:n:";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
     { "with-ports", no_argument, nullptr, 'p' },
     { "no-ports-sn", no_argument, nullptr, 'P' },
+    { "devpath", required_argument, nullptr, 'd' },
     { "target", required_argument, nullptr, 't' },
     { "hash-only", no_argument, nullptr, 'H' },
     { "no-hashes", no_argument, nullptr, 'X' },
@@ -58,6 +59,8 @@ namespace usbguard
     stream << "  -p, --with-ports       Generate port specific rules for all devices." << std::endl;
     stream << "  -P, --no-ports-sn      Don't generate port specific rule for devices" << std::endl;
     stream << "                         without an iSerial value." << std::endl;
+    stream << "  -d, --devpath          Only generate a rule for the device at the specified" << std::endl;
+    stream << "                         sub path of /sys." << std::endl;
     stream << "  -t, --target <T>       Generate an explicit \"catch all\" rule with the" << std::endl;
     stream << "                         specified target. Possible targets: allow, block, reject." << std::endl;
     stream << "  -X, --no-hashes        Don't generate a hash attribute for each device." << std::endl;
@@ -75,6 +78,7 @@ namespace usbguard
   {
     bool port_specific = false;
     bool port_specific_noserial = true;
+    std::string devpath = "";
     bool with_catchall = false;
     std::string catchall_target = "block";
     bool with_hashes = true;
@@ -98,6 +102,10 @@ namespace usbguard
 
       case 'P':
         port_specific_noserial = false;
+        break;
+
+      case 'd':
+        devpath = optarg;
         break;
 
       case 't':
@@ -143,6 +151,7 @@ namespace usbguard
     generator.setHashOnly(only_hashes);
     generator.setPortSpecificRules(port_specific);
     generator.setPortSpecificNoSerialRules(port_specific_noserial);
+    generator.setDevpath(devpath);
     generator.setExplicitCatchAllRule(with_catchall,
       Rule::targetFromString(catchall_target));
     generator.generate();
