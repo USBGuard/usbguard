@@ -41,12 +41,12 @@ namespace usbguard
   */
   KeyValueParser::KeyValueParser(const std::vector<std::string>& v, const std::string& sep, bool case_sensitive,
     bool validate_keys):
-    d_pointer(make_unique<KeyValueParserPrivate>(*this, v, sep, case_sensitive, validate_keys))
+    d_pointer(usbguard::make_unique<KeyValueParserPrivate>(*this, v, sep, case_sensitive, validate_keys))
   {
   }
 
   KeyValueParser::KeyValueParser(const std::vector<std::string>& v, bool case_sensitive, bool validate_keys):
-    d_pointer(make_unique<KeyValueParserPrivate>(*this, v, "=", case_sensitive, validate_keys))
+    d_pointer(usbguard::make_unique<KeyValueParserPrivate>(*this, v, "=", case_sensitive, validate_keys))
   {
   }
 
