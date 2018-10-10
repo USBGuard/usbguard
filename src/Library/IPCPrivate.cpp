@@ -38,12 +38,13 @@ namespace usbguard
     { 0x02, "usbguard.IPC.applyDevicePolicy" },
     { 0x03, "usbguard.IPC.DevicePresenceChangedSignal" },
     { 0x04, "usbguard.IPC.DevicePolicyChangedSignal" },
-    { 0x05, "usbguard.IPC.listRules" },
-    { 0x06, "usbguard.IPC.appendRule" },
-    { 0x07, "usbguard.IPC.removeRule" },
-    { 0x08, "usbguard.IPC.Exception" },
-    { 0x09, "usbguard.IPC.getParameter" },
-    { 0x0a, "usbguard.IPC.setParameter" }
+    { 0x05, "usbguard.IPC.PropertyParameterChangedSignal" },
+    { 0x06, "usbguard.IPC.listRules" },
+    { 0x07, "usbguard.IPC.appendRule" },
+    { 0x08, "usbguard.IPC.removeRule" },
+    { 0x09, "usbguard.IPC.Exception" },
+    { 0x0a, "usbguard.IPC.getParameter" },
+    { 0x0b, "usbguard.IPC.setParameter" }
   };
 
   uint32_t IPC::messageTypeNameToNumber(const std::string& name)

@@ -633,6 +633,9 @@ namespace usbguard
     if (name == "InsertedDevicePolicy") {
       const auto previous_value = devicePolicyMethodToString(_inserted_device_policy_method);
       setInsertedDevicePolicyMethod(devicePolicyMethodFromString(value));
+      PropertyParameterChanged(name,
+        previous_value,
+        value);
       return previous_value;
     }
 

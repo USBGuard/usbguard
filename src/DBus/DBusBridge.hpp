@@ -55,6 +55,10 @@ namespace usbguard
       const std::string& device_rule,
       uint32_t rule_id) override;
 
+    void PropertyParameterChanged(const std::string& name,
+      const std::string& value_old,
+      const std::string& value_new) override;
+
     void ExceptionMessage(const std::string& context,
       const std::string& object,
       const std::string& reason) override;

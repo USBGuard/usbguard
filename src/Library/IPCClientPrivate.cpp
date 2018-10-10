@@ -83,6 +83,7 @@ namespace usbguard
     registerHandler<IPC::Exception>(&IPCClientPrivate::handleException);
     registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
     registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
+    registerHandler<IPC::PropertyParameterChangedSignal>(&IPCClientPrivate::handlePropertyParameterChangedSignal);
 
     if (connected) {
       try {
@@ -507,6 +508,16 @@ namespace usbguard
       Rule::targetFromInteger(signal->target_new()),
       signal->device_rule(),
       signal->rule_id());
+  }
+
+  void IPCClientPrivate::handlePropertyParameterChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    (void)message_out;
+    const IPC::PropertyParameterChangedSignal* const signal = \
+      reinterpret_cast<const IPC::PropertyParameterChangedSignal*>(message_in.get());
+    _p_instance.PropertyParameterChanged(signal->name(),
+      signal->value_old(),
+      signal->value_new());
   }
 } /* namespace usbguard */
 

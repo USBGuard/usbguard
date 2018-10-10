@@ -107,6 +107,7 @@ namespace usbguard
     void handleException(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out);
     void handleDevicePresenceChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out);
     void handleDevicePolicyChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out);
+    void handlePropertyParameterChangedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out);
 
     IPCClient& _p_instance;
 

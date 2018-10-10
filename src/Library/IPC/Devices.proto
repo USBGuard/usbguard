@@ -50,3 +50,9 @@ message DevicePolicyChangedSignal {
   required string device_rule = 4;
   required uint32 rule_id = 5;
 }
+
+message PropertyParameterChangedSignal {
+  required string name = 1;
+  required string value_old = 2;
+  required string value_new = 3;
+}

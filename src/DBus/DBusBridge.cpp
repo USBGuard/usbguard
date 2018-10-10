@@ -271,6 +271,19 @@ namespace usbguard
     }
   }
 
+  void DBusBridge::PropertyParameterChanged(const std::string& name,
+    const std::string& value_old,
+    const std::string& value_new)
+  {
+    g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
+      "/org/usbguard", "org.usbguard", "PropertyParameterChanged",
+      g_variant_new("(sss)",
+        name.c_str(),
+        value_old.c_str(),
+        value_new.c_str()),
+      nullptr);
+  }
+
   void DBusBridge::ExceptionMessage(const std::string& context,
     const std::string& object,
     const std::string& reason)
