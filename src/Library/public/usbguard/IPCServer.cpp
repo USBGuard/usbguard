@@ -284,6 +284,13 @@ namespace usbguard
     d_pointer->DevicePolicyChanged(id, target_old, target_new, device_rule, rule_id);
   }
 
+  void IPCServer::PropertyParameterChanged(const std::string& name,
+    const std::string& value_old,
+    const std::string& value_new)
+  {
+    d_pointer->PropertyParameterChanged(name, value_old, value_new);
+  }
+
   void IPCServer::ExceptionMessage(const std::string& context,
     const std::string& object,
     const std::string& reason)

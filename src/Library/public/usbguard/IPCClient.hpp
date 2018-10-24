@@ -93,6 +93,15 @@ namespace usbguard
       (void)rule_id;
     }
 
+    virtual void PropertyParameterChanged(const std::string& name,
+      const std::string& value_old,
+      const std::string& value_new) override
+    {
+      (void)name;
+      (void)value_old;
+      (void)value_new;
+    }
+
     virtual void ExceptionMessage(const std::string& context,
       const std::string& object,
       const std::string& reason) override

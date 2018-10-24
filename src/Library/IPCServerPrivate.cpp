@@ -533,6 +533,10 @@ namespace usbguard
       return IPCServer::AccessControl::Section::DEVICES;
     }
 
+    if (name == "usbguard.IPC.PropertyParameterChangedSignal") {
+      return IPCServer::AccessControl::Section::PARAMETERS;
+    }
+
     if (name == "usbguard.IPC.Exception") {
       return IPCServer::AccessControl::Section::EXCEPTIONS;
     }
@@ -1012,6 +1016,17 @@ namespace usbguard
     signal.set_target_new(Rule::targetToInteger(target_new));
     signal.set_device_rule(device_rule);
     signal.set_rule_id(rule_id);
+    qbIPCBroadcastMessage(&signal);
+  }
+
+  void IPCServerPrivate::PropertyParameterChanged(const std::string& name,
+    const std::string& value_old,
+    const std::string& value_new)
+  {
+    IPC::PropertyParameterChangedSignal signal;
+    signal.set_name(name);
+    signal.set_value_old(value_old);
+    signal.set_value_new(value_new);
     qbIPCBroadcastMessage(&signal);
   }
 

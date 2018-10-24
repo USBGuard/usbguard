@@ -65,6 +65,10 @@ namespace usbguard
       const std::string& device_rule,
       uint32_t rule_id) = 0;
 
+    virtual void PropertyParameterChanged(const std::string& name,
+      const std::string& value_old,
+      const std::string& value_new) = 0;
+
     virtual void ExceptionMessage(const std::string& context,
       const std::string& object,
       const std::string& reason) = 0;

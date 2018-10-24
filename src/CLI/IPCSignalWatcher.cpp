@@ -127,6 +127,25 @@ namespace usbguard
     }
   }
 
+  void IPCSignalWatcher::PropertyParameterChanged(const std::string& name,
+    const std::string& value_old,
+    const std::string& value_new)
+  {
+    std::cout << "[property] ParameterChanged: name=" << name << std::endl;
+    std::cout << " value_old=" << value_old << std::endl;
+    std::cout << " value_new=" << value_new << std::endl;
+
+    if (hasOpenExecutable()) {
+      const std::map<std::string, std::string> env = {
+        { "USBGUARD_IPC_SIGNAL", "Property.ParameterChanged" },
+        { "USBGUARD_PROPERTY_NAME", name },
+        { "USBGUARD_PROPERTY_VALUE_OLD", value_old },
+        { "USBGUARD_PROPERTY_VALUE_NEW", value_new }
+      };
+      runExecutable(env);
+    }
+  }
+
   void IPCSignalWatcher::openExecutable(const std::string& path)
   {
     const int fd = ::open(path.c_str(), O_RDONLY);
