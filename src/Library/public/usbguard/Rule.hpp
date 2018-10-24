@@ -487,7 +487,7 @@ namespace usbguard
 
 
     operator bool() const;
-    std::string toString(bool invalid = false) const;
+    std::string toString(bool invalid = false, bool hide_serial = false) const;
 
     void updateMetaDataCounters(bool applied = true, bool evaluated = false);
 

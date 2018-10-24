@@ -104,6 +104,13 @@ namespace usbguard
 
     void setBackend(std::unique_ptr<AuditBackend> backend);
 
+    /*
+     * Sets whether personally identifiable information such as device serial
+     * numbers and hashes of the descriptors (which include the serial number)
+     * should be excluded from audit entries.
+     */
+    void setHidePII(bool hide_pii);
+
     AuditEvent policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event);
     AuditEvent policyEvent(std::shared_ptr<Rule> new_rule, std::shared_ptr<Rule> old_rule);
     AuditEvent policyEvent(std::shared_ptr<Device> device, Policy::EventType event);
@@ -149,6 +156,7 @@ namespace usbguard
   private:
     AuditIdentity _identity;
     std::shared_ptr<AuditBackend> _backend;
+    bool _hide_pii;
   };
 } /* namespace usbguard */
 

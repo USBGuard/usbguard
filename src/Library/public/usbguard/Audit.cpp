@@ -156,13 +156,18 @@ namespace usbguard
   }
 
   Audit::Audit(const AuditIdentity& identity)
-    : _identity(identity)
+    : _identity(identity), _hide_pii(false)
   {
   }
 
   void Audit::setBackend(std::unique_ptr<AuditBackend> backend)
   {
     _backend = std::shared_ptr<AuditBackend>(std::move(backend));
+  }
+
+  void Audit::setHidePII(bool hide_pii)
+  {
+    _hide_pii = hide_pii;
   }
 
   AuditEvent Audit::policyEvent(std::shared_ptr<Rule> rule, Policy::EventType event)
@@ -200,7 +205,7 @@ namespace usbguard
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(event_type));
     event.setKey("rule.id", numberToString(rule->getRuleID()));
-    event.setKey("rule", rule->toString());
+    event.setKey("rule", rule->toString(false, _hide_pii));
     return event;
   }
 
@@ -209,8 +214,8 @@ namespace usbguard
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Policy.") + Policy::eventTypeToString(Policy::EventType::Update));
     event.setKey("rule.id", numberToString(old_rule->getRuleID()));
-    event.setKey("rule.old", old_rule->toString());
-    event.setKey("rule.new", new_rule->toString());
+    event.setKey("rule.old", old_rule->toString(false, _hide_pii));
+    event.setKey("rule.new", new_rule->toString(false, _hide_pii));
     return event;
   }
 
@@ -220,7 +225,7 @@ namespace usbguard
     event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(event_type));
     event.setKey("target", Rule::targetToString(device->getTarget()));
     event.setKey("device.system_name", device->getSystemName());
-    event.setKey("device.rule", device->getDeviceRule()->toString());
+    event.setKey("device.rule", device->getDeviceRule()->toString(false, _hide_pii));
     return event;
   }
 
@@ -232,7 +237,7 @@ namespace usbguard
     event.setKey("target.old", Rule::targetToString(old_target));
     event.setKey("target.new", Rule::targetToString(new_target));
     event.setKey("device.system_name", device->getSystemName());
-    event.setKey("device.rule", device->getDeviceRule()->toString());
+    event.setKey("device.rule", device->getDeviceRule()->toString(false, _hide_pii));
     return event;
   }
 
@@ -242,7 +247,7 @@ namespace usbguard
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(event_type));
     event.setKey("device.system_name", device->getSystemName());
-    event.setKey("device.rule", device->getDeviceRule()->toString());
+    event.setKey("device.rule", device->getDeviceRule()->toString(false, _hide_pii));
     return event;
   }
 
@@ -252,8 +257,8 @@ namespace usbguard
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(DeviceManager::EventType::Update));
     event.setKey("device.system_name", new_device->getSystemName());
-    event.setKey("device.rule.old", old_device->getDeviceRule()->toString());
-    event.setKey("device.rule.new", new_device->getDeviceRule()->toString());
+    event.setKey("device.rule.old", old_device->getDeviceRule()->toString(false, _hide_pii));
+    event.setKey("device.rule.new", new_device->getDeviceRule()->toString(false, _hide_pii));
     return event;
   }
 } /* namespace usbguard */

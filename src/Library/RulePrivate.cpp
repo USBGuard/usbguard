@@ -420,7 +420,7 @@ namespace usbguard
     return;
   }
 
-  std::string RulePrivate::toString(bool invalid) const
+  std::string RulePrivate::toString(bool invalid, bool hide_pii) const
   {
     std::string rule_string;
 
@@ -437,10 +437,18 @@ namespace usbguard
     }
 
     toString_appendNonEmptyAttribute(rule_string, _device_id);
-    toString_appendNonEmptyAttribute(rule_string, _serial);
+
+    if (!hide_pii) {
+      toString_appendNonEmptyAttribute(rule_string, _serial);
+    }
+
     toString_appendNonEmptyAttribute(rule_string, _name);
-    toString_appendNonEmptyAttribute(rule_string, _hash);
-    toString_appendNonEmptyAttribute(rule_string, _parent_hash);
+
+    if (!hide_pii) {
+      toString_appendNonEmptyAttribute(rule_string, _hash);
+      toString_appendNonEmptyAttribute(rule_string, _parent_hash);
+    }
+
     toString_appendNonEmptyAttribute(rule_string, _via_port);
     toString_appendNonEmptyAttribute(rule_string, _with_interface);
     toString_appendNonEmptyAttribute(rule_string, _conditions);
