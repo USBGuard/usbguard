@@ -60,9 +60,9 @@ dn: cn=Rule1,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule1
-RuleTarget: allow
+USBGuardRuleTarget: allow
 USBGuardHost: *
-RuleOrder: 0
+USBGuardRuleOrder: 0
 USBID: 1038:1702
 USBSerial: ""
 USBName: "SteelSeries Rival 100 Gaming Mouse"
@@ -75,10 +75,10 @@ dn: cn=Rule2,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule2
-RuleTarget: allow
+USBGuardRuleTarget: allow
 USBGuardHost: *
 USBGuardHost: !RandomHOSt
-RuleOrder: 1
+USBGuardRuleOrder: 1
 USBID: 1038:1702
 USBSerial: ""
 USBName: "Keyboard..."
@@ -90,9 +90,9 @@ dn: cn=Rule3,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule3
-RuleTarget: allow
+USBGuardRuleTarget: allow
 USBGuardHost: *
-RuleOrder: 6
+USBGuardRuleOrder: 6
 USBID: 1038:1702
 USBSerial: ""
 USBName: "Flash"
@@ -103,9 +103,9 @@ dn: cn=Rule4,ou=USBGuard,dc=example,dc=com
 objectClass: USBGuardPolicy
 objectClass: top
 cn: Rule4
-RuleTarget: allow
+USBGuardRuleTarget: allow
 USBGuardHost: *
-RuleOrder: 2
+USBGuardRuleOrder: 2
 EOF
 
 

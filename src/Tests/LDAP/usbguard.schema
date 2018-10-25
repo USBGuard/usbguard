@@ -1,5 +1,5 @@
 attributetype ( 1.3.6.1.4.1.15955.9.1.1
-  NAME 'RuleTarget'
+  NAME 'USBGuardRuleTarget'
   DESC 'Hostname for USBGuard host'
   EQUALITY caseExactIA5Match
   SUBSTR caseExactIA5SubstringsMatch
@@ -12,8 +12,8 @@ attributetype ( 1.3.6.1.4.1.15955.9.1.2
   SUBSTR caseExactIA5SubstringsMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
-attributeTypes ( 1.3.6.1.4.1.15955.9.1.3
-  NAME 'RuleOrder'
+attributetype ( 1.3.6.1.4.1.15955.9.1.3
+  NAME 'USBGuardRuleOrder'
   DESC 'an integer to order the USBGuard Policy entries'
   EQUALITY integerMatch
   ORDERING integerOrderingMatch
@@ -69,7 +69,7 @@ attributetype ( 1.3.6.1.4.1.15955.9.1.10
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 attributetype ( 1.3.6.1.4.1.15955.9.1.11
-  NAME 'RuleCondition'
+  NAME 'USBGuardRuleCondition'
   DESC 'Condition'
   EQUALITY caseExactIA5Match
   SUBSTR caseExactIA5SubstringsMatch
@@ -77,6 +77,6 @@ attributetype ( 1.3.6.1.4.1.15955.9.1.11
 
 objectclass ( 1.3.6.1.4.1.15955.9.1.1 NAME 'USBGuardPolicy' SUP top STRUCTURAL
   DESC 'USBGuard Policy'
-  MUST ( cn $ RuleTarget $ USBGuardHost $ RuleOrder )
-  MAY  ( USBID $ USBSerial $ USBName $ USBHash $ USBParentHash $ USBViaPort $ USBWithInterface $ RuleCondition $ description )
+  MUST ( cn $ USBGuardRuleTarget $ USBGuardHost $ USBGuardRuleOrder )
+  MAY  ( USBID $ USBSerial $ USBName $ USBHash $ USBParentHash $ USBViaPort $ USBWithInterface $ USBGuardRuleCondition $ description )
   )

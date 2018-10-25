@@ -28,9 +28,9 @@
 namespace usbguard
 {
   std::vector<std::string> LDAPUtil::_ldap_keys = {
-    "RuleTarget",
+    "USBGuardRuleTarget",
     "USBGuardHost",
-    "RuleOrder",
+    "USBGuardRuleOrder",
     "USBID",
     "USBSerial",
     "USBName",
@@ -38,7 +38,7 @@ namespace usbguard
     "USBParentHash",
     "USBViaPort",
     "USBWithInterface",
-    "RuleCondition"
+    "USBGuardRuleCondition"
   };
 
   std::vector<std::string> LDAPUtil::_rule_keys = {
@@ -96,7 +96,7 @@ namespace usbguard
     rule_string += "objectClass: " + values["OBJCLASS"] + "\n";
     rule_string += "objectClass: top\n";
     rule_string += "cn: " + name + "\n";
-    rule_string += LDAPUtil::_ldap_keys[static_cast<unsigned>(LDAPUtil::LDAP_KEY_INDEX::RuleTarget)] + ": ";
+    rule_string += LDAPUtil::_ldap_keys[static_cast<unsigned>(LDAPUtil::LDAP_KEY_INDEX::USBGuardRuleTarget)] + ": ";
 
     try {
       rule_string.append(Rule::targetToString(rule->getTarget()));
