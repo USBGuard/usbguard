@@ -83,6 +83,7 @@ namespace usbguard
     void start() override;
     void stop() override;
     void scan() override;
+    void scan(const std::string& devpath) override;
 
     std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
     void insertDevice(std::shared_ptr<UMockdevDevice> device);

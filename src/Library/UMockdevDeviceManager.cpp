@@ -584,6 +584,11 @@ namespace usbguard
     }
   }
 
+  void UMockdevDeviceManager::scan(const std::string& devpath)
+  {
+    USBGUARD_LOG(Trace) << "devpath=" << devpath;
+  }
+
   std::shared_ptr<Device> UMockdevDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
   {
     USBGUARD_LOG(Trace) << "id=" << id

@@ -316,6 +316,27 @@ namespace usbguard
     }
   }
 
+  void UEventDeviceManager::scan(const std::string& devpath)
+  {
+    std::vector<std::string> components;
+    tokenizeString(devpath, components, "/", /*trim_empty=*/true);
+    auto base = std::find_if(components.begin(), components.end(),
+    [](const std::string& component) -> bool {
+      return hasPrefix(component, "usb");
+    });
+    std::string path = "";
+
+    for (auto itr = components.begin(); itr < components.end(); ++itr) {
+      path += "/" + *itr;
+
+      if (itr >= base) {
+        ueventProcessAction("add", path);
+      }
+    }
+
+    ueventProcessAction("add", path);
+  }
+
   std::shared_ptr<Device> UEventDeviceManager::applyDevicePolicy(uint32_t id, Rule::Target target)
   {
     USBGUARD_LOG(Trace) << "id=" << id
@@ -547,6 +568,11 @@ namespace usbguard
     }
 
     const std::string sysfs_devpath = uevent.getAttribute("DEVPATH");
+    ueventProcessAction(action, sysfs_devpath);
+  }
+
+  void UEventDeviceManager::ueventProcessAction(const std::string& action, const std::string& sysfs_devpath)
+  {
     bool enumeration_notify = false;
 
     try {
