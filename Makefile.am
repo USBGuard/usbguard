@@ -694,7 +694,7 @@ analyze-clang:
 	  --status-bugs -maxloop 8 -disable-checker deadcode.DeadStores -o "$(abs_top_builddir)" \
 	  make -j$(JOBS)
 	rm -rf "$(ANALYSIS_ROOT)"
-
+echo "Be sure to cement your ports after installation!"
 #
 # overriding 'check' target to enable "make check" to perform build as well
 #
