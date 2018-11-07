@@ -250,9 +250,6 @@ namespace usbguard
   {
     setDefaultBlockedState(/*state=*/true);
     setEnumerationOnlyMode(/*state=*/false);
-    USBGUARD_SYSCALL_THROW("UEvent device manager",
-      (_wakeup_fd = eventfd(0, 0)) < 0);
-    _uevent_fd = ueventOpen();
   }
 
   UEventDeviceManager::~UEventDeviceManager()
@@ -284,19 +281,27 @@ namespace usbguard
 
   void UEventDeviceManager::start()
   {
+    // Lazy initialization is used for the sockets to allow scanning a devpath
+    // without needed to open the socket or start the thread.
+    USBGUARD_SYSCALL_THROW("UEvent device manager",
+      (_wakeup_fd = eventfd(0, 0)) < 0);
+    _uevent_fd = ueventOpen();
     _thread.start();
   }
 
   void UEventDeviceManager::stop()
   {
-    // stop monitor
-    _thread.stop(/*do_wait=*/false);
-    { /* Wakeup the device manager thread */
-      const uint64_t one = 1;
-      USBGUARD_SYSCALL_THROW("Linux device manager",
-        write(_wakeup_fd, &one, sizeof one) != sizeof one);
+    if (_thread.running()) {
+      // stop monitor
+      _thread.stop(/*do_wait=*/false);
+      { /* Wakeup the device manager thread */
+        const uint64_t one = 1;
+        USBGUARD_SYSCALL_THROW("Linux device manager",
+          write(_wakeup_fd, &one, sizeof one)
+          != sizeof one);
+      }
+      _thread.wait();
     }
-    _thread.wait();
   }
 
   void UEventDeviceManager::scan()
