@@ -34,8 +34,7 @@ ImplicitPolicyTarget=block
 # * apply-policy - evaluate the ruleset for every present
 #                  device
 #
-PresentDevicePolicy=apply-policy
-
+PresentDevicePolicy=allow
 #
 # Present controller policy.
 #
