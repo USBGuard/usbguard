@@ -38,7 +38,6 @@ namespace usbguard
     _catchall_target = Rule::Target::Block;
     _dm = DeviceManager::create(*this, "uevent");
     _dm->setEnumerationOnlyMode(true);
-    _dm->start();
   }
 
   void PolicyGenerator::setWithHashAttribute(bool state)
@@ -64,6 +63,7 @@ namespace usbguard
   void PolicyGenerator::generate()
   {
     if (_devpath.empty()) {
+      _dm->start();
       _dm->scan();
     }
     else {
