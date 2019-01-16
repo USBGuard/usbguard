@@ -651,8 +651,17 @@ namespace usbguard
         value);
       return previous_value;
     }
-
-    throw Exception("setParameter", name, "unknown parameter");
+    else if (name == "ImplicitPolicyTarget") {
+      const auto previous_value = Rule::targetToString(_implicit_policy_target);
+      setImplicitPolicyTarget(Rule::targetFromString(value));
+      PropertyParameterChanged(name,
+        previous_value,
+        value);
+      return previous_value;
+    }
+    else {
+      throw Exception("setParameter", name, "unknown parameter");
+    }
   }
 
   std::string Daemon::getParameter(const std::string& name)
@@ -660,8 +669,12 @@ namespace usbguard
     if (name == "InsertedDevicePolicy") {
       return devicePolicyMethodToString(_inserted_device_policy_method);
     }
-
-    throw Exception("getParameter", name, "unknown parameter");
+    else if (name == "ImplicitPolicyTarget") {
+      return Rule::targetToString(_implicit_policy_target);
+    }
+    else {
+      throw Exception("getParameter", name, "unknown parameter");
+    }
   }
 
   uint32_t Daemon::appendRule(const std::string& rule_spec,
