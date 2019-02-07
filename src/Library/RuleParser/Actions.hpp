@@ -45,6 +45,7 @@ namespace usbguard
     struct str_id;
     struct str_via_port;
     struct str_with_interface;
+    struct str_with_connect_type;
     struct str_if;
 
     template<typename Rule>
@@ -305,6 +306,48 @@ namespace usbguard
           rule.attributeSerial().setSetOperator(Rule::setOperatorFromString(in.string()));
         }
         catch (const std::exception& ex) {
+          throw tao::pegtl::parse_error(ex.what(), in);
+        }
+      }
+    };
+
+    template <typename Rule>
+    struct with_connect_type_actions : tao::pegtl::nothing<Rule> {};
+
+    template <>
+    struct with_connect_type_actions<str_with_connect_type> {
+      template <typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        if (!rule.attributeWithConnectType().empty()) {
+          throw tao::pegtl::parse_error(
+              "with-connect-type attribute already defined", in);
+        }
+      }
+    };
+
+    template <>
+    struct with_connect_type_actions<string_value> {
+      template <typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        try {
+          rule.attributeWithConnectType().append(stringValueFromRule(in.string()));
+        } catch (const std::exception& ex) {
+          throw tao::pegtl::parse_error(ex.what(), in);
+        }
+      }
+    };
+
+    template <>
+    struct with_connect_type_actions<multiset_operator> {
+      template <typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        try {
+          rule.attributeWithConnectType().setSetOperator(
+              Rule::setOperatorFromString(in.string()));
+        } catch (const std::exception& ex) {
           throw tao::pegtl::parse_error(ex.what(), in);
         }
       }

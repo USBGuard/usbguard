@@ -93,6 +93,7 @@ namespace usbguard
 
     device_rule->setDeviceID(_device_id);
     device_rule->setSerial(_serial_number);
+    device_rule->setWithConnectType(_connect_type);
 
     if (with_port) {
       device_rule->setViaPort(_port);
@@ -272,6 +273,20 @@ namespace usbguard
   const std::string& DevicePrivate::getSerial() const
   {
     return _serial_number;
+  }
+
+  void DevicePrivate::setConnectType(const std::string& connect_type)
+  {
+    if (connect_type.size() > USB_GENERIC_STRING_MAX_LENGTH) {
+      throw std::runtime_error("device connect-type string size out of range");
+    }
+
+    _connect_type = connect_type;
+  }
+
+  const std::string& DevicePrivate::getConnectType() const
+  {
+    return _connect_type;
   }
 
   std::vector<USBInterfaceType>& DevicePrivate::refMutableInterfaceTypes()

@@ -163,6 +163,16 @@ namespace usbguard
     return d_pointer->getSerial();
   }
 
+  void Device::setConnectType(const std::string& connect_type)
+  {
+    d_pointer->setConnectType(connect_type);
+  }
+
+  const std::string& Device::getConnectType() const
+  {
+    return d_pointer->getConnectType();
+  }
+
   std::vector<USBInterfaceType>& Device::refMutableInterfaceTypes()
   {
     return d_pointer->refMutableInterfaceTypes();

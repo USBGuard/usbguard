@@ -102,6 +102,10 @@ namespace usbguard
        */
       setTarget(Rule::Target::Block);
     }
+    /*
+     * Set connect type
+     */
+    setConnectType(sysfs_device.readAttribute("port/connect_type", /*strip_last_null=*/true, /*optional=*/true));
 
     /*
      * Process USB descriptor data.
