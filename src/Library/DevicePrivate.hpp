@@ -79,6 +79,9 @@ namespace usbguard
     void setSerial(const std::string& serial_number);
     const std::string& getSerial() const;
 
+    void setConnectType(const std::string& connect_type);
+    const std::string& getConnectType() const;
+
     std::vector<USBInterfaceType>& refMutableInterfaceTypes();
     const std::vector<USBInterfaceType>& getInterfaceTypes() const;
 
@@ -99,6 +102,7 @@ namespace usbguard
     USBDeviceID _device_id;
     std::string _serial_number;
     std::string _port;
+    std::string _connect_type;
     std::vector<USBInterfaceType> _interface_types;
     std::string _hash_base64;
     Hash _hash;

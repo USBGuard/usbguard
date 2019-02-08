@@ -94,6 +94,22 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
+  SECTION("to/from string: allow with-connect-type \"<non printable>\"") {
+    rule.setTarget(Rule::Target::Allow);
+    rule.setWithConnectType(non_printable_string);
+    REQUIRE_NOTHROW(rule_string = rule.toString());
+    REQUIRE(
+        rule_string ==
+        "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+    REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
+    REQUIRE_NOTHROW(rule_string = rule_from.toString());
+    REQUIRE(
+        rule_string ==
+        "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+    REQUIRE(rule.appliesTo(rule_from));
+    REQUIRE(rule_from.appliesTo(rule));
+    REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
+  }
 }
 
 TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser]")
@@ -160,6 +176,18 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
     REQUIRE_NOTHROW(rule_string = rule_from.toString());
     REQUIRE(rule_string == "allow via-port one-of { \"" + dqb_string_escaped + "\" \"" + dqb_string_escaped + "\" }");
+    REQUIRE(rule.appliesTo(rule_from));
+    REQUIRE(rule_from.appliesTo(rule));
+    REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
+  }
+  SECTION("to/from string: allow with-connect-type \"<double quote and backslash>\"") {
+    rule.setTarget(Rule::Target::Allow);
+    rule.setWithConnectType(dqb_string);
+    REQUIRE_NOTHROW(rule_string = rule.toString());
+    REQUIRE(rule_string == "allow with-connect-type \"" + dqb_string_escaped + "\"");
+    REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
+    REQUIRE_NOTHROW(rule_string = rule_from.toString());
+    REQUIRE(rule_string == "allow with-connect-type \"" + dqb_string_escaped + "\"");
     REQUIRE(rule.appliesTo(rule_from));
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);

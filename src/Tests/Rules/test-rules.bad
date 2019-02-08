@@ -71,3 +71,5 @@ allow with-interface 12:34:56 with-interface 12:34:56
 allow with-interface one-of { 12:12:23 } with-interface 12:11:11
 allow if allowed-matches(fooo)
 allow if !allowed-matches(aaaa)
+allow with-connect-type "hardwired" with-connect-type "hotplug"
+allow with-connect-type one-of { "hardwired" } with-connect-type "hardwired"

@@ -143,6 +143,12 @@ If the operator is not specified it is set to *equals*.
 *with-interface* [operator] { interface-type ... }::
     Match a set of interface types against the set of interfaces that the USB device provides.
 
+*with-connect-type* "connect-type"::
+    Match the USB port/connect_type device attribute.
+
+*with-connect-type* [operator] { "connect-type" ... }::
+    Match a set of USB port/connect_type device attributes.
+
 The 'usb-device-id' is a colon delimited pair in the form 'vendor_id:product_id'.
 All USB devices have this ID assigned by the manufacturer and it should uniquely identify a USB product type.
 Both 'vendor_id' and 'product_id' are 16-bit numbers represented in hexadecimal base.

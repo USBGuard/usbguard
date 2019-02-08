@@ -44,6 +44,7 @@ namespace usbguard
     struct str_parent_hash : TAOCPP_PEGTL_STRING("parent-hash") {};
     struct str_via_port : TAOCPP_PEGTL_STRING("via-port") {};
     struct str_with_interface : TAOCPP_PEGTL_STRING("with-interface") {};
+    struct str_with_connect_type : TAOCPP_PEGTL_STRING("with-connect-type") {};
     struct str_serial : TAOCPP_PEGTL_STRING("serial") {};
     struct str_if : TAOCPP_PEGTL_STRING("if") {};
     struct str_id : TAOCPP_PEGTL_STRING("id") {};
@@ -163,6 +164,9 @@ namespace usbguard
     struct serial_attribute
       : action<serial_actions, rule_attribute<str_serial, string_value>> {};
 
+    struct with_connect_type_attribute
+      : action<with_connect_type_actions, rule_attribute<str_with_connect_type, string_value>> {};
+
     struct via_port_attribute
       : action<via_port_actions, rule_attribute<str_via_port, string_value>> {};
 
@@ -180,6 +184,7 @@ namespace usbguard
         serial_attribute,
         via_port_attribute,
         with_interface_attribute,
+        with_connect_type_attribute,
         condition_attribute> {};
 
     /*

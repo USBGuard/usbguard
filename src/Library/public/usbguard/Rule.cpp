@@ -115,6 +115,26 @@ namespace usbguard
     return d_pointer->attributeSerial();
   }
 
+  void Rule::setWithConnectType(const std::string& value)
+  {
+    d_pointer->setWithConnectType(value);
+  }
+
+  const std::string& Rule::getWithConnectType() const
+  {
+    return d_pointer->getWithConnectType();
+  }
+
+  const Rule::Attribute<std::string>& Rule::attributeWithConnectType() const
+  {
+    return d_pointer->attributeWithConnectType();
+  }
+
+  Rule::Attribute<std::string>& Rule::attributeWithConnectType() 
+  {
+    return d_pointer->attributeWithConnectType();
+  }
+
   void Rule::setName(const std::string& value)
   {
     d_pointer->setName(value);

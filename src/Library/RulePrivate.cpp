@@ -32,6 +32,7 @@ namespace usbguard
     : //_p_instance(p_instance),
       _device_id("id"),
       _serial("serial"),
+      _with_connect_type("with-connect-type"),
       _name("name"),
       _hash("hash"),
       _parent_hash("parent-hash"),
@@ -49,6 +50,7 @@ namespace usbguard
     : //_p_instance(p_instance),
       _device_id("id"),
       _serial("serial"),
+      _with_connect_type("with-connect-type"),
       _name("name"),
       _hash("hash"),
       _parent_hash("parent-hash"),
@@ -67,6 +69,7 @@ namespace usbguard
     _target = rhs._target;
     _device_id = rhs._device_id;
     _serial = rhs._serial;
+    _with_connect_type = rhs._with_connect_type;
     _name = rhs._name;
     _hash = rhs._hash;
     _parent_hash = rhs._parent_hash;
@@ -116,6 +119,7 @@ namespace usbguard
 
     if (!_device_id.appliesTo(rhs.internal()->_device_id) ||
       !_serial.appliesTo(rhs.internal()->_serial) ||
+      !_with_connect_type.appliesTo(rhs.internal()->_with_connect_type) ||
       !_name.appliesTo(rhs.internal()->_name) ||
       !_hash.appliesTo(rhs.internal()->_hash) ||
       !(parent_insensitive || _parent_hash.appliesTo(rhs.internal()->_parent_hash)) ||
@@ -308,6 +312,26 @@ namespace usbguard
     return _serial;
   }
 
+  void RulePrivate::setWithConnectType(const std::string& value)
+  {
+    _with_connect_type.set(value);
+  }
+
+  const std::string& RulePrivate::getWithConnectType() const
+  {
+    return _with_connect_type.get();
+  }
+
+  const Rule::Attribute<std::string>& RulePrivate::attributeWithConnectType() const
+  {
+    return _with_connect_type;
+  }
+
+  Rule::Attribute<std::string>& RulePrivate::attributeWithConnectType()
+  {
+    return _with_connect_type;
+  }
+
   void RulePrivate::setName(const std::string& value)
   {
     _name.set(value);
@@ -452,6 +476,7 @@ namespace usbguard
     toString_appendNonEmptyAttribute(rule_string, _via_port);
     toString_appendNonEmptyAttribute(rule_string, _with_interface);
     toString_appendNonEmptyAttribute(rule_string, _conditions);
+    toString_appendNonEmptyAttribute(rule_string, _with_connect_type);
     return rule_string;
   }
 
