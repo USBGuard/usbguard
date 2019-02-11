@@ -104,7 +104,7 @@ namespace usbguard
 
   void ConfigFilePrivate::close()
   {
-    if (_stream) {
+    if (_stream.is_open()) {
       if (_dirty && !_readonly) {
         write();
       }
