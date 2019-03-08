@@ -77,7 +77,6 @@ namespace usbguard
     UMockdevDeviceManager(DeviceManagerHooks& hooks);
     ~UMockdevDeviceManager();
 
-    void setDefaultBlockedState(bool state) override;
     void setEnumerationOnlyMode(bool state) override;
 
     void start() override;
@@ -155,8 +154,6 @@ namespace usbguard
 
     std::map<std::string, std::shared_ptr<UMockdevDeviceDefinition>> _sysfs_path_map;
     std::multimap<std::string, std::weak_ptr<UMockdevDeviceDefinition>> _umockdev_file_map;
-
-    bool _default_blocked_state{true};
 
     bool _enumeration_only_mode{false};
     std::atomic<bool> _enumeration{false};

@@ -51,6 +51,29 @@
 
 namespace usbguard
 {
+  namespace
+  {
+    void setDeviceAuthorizedDefault(SysFSDevice* device, DeviceManager::AuthorizedDefaultType auth_default)
+    {
+      if (auth_default == DeviceManager::AuthorizedDefaultType::Keep) {
+        return;
+      }
+
+      std::string auth_default_str = std::to_string(DeviceManager::authorizedDefaultTypeToInteger(auth_default));
+      device->setAttribute("authorized_default", auth_default_str);
+
+      if (device->readAttribute("authorized_default", /*strip_last_null=*/true) != auth_default_str) {
+        if (auth_default == DeviceManager::AuthorizedDefaultType::Internal) {
+          USBGUARD_LOG(Warning) << "No kernel support for authorized_default = 2, falling back to 0";
+          setDeviceAuthorizedDefault(device, DeviceManager::AuthorizedDefaultType::None);
+        }
+        else {
+          throw Exception("UEventDevice", device->getPath(), "Failed to set authorized_default to \"" + auth_default_str + "\"");
+        }
+      }
+    }
+  }  /* namespace */
+
   UMockdevDevice::UMockdevDevice(UMockdevDeviceManager& device_manager, SysFSDevice& sysfs_device)
     : Device(device_manager)
   {
@@ -250,7 +273,6 @@ namespace usbguard
       _enumeration(false)
   {
     umockdevInit();
-    setDefaultBlockedState(/*state=*/true);
     setEnumerationOnlyMode(/*state=*/false);
     USBGUARD_SYSCALL_THROW("UEventDeviceManager", (_wakeup_fd = eventfd(0, 0)) < 0);
     _uevent_fd = ueventOpen();
@@ -526,7 +548,7 @@ namespace usbguard
   UMockdevDeviceManager::~UMockdevDeviceManager()
   {
     if (getRestoreControllerDeviceState()) {
-      setDefaultBlockedState(/*state=*/false); // FIXME: Set to previous state
+      setAuthorizedDefault(AuthorizedDefaultType::All); // FIXME: Set to previous state
     }
 
     stop();
@@ -538,11 +560,6 @@ namespace usbguard
     if (_wakeup_fd >= 0) {
       (void)close(_wakeup_fd);
     }
-  }
-
-  void UMockdevDeviceManager::setDefaultBlockedState(bool state)
-  {
-    _default_blocked_state = state;
   }
 
   void UMockdevDeviceManager::setEnumerationOnlyMode(bool state)
@@ -1166,10 +1183,12 @@ namespace usbguard
 
     try {
       std::shared_ptr<UMockdevDevice> device = std::make_shared<UMockdevDevice>(*this, sysfs_device);
+      DeviceManager::AuthorizedDefaultType auth_default = getAuthorizedDefault();
 
       if (device->isController() && !_enumeration_only_mode) {
-        USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " << _default_blocked_state;
-        device->sysfsDevice().setAttribute("authorized_default", _default_blocked_state ? "0" : "1");
+        USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " <<
+          DeviceManager::authorizedDefaultTypeToString(auth_default);
+        setDeviceAuthorizedDefault(&device->sysfsDevice(), auth_default);
       }
 
       insertDevice(device);

@@ -40,6 +40,9 @@ namespace usbguard
     DeviceManagerPrivate(DeviceManager& p_instance, const DeviceManagerPrivate& rhs);
     const DeviceManagerPrivate& operator=(const DeviceManagerPrivate& rhs);
 
+    void setAuthorizedDefault(DeviceManager::AuthorizedDefaultType authorized);
+    DeviceManager::AuthorizedDefaultType getAuthorizedDefault() const;
+
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;
 
@@ -60,6 +63,7 @@ namespace usbguard
     DeviceManagerHooks& _hooks;
     mutable std::mutex _device_map_mutex;
     std::map<uint32_t, std::shared_ptr<Device>> _device_map;
+    DeviceManager::AuthorizedDefaultType _authorized_default{DeviceManager::AuthorizedDefaultType::None};
     bool _restore_controller_device_state{false};
   };
 

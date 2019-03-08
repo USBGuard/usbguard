@@ -70,7 +70,6 @@ namespace usbguard
     UEventDeviceManager(DeviceManagerHooks& hooks);
     ~UEventDeviceManager();
 
-    void setDefaultBlockedState(bool state) override;
     void setEnumerationOnlyMode(bool state) override;
 
     void start() override;
@@ -83,6 +82,7 @@ namespace usbguard
     std::shared_ptr<Device> removeDevice(const std::string& syspath);
 
     uint32_t getIDFromSysfsPath(const std::string& syspath) const;
+
 
   private:
     static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
@@ -115,7 +115,6 @@ namespace usbguard
 
     std::map<std::string, uint32_t> _sysfs_path_to_id_map;
 
-    bool _default_blocked_state;
     bool _enumeration_only_mode;
     std::atomic<bool> _enumeration;
     std::condition_variable _enumeration_complete;

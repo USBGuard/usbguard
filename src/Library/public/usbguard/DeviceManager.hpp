@@ -44,9 +44,22 @@ namespace usbguard
       Remove = 3,
     };
 
+    enum class AuthorizedDefaultType {
+      Keep = -128,
+      Wired = -1,
+      None = 0,
+      All = 1,
+      Internal = 2,
+    };
+
     static uint32_t eventTypeToInteger(EventType event);
     static EventType eventTypeFromInteger(uint32_t event_integer);
     static std::string eventTypeToString(EventType event);
+
+    static int32_t authorizedDefaultTypeToInteger(AuthorizedDefaultType authorized_default);
+    static AuthorizedDefaultType authorizedDefaultTypeFromInteger(int32_t authorized_default_integer);
+    static AuthorizedDefaultType authorizedDefaultTypeFromString(const std::string& authorized_default_string);
+    static const std::string authorizedDefaultTypeToString(AuthorizedDefaultType authorized_default);
 
     DeviceManager(DeviceManagerHooks& hooks);
     DeviceManager(const DeviceManager& rhs);
@@ -54,12 +67,14 @@ namespace usbguard
 
     virtual ~DeviceManager();
 
-    virtual void setDefaultBlockedState(bool state) = 0;
     virtual void setEnumerationOnlyMode(bool state) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void scan() = 0;
     virtual void scan(const std::string& devpath) = 0;
+
+    void setAuthorizedDefault(AuthorizedDefaultType authorized);
+    AuthorizedDefaultType getAuthorizedDefault() const;
 
     void setRestoreControllerDeviceState(bool enabled);
     bool getRestoreControllerDeviceState() const;
