@@ -321,7 +321,7 @@ namespace usbguard
       {
         if (!rule.attributeWithConnectType().empty()) {
           throw tao::pegtl::parse_error(
-              "with-connect-type attribute already defined", in);
+            "with-connect-type attribute already defined", in);
         }
       }
     };
@@ -333,7 +333,8 @@ namespace usbguard
       {
         try {
           rule.attributeWithConnectType().append(stringValueFromRule(in.string()));
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex) {
           throw tao::pegtl::parse_error(ex.what(), in);
         }
       }
@@ -346,8 +347,9 @@ namespace usbguard
       {
         try {
           rule.attributeWithConnectType().setSetOperator(
-              Rule::setOperatorFromString(in.string()));
-        } catch (const std::exception& ex) {
+            Rule::setOperatorFromString(in.string()));
+        }
+        catch (const std::exception& ex) {
           throw tao::pegtl::parse_error(ex.what(), in);
         }
       }

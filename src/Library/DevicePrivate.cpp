@@ -144,8 +144,8 @@ namespace usbguard
      * Hash name, device id and serial number fields.
      */
     for (const std::string& field : {
-    _name, vendor_id, product_id, _serial_number
-  }) {
+        _name, vendor_id, product_id, _serial_number
+      }) {
       hash.update(field);
     }
     _hash = std::move(hash);

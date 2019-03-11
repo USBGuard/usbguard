@@ -99,13 +99,13 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     rule.setWithConnectType(non_printable_string);
     REQUIRE_NOTHROW(rule_string = rule.toString());
     REQUIRE(
-        rule_string ==
-        "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+      rule_string ==
+      "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
     REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
     REQUIRE_NOTHROW(rule_string = rule_from.toString());
     REQUIRE(
-        rule_string ==
-        "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+      rule_string ==
+      "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
     REQUIRE(rule.appliesTo(rule_from));
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);

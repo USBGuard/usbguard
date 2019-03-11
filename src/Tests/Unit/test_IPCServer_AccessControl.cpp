@@ -31,16 +31,16 @@ TEST_CASE("IPCServer::AccessControl", "[Unit]")
         IPCServer::AccessControl::Privilege::LIST));
 
     for (const auto& section : {
-    IPCServer::AccessControl::Section::DEVICES,
-              IPCServer::AccessControl::Section::POLICY,
-              IPCServer::AccessControl::Section::PARAMETERS,
-              IPCServer::AccessControl::Section::EXCEPTIONS
-  }) {
+        IPCServer::AccessControl::Section::DEVICES,
+        IPCServer::AccessControl::Section::POLICY,
+        IPCServer::AccessControl::Section::PARAMETERS,
+        IPCServer::AccessControl::Section::EXCEPTIONS
+      }) {
       for (const auto& privilege : {
-      IPCServer::AccessControl::Privilege::MODIFY,
-                IPCServer::AccessControl::Privilege::LIST,
-                IPCServer::AccessControl::Privilege::LISTEN
-    }) {
+          IPCServer::AccessControl::Privilege::MODIFY,
+          IPCServer::AccessControl::Privilege::LIST,
+          IPCServer::AccessControl::Privilege::LISTEN
+        }) {
         REQUIRE(!ac.hasPrivilege(section, privilege));
       }
     }
@@ -52,15 +52,15 @@ TEST_CASE("IPCServer::AccessControl", "[Unit]")
         IPCServer::AccessControl::Privilege::LIST));
 
     for (const auto& section : {
-    IPCServer::AccessControl::Section::POLICY,
-              IPCServer::AccessControl::Section::PARAMETERS,
-              IPCServer::AccessControl::Section::EXCEPTIONS
-  }) {
+        IPCServer::AccessControl::Section::POLICY,
+        IPCServer::AccessControl::Section::PARAMETERS,
+        IPCServer::AccessControl::Section::EXCEPTIONS
+      }) {
       for (const auto& privilege : {
-      IPCServer::AccessControl::Privilege::MODIFY,
-                IPCServer::AccessControl::Privilege::LIST,
-                IPCServer::AccessControl::Privilege::LISTEN
-    }) {
+          IPCServer::AccessControl::Privilege::MODIFY,
+          IPCServer::AccessControl::Privilege::LIST,
+          IPCServer::AccessControl::Privilege::LISTEN
+        }) {
         REQUIRE(!ac.hasPrivilege(section, privilege));
       }
     }

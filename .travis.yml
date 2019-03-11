@@ -85,7 +85,7 @@ before_install:
 - sudo apt-get install -y asciidoc
 - sudo apt-get install -y umockdev libumockdev-dev
 - sudo gem install coveralls-lcov
-- curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netix.dl.sourceforge.net/project/astyle/astyle/astyle%203.0.1/astyle_3.0.1_linux.tar.gz'
+- curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netix.dl.sourceforge.net/project/astyle/astyle/astyle%203.1/astyle_3.1_linux.tar.gz'
 install:
 - pushd .
 - cd /tmp

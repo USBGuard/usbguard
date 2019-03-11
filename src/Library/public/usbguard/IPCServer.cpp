@@ -157,11 +157,11 @@ namespace usbguard
 
     if (section == Section::ALL) {
       for (const auto& value : {
-      Section::POLICY,
-              Section::PARAMETERS,
-              Section::EXCEPTIONS,
-              Section::DEVICES
-    }) {
+          Section::POLICY,
+          Section::PARAMETERS,
+          Section::EXCEPTIONS,
+          Section::DEVICES
+        }) {
         _access_control[value] |= static_cast<uint8_t>(privilege);
       }
     }
@@ -206,20 +206,20 @@ namespace usbguard
     std::string access_control_string;
 
     for (auto const& section : {
-    Section::DEVICES,
-            Section::POLICY,
-            Section::PARAMETERS,
-            Section::EXCEPTIONS
-  }) {
+        Section::DEVICES,
+        Section::POLICY,
+        Section::PARAMETERS,
+        Section::EXCEPTIONS
+      }) {
       bool section_is_empty = true;
       std::string section_string = sectionToString(section);
       section_string.append("=");
 
       for (auto const& privilege : {
-      Privilege::LIST,
-                Privilege::MODIFY,
-                Privilege::LISTEN
-    }) {
+          Privilege::LIST,
+          Privilege::MODIFY,
+          Privilege::LISTEN
+        }) {
         if (hasPrivilege(section, privilege)) {
           const std::string privilege_string = privilegeToString(privilege);
           section_string.append(privilege_string);

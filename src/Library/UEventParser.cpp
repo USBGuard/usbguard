@@ -55,8 +55,8 @@ namespace usbguard
           const std::string value = trim(in.string().substr(p + 1, std::string::npos), std::string("\n\0", 2));
 
           for (const std::string header_key : {
-          "ACTION", "DEVPATH"
-        }) {
+              "ACTION", "DEVPATH"
+            }) {
             if (key == header_key) {
               /*
                * Sanity check the value only if the value is already assigned,

@@ -109,8 +109,8 @@ namespace usbguard
   bool UEvent::hasRequiredAttributes() const
   {
     for (const std::string name : {
-    "ACTION", "DEVPATH", "SUBSYSTEM"
-  }) {
+        "ACTION", "DEVPATH", "SUBSYSTEM"
+      }) {
       if (!hasAttribute(name)) {
         return false;
       }

@@ -130,7 +130,7 @@ namespace usbguard
     return d_pointer->attributeWithConnectType();
   }
 
-  Rule::Attribute<std::string>& Rule::attributeWithConnectType() 
+  Rule::Attribute<std::string>& Rule::attributeWithConnectType()
   {
     return d_pointer->attributeWithConnectType();
   }
