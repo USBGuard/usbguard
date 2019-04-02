@@ -65,6 +65,24 @@ PresentControllerPolicy=keep
 InsertedDevicePolicy=apply-policy
 
 #
+# Control which devices are authorized by default.
+#
+# The USBGuard daemon modifies some the default authorization state attributes
+# of controller devices. This setting, enables you to define what value the
+# default authorization is set to.
+#
+# * keep         - do not change the authorization state
+# * wired        - new wired USB devices start out authorized, wireless USB
+#                  devices do not
+# * none         - every new device starts out deauthorized
+# * all          - every new device starts out authorized
+# * internal     - internal devices start out authorized, external devices start
+#                  out deauthorized (this requires the ACPI tables to properly
+#                  label internal devices, and kernel support)
+#
+AuthorizedDefault=none
+
+#
 # Restore controller device state.
 #
 # The USBGuard daemon modifies some attributes of controller

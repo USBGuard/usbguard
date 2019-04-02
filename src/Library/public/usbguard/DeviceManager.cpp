@@ -69,6 +69,53 @@ namespace usbguard
     }
   }
 
+  static const std::vector<std::pair<std::string, DeviceManager::AuthorizedDefaultType>> authorized_default_type_strings = {
+    { "keep", DeviceManager::AuthorizedDefaultType::Keep },
+    { "wired", DeviceManager::AuthorizedDefaultType::Wired },
+    { "none", DeviceManager::AuthorizedDefaultType::None },
+    { "all", DeviceManager::AuthorizedDefaultType::All },
+    { "internal", DeviceManager::AuthorizedDefaultType::Internal }
+  };
+
+  int32_t DeviceManager::authorizedDefaultTypeToInteger(DeviceManager::AuthorizedDefaultType authorized_default)
+  {
+    return static_cast<int32_t>(authorized_default);
+  }
+
+  DeviceManager::AuthorizedDefaultType DeviceManager::authorizedDefaultTypeFromInteger(int32_t authorized_default_integer)
+  {
+    for (auto authorized_default_type_string : authorized_default_type_strings) {
+      if (static_cast<int32_t>(authorized_default_type_string.second) == authorized_default_integer) {
+        return authorized_default_type_string.second;
+      }
+    }
+
+    throw std::runtime_error("Invalid authorized default type integer value");
+  }
+
+  DeviceManager::AuthorizedDefaultType DeviceManager::authorizedDefaultTypeFromString(const std::string&
+    authorized_default_string)
+  {
+    for (auto authorized_default_type_string : authorized_default_type_strings) {
+      if (authorized_default_type_string.first == authorized_default_string) {
+        return authorized_default_type_string.second;
+      }
+    }
+
+    throw Exception("AuthorizedDefaultType", authorized_default_string, "invalid authorized default type string");
+  }
+
+  const std::string DeviceManager::authorizedDefaultTypeToString(AuthorizedDefaultType authorized_default)
+  {
+    for (auto authorized_default_type_string : authorized_default_type_strings) {
+      if (authorized_default_type_string.second == authorized_default) {
+        return authorized_default_type_string.first;
+      }
+    }
+
+    throw USBGUARD_BUG("Invalid authorized default type value");
+  }
+
   DeviceManager::DeviceManager(DeviceManagerHooks& hooks)
     : d_pointer(usbguard::make_unique<DeviceManagerPrivate>(*this, hooks))
   {
@@ -86,6 +133,16 @@ namespace usbguard
   }
 
   DeviceManager::~DeviceManager() = default;
+
+  void DeviceManager::setAuthorizedDefault(DeviceManager::AuthorizedDefaultType authorized)
+  {
+    d_pointer->setAuthorizedDefault(authorized);
+  }
+
+  DeviceManager::AuthorizedDefaultType DeviceManager::getAuthorizedDefault() const
+  {
+    return d_pointer->getAuthorizedDefault();
+  }
 
   void DeviceManager::setRestoreControllerDeviceState(bool enabled)
   {

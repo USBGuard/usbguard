@@ -50,6 +50,16 @@ namespace usbguard
     return *this;
   }
 
+  void DeviceManagerPrivate::setAuthorizedDefault(DeviceManager::AuthorizedDefaultType authorized)
+  {
+    _authorized_default = authorized;
+  }
+
+  DeviceManager::AuthorizedDefaultType DeviceManagerPrivate::getAuthorizedDefault() const
+  {
+    return _authorized_default;
+  }
+
   void DeviceManagerPrivate::setRestoreControllerDeviceState(bool enabled)
   {
     _restore_controller_device_state = enabled;

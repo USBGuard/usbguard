@@ -28,6 +28,7 @@
 #include "Common/Utility.hpp"
 #include "NSHandler.hpp"
 
+#include "usbguard/DeviceManager.hpp"
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleParser.hpp"
 #include "usbguard/Audit.hpp"
@@ -63,6 +64,7 @@ namespace usbguard
     "IPCAllowedGroups",
     "DeviceRulesWithPort",
     "InsertedDevicePolicy",
+    "AuthorizedDefault",
     "RestoreControllerDeviceState",
     "DeviceManagerBackend",
     "IPCAccessControlFiles",
@@ -265,6 +267,13 @@ namespace usbguard
     }
 
     _dm = DeviceManager::create(*this, _device_manager_backend);
+
+    /* RestoreControllerDeviceState */
+    if (_config.hasSettingValue("AuthorizedDefault")) {
+      const std::string value = _config.getSettingValue("AuthorizedDefault");
+      DeviceManager::AuthorizedDefaultType authorized_default = DeviceManager::authorizedDefaultTypeFromString(value);
+      _dm->setAuthorizedDefault(authorized_default);
+    }
 
     /* RestoreControllerDeviceState */
     if (_config.hasSettingValue("RestoreControllerDeviceState")) {
