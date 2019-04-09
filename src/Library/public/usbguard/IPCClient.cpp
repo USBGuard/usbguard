@@ -62,9 +62,9 @@ namespace usbguard
     return d_pointer->getParameter(name);
   }
 
-  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id)
+  uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent)
   {
-    return d_pointer->appendRule(rule_spec, parent_id);
+    return d_pointer->appendRule(rule_spec, parent_id, permanent);
   }
 
   void IPCClient::removeRule(uint32_t id)

@@ -78,6 +78,7 @@
       appendRule:
        @rule: The rule that should be appended to the policy.
        @parent_id: Rule id of the parent rule.
+       @temporary: A boolean to avoid adding this rule to the policy file.
        @id: The rule id assigned to the succesfully appended rule.
 
       Append a new rule to the current policy. Using the parent_id
@@ -88,6 +89,7 @@
     <method name="appendRule">
       <arg name="rule" direction="in" type="s"/>
       <arg name="parent_id" direction="in" type="u"/>
+      <arg name="temporary" direction="in" type="b"/>
       <arg name="id" direction="out" type="u"/>
     </method>
 

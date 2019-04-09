@@ -140,9 +140,10 @@ namespace usbguard
     if (method_name == "appendRule") {
       const char* rule_spec_cstr = nullptr;
       uint32_t parent_id = 0;
-      g_variant_get(parameters, "(&su)", &rule_spec_cstr, &parent_id);
+      bool temporary = false;
+      g_variant_get(parameters, "(&sub)", &rule_spec_cstr, &parent_id, &temporary);
       std::string rule_spec(rule_spec_cstr);
-      const uint32_t rule_id = appendRule(rule_spec, parent_id);
+      const uint32_t rule_id = appendRule(rule_spec, parent_id, !temporary);
       g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));
       return;
     }

@@ -848,10 +848,11 @@ namespace usbguard
     const IPC::appendRule* const message_in = static_cast<const IPC::appendRule*>(request.get());
     const std::string rule = message_in->request().rule();
     const uint32_t parent_id = message_in->request().parent_id();
+    const bool permanent = message_in->request().permanent();
     /*
      * Execute the method.
      */
-    const uint32_t id = _p_instance.appendRule(rule, parent_id);
+    const uint32_t id = _p_instance.appendRule(rule, parent_id, permanent);
     /*
      * Construct the response.
      */

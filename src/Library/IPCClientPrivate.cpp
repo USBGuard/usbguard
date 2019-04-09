@@ -380,11 +380,12 @@ namespace usbguard
     return message_in->response().value();
   }
 
-  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id)
+  uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent)
   {
     IPC::appendRule message_out;
     message_out.mutable_request()->set_rule(rule_spec);
     message_out.mutable_request()->set_parent_id(parent_id);
+    message_out.mutable_request()->set_permanent(permanent);
     auto message_in = qbIPCSendRecvMessage(message_out);
     return message_in->response().id();
   }

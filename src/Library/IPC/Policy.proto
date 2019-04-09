@@ -22,6 +22,7 @@ message listRules {
 message appendRuleRequest {
   required string rule = 1;
   required uint32 parent_id = 2;
+  required bool permanent = 3;
 }
 
 message appendRuleResponse {
