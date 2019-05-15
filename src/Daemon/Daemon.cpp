@@ -687,7 +687,7 @@ namespace usbguard
   }
 
   uint32_t Daemon::appendRule(const std::string& rule_spec,
-    uint32_t parent_id)
+    uint32_t parent_id, bool permanent)
   {
     USBGUARD_LOG(Trace) << "entry:"
       << " rule_spec=" << rule_spec
@@ -696,7 +696,7 @@ namespace usbguard
     /* TODO: reevaluate the firewall rules for all active devices */
     const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
 
-    if (_config.hasSettingValue("RuleFile")) {
+    if (_config.hasSettingValue("RuleFile") && permanent) {
       _policy.getRuleSet()->save();
     }
 

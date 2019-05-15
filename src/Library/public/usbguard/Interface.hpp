@@ -41,7 +41,7 @@ namespace usbguard
 
     /* Methods */
     virtual uint32_t appendRule(const std::string& rule_spec,
-      uint32_t parent_id) = 0;
+      uint32_t parent_id, bool permanent) = 0;
 
     virtual void removeRule(uint32_t id) = 0;
 

@@ -29,11 +29,12 @@
 
 namespace usbguard
 {
-  static const char* options_short = "ha:";
+  static const char* options_short = "ha:t";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
     { "after", required_argument, nullptr, 'a' },
+    { "temporary", no_argument, nullptr, 't' },
     { nullptr, 0, nullptr, 0 }
   };
 
@@ -44,6 +45,8 @@ namespace usbguard
     stream << " Options:" << std::endl;
     stream << "  -a, --after <id>  Append the new rule after a rule with the specified id" << std::endl;
     stream << "                    instead of appending it at the end of the rule set." << std::endl;
+    stream << "  -t, --temporary   Make the decision temporary. The rule policy file will not" << std::endl;
+    stream << "                    be updated." << std::endl;
     stream << "  -h, --help        Show this help." << std::endl;
     stream << std::endl;
   }
@@ -51,6 +54,7 @@ namespace usbguard
   int usbguard_append_rule(int argc, char* argv[])
   {
     uint32_t parent_id = usbguard::Rule::LastID;
+    bool permanent = true;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
@@ -61,6 +65,10 @@ namespace usbguard
 
       case 'a':
         parent_id = std::stoul(optarg);
+        break;
+
+      case 't':
+        permanent = false;
         break;
 
       case '?':
@@ -81,7 +89,7 @@ namespace usbguard
 
     usbguard::IPCClient ipc(/*connected=*/true);
     const std::string rule_spec = argv[0];
-    const uint32_t id = ipc.appendRule(rule_spec, parent_id);
+    const uint32_t id = ipc.appendRule(rule_spec, parent_id, permanent);
     std::cout << id << std::endl;
     return EXIT_SUCCESS;
   }

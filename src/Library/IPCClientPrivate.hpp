@@ -58,7 +58,7 @@ namespace usbguard
     std::string setParameter(const std::string& name, const std::string& value);
     std::string getParameter(const std::string& name);
 
-    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id);
+    uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent);
     void removeRule(uint32_t id);
     const std::shared_ptr<RuleSet> listRules(const std::string& query);
 
