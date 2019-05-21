@@ -148,8 +148,12 @@ namespace usbguard
         if (  !( file_stat.st_mode & permissions ) ||
           ( file_stat.st_mode & permission_bad)
         ) {
-          USBGUARD_LOG(Error) << "Policy leaks are possible with this permissions!";
-          throw Exception("Check permissions", path, "Policy leaks possible");
+          std::ostringstream strm ;
+          strm.width(4) ;
+          strm.fill('0') ;
+          strm << std::oct << permissions ;
+          USBGUARD_LOG(Error) << "Permissions for " << path << " should be " <<  strm.str() ;
+          throw Exception("Check permissions", path, "Policy may be readable");
         }
         else {
           USBGUARD_LOG(Info) << "File has correct permissions.";
@@ -157,7 +161,7 @@ namespace usbguard
       }
       else {
         USBGUARD_LOG(Error) << "ERROR: File is not a regular file.";
-        throw Exception("Check permissions", path, "File not exists");
+        throw Exception("Check permissions", path, "Path is not a file");
       }
     }
     else {
