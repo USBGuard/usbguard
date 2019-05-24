@@ -311,6 +311,48 @@ namespace usbguard
       }
     };
 
+    template<typename Rule>
+    struct label_actions : tao::pegtl::nothing<Rule> {};
+
+    template<>
+    struct label_actions<str_serial> {
+      template<typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        if (!rule.attributeLabel().empty()) {
+          throw tao::pegtl::parse_error("label attribute already defined", in);
+        }
+      }
+    };
+
+    template<>
+    struct label_actions<string_value> {
+      template<typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        try {
+          rule.attributeLabel().append(stringValueFromRule(in.string()));
+        }
+        catch (const std::exception& ex) {
+          throw tao::pegtl::parse_error(ex.what(), in);
+        }
+      }
+    };
+
+    template<>
+    struct label_actions<multiset_operator> {
+      template<typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        try {
+          rule.attributeLabel().setSetOperator(Rule::setOperatorFromString(in.string()));
+        }
+        catch (const std::exception& ex) {
+          throw tao::pegtl::parse_error(ex.what(), in);
+        }
+      }
+    };
+
     template <typename Rule>
     struct with_connect_type_actions : tao::pegtl::nothing<Rule> {};
 

@@ -48,6 +48,7 @@ namespace usbguard
     struct str_serial : TAOCPP_PEGTL_STRING("serial") {};
     struct str_if : TAOCPP_PEGTL_STRING("if") {};
     struct str_id : TAOCPP_PEGTL_STRING("id") {};
+    struct str_label : TAOCPP_PEGTL_STRING("label") {};
 
     struct str_all_of : TAOCPP_PEGTL_STRING("all-of") {};
     struct str_one_of : TAOCPP_PEGTL_STRING("one-of") {};
@@ -176,6 +177,9 @@ namespace usbguard
     struct condition_attribute
       : action<condition_actions, rule_attribute<str_if, condition>> {};
 
+    struct label_attribute
+      : action<label_actions, rule_attribute<str_label, string_value>> {};
+
     struct rule_attributes
       : sor<id_attribute,
         name_attribute,
@@ -185,7 +189,8 @@ namespace usbguard
         via_port_attribute,
         with_interface_attribute,
         with_connect_type_attribute,
-        condition_attribute> {};
+        condition_attribute,
+        label_attribute> {};
 
     /*
      * Rule target
