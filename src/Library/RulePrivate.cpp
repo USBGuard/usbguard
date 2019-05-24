@@ -38,7 +38,8 @@ namespace usbguard
       _parent_hash("parent-hash"),
       _via_port("via-port"),
       _with_interface("with-interface"),
-      _conditions("if")
+      _conditions("if"),
+      _label("label")
   {
     (void)p_instance;
     _rule_id = Rule::DefaultID;
@@ -56,7 +57,8 @@ namespace usbguard
       _parent_hash("parent-hash"),
       _via_port("via-port"),
       _with_interface("with-interface"),
-      _conditions("if")
+      _conditions("if"),
+      _label("label")
   {
     (void)p_instance;
     *this = rhs;
@@ -77,6 +79,7 @@ namespace usbguard
     _with_interface = rhs._with_interface;
     _conditions = rhs._conditions;
     _conditions_state = rhs._conditions_state;
+    _label= rhs._label;
     return *this;
 #if 0
 
@@ -312,6 +315,26 @@ namespace usbguard
     return _serial;
   }
 
+  void RulePrivate::setLabel(const std::string& value)
+  {
+    _label.set(value);
+  }
+
+  const std::string& RulePrivate::getLabel() const
+  {
+    return _label.get();
+  }
+
+  const Rule::Attribute<std::string>& RulePrivate::attributeLabel() const
+  {
+    return _label;
+  }
+
+  Rule::Attribute<std::string>& RulePrivate::attributeLabel()
+  {
+    return _label;
+  }
+
   void RulePrivate::setWithConnectType(const std::string& value)
   {
     _with_connect_type.set(value);
@@ -477,6 +500,7 @@ namespace usbguard
     toString_appendNonEmptyAttribute(rule_string, _with_interface);
     toString_appendNonEmptyAttribute(rule_string, _conditions);
     toString_appendNonEmptyAttribute(rule_string, _with_connect_type);
+    toString_appendNonEmptyAttribute(rule_string, _label);
     return rule_string;
   }
 

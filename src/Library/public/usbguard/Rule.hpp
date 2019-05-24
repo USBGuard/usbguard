@@ -447,6 +447,11 @@ namespace usbguard
     const Attribute<std::string>& attributeSerial() const;
     Attribute<std::string>& attributeSerial();
 
+    void setLabel(const std::string& value);
+    const std::string& getLabel() const;
+    const Attribute<std::string>& attributeLabel() const;
+    Attribute<std::string>& attributeLabel();
+
     void setWithConnectType(const std::string& value);
     const std::string& getWithConnectType() const;
     const Attribute<std::string>& attributeWithConnectType() const;

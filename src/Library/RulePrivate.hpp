@@ -89,6 +89,11 @@ namespace usbguard
     const Rule::Attribute<std::string>& attributeSerial() const;
     Rule::Attribute<std::string>& attributeSerial();
 
+    void setLabel(const std::string& value);
+    const std::string& getLabel() const;
+    const Rule::Attribute<std::string>& attributeLabel() const;
+    Rule::Attribute<std::string>& attributeLabel();
+
     void setWithConnectType(const std::string& value);
     const std::string& getWithConnectType() const;
     const Rule::Attribute<std::string>& attributeWithConnectType() const;
@@ -149,6 +154,7 @@ namespace usbguard
     Rule::Attribute<std::string> _via_port;
     Rule::Attribute<USBInterfaceType> _with_interface;
     Rule::Attribute<RuleCondition> _conditions;
+    Rule::Attribute<std::string> _label;
     uint64_t _conditions_state;
   };
 }

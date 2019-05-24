@@ -271,6 +271,7 @@ allow with-connect-type { "hardwired" } with-interface { 14:E1:ee a9:ef:1e } nam
 allow with-connect-type one-of { "hotplug" "hardwired" } parent-hash "~5dLGqYl" serial "ti'eurG]"  if false
 allow with-connect-type equals { "unknown" "hotplug" } parent-hash { "W`G.6Y:v" "l',6M , " ".!/r5}Dz" "9HOHPNuk" "k}{N*X%m" "gsr?KNZ8" "OypL42xt" } serial { "dTNG+F-L" "cqomCC/r" "oI7P_=D2" "z~:y^Sgb" } id { 0397:4c5d 0f9d:* } name "{?N|IzD," hash { "$$e]1W6`" }
 allow with-connect-type none-of { "unknown" "hotplug" "not used" } via-port ".sZAu,K#" parent-hash "lR-:Z~S*"
+allow label "arbitrary value"
 block
 block hash "7k9=0w;>" via-port equals { "uAn$>}g'" " Idtdm=Z" "L5+~$p9G" ".<2^/*_#" } name all-of { "CH'-JLED" "A!a^flj}" "VZB4bM29" "zQibW[lk" "~.O];jOw" } id b96e:* with-interface none-of { b8:*:* 1a:fA:* 7e:B6:97 57:*:* 8D:d8:* } serial "&02OlmQ." parent-hash "Y{cAzv[U"
 block hash "8$^jgkWg"
