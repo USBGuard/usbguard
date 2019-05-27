@@ -29,11 +29,12 @@
 
 namespace usbguard
 {
-  static const char* options_short = "hd";
+  static const char* options_short = "hdl:";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
     { "show-devices", no_argument, nullptr, 'd'},
+    { "label", required_argument, nullptr, 'l' },
     { nullptr, 0, nullptr, 0 }
   };
 
@@ -44,6 +45,7 @@ namespace usbguard
     stream << " Options:" << std::endl;
     stream << "  -d, --show-devices  Show all devices which are affected by the specific rule." << std::endl;
     stream << "  -h, --help          Show this help." << std::endl;
+    stream << "  -l, --label <label> Only show rules having a specific label." << std::endl;
     stream << std::endl;
   }
 
@@ -51,6 +53,7 @@ namespace usbguard
   {
     bool show_devices = false;
     int opt = 0;
+    std::string label;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
       switch (opt) {
@@ -62,6 +65,10 @@ namespace usbguard
         show_devices = true;
         break;
 
+      case 'l':
+        label = optarg;
+        break;
+
       case '?':
         showHelp(std::cerr);
 
@@ -71,19 +78,13 @@ namespace usbguard
     }
 
     usbguard::IPCClient ipc(/*connected=*/true);
-    auto ruleset = ipc.listRules();
+    auto rules = ipc.listRules(label);
 
-    // if true, devices which are affected by rule are printed on stdout.
-    if (!show_devices) {
-      for (auto rule : ruleset->getRules()) {
-        std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
-      }
-    }
-    else {
-      for (auto rule : ruleset->getRules()) {
-        std::cout << rule->getRuleID() << ": " << rule->toString() << std::endl;
+    for (auto rule : rules) {
+      std::cout << rule.getRuleID() << ": " << rule.toString() << std::endl;
 
-        for (auto device_rule : ipc.listDevices(rule->toString())) {
+      if (show_devices) {
+        for (auto device_rule : ipc.listDevices(rule.toString())) {
           std::cout << "\t"<< device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
         }
       }

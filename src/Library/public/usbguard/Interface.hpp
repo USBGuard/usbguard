@@ -45,7 +45,7 @@ namespace usbguard
 
     virtual void removeRule(uint32_t id) = 0;
 
-    virtual const std::shared_ptr<RuleSet> listRules(const std::string& query) = 0;
+    virtual const std::vector<Rule> listRules(const std::string& query) = 0;
 
     virtual uint32_t applyDevicePolicy(uint32_t id,
       Rule::Target target,

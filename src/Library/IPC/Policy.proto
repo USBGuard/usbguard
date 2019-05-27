@@ -8,8 +8,7 @@ message listRulesRequest {
 }
 
 message listRulesResponse {
-  required uint32 default_target = 1;
-  repeated Rule rules = 2;
+  repeated Rule rules = 1;
 }
 
 message listRules {

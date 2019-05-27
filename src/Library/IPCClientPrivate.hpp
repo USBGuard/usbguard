@@ -60,7 +60,7 @@ namespace usbguard
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent);
     void removeRule(uint32_t id);
-    const std::shared_ptr<RuleSet> listRules(const std::string& query);
+    const std::vector<Rule> listRules(const std::string& query);
 
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
     const std::vector<Rule> listDevices(const std::string& query);

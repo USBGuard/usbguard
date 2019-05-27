@@ -892,19 +892,17 @@ namespace usbguard
     /*
      * Execute the method.
      */
-    auto rule_set = _p_instance.listRules(query);
-    const uint32_t default_target = Rule::targetToInteger(rule_set->getDefaultTarget());
+    auto rules = _p_instance.listRules(query);
     /*
      * Construct the response.
      */
     IPC::listRules* const message_out = message_in->New();
     message_out->MergeFrom(*message_in);
-    message_out->mutable_response()->set_default_target(default_target);
 
-    for (const auto& rule : rule_set->getRules()) {
+    for (const auto& rule : rules) {
       auto message_rule = message_out->mutable_response()->add_rules();
-      message_rule->set_id(rule->getRuleID());
-      message_rule->set_rule(rule->toString());
+      message_rule->set_id(rule.getRuleID());
+      message_rule->set_rule(rule.toString());
     }
 
     response.reset(message_out);

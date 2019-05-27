@@ -108,8 +108,7 @@ namespace usbguard
       const char* query_cstr = nullptr;
       g_variant_get(parameters, "(&s)", &query_cstr);
       std::string query(query_cstr);
-      auto rule_set = listRules(query);
-      auto rules = rule_set->getRules();
+      auto rules = listRules(query);
 
       if (rules.size() > 0) {
         auto gvbuilder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
@@ -117,8 +116,8 @@ namespace usbguard
         try {
           for (auto rule : rules) {
             g_variant_builder_add(gvbuilder, "(us)",
-              rule->getRuleID(),
-              rule->toString().c_str());
+              rule.getRuleID(),
+              rule.toString().c_str());
           }
 
           g_dbus_method_invocation_return_value(invocation, g_variant_new("(a(us))", gvbuilder));
