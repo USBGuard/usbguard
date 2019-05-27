@@ -718,10 +718,19 @@ namespace usbguard
     }
   }
 
-  const std::shared_ptr<RuleSet> Daemon::listRules(const std::string& query)
+  const std::vector<Rule> Daemon::listRules(const std::string& query)
   {
     USBGUARD_LOG(Trace) << "entry: query=" << query;
-    return _policy.getRuleSet();
+    std::vector<Rule> rules;
+
+    for(auto const& rule : _policy.getRuleSet()->getRules()) {
+      if (query.empty() || rule->getLabel() == query) {
+        rules.push_back(*rule);
+      }
+    }
+
+    USBGUARD_LOG(Trace) << "return:" << " count(rules)=" << rules.size();
+    return rules;
   }
 
   uint32_t Daemon::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)

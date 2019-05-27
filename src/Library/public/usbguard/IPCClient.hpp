@@ -48,8 +48,8 @@ namespace usbguard
 
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent) override;
     void removeRule(uint32_t id) override;
-    const std::shared_ptr<RuleSet> listRules(const std::string& query) override;
-    const std::shared_ptr<RuleSet> listRules()
+    const std::vector<Rule> listRules(const std::string& query) override;
+    const std::vector<Rule> listRules()
     {
       return listRules("match");
     }

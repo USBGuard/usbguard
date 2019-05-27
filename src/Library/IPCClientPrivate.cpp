@@ -397,23 +397,20 @@ namespace usbguard
     auto message_in = qbIPCSendRecvMessage(message_out);
   }
 
-  const std::shared_ptr<RuleSet> IPCClientPrivate::listRules(const std::string& query)
+  const std::vector<Rule> IPCClientPrivate::listRules(const std::string& query)
   {
     IPC::listRules message_out;
+    std::vector<Rule> rules;
     message_out.mutable_request()->set_query(query);
     auto message_in = qbIPCSendRecvMessage(message_out);
-    const Rule::Target default_target = \
-      Rule::targetFromInteger(message_in->response().default_target());
-    auto rule_set = std::make_shared<MEMRuleSet>(&_p_instance);
-    rule_set->setDefaultTarget(default_target);
 
     for (auto rule_message : message_in->response().rules()) {
       Rule rule = Rule::fromString(rule_message.rule());
       rule.setRuleID(rule_message.id());
-      rule_set->appendRule(rule);
+      rules.push_back(rule);
     }
 
-    return std::dynamic_pointer_cast<RuleSet>(rule_set);
+    return rules;
   }
 
   uint32_t IPCClientPrivate::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)
@@ -445,14 +442,7 @@ namespace usbguard
   void IPCClientPrivate::handleMethodResponse(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
   {
     (void)message_out;
-    const auto response_field = message_in->GetDescriptor()->FindFieldByName("response");
-    const auto reflection = message_in->GetReflection();
-    const bool has_response = reflection->HasField(*message_in, response_field);
     const uint64_t id = IPC::getMessageHeaderID(*message_in);
-
-    if (!has_response) {
-      throw IPCException("IPC method response", "message", "Missing response field", id);
-    }
 
     try {
       auto& return_promise = _return_map.at(id);
