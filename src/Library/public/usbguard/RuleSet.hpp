@@ -43,7 +43,6 @@ namespace usbguard
 
     void setDefaultTarget(Rule::Target target);
     Rule::Target getDefaultTarget() const;
-    void setDefaultAction(const std::string& action);
     uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
     uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
     std::shared_ptr<Rule> getRule(uint32_t id);
@@ -66,7 +65,6 @@ namespace usbguard
 
     Interface* _interface_ptr{nullptr};
     Rule::Target _default_target;
-    std::string _default_action;
     Atomic<uint32_t> _id_next;
     std::vector<std::shared_ptr<Rule>> _rules;
   };

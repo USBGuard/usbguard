@@ -51,11 +51,6 @@ namespace usbguard
     return _ruleset_ptr->getDefaultTarget();
   }
 
-  void Policy::setDefaultAction(const std::string& action)
-  {
-    _ruleset_ptr->setDefaultAction(action);
-  }
-
   uint32_t Policy::appendRule(const Rule& rule, uint32_t parent_id)
   {
     return _ruleset_ptr->appendRule(rule, parent_id);
