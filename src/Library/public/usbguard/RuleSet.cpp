@@ -38,7 +38,6 @@ namespace usbguard
   {
     clearWritable();
     _default_target = Rule::Target::Block;
-    _default_action = std::string();
     _id_next = Rule::RootID + 1;
   }
 
@@ -51,7 +50,6 @@ namespace usbguard
   {
     _interface_ptr = rhs._interface_ptr;
     _default_target = rhs._default_target;
-    _default_action = rhs._default_action;
     _id_next = rhs._id_next.load();
     _rules = rhs._rules;
     return *this;
@@ -67,12 +65,6 @@ namespace usbguard
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     return _default_target;
-  }
-
-  void RuleSet::setDefaultAction(const std::string& action)
-  {
-    std::unique_lock<std::mutex> op_lock(_op_mutex);
-    _default_action = action;
   }
 
   uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id, bool lock)
