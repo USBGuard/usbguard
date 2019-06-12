@@ -577,6 +577,9 @@ AC_ARG_ENABLE([tsan],
     [enable_tsan=$enableval], [enable_tsan=no])
 
 if test "x$enable_tsan" = xyes; then
+  if test "x$enable_asan" = xyes; then
+    AC_MSG_FAILURE([Address Sanitizer (ASAN) and Thread Sanitizer (TSAN) are mutually exclusive])
+  fi
   AX_CHECK_COMPILE_FLAG([-fsanitize=thread],
                         [TSAN_FLAGS="$TSAN_FLAGS -fsanitize=thread"],
                         [enable_tsan=no], [])
