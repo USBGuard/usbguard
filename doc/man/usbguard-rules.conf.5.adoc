@@ -159,7 +159,7 @@ On Linux it's in the form of "usbN" in case of a USB controller (more accurately
 
 The 'interface-type' represents a USB interface and should be formatted as three 8-bit numbers in hexadecimal base delimited by a colon character, i.e. 'cc:ss:pp'.
 The numbers represent the interface class ('cc'), subclass ('ss') and protocol ('pp') as assigned by the http://www.usb.org/about[USB-IF].
-See the http://www.usb.org/developers/defined_class[list of assigned classes, subclasses and protocols] for details.
+See the https://www.usb.org/defined-class-codes[list of assigned classes, subclasses and protocols] for details.
 Instead of the subclass and protocol number, you may write an asterisk character (`*`) to match all subclasses or protocols.
 Matching a specific class and a specific protocol is not allowed, i.e. if you use an asterisk as the subclass number, you have to use an asterisk for the protocol too.
 
