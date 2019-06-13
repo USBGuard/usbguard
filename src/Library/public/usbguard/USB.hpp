@@ -144,9 +144,10 @@ namespace usbguard
   class DLL_PUBLIC USBDeviceID
   {
   public:
-    USBDeviceID();
+    USBDeviceID() = default;
     USBDeviceID(const std::string& vendor_id, const std::string& product_id = std::string());
-    USBDeviceID(const USBDeviceID& rhs);
+    USBDeviceID(const USBDeviceID& rhs) = default;
+    USBDeviceID& operator=(const USBDeviceID& rhs) = default;
 
     static void checkDeviceID(const std::string& vendor_id, const std::string& product_id);
 

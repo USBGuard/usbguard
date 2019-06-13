@@ -35,6 +35,7 @@ namespace usbguard
     RuleSet(Interface* const interface_ptr);
     RuleSet(const RuleSet& rhs);
     const RuleSet& operator=(const RuleSet& rhs);
+    virtual ~RuleSet() = default;
 
     virtual void load() = 0;
     virtual void save() = 0;

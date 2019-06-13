@@ -22,34 +22,34 @@
 #endif
 
 #include "RuleSet.hpp"
-#include "MEMRuleSet.hpp"
+#include "MemoryRuleSet.hpp"
 
 namespace usbguard
 {
-  MEMRuleSet::MEMRuleSet(Interface* const interface_ptr)
+  MemoryRuleSet::MemoryRuleSet(Interface* const interface_ptr)
     : RuleSet(interface_ptr)
   {
     setWritable();
-    USBGUARD_LOG(Info) << "Creating MEMRuleSet";
+    USBGUARD_LOG(Info) << "Creating MemoryRuleSet";
   }
 
-  MEMRuleSet::MEMRuleSet(const MEMRuleSet& rhs)
+  MemoryRuleSet::MemoryRuleSet(const MemoryRuleSet& rhs)
     : RuleSet(rhs._interface_ptr)
   {
     *this = rhs;
   }
 
-  const MEMRuleSet& MEMRuleSet::operator=(const MEMRuleSet& rhs)
+  const MemoryRuleSet& MemoryRuleSet::operator=(const MemoryRuleSet& rhs)
   {
     RuleSet::operator = (rhs);
     return *this;
   }
 
-  void MEMRuleSet::load()
+  void MemoryRuleSet::load()
   {
   }
 
-  void MEMRuleSet::save()
+  void MemoryRuleSet::save()
   {
   }
 } /* namespace usbguard */

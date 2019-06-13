@@ -37,21 +37,13 @@ namespace usbguard
       MetaData()
         : tp_created(std::chrono::steady_clock::now())
       {
-        counter_evaluated = 0;
-        counter_applied = 0;
       }
 
-      MetaData(const MetaData& rhs)
-      {
-        counter_evaluated = rhs.counter_evaluated;
-        counter_applied = rhs.counter_applied;
-        tp_created = rhs.tp_created;
-        tp_last_evaluated = rhs.tp_last_evaluated;
-        tp_last_applied = rhs.tp_last_applied;
-      }
+      MetaData(const MetaData& rhs) = default;
+      MetaData& operator=(const MetaData& rhs) = default;
 
-      uint64_t counter_evaluated;
-      uint64_t counter_applied;
+      uint64_t counter_evaluated{0};
+      uint64_t counter_applied{0};
       std::chrono::steady_clock::time_point tp_created;
       std::chrono::steady_clock::time_point tp_last_evaluated;
       std::chrono::steady_clock::time_point tp_last_applied;

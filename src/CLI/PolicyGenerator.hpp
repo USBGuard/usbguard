@@ -25,7 +25,7 @@
 #include "usbguard/DeviceManagerHooks.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/RuleSet.hpp"
-#include "usbguard/MEMRuleSet.hpp"
+#include "usbguard/MemoryRuleSet.hpp"
 
 namespace usbguard
 {

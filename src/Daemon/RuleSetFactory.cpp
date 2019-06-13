@@ -21,7 +21,7 @@
 #endif
 
 #include "usbguard/RuleSet.hpp"
-#include "usbguard/MEMRuleSet.hpp"
+#include "usbguard/MemoryRuleSet.hpp"
 
 #include "FileRuleSet.hpp"
 
@@ -45,7 +45,7 @@ namespace usbguard
 
   std::shared_ptr<RuleSet> RuleSetFactory::generateDefaultRuleSet()
   {
-    auto rule_set = std::make_shared<MEMRuleSet>(RuleSetFactory::interface_ptr);
+    auto rule_set = std::make_shared<MemoryRuleSet>(RuleSetFactory::interface_ptr);
     return  std::dynamic_pointer_cast<RuleSet>(rule_set);
   }
 

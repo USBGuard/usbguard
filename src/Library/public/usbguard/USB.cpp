@@ -30,21 +30,11 @@
 
 namespace usbguard
 {
-  USBDeviceID::USBDeviceID()
-  {
-  }
-
   USBDeviceID::USBDeviceID(const std::string& vendor_id, const std::string& product_id)
   {
     checkDeviceID(vendor_id, product_id);
     setVendorID(vendor_id);
     setProductID(product_id);
-  }
-
-  USBDeviceID::USBDeviceID(const USBDeviceID& rhs)
-  {
-    _vendor_id = rhs._vendor_id;
-    _product_id = rhs._product_id;
   }
 
   void USBDeviceID::checkDeviceID(const std::string& vendor_id, const std::string& product_id)

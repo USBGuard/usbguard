@@ -104,12 +104,8 @@ namespace usbguard
         _set_operator = SetOperator::Equals;
       }
 
-      Attribute(const Attribute<ValueType>& rhs)
-      {
-        _name = rhs._name;
-        _set_operator = rhs._set_operator;
-        _values = rhs._values;
-      }
+      Attribute(const Attribute<ValueType>& rhs) = default;
+      Attribute& operator=(const Attribute<ValueType>& rhs) = default;
 
       void setSetOperator(SetOperator op)
       {

@@ -38,7 +38,7 @@ namespace usbguard
   {
   public:
     Device(DeviceManager& manager);
-    ~Device();
+    virtual ~Device();
     Device(const Device& rhs);
     const Device& operator=(const Device& rhs);
 

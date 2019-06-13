@@ -26,7 +26,7 @@
 
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/RuleSet.hpp"
-#include "usbguard/MEMRuleSet.hpp"
+#include "usbguard/MemoryRuleSet.hpp"
 
 #include "FileRuleSet.hpp"
 

@@ -277,7 +277,7 @@ libusbguard_la_SOURCES=\
 	src/Library/public/usbguard/IPCServer.cpp \
 	src/Library/public/usbguard/KeyValueParser.cpp \
 	src/Library/public/usbguard/Logger.cpp \
-	src/Library/public/usbguard/MEMRuleSet.cpp \
+	src/Library/public/usbguard/MemoryRuleSet.cpp \
 	src/Library/public/usbguard/Policy.cpp \
 	src/Library/public/usbguard/Rule.cpp \
 	src/Library/public/usbguard/RuleCondition.cpp \
@@ -300,7 +300,7 @@ pkginclude_HEADERS=\
 	src/Library/public/usbguard/Interface.hpp \
 	src/Library/public/usbguard/KeyValueParser.hpp \
 	src/Library/public/usbguard/Logger.hpp \
-	src/Library/public/usbguard/MEMRuleSet.hpp \
+	src/Library/public/usbguard/MemoryRuleSet.hpp \
 	src/Library/public/usbguard/Policy.hpp \
 	src/Library/public/usbguard/Predicates.hpp \
 	src/Library/public/usbguard/Rule.hpp \

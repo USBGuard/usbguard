@@ -240,7 +240,7 @@ namespace usbguard
     }
 
     const USBDeviceDescriptor* const device_descriptor = \
-      reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
+      reinterpret_cast<const USBDeviceDescriptor*>(descriptor);
 
     if (device_descriptor->idVendor == 0x1d6b /* Linux Foundation */) {
       switch (device_descriptor->idProduct) {
@@ -260,7 +260,7 @@ namespace usbguard
   void UEventDevice::updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* const descriptor)
   {
     USBGUARD_LOG(Trace);
-    USBDeviceDescriptor descriptor_modified = *reinterpret_cast<const USBDeviceDescriptor* const>(descriptor);
+    USBDeviceDescriptor descriptor_modified = *reinterpret_cast<const USBDeviceDescriptor*>(descriptor);
     descriptor_modified.bcdDevice = 0;
     updateHash(&descriptor_modified, sizeof descriptor_modified);
   }
@@ -371,7 +371,7 @@ namespace usbguard
     std::unique_lock<std::mutex> device_lock(device->refDeviceMutex());
     sysfsApplyTarget(device->sysfsDevice(), target);
     device->setTarget(target);
-    return std::move(device);
+    return device;
   }
 
   int UEventDeviceManager::ueventOpen()
@@ -544,7 +544,7 @@ namespace usbguard
     }
 
     const struct ucred* const cmsg_ucred = \
-        reinterpret_cast<const struct ucred* const>(CMSG_DATA(cmsg_header));
+        reinterpret_cast<const struct ucred*>(CMSG_DATA(cmsg_header));
 
     if (cmsg_ucred == nullptr) {
       /* missing ucred -- ignore */

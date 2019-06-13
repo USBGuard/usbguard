@@ -28,13 +28,13 @@
 namespace usbguard
 {
   class Interface;
-  class DLL_PUBLIC MEMRuleSet : public RuleSet
+  class DLL_PUBLIC MemoryRuleSet : public RuleSet
   {
   public:
 
-    MEMRuleSet(Interface* const interface_ptr);
-    MEMRuleSet(const MEMRuleSet& rhs);
-    const MEMRuleSet& operator=(const MEMRuleSet& rhs);
+    MemoryRuleSet(Interface* const interface_ptr);
+    MemoryRuleSet(const MemoryRuleSet& rhs);
+    const MemoryRuleSet& operator=(const MemoryRuleSet& rhs);
 
     void load() override;
     void save() override;

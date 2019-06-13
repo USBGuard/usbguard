@@ -39,7 +39,7 @@
 #include "usbguard/KeyValueParser.hpp"
 #include "usbguard/Logger.hpp"
 #include "usbguard/RuleSet.hpp"
-#include "usbguard/MEMRuleSet.hpp"
+#include "usbguard/MemoryRuleSet.hpp"
 
 #include "RuleSetFactory.hpp"
 

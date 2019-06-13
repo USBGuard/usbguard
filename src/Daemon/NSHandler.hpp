@@ -26,7 +26,7 @@
 
 #include "usbguard/KeyValueParser.hpp"
 #include "usbguard/RuleSet.hpp"
-#include "usbguard/MEMRuleSet.hpp"
+#include "usbguard/MemoryRuleSet.hpp"
 #include "usbguard/Typedefs.hpp"
 
 #ifdef HAVE_LDAP

@@ -28,7 +28,7 @@ namespace usbguard
 
   PolicyGenerator::PolicyGenerator()
   {
-    _ruleset = std::dynamic_pointer_cast<RuleSet>(std::make_shared<MEMRuleSet>(nullptr));
+    _ruleset = std::dynamic_pointer_cast<RuleSet>(std::make_shared<MemoryRuleSet>(nullptr));
     _with_hash = true;
     _hash_only = false;
     _port_specific = false;
