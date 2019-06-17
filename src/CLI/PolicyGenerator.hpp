@@ -17,6 +17,8 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //          Radovan Sroka <rsroka@redhat.com>
 //
+#pragma once
+
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif

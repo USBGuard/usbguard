@@ -49,10 +49,10 @@ namespace usbguard
       std::chrono::steady_clock::time_point tp_last_applied;
     };
 
-    RulePrivate(Rule& p_instance);
-    RulePrivate(Rule& p_instance, const RulePrivate& rhs);
-    const RulePrivate& operator=(const RulePrivate& rhs);
-    ~RulePrivate();
+    RulePrivate();
+    RulePrivate(const RulePrivate& rhs);
+    RulePrivate& operator=(const RulePrivate& rhs) = default;
+    ~RulePrivate() = default;
 
     bool appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive = false) const;
     bool appliesTo(const Rule& rhs, bool parent_insensitive = false) const;
@@ -133,7 +133,6 @@ namespace usbguard
     static Rule fromString(const std::string& rule_string);
 
   private:
-    //Rule& _p_instance;
     MetaData _meta;
     uint32_t _rule_id;
     Rule::Target _target;
