@@ -38,20 +38,20 @@ namespace usbguard
   const uint32_t Rule::ImplicitID = std::numeric_limits<uint32_t>::max() - 1;
 
   Rule::Rule()
-    : d_pointer(usbguard::make_unique<RulePrivate>(*this))
+    : d_pointer(usbguard::make_unique<RulePrivate>())
   {
   }
 
   Rule::~Rule() = default;
 
   Rule::Rule(const Rule& rhs)
-    : d_pointer(usbguard::make_unique<RulePrivate>(*this, *rhs.d_pointer))
+    : d_pointer(usbguard::make_unique<RulePrivate>(*rhs.d_pointer))
   {
   }
 
   const Rule& Rule::operator=(const Rule& rhs)
   {
-    d_pointer.reset(new RulePrivate(*this, *rhs.d_pointer));
+    d_pointer.reset(new RulePrivate(*rhs.d_pointer));
     return *this;
   }
 

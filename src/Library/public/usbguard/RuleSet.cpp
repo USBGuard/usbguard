@@ -104,9 +104,9 @@ namespace usbguard
       bool parent_found = false;
 
       for (auto it = _rules.begin(); it != _rules.end(); ++it) {
-        const Rule& rule = **it;
+        const Rule& existing_rule = **it;
 
-        if (rule.getRuleID() == parent_id) {
+        if (existing_rule.getRuleID() == parent_id) {
           _rules.insert(it+1, rule_ptr);
           parent_found = true;
           break;

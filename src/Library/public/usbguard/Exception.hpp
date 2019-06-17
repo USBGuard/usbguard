@@ -45,12 +45,11 @@ namespace usbguard
     {
     }
 
-    Exception(const Exception& rhs)
-      : _context(rhs._context),
-        _object(rhs._object),
-        _reason(rhs._reason)
-    {
-    }
+    Exception(const Exception& rhs) = default;
+    Exception& operator=(const Exception& rhs) = default;
+
+    Exception(Exception&& rhs) = default;
+    Exception& operator=(Exception&& rhs) = default;
 
     const std::string& context() const noexcept
     {

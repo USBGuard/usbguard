@@ -28,9 +28,8 @@
 
 namespace usbguard
 {
-  RulePrivate::RulePrivate(Rule& p_instance)
-    : //_p_instance(p_instance),
-      _device_id("id"),
+  RulePrivate::RulePrivate()
+    : _device_id("id"),
       _serial("serial"),
       _with_connect_type("with-connect-type"),
       _name("name"),
@@ -41,15 +40,13 @@ namespace usbguard
       _conditions("if"),
       _label("label")
   {
-    (void)p_instance;
     _rule_id = Rule::DefaultID;
     _target = Rule::Target::Invalid;
     _conditions_state = 0;
   }
 
-  RulePrivate::RulePrivate(Rule& p_instance, const RulePrivate& rhs)
-    : //_p_instance(p_instance),
-      _device_id("id"),
+  RulePrivate::RulePrivate(const RulePrivate& rhs)
+    : _device_id("id"),
       _serial("serial"),
       _with_connect_type("with-connect-type"),
       _name("name"),
@@ -60,48 +57,7 @@ namespace usbguard
       _conditions("if"),
       _label("label")
   {
-    (void)p_instance;
     *this = rhs;
-  }
-
-  const RulePrivate& RulePrivate::operator=(const RulePrivate& rhs)
-  {
-    _meta = rhs._meta;
-    _rule_id = rhs._rule_id;
-    _target = rhs._target;
-    _device_id = rhs._device_id;
-    _serial = rhs._serial;
-    _with_connect_type = rhs._with_connect_type;
-    _name = rhs._name;
-    _hash = rhs._hash;
-    _parent_hash = rhs._parent_hash;
-    _via_port = rhs._via_port;
-    _with_interface = rhs._with_interface;
-    _conditions = rhs._conditions;
-    _conditions_state = rhs._conditions_state;
-    _label= rhs._label;
-    return *this;
-#if 0
-
-    /* TODO */
-    try {
-      for (auto const& condition : rhs._conditions) {
-        _conditions.push_back(condition->clone());
-      }
-    }
-    catch (...) {
-      for (auto const& condition : _conditions) {
-        delete condition;
-      }
-
-      throw;
-    }
-
-#endif
-  }
-
-  RulePrivate::~RulePrivate()
-  {
   }
 
   bool RulePrivate::appliesTo(std::shared_ptr<const Rule> rhs, bool parent_insensitive) const
