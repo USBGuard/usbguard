@@ -21,7 +21,6 @@
 #endif
 
 #include "DBusBridge.hpp"
-
 namespace usbguard
 {
   DBusBridge::DBusBridge(GDBusConnection* const gdbus_connection,
@@ -45,13 +44,13 @@ namespace usbguard
     }
 
     try {
-      if (interface == "org.usbguard.Policy") {
+      if (interface == DBUS_POLICY_INTERFACE) {
         handlePolicyMethodCall(method_name, parameters, invocation);
       }
-      else if (interface == "org.usbguard.Devices") {
+      else if (interface == DBUS_DEVICES_INTERFACE) {
         handleDevicesMethodCall(method_name, parameters, invocation);
       }
-      else if (interface == "org.usbguard") {
+      else if (interface == DBUS_ROOT_INTERFACE) {
         handleRootMethodCall(method_name, parameters, invocation);
       }
       else {
@@ -234,7 +233,7 @@ namespace usbguard
   {
     GVariantBuilder* gv_builder_attributes = deviceRuleToAttributes(device_rule);
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-      "/org/usbguard/Devices", "org.usbguard.Devices", "DevicePresenceChanged",
+      DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePresenceChanged",
       g_variant_new("(uuusa{ss})",
         id,
         DeviceManager::eventTypeToInteger(event),
@@ -256,7 +255,7 @@ namespace usbguard
   {
     GVariantBuilder* gv_builder_attributes = deviceRuleToAttributes(device_rule);
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-      "/org/usbguard/Devices", "org.usbguard.Devices", "DevicePolicyChanged",
+      DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePolicyChanged",
       g_variant_new("(uuusua{ss})",
         id,
         Rule::targetToInteger(target_old),
@@ -276,7 +275,7 @@ namespace usbguard
     const std::string& value_new)
   {
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-      "/org/usbguard", "org.usbguard", "PropertyParameterChanged",
+      DBUS_ROOT_PATH, DBUS_ROOT_INTERFACE, "PropertyParameterChanged",
       g_variant_new("(sss)",
         name.c_str(),
         value_old.c_str(),
@@ -289,7 +288,7 @@ namespace usbguard
     const std::string& reason)
   {
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
-      "/org/usbguard", "org.usbguard", "ExceptionMessage",
+      DBUS_ROOT_PATH, DBUS_ROOT_INTERFACE, "ExceptionMessage",
       g_variant_new("(sss)",
         context.c_str(),
         object.c_str(),

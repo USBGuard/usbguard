@@ -132,21 +132,21 @@ on_bus_acquired (GDBusConnection* connection,
   (void)name;
   (void)user_data;
   auto usbguard_rid = g_dbus_connection_register_object(connection,
-      "/org/usbguard",
+      DBUS_ROOT_PATH,
       introspection_data->interfaces[0],
       &usbguard_interface_vtable,
       /*user_data=*/dbus_bridge,
       /*user_data_free_func=*/nullptr,
       /*GError=*/nullptr);
   auto policy_rid = g_dbus_connection_register_object(connection,
-      "/org/usbguard/Policy",
+      DBUS_POLICY_PATH,
       introspection_data->interfaces[1],
       &policy_interface_vtable,
       /*user_data=*/dbus_bridge,
       /*user_data_free_func=*/nullptr,
       /*GError=*/nullptr);
   auto devices_rid = g_dbus_connection_register_object(connection,
-      "/org/usbguard/Devices",
+      DBUS_DEVICES_PATH,
       introspection_data->interfaces[2],
       &devices_interface_vtable,
       /*user_data=*/dbus_bridge,
@@ -279,7 +279,7 @@ main (int argc, char* argv[])
   /* Try to take ownership of the bus */
   auto owner_id = g_bus_own_name (use_system_bus ?
       G_BUS_TYPE_SYSTEM : G_BUS_TYPE_SESSION,
-      "org.usbguard",
+      DBUS_SERVICE_NAME,
       G_BUS_NAME_OWNER_FLAGS_NONE,
       on_bus_acquired,
       on_name_acquired,
@@ -298,7 +298,7 @@ main (int argc, char* argv[])
     ret = global_ret;
   }
   else {
-    std::cerr << "Failed to take ownership of the org.usbguard bus name." << std::endl;
+    std::cerr << "Failed to take ownership of the " << DBUS_SERVICE_NAME << " bus name." << std::endl;
     ret = EXIT_FAILURE;
   }
 

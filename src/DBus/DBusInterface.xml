@@ -4,9 +4,9 @@
   "https://specifications.freedesktop.org/dbus/1.0/introspect.dtd">
 <node>
   <!--
-    org.usbguard
+    org.usbguard1
     -->
-  <interface name="org.usbguard">
+  <interface name="org.usbguard1">
     <!--
       getParameter:
        @name:
@@ -56,11 +56,11 @@
     </signal>
   </interface>
   <!--
-   org.usbguard.Policy:
+   org.usbguard.Policy1:
 
    The Policy interface allows to modify the USBGuard authorization policy.
   -->
-  <interface name="org.usbguard.Policy">
+  <interface name="org.usbguard.Policy1">
     <!--
       listRules:
        @query: A query, in the rule language syntax, for matching rules.
@@ -104,7 +104,7 @@
     </method>
   </interface>
   <!--
-    org.usbguard.Devices:
+    org.usbguard.Devices1:
 
     The org.usbguard.Devices interface provides access to USB
     devices via the USBGuard daemon. It can be used to modify
@@ -112,7 +112,7 @@
     for device events (insertion, removal, (de)authorization,
     ...)
    -->
-  <interface name="org.usbguard.Devices">
+  <interface name="org.usbguard.Devices1">
     <!--
       listDevices:
        @query: A query, in the rule language syntax, for matching devices.

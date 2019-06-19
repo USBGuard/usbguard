@@ -28,6 +28,14 @@
 #include <gio/gio.h>
 #pragma clang diagnostic pop
 
+#define DBUS_SERVICE_NAME      "org.usbguard1"
+#define DBUS_ROOT_INTERFACE    "org.usbguard1"
+#define DBUS_ROOT_PATH         "/org/usbguard1"
+#define DBUS_POLICY_INTERFACE  "org.usbguard.Policy1"
+#define DBUS_POLICY_PATH       "/org/usbguard1/Policy"
+#define DBUS_DEVICES_INTERFACE "org.usbguard.Devices1"
+#define DBUS_DEVICES_PATH      "/org/usbguard1/Devices"
+
 namespace usbguard
 {
   class DBusBridge : public IPCClient
