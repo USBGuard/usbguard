@@ -446,18 +446,18 @@ endif
 
 BUILT_SOURCES+=\
 	src/DBus/DBusInterface.xml.cstr \
-	src/DBus/org.usbguard.service \
+	src/DBus/org.usbguard1.service \
 	src/DBus/usbguard-dbus.service
 
 EXTRA_DIST+=\
-	src/DBus/org.usbguard.conf \
-	src/DBus/org.usbguard.service.in \
+	src/DBus/org.usbguard1.conf \
+	src/DBus/org.usbguard1.service.in \
 	src/DBus/usbguard-dbus.service.in \
-	src/DBus/org.usbguard.policy \
+	src/DBus/org.usbguard1.policy \
 	src/DBus/DBusInterface.xml
 
 CLEANFILES+=\
-	$(top_builddir)/src/DBus/org.usbguard.service \
+	$(top_builddir)/src/DBus/org.usbguard1.service \
 	$(top_builddir)/src/DBus/usbguard-dbus.service \
 	$(top_builddir)/src/DBus/DBusInterface.xml.cstr
 
@@ -486,16 +486,16 @@ usbguard_dbus_LDADD=\
 %.service: %.service.in
 	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
 
-install-data-dbus: $(top_builddir)/src/DBus/org.usbguard.service install-polkit-policy install-systemd-dbus-service
+install-data-dbus: $(top_builddir)/src/DBus/org.usbguard1.service install-polkit-policy install-systemd-dbus-service
 	$(MKDIR_P) $(DESTDIR)$(DBUS_SERVICES_DIR) && \
-	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard.service $(DESTDIR)$(DBUS_SERVICES_DIR)
+	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard1.service $(DESTDIR)$(DBUS_SERVICES_DIR)
 	$(MKDIR_P) $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
-	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
+	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard1.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
 uninstall-data-dbus: uninstall-polkit-policy uninstall-systemd-dbus-service
-	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard.service
+	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard1.service
 	rmdir $(DESTDIR)$(DBUS_SERVICES_DIR)
-	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard.conf
+	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard1.conf
 	rmdir $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
 dbus-docs: $(top_srcdir)/src/DBus/DBusInterface.xml
@@ -518,10 +518,10 @@ dbus-docs: $(top_srcdir)/src/DBus/DBusInterface.xml
 if POLICYKIT_ENABLED
 install-polkit-policy:
 	$(MKDIR_P) $(DESTDIR)$(POLKIT_POLICY_DIR) && \
-	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard.policy $(DESTDIR)$(POLKIT_POLICY_DIR)
+	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard1.policy $(DESTDIR)$(POLKIT_POLICY_DIR)
 
 uninstall-polkit-policy:
-	rm -f $(DESTDIR)$(POLKIT_POLICY_DIR)/org.usbguard.policy
+	rm -f $(DESTDIR)$(POLKIT_POLICY_DIR)/org.usbguard1.policy
 	rmdir $(DESTDIR)$(POLKIT_POLICY_DIR)
 
 else

@@ -5,7 +5,7 @@ Documentation=man:usbguard-dbus(8)
 
 [Service]
 Type=dbus
-BusName=org.usbguard
+BusName=org.usbguard1
 ExecStart=%{sbindir}%/usbguard-dbus --system
 Restart=on-failure
 

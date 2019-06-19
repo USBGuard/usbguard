@@ -6,7 +6,7 @@
   <vendor>The USBGuard Project</vendor>
   <vendor_url>https://github.org/USBGuard/usbguard</vendor_url>
 
-  <action id="org.usbguard.Policy.listRules">
+  <action id="org.usbguard.Policy1.listRules">
     <description>List the rule set (policy) used by the USBGuard daemon</description>
     <message>Prevents from listing the USBGuard policy</message>
     <defaults>
@@ -15,7 +15,7 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Policy.appendRule">
+  <action id="org.usbguard.Policy1.appendRule">
     <description>Append a new rule to the policy</description>
     <message>Prevents from appending rules to the USBGuard policy</message>
     <defaults>
@@ -24,7 +24,7 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Policy.removeRule">
+  <action id="org.usbguard.Policy1.removeRule">
     <description>Remove a rule from the policy</description>
     <message>Prevents removing rules from the USBGuard policy</message>
     <defaults>
@@ -33,8 +33,8 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Devices.listDevices">
-    <description>List all USB devices recognized by the USBGuard deaemon</description>
+  <action id="org.usbguard.Devices1.listDevices">
+    <description>List all USB devices recognized by the USBGuard daemon</description>
     <message>Prevents from listing USB devices recognized by the USBGuard daemon</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
@@ -42,7 +42,7 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Devices.allowDevice">
+  <action id="org.usbguard.Devices1.allowDevice">
     <description>Authorize a USB device via the USBGuard daemon to interact with the system</description>
     <message>Prevents from authorizing USB devices via the USBGuard daemon</message>
     <defaults>
@@ -51,7 +51,7 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Devices.blockDevice">
+  <action id="org.usbguard.Devices1.blockDevice">
     <description>Deauthorize a USB device via the USBGuard daemon</description>
     <message>Prevents from deauthorizing USB devices via the USBGuard daemon</message>
     <defaults>
@@ -60,7 +60,7 @@
     </defaults>
   </action>
 
-  <action id="org.usbguard.Devices.rejectDevice">
+  <action id="org.usbguard.Devices1.rejectDevice">
     <description>Remove a USB device via the USBGuard daemon</description>
     <message>Prevents from removing USB devices via the USBGuard daemon</message>
     <defaults>
