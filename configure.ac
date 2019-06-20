@@ -323,89 +323,6 @@ AC_LANG_POP
 CPPFLAGS=$SAVE_CPPFLAGS
 
 #
-# Qt GUI
-#
-AC_ARG_WITH([gui-qt],
-  AS_HELP_STRING([--with-gui-qt], [Build the Qt GUI components]),
-  [with_gui_qt=$withval], [with_gui_qt=no])
-
-#
-# Check for Qt 5.x
-#
-PKG_CHECK_MODULES([qt5], [Qt5Gui >= 5.0 Qt5Widgets >= 5.0 Qt5Svg >= 5.0],
-  [
-    export QT_SELECT=5
-    AC_CHECK_PROGS(QT5MOC, [moc-qt5 moc])
-    AC_CHECK_PROGS(QT5UIC, [uic-qt5 uic])
-    AC_CHECK_PROGS(QT5RCC, [rcc-qt5 rcc])
-    AC_CHECK_PROGS(QT5LRELEASE, [lrelease-qt5 lrelease])
-    if test -z "$QT5MOC" || test -z "$QT5UIC" || test -z "$QT5RCC" || test -z "$QT5LRELEASE"; then
-      qt5_available=no
-    else
-      qt5_available=yes
-    fi
-  ],
-  [
-    qt5_available=no
-  ])
-#
-# Check for Qt 4.x
-#
-PKG_CHECK_MODULES([qt4], [QtGui >= 4.0 QtSvg >= 4.0],
-  [
-    export QT_SELECT=4
-    AC_CHECK_PROGS(QT4MOC, [moc-qt4 moc])
-    AC_CHECK_PROGS(QT4UIC, [uic-qt4 uic])
-    AC_CHECK_PROGS(QT4RCC, [rcc-qt4 rcc])
-    AC_CHECK_PROGS(QT4LRELEASE, [lrelease-qt4 lrelease])
-    if test -z "$QT4MOC" || test -z "$QT4UIC" || test -z "$QT4RCC" || test -z "$QT4LRELEASE"; then
-      qt4_available=no
-    else
-      qt4_available=yes
-    fi
-  ],
-  [
-    qt4_available=no
-  ])
-
-case "$with_gui_qt" in
-  qt5)
-    if test "x$qt5_available" = xno; then
-      AC_MSG_ERROR([Requested to use Qt 5.x to build Qt GUI components but Qt 5.x development files are not available!]);
-    fi
-    AC_DEFINE([HAVE_QT5], [1], [Qt 5.x development files available])
-    AC_SUBST(QTMOC, $QT5MOC)
-    AC_SUBST(QTUIC, $QT5UIC)
-    AC_SUBST(QTRCC, $QT5RCC)
-    AC_SUBST(QTLRELEASE, $QT5LRELEASE)
-    AC_SUBST(qt_CFLAGS, $qt5_CFLAGS)
-    AC_SUBST(qt_LIBS, $qt5_LIBS)
-    qt_summary="Qt 5.x; system-wide; $qt_CFLAGS $qt_LIBS"
-    build_gui_qt=yes
-  ;;
-  qt4)
-    if test "x$qt4_available" = xno; then
-      AC_MSG_ERROR([Requested to use Qt 5.x to build Qt GUI components but Qt 5.x development files are not available!]);
-    fi
-    AC_DEFINE([HAVE_QT4], [1], [Qt 4.x development files available])
-    AC_SUBST(QTMOC, $QT4MOC)
-    AC_SUBST(QTUIC, $QT4UIC)
-    AC_SUBST(QTRCC, $QT4RCC)
-    AC_SUBST(QTLRELEASE, $QT4LRELEASE)
-    AC_SUBST(qt_CFLAGS, $qt4_CFLAGS)
-    AC_SUBST(qt_LIBS, $qt4_LIBS)
-    qt_summary="Qt 4.x; system-wide; $qt_CFLAGS $qt_LIBS"
-    build_gui_qt=yes
-  ;;
-  no)
-    qt_summary="Building without Qt GUI"
-    build_gui_qt=no
-  ;;
-  *)
-   AC_MSG_ERROR([Unknown --with-gui-qt selector value: $with_gui_qt; recognized selectors are: qt4, qt5, no])
-esac
-
-#
 # GLib D-Bus
 #
 AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
@@ -729,7 +646,6 @@ esac
 AC_SUBST([BASH_COMPLETION_DIR], $bash_completion_dir)
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
-AM_CONDITIONAL([GUI_QT_ENABLED], [test "x$build_gui_qt" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
 AM_CONDITIONAL([DOCS_ENABLED], [! test -z "$A2X" ])
 AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
@@ -758,8 +674,7 @@ AC_DEFINE_UNQUOTED([USBGUARD_DAEMON_CONF_PATH], ["$sysconfdir/usbguard/usbguard-
 AC_CONFIG_FILES([Makefile
                  libusbguard.pc
                  src/Tests/Fuzzers/Makefile
-                 src/Tests/Makefile
-                 src/GUI.Qt/usbguard-applet-qt.desktop])
+                 src/Tests/Makefile])
 AC_OUTPUT
 
 echo
@@ -779,7 +694,6 @@ echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"
 echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 1.3.1: $have_pegtl_lte_131"
-echo "         Qt: $qt_summary"
 echo " GLib D-Bus: $dbus_summary"
 echo "   umockdev: $umockdev_summary"
 echo

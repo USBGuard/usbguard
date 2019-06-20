@@ -58,8 +58,7 @@ That will allow them to manipulate the authorization state of USB devices and mo
 == SEE ALSO
 link:usbguard-daemon.conf.5.adoc#name[usbguard-daemon.conf(5)],
 link:usbguard-rules.conf.5.adoc#name[usbguard-rules.conf(5)],
-link:usbguard.1.adoc#name[usbguard(1)],
-link:usbguard-applet-qt.1.adoc#name[usbguard-applet-qt(1)]
+link:usbguard.1.adoc#name[usbguard(1)]
 
 
 include::footer.adoc[]

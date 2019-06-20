@@ -27,8 +27,7 @@ The usbguard-dbus component exposes a D-Bus interface to a running instance of *
 
 
 == SEE ALSO
-link:usbguard.1.adoc#name[usbguard(1)],
-link:usbguard-applet-qt.1.adoc#name[usbguard-applet-qt(1)]
+link:usbguard.1.adoc#name[usbguard(1)]
 
 
 include::footer.adoc[]
