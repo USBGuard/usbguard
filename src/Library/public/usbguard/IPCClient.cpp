@@ -72,9 +72,9 @@ namespace usbguard
     d_pointer->removeRule(id);
   }
 
-  const std::vector<Rule> IPCClient::listRules(const std::string& query)
+  const std::vector<Rule> IPCClient::listRules(const std::string& label)
   {
-    return d_pointer->listRules(query);
+    return d_pointer->listRules(label);
   }
 
   uint32_t IPCClient::applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent)

@@ -718,13 +718,13 @@ namespace usbguard
     }
   }
 
-  const std::vector<Rule> Daemon::listRules(const std::string& query)
+  const std::vector<Rule> Daemon::listRules(const std::string& label)
   {
-    USBGUARD_LOG(Trace) << "entry: query=" << query;
+    USBGUARD_LOG(Trace) << "entry: label=" << label;
     std::vector<Rule> rules;
 
     for(auto const& rule : _policy.getRuleSet()->getRules()) {
-      if (query.empty() || rule->getLabel() == query) {
+      if (label.empty() || rule->getLabel() == label) {
         rules.push_back(*rule);
       }
     }

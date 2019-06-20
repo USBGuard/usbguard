@@ -397,11 +397,11 @@ namespace usbguard
     auto message_in = qbIPCSendRecvMessage(message_out);
   }
 
-  const std::vector<Rule> IPCClientPrivate::listRules(const std::string& query)
+  const std::vector<Rule> IPCClientPrivate::listRules(const std::string& label)
   {
     IPC::listRules message_out;
     std::vector<Rule> rules;
-    message_out.mutable_request()->set_query(query);
+    message_out.mutable_request()->set_label(label);
     auto message_in = qbIPCSendRecvMessage(message_out);
 
     for (auto rule_message : message_in->response().rules()) {

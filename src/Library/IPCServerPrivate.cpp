@@ -888,11 +888,11 @@ namespace usbguard
      * Get request field values.
      */
     const IPC::listRules* const message_in = static_cast<const IPC::listRules*>(request.get());
-    const std::string query = message_in->request().query();
+    const std::string label = message_in->request().label();
     /*
      * Execute the method.
      */
-    auto rules = _p_instance.listRules(query);
+    auto rules = _p_instance.listRules(label);
     /*
      * Construct the response.
      */
