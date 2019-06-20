@@ -59,18 +59,6 @@ matrix:
         apt:
           packages: ['libgcrypt-dev']
       env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          packages: ['qtbase5-dev', 'qt5-default', 'qtbase5-dev-tools', 'libqt5svg5-dev', 'qttools5-dev-tools']
-      env: CONFIGURE_ARGS=--with-gui-qt=qt5
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          packages: ['libqt4-dev', 'qt4-default', 'qt4-dev-tools', 'libqt4-svg']
-      env: CONFIGURE_ARGS=--with-gui-qt=qt4
 before_install:
 - sudo add-apt-repository -y ppa:chris-lea/libsodium
 - sudo apt-get -qq update
