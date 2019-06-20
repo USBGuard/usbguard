@@ -63,14 +63,14 @@
   <interface name="org.usbguard.Policy1">
     <!--
       listRules:
-       @query: A query, in the rule language syntax, for matching rules.
+       @label: A label for matching rules.
        @ruleset: An array of (rule_id, rule) tuples.
 
       List the current rule set (policy) used by the USBGuard daemon. The
       rules are returned in the same order as they are evaluated.
      -->
     <method name="listRules">
-      <arg name="query" direction="in" type="s"/>
+      <arg name="label" direction="in" type="s"/>
       <arg name="ruleset" direction="out" type="a(us)"/>
     </method>
 

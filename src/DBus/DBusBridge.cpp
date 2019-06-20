@@ -104,10 +104,10 @@ namespace usbguard
   void DBusBridge::handlePolicyMethodCall(const std::string& method_name, GVariant* parameters, GDBusMethodInvocation* invocation)
   {
     if (method_name == "listRules") {
-      const char* query_cstr = nullptr;
-      g_variant_get(parameters, "(&s)", &query_cstr);
-      std::string query(query_cstr);
-      auto rules = listRules(query);
+      const char* label_cstr = nullptr;
+      g_variant_get(parameters, "(&s)", &label_cstr);
+      std::string label(label_cstr);
+      auto rules = listRules(label);
 
       if (rules.size() > 0) {
         auto gvbuilder = g_variant_builder_new(G_VARIANT_TYPE_ARRAY);
