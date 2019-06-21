@@ -17,7 +17,7 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-# Test whether the binaries are executable as expected (no linker errors, etc.)
+# Test the authorization of devices using umockdev.
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 

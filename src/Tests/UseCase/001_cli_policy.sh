@@ -18,7 +18,7 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-# Test whether the binaries are executable as expected (no linker errors, etc.)
+# Test the generation of policy based on umockdev.
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 

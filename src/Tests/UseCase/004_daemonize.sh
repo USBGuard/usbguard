@@ -18,7 +18,7 @@
 #
 # Authors: Jiri Vymazal <jvymazal@redhat.com>
 #
-# Test whether the binaries are executable as expected (no linker errors, etc.)
+# Test the execution of the daemon with an empty configuration.
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 

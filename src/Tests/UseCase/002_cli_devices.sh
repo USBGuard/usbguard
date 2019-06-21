@@ -18,7 +18,9 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-# Test whether the binaries are executable as expected (no linker errors, etc.)
+# Test the authorization of devices using the kernel g_mass_storage and
+# dummy_hcd modules. This test must be run by a user that can elevate
+# their privileges using sudo.
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 
