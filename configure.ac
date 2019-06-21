@@ -255,7 +255,8 @@ libcap_ng_summary="not found"]
 
 PKG_CHECK_MODULES([umockdev], [umockdev-1.0 >= 0.8.0],
 [AC_DEFINE([HAVE_UMOCKDEV], [1], [umockdev API usable])
-umockdev_summary="system-wide; $umockdev_LIBS"],
+umockdev_summary="system-wide; $umockdev_LIBS"
+umockdev_available=yes],
 [AC_MSG_NOTICE([umockdev development files not found! umockdev device manager won't be available])
 umockdev_summary="not found"]
 )
@@ -540,6 +541,12 @@ fi
 AC_ARG_ENABLE([full-test-suite],
               [AS_HELP_STRING([--enable-full-test-suite], [Run the full test suite (default=no)])],
               [full_test_suite=$enableval], [full_test_suite=no])
+
+if test "x$full_test_suite" = xyes; then
+  if test "x$umockdev_available" != xyes; then
+    AC_MSG_ERROR([umockdev is required to run the full test suite.])
+  fi
+fi
 
 # Checks for header files.
 AC_LANG_PUSH([C++])
