@@ -21,6 +21,9 @@
 #
 source "${USBGUARD_TESTLIB_BASH}" || exit 129
 
+# Skip if udevmock-wrapper is not available
+command -v umockdev-wrapper || exit 77
+
 #set -x
 
 # TODO? Move to testlib
