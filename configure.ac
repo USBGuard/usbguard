@@ -10,7 +10,7 @@ AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([subdir-objects foreign tar-pax])
 
 # If automake supports "silent rules", enable them by default
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 #
 # Compiler flags
