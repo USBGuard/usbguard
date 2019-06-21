@@ -91,7 +91,7 @@ before_script:
 - CXX=${COMPILER_CXX:=$CXX} CC=${COMPILER_C:=$CC} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap $CONFIGURE_ARGS
 script:
 - test $TRAVIS_BRANCH != coverity_scan || exit 0
-- if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; make check; fi
+- if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; VERBOSE=1 make check; fi
 after_success:
 - test "x$COVERAGE" = xyes -a "x$CXX" = "xg++" && lcov --compat-libtool --directory . --capture --output-file coverage.info && coveralls-lcov coverage.info
 addons:
