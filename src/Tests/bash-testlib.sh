@@ -19,7 +19,7 @@
 #
 
 # uncomment for debugging
-set -x
+# set -x
 
 COMMAND_QUEUE=()
 COMMAND_JOBID=()
@@ -66,9 +66,11 @@ function schedule()
 #
 function handle_SIGCHLD()
 {
- for j in $(jobs -n); do
-   echo "Job: $j"
- done
+ # uncomment for debugging
+ #for j in $(jobs -n); do
+ #  echo "Job: $j"
+ #done
+ :
 }
 
 function execute()
