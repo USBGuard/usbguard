@@ -27,7 +27,6 @@ AM_CPPFLAGS=\
 
 EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/custom.supp \
-	$(top_srcdir)/src/Tests/test-driver \
 	$(top_srcdir)/src/Tests/bash-testlib.sh \
 	$(top_srcdir)/src/ThirdParty/Catch \
 	$(top_srcdir)/src/Tests/USB/test-descriptor-parser.sh \
@@ -59,9 +58,6 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/LDAP/UseCase/ldap-test-5.sh \
 	$(top_srcdir)/src/Tests/LDAP/ldap.sh \
 	$(top_srcdir)/src/Tests/LDAP/nsswitch.sh
-
-LOG_DRIVER=\
-	$(top_srcdir)/src/Tests/test-driver
 
 TESTS_ENVIRONMENT=\
 	builddir=$(top_builddir) \
