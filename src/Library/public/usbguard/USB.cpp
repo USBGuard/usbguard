@@ -338,7 +338,7 @@ namespace usbguard
         return;
 
       default:
-        throw Exception("USB descriptor parser", "device descriptor", "unexpected descriptor size");
+        throw Exception("USB descriptor parser", "device descriptor", "unexpected descriptor size: " + std::to_string(size));
       }
 
       break;
@@ -350,7 +350,7 @@ namespace usbguard
         return;
 
       default:
-        throw Exception("USB descriptor parser", "configuration descriptor", "unexpected descriptor size");
+        throw Exception("USB descriptor parser", "configuration descriptor", "unexpected descriptor size: " + std::to_string(size));
       }
 
       break;
@@ -362,7 +362,7 @@ namespace usbguard
         return;
 
       default:
-        throw Exception("USB descriptor parser", "interface descriptor", "unexpected descriptor size");
+        throw Exception("USB descriptor parser", "interface descriptor", "unexpected descriptor size: " + std::to_string(size));
       }
 
       break;
@@ -378,7 +378,7 @@ namespace usbguard
         return;
 
       default:
-        throw Exception("USB descriptor parser", "endpoint descriptor", "unexpected descriptor size");
+        throw Exception("USB descriptor parser", "endpoint descriptor", "unexpected descriptor size: " + std::to_string(size));
       }
 
       break;
