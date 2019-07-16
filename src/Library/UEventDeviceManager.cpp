@@ -651,6 +651,9 @@ namespace usbguard
           enumeration_notify = true;
         }
       }
+      else if (action == "bind" || action == "unbind") {
+        USBGUARD_LOG(Debug) << action << "=" << sysfs_devpath;
+      }
       else {
         USBGUARD_LOG(Warning) << "Ignoring unknown UEvent action: sysfs_devpath=" << sysfs_devpath
           << " action=" << action;
