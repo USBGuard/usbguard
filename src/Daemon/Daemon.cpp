@@ -117,7 +117,7 @@ namespace usbguard
     }
     USBGUARD_SYSCALL_THROW("Daemon initialization",
       (errno = pthread_sigmask(SIG_BLOCK, &signal_set, nullptr)) != 0);
-    _device_manager_backend = "udev";
+    _device_manager_backend = "uevent";
     _implicit_policy_target = Rule::Target::Block;
     _present_device_policy_method = DevicePolicyMethod::ApplyPolicy;
     _present_controller_policy_method = DevicePolicyMethod::Keep;
