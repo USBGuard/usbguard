@@ -43,6 +43,15 @@ The policy and the authorization state of USB devices can be modified during run
 *-c* 'path'::
     Load configuration from a file at 'path' (default: '/etc/usbguard/usbguard-daemon.conf').
 
+*-P*::
+    Disable permissions check on conf and policy files (default: '/etc/usbguard/usbguard-daemon.conf').
+
+*-C*::
+    Drop capabilities to limit privileges of the process.
+
+*-W*::
+    Use a seccomp whitelist to limit available syscalls to the process.
+
 *-h*::
     Show the help/usage screen.
 
