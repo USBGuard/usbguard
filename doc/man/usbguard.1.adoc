@@ -13,11 +13,11 @@ usbguard [OPTIONS] <subcommand> [SUBCOMMAND-OPTIONS] ...
 
 usbguard list-devices
 
-usbguard allow-device 'id'
+usbguard allow-device 'id' | 'rule'
 
-usbguard block-device 'id'
+usbguard block-device 'id' | 'rule'
 
-usbguard reject-device 'id'
+usbguard reject-device 'id' | 'rule'
 
 usbguard list-rules
 
@@ -58,8 +58,8 @@ Available options:
     Show help.
 
 
-=== *allow-device* ['OPTIONS'] 'id'
-Authorize a device identified by the device 'id' to interact with the system.
+=== *allow-device* ['OPTIONS'] <'id' | 'rule'>
+Authorize a device identified by either the device 'id' or a specific 'rule' to interact with the system. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
 
@@ -71,8 +71,8 @@ Available options:
     Show help.
 
 
-=== *block-device* ['OPTIONS'] 'id'
-Deauthorize a device identified by the device 'id'.
+=== *block-device* ['OPTIONS'] <'id' | 'rule'>
+Deauthorize a device identified by either the device 'id' or a specific 'rule'. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
 
@@ -84,8 +84,8 @@ Available options:
     Show help.
 
 
-=== *reject-device* ['OPTIONS'] 'id'
-Deauthorize and remove a device identified by the device 'id'.
+=== *reject-device* ['OPTIONS'] <'id' | 'rule'>
+Deauthorize and remove a device identified by either the device 'id' or a specific 'rule'. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
 
@@ -247,6 +247,10 @@ Available options:
 Generating an initial policy:
 
 include::example-initial-policy.adoc[]
+
+Allow device(s):
+
+include::example-allow-device.adoc[]
 
 
 == SEE ALSO

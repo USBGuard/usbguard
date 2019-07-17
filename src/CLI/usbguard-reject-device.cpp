@@ -22,6 +22,8 @@
 
 #include "usbguard.hpp"
 #include "usbguard-reject-device.hpp"
+#include "usbguard/RuleParser.hpp"
+#include "Common/Utility.hpp"
 
 #include "usbguard/IPCClient.hpp"
 
@@ -39,7 +41,7 @@ namespace usbguard
 
   static void showHelp(std::ostream& stream)
   {
-    stream << " Usage: " << usbguard_arg0 << " reject-device [OPTIONS] <device-id>" << std::endl;
+    stream << " Usage: " << usbguard_arg0 << " reject-device [OPTIONS] (<device-id> | <rule>)" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific reject" << std::endl;
@@ -74,15 +76,39 @@ namespace usbguard
 
     argc -= optind;
     argv += optind;
+    usbguard::IPCClient ipc(/*connected=*/true);
 
-    if (argc != 1) {
+    if (argc == 0) {
       showHelp(std::cerr);
       return EXIT_FAILURE;
     }
+    else if (argc == 1) { /* Reject device by ID */
+      id = std::stoul(argv[0]);
+      ipc.applyDevicePolicy(id, Rule::Target::Reject, permanent);
+    }
+    else { /* Reject device by Rule */
+      //Create a string containing each argument(rule)
+      std::vector<std::string> arguments(argv, argv + argc);
+      std::string rule_string = joinElements(arguments.begin(), arguments.end());
+      usbguard::Rule rule;
 
-    id = std::stoul(argv[0]);
-    usbguard::IPCClient ipc(/*connected=*/true);
-    ipc.applyDevicePolicy(id, Rule::Target::Reject, permanent);
+      try {
+        rule = Rule::fromString(rule_string);
+      }
+      catch (const usbguard::RuleParserError& ex) {
+        std::cerr << "ERROR: " << ex.what() << std::endl;
+        showHelp(std::cerr);
+        return EXIT_FAILURE;
+      }
+
+      for (auto rule_device : ipc.listDevices(argv[0])) {
+        if (rule.appliesTo(rule_device)) {
+          id = rule_device.getRuleID();
+          ipc.applyDevicePolicy(id, Rule::Target::Reject, permanent);
+        }
+      }
+    }
+
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */

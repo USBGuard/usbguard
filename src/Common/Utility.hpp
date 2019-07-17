@@ -294,6 +294,24 @@ namespace usbguard
     int _fd{-1};
   };
 
+
+  template<typename T>
+  std::string joinElements(T begin, T end, const std::string& separator = " ")
+  {
+    std::ostringstream ss;
+
+    if (begin != end) {
+      ss << *(begin++);
+    }
+
+    while (begin != end) {
+      ss << separator << *(begin++);
+    }
+
+    return ss.str();
+  }
+
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
