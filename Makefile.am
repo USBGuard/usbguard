@@ -434,10 +434,20 @@ usbguard_rule_parser_LDADD=\
 	$(top_builddir)/libusbguard.la
 
 #
-# DBus Bridge
+# DBus
 #
 if DBUS_ENABLED
-sbin_PROGRAMS+= usbguard-dbus
+libusbguard_la_SOURCES+= \
+	src/Library/DBusConstants.hpp \
+	src/Library/DBusIPCServerPrivate.hpp \
+	src/Library/DBusIPCServerPrivate.cpp
+
+libusbguard_la_CPPFLAGS+=\
+	-I$(top_builddir)/src/DBus \
+	@dbus_CFLAGS@
+
+libusbguard_la_LIBADD+=\
+	@dbus_LIBS@
 
 if DOCS_ENABLED
 man8_MANS+=\
@@ -445,56 +455,32 @@ man8_MANS+=\
 endif
 
 BUILT_SOURCES+=\
-	src/DBus/DBusInterface.xml.cstr \
-	src/DBus/org.usbguard1.service \
-	src/DBus/usbguard-dbus.service
+	src/DBus/DBusInterface.xml.cstr
 
 EXTRA_DIST+=\
 	src/DBus/org.usbguard1.conf \
-	src/DBus/org.usbguard1.service.in \
-	src/DBus/usbguard-dbus.service.in \
 	src/DBus/org.usbguard1.policy \
 	src/DBus/DBusInterface.xml
 
 CLEANFILES+=\
-	$(top_builddir)/src/DBus/org.usbguard1.service \
-	$(top_builddir)/src/DBus/usbguard-dbus.service \
 	$(top_builddir)/src/DBus/DBusInterface.xml.cstr
-
-usbguard_dbus_SOURCES=\
-	src/DBus/gdbus-server.cpp \
-	src/DBus/DBusBridge.cpp \
-	src/DBus/DBusBridge.hpp
-
-usbguard_dbus_CPPFLAGS=\
-	-fPIE \
-	$(AM_CPPFLAGS) \
-	-I$(top_builddir)/src/DBus \
-	@dbus_CFLAGS@
-
-usbguard_dbus_LDADD=\
-	$(top_builddir)/libusbguard.la \
-	@dbus_LIBS@
 
 %.xml:
 	xmllint "$(top_srcdir)/$@" > /dev/null
 
 %.xml.cstr: %.xml
+	$(MKDIR_P) $(dir $@)
 	XMLLINT_INDENT="" xmllint --noblanks --format "$<" |\
 	  sed -n -e '/<!--/,/-->/ d; s|\"|\\"|g; s|.*|"&"|; p' > "$(top_builddir)/$@"
 
 %.service: %.service.in
 	sed -e "s|%{sbindir}%|$(sbindir)|" "$<" > "$(top_builddir)/$@"
 
-install-data-dbus: $(top_builddir)/src/DBus/org.usbguard1.service install-polkit-policy install-systemd-dbus-service
-	$(MKDIR_P) $(DESTDIR)$(DBUS_SERVICES_DIR) && \
-	  $(INSTALL_DATA) $(top_builddir)/src/DBus/org.usbguard1.service $(DESTDIR)$(DBUS_SERVICES_DIR)
+install-data-dbus: install-polkit-policy
 	$(MKDIR_P) $(DESTDIR)$(DBUS_BUSCONFIG_DIR) && \
 	  $(INSTALL_DATA) $(top_srcdir)/src/DBus/org.usbguard1.conf $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
-uninstall-data-dbus: uninstall-polkit-policy uninstall-systemd-dbus-service
-	rm -f $(DESTDIR)$(DBUS_SERVICES_DIR)/org.usbguard1.service
-	rmdir $(DESTDIR)$(DBUS_SERVICES_DIR)
+uninstall-data-dbus: uninstall-polkit-policy
 	rm -f $(DESTDIR)$(DBUS_BUSCONFIG_DIR)/org.usbguard1.conf
 	rmdir $(DESTDIR)$(DBUS_BUSCONFIG_DIR)
 
@@ -527,21 +513,7 @@ uninstall-polkit-policy:
 else
 install-polkit-policy:
 uninstall-polkit-policy:
-endif
-
-if SYSTEMD_SUPPORT_ENABLED
-install-systemd-dbus-service: $(top_builddir)/src/DBus/usbguard-dbus.service
-	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR) && \
-	  $(INSTALL_DATA) $(top_builddir)/src/DBus/usbguard-dbus.service $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-
-uninstall-systemd-dbus-service:
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard-dbus.service
-	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-
-else
-install-systemd-dbus-service:
-uninstall-systemd-dbus-service:
-endif
+endif #POLICYKIT_ENABLED
 else
 install-data-dbus:
 uninstall-data-dbus:

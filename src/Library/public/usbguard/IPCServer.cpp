@@ -21,6 +21,9 @@
 #endif
 
 #include "IPCServerPrivate.hpp"
+#ifdef HAVE_DBUS
+  #include "DBusIPCServerPrivate.hpp"
+#endif
 #include "QBIPCServerPrivate.hpp"
 #include "Common/Utility.hpp"
 
@@ -254,6 +257,9 @@ namespace usbguard
   IPCServer::IPCServer()
   {
     d_pointers.push_back(usbguard::make_unique<QBIPCServerPrivate>(*this));
+#ifdef HAVE_DBUS
+    d_pointers.push_back(usbguard::make_unique<DBusIPCServerPrivate>(*this));
+#endif
   }
 
   IPCServer::~IPCServer() = default;
