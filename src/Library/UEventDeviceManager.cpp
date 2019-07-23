@@ -340,6 +340,25 @@ namespace usbguard
     if (enumeration_count < 0) {
       throw Exception("UEventDeviceManager", "present devices", "failed to enumerate");
     }
+
+    // We keep track of the uevents received during the scanning and process
+    // them ad-hoc at the end. This is to avoid any inconsistent state while
+    // enumerating the devices.
+    _enumeration = false;
+    processBacklog();
+  }
+
+  void UEventDeviceManager::processBacklog()
+  {
+    USBGUARD_LOG(Debug) << "Processing backlog: _backlog.size() = " << _backlog.size();
+    try {
+      for (auto & it : _backlog) {
+        ueventProcessUEvent(std::move(it));
+      }
+    }
+    catch (...) {
+      USBGUARD_LOG(Warning) << "ueventProcessBacklog: error processing uevent data";
+    }
   }
 
   void UEventDeviceManager::scan(const std::string& devpath)
@@ -565,8 +584,8 @@ namespace usbguard
      * Try to parse uevent from the buffer and process it.
      */
     try {
-      const UEvent uevent = UEvent::fromString(buffer, /*attributes_only=*/false, /*trace=*/false);
-      ueventProcessUEvent(uevent);
+      UEvent uevent = UEvent::fromString(buffer, /*attributes_only=*/false, /*trace=*/false);
+      ueventProcessUEvent(std::move(uevent));
     }
     catch (...) {
       USBGUARD_LOG(Warning) << "ueventProcessRead: received invalid uevent data";
@@ -574,7 +593,7 @@ namespace usbguard
     }
   }
 
-  void UEventDeviceManager::ueventProcessUEvent(const UEvent& uevent)
+  void UEventDeviceManager::ueventProcessUEvent(UEvent uevent)
   {
     const std::string subsystem = uevent.getAttribute("SUBSYSTEM");
     const std::string devtype = uevent.getAttribute("DEVTYPE");
@@ -594,20 +613,23 @@ namespace usbguard
     }
 
     const std::string sysfs_devpath = uevent.getAttribute("DEVPATH");
-    ueventProcessAction(action, sysfs_devpath);
+
+    if (_enumeration) {
+      _backlog.emplace_back(std::move(uevent));
+    }
+    else {
+      ueventProcessAction(action, sysfs_devpath);
+    }
   }
 
   void UEventDeviceManager::ueventProcessAction(const std::string& action, const std::string& sysfs_devpath)
   {
-    bool enumeration_notify = false;
 
     try {
-      std::unique_lock<std::mutex> lock(_enumeration_mutex);
       uint32_t id = 0;
       const bool known_path = knownSysfsPath(sysfs_devpath, &id);
 
       if (action == "add" || action == "change") {
-        lock.unlock();
 
         if (known_path && id > 0) {
           processDevicePresence(id);
@@ -637,19 +659,10 @@ namespace usbguard
           USBGUARD_LOG(Debug) << "Enumeration notify: sysfs_devpath=" << sysfs_devpath
             << " _enumeration=" << _enumeration
             << " known_path=" << known_path;
-
-          if (known_path) {
-            enumeration_notify = true;
-          }
         }
       }
       else if (action == "remove") {
-        lock.unlock();
         processDeviceRemoval(sysfs_devpath);
-
-        if (known_path) {
-          enumeration_notify = true;
-        }
       }
       else if (action == "bind" || action == "unbind") {
         USBGUARD_LOG(Debug) << action << "=" << sysfs_devpath;
@@ -669,10 +682,6 @@ namespace usbguard
       DeviceException("unknown exception");
     }
 
-    if (_enumeration && enumeration_notify) {
-      _enumeration_complete.notify_one();
-      USBGUARD_LOG(Debug) << "Notified enumeration routine after sysfs_path=" << sysfs_devpath;
-    }
   }
 
   bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
@@ -788,19 +797,8 @@ namespace usbguard
       SysFSDevice device(sysfs_relative_path);
 
       if (device.getUEvent().getAttribute("DEVTYPE") == "usb_device") {
-        std::unique_lock<std::mutex> lock(_enumeration_mutex);
         learnSysfsPath(sysfs_relative_path);
-        device.setAttribute("uevent", "add");
-
-        if (!_enumeration_complete.wait_for(lock, std::chrono::seconds(2),
-        [this, sysfs_relative_path]() {
-        uint32_t id = 0;
-        const bool known = knownSysfsPath(sysfs_relative_path, &id);
-          USBGUARD_LOG(Debug) << "cv: known=" << known << " id=" << id;
-          return id != 0;
-        })) {
-          throw Exception("UEventDeviceManager", sysfs_absolute_path, "enumeration timeout");
-        }
+        ueventProcessAction("add", sysfs_relative_path);
         return 1;
       }
       else {
