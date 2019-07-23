@@ -94,7 +94,7 @@ namespace usbguard
 
     int ueventOpen();
     void ueventProcessRead();
-    void ueventProcessUEvent(const UEvent& uevent);
+    void ueventProcessUEvent(UEvent uevent);
     void ueventProcessAction(const std::string& action, const std::string& sysfs_devpath);
     int ueventEnumerateDevices();
     int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
@@ -103,10 +103,12 @@ namespace usbguard
     void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
     void processDevicePresence(uint32_t id);
     void processDeviceRemoval(const std::string& sysfs_devpath);
+    void processBacklog();
 
     Thread<UEventDeviceManager> _thread;
     int _uevent_fd;
     int _wakeup_fd;
+    std::vector<UEvent> _backlog;
 
     bool isPresentSysfsPath(const std::string& sysfs_path) const;
     bool knownSysfsPath(const std::string& sysfs_path, uint32_t* id = nullptr) const;
@@ -117,8 +119,6 @@ namespace usbguard
 
     bool _enumeration_only_mode;
     std::atomic<bool> _enumeration;
-    std::condition_variable _enumeration_complete;
-    std::mutex _enumeration_mutex;
   };
 } /* namespace usbguard */
 #endif /* HAVE_UEVENT */
