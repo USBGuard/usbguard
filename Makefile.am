@@ -236,13 +236,14 @@ libusbguard_la_SOURCES=\
 	src/Library/IPCClientPrivate.hpp \
 	src/Library/IPCPrivate.cpp \
 	src/Library/IPCPrivate.hpp \
-	src/Library/IPCServerPrivate.cpp \
 	src/Library/IPCServerPrivate.hpp \
 	src/Library/Init.cpp \
 	src/Library/KeyValueParserPrivate.cpp \
 	src/Library/KeyValueParserPrivate.hpp \
 	src/Library/LocaltimeCondition.cpp \
 	src/Library/LocaltimeCondition.hpp \
+	src/Library/QBIPCServerPrivate.hpp \
+	src/Library/QBIPCServerPrivate.cpp \
 	src/Library/RandomStateCondition.cpp \
 	src/Library/RandomStateCondition.hpp \
 	src/Library/RuleAppliedCondition.cpp \

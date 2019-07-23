@@ -21,6 +21,7 @@
 #endif
 
 #include "IPCServerPrivate.hpp"
+#include "QBIPCServerPrivate.hpp"
 #include "Common/Utility.hpp"
 
 #include "usbguard/Exception.hpp"
@@ -251,20 +252,24 @@ namespace usbguard
   }
 
   IPCServer::IPCServer()
-    : d_pointer(usbguard::make_unique<IPCServerPrivate>(*this))
   {
+    d_pointers.push_back(usbguard::make_unique<QBIPCServerPrivate>(*this));
   }
 
   IPCServer::~IPCServer() = default;
 
   void IPCServer::start()
   {
-    d_pointer->start();
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->start();
+    }
   }
 
   void IPCServer::stop()
   {
-    d_pointer->stop();
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->stop();
+    }
   }
 
   void IPCServer::DevicePresenceChanged(uint32_t id,
@@ -272,7 +277,9 @@ namespace usbguard
     Rule::Target target,
     const std::string& device_rule)
   {
-    d_pointer->DevicePresenceChanged(id, event, target, device_rule);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->DevicePresenceChanged(id, event, target, device_rule);
+    }
   }
 
   void IPCServer::DevicePolicyChanged(uint32_t id,
@@ -281,41 +288,55 @@ namespace usbguard
     const std::string& device_rule,
     uint32_t rule_id)
   {
-    d_pointer->DevicePolicyChanged(id, target_old, target_new, device_rule, rule_id);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->DevicePolicyChanged(id, target_old, target_new, device_rule, rule_id);
+    }
   }
 
   void IPCServer::PropertyParameterChanged(const std::string& name,
     const std::string& value_old,
     const std::string& value_new)
   {
-    d_pointer->PropertyParameterChanged(name, value_old, value_new);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->PropertyParameterChanged(name, value_old, value_new);
+    }
   }
 
   void IPCServer::ExceptionMessage(const std::string& context,
     const std::string& object,
     const std::string& reason)
   {
-    d_pointer->ExceptionMessage(context, object, reason);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->ExceptionMessage(context, object, reason);
+    }
   }
 
   void IPCServer::addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedUID(uid, ac);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->addAllowedUID(uid, ac);
+    }
   }
 
   void IPCServer::addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedGID(gid, ac);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->addAllowedGID(gid, ac);
+    }
   }
 
   void IPCServer::addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedUsername(username, ac);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->addAllowedUsername(username, ac);
+    }
   }
 
   void IPCServer::addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac)
   {
-    d_pointer->addAllowedGroupname(groupname, ac);
+    for (const auto& d_pointer : d_pointers) {
+      d_pointer->addAllowedGroupname(groupname, ac);
+    }
   }
 } /* namespace usbguard */
 
