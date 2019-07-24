@@ -66,7 +66,6 @@ TESTS_ENVIRONMENT=\
 	USBGUARD_TESTLIB_BASH=$(top_srcdir)/src/Tests/bash-testlib.sh \
 	USBGUARD=$(top_builddir)/usbguard \
 	USBGUARD_DAEMON=$(top_builddir)/usbguard-daemon \
-	USBGUARD_DBUS=$(top_builddir)/usbguard-dbus \
 	LDAP_UTIL=$(top_srcdir)/src/Tests/LDAP/ldap.sh \
 	NSSWITCH=$(top_srcdir)/src/Tests/LDAP/nsswitch.sh
 

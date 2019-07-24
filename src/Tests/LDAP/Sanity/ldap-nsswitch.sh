@@ -29,7 +29,6 @@ then
     NSSWITCH=../nsswitch.sh
     USBGUARD=../../../../build/usbguard
     USBGUARD_DAEMON=../../../../build/usbguard-daemon
-    USBGUARD_DBUS=../../../../build/usbguard-dbus
 else
     source "${USBGUARD_TESTLIB_BASH}" || exit 129
 fi
