@@ -289,7 +289,7 @@ namespace usbguard
     _umockdev_deviceroot = std::string(envval);
     _testbed.reset(umockdev_testbed_new());
     USBGUARD_LOG(Info) << "umockdev device directory set to " << _umockdev_deviceroot;
-    const auto lambdaUMockdevFilterEntry = [](const std::string& fullpath, const struct dirent* dirent) {
+    const auto lambdaUMockdevFilterEntry = [](const std::string& fullpath, const struct dirent* dirent) -> std::string {
       (void)dirent;
       struct stat st = {};
 
@@ -305,7 +305,7 @@ namespace usbguard
         return std::string();
       }
     };
-    const auto lambdaUMockdevAddFromFile = [this](const std::string& fullpath, const std::string& loadpath) {
+    const auto lambdaUMockdevAddFromFile = [this](const std::string& fullpath, const std::string& loadpath) -> int {
       (void)fullpath;
 
       for (const auto& device_path : umockdevLoadFromFile(loadpath)) {

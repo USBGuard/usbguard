@@ -189,7 +189,7 @@ namespace usbguard
     std::function<std::string(const std::string&, const struct dirent*)> filter,
     std::function<int(const std::string&, const std::string&)> loader,
     std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
-      [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b)
+      [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool
   {
     return a.first < b.first;
   },
