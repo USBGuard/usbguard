@@ -198,4 +198,4 @@ fi
 
 nss_restore
 
-exit $(( $RC + $GREP + $KILLRC + $WC + $DIFF ))
+exit $(( $RC + $GREP1 + $GREP2 + $KILLRC + $WC + $DIFF ))
