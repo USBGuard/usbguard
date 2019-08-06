@@ -62,7 +62,7 @@ namespace usbguard
   std::pair<std::string, std::string> KeyValueParserPrivate::parseLine(std::string& str)
   {
     std::string::size_type sep_pos;
-    std::string key_c, key, val;
+    std::string key, val;
     sep_pos = str.find(this->_separator);
 
     if (sep_pos == std::string::npos) {
