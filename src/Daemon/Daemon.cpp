@@ -539,10 +539,6 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "Leaving main loop.";
   }
 
-  void Daemon::quit()
-  {
-  }
-
   void Daemon::daemonize(const std::string& pid_file)
   {
     USBGUARD_LOG(Trace) << "Starting daemonization";
