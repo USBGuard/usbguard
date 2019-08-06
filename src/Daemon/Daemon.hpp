@@ -76,8 +76,6 @@ namespace usbguard
 
     /* Start the daemon */
     void run();
-    /* Stop the daemon */
-    void quit();
     /* Handle process daemonization */
     void daemonize(const std::string& pid_file);
 
