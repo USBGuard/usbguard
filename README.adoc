@@ -5,7 +5,7 @@ USBGuard
 [.clearfix]
 --
 [.left]
-image::https://travis-ci.org/USBGuard/usbguard.svg?branch=master[Travis CI, link=https://travis-ci.org/USBGuard/usbguard]
+image::https://travis-ci.com/USBGuard/usbguard.svg?branch=master[Travis CI, link=https://travis-ci.com/USBGuard/usbguard]
 [.left]
 image::https://coveralls.io/repos/github/USBGuard/usbguard/badge.svg[Coverage, link=https://coveralls.io/github/USBGuard/usbguard]
 [.left]
