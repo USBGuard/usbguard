@@ -28,7 +28,7 @@ namespace usbguard
 
   PolicyGenerator::PolicyGenerator()
   {
-    _ruleset = std::dynamic_pointer_cast<RuleSet>(std::make_shared<MemoryRuleSet>(nullptr));
+    _ruleset.push_back(std::dynamic_pointer_cast<RuleSet>(std::make_shared<MemoryRuleSet>(nullptr)));
     _with_hash = true;
     _hash_only = false;
     _port_specific = false;
@@ -73,11 +73,11 @@ namespace usbguard
     if (_with_catchall) {
       Rule catchall_rule;
       catchall_rule.setTarget(_catchall_target);
-      _ruleset->appendRule(catchall_rule);
+      _ruleset.front()->appendRule(catchall_rule);
     }
   }
 
-  const std::shared_ptr<RuleSet> PolicyGenerator::refRuleSet() const
+  const std::vector<std::shared_ptr<RuleSet>> PolicyGenerator::refRuleSet() const
   {
     return _ruleset;
   }
@@ -135,13 +135,13 @@ namespace usbguard
     }
 
     rule->setTarget(Rule::Target::Allow);
-    _ruleset->appendRule(*rule);
+    _ruleset.front()->appendRule(*rule);
   }
 
 
   uint32_t PolicyGenerator::dmHookAssignID()
   {
-    return _ruleset->assignID();
+    return _ruleset.front()->assignID();
   }
 
   void PolicyGenerator::dmHookDeviceException(const std::string& message)

@@ -61,7 +61,8 @@ namespace usbguard
     Daemon();
     ~Daemon();
 
-    int checkPermissions(const std::string& path, const mode_t permissions);
+    int checkFilePermissions(const std::string& path, const mode_t permissions);
+    void checkFolderPermissions(const std::string& path, const mode_t permissions);
     void loadConfiguration(const std::string& path, const bool check_permissions);
     void loadRules();
     void loadIPCAccessControlFiles(const std::string& path);
@@ -112,6 +113,8 @@ namespace usbguard
     void dmApplyDevicePolicy(std::shared_ptr<Device> device, std::shared_ptr<Rule> matched_rule);
     std::shared_ptr<Rule> getInsertedDevicePolicyRule(std::shared_ptr<Device> device);
     std::shared_ptr<Rule> getPresentDevicePolicyRule(std::shared_ptr<Device> device);
+
+    std::vector<std::string> getRuleFiles(const std::string& ruledir_path);
 
     std::shared_ptr<Rule> upsertDeviceRule(uint32_t id, Rule::Target target);
 

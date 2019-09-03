@@ -53,7 +53,7 @@ namespace usbguard
 
     std::vector<std::shared_ptr<const Rule>> getRules();
     uint32_t assignID(std::shared_ptr<Rule> rule);
-    uint32_t assignID();
+    static uint32_t assignID();
 
     void setWritable();
     void clearWritable();
@@ -66,7 +66,7 @@ namespace usbguard
 
     Interface* _interface_ptr{nullptr};
     Rule::Target _default_target;
-    Atomic<uint32_t> _id_next;
+    static Atomic<uint32_t> _id_next;
     std::vector<std::shared_ptr<Rule>> _rules;
   };
 

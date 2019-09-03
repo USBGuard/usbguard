@@ -123,12 +123,14 @@ namespace usbguard
     return rule_string;
   }
 
-  void LDAPUtil::serializeLDIF(const std::shared_ptr<RuleSet> ruleset, std::ostream& stream,
+  void LDAPUtil::serializeLDIF(const std::vector<std::shared_ptr<RuleSet>> rulesets, std::ostream& stream,
     std::map<std::string, std::string>& values)
   {
-    for (auto const& rule : ruleset->getRules()) {
-      std::string rule_string = toLDIF(rule, values, false);
-      stream << rule_string << std::endl;
+    for (auto ruleset : rulesets) {
+      for (auto const& rule : ruleset->getRules()) {
+        std::string rule_string = toLDIF(rule, values, false);
+        stream << rule_string << std::endl;
+      }
     }
   }
 } /* namespace usbguard */

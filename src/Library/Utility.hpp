@@ -24,6 +24,7 @@
 #include "usbguard/Typedefs.hpp"
 
 #include <string>
+#include <vector>
 
 namespace usbguard
 {
@@ -32,6 +33,7 @@ namespace usbguard
     std::string escapeString(const std::string& value);
     std::string unescapeString(const std::string& value);
     std::string quoteEscapeString(const std::string& value);
+
   }
 } /* namespace usbguard */
 
