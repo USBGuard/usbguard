@@ -142,6 +142,7 @@ AC_SUBST([atomic_LIBS])
 #
 # Checks for required libraries.
 #
+AX_PTHREAD
 AC_MSG_CHECKING([for NETLINK_KOBJECT_UEVENT definition])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include <linux/netlink.h>

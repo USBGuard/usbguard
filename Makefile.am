@@ -348,6 +348,9 @@ usbguard_daemon_SOURCES=\
 	src/Daemon/LinuxAuditBackend.hpp \
 	src/Daemon/LinuxAuditBackend.cpp
 
+usbguard_daemon_CXXFLAGS=\
+	$(PTHREAD_CFLAGS)
+
 usbguard_daemon_CPPFLAGS=\
 	-fPIE \
 	$(AM_CPPFLAGS) \
@@ -361,7 +364,8 @@ usbguard_daemon_LDADD=\
 	@ldap_LIBS@ \
 	@seccomp_LIBS@ \
 	@libcapng_LIBS@ \
-	@audit_LIBS@
+	@audit_LIBS@ \
+	$(PTHREAD_LIBS)
 
 EXTRA_DIST +=\
 	README.adoc \
@@ -408,13 +412,17 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-remove-user.cpp \
 	src/CLI/usbguard-remove-user.hpp
 
+usbguard_CXXFLAGS=\
+	$(PTHREAD_CFLAGS)
+
 usbguard_CPPFLAGS=\
 	-fPIE \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src/CLI
 
 usbguard_LDADD=\
-	$(top_builddir)/libusbguard.la
+	$(top_builddir)/libusbguard.la \
+	${PTHREAD_LIBS}
 
 if BASH_COMPLETION_ENABLED
 bashcompletiondir = $(BASH_COMPLETION_DIR)

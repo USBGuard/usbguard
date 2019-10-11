@@ -115,8 +115,12 @@ test_unit_SOURCES=\
 	Unit/test_UMockdevDeviceDefinition.cpp \
 	Unit/test_UMockdevDeviceDefinition.data.hpp
 
+test_unit_CXXFLAGS=\
+	$(PTHREAD_CFLAGS)
+
 test_unit_LDADD=\
-	$(top_builddir)/libusbguard.la
+	$(top_builddir)/libusbguard.la \
+	$(PTHREAD_LIBS)
 
 test_unit_LDFLAGS=\
 	-static
@@ -128,6 +132,10 @@ test_regression_SOURCES=\
 	Regression/test_Rule_ghi247.cpp \
 	Regression/github-PR209-config-parser.cpp
 
+test_regression_CXXFLAGS=\
+	$(PTHREAD_CFLAGS)
+
 test_regression_LDADD=\
-	$(top_builddir)/libusbguard.la
+	$(top_builddir)/libusbguard.la \
+	$(PTHREAD_LIBS)
 
