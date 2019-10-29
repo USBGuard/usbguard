@@ -115,7 +115,11 @@ CLEANFILES+=\
 	$(top_builddir)/usbguard.service
 
 usbguard.service: $(top_srcdir)/usbguard.service.in
-	$(SED) -e "s|%sbindir%|${sbindir}|" -e "s|%sysconfdir%|${sysconfdir}|" $^ > $@ || rm -f $@
+	$(SED) \
+	  -e "s|%sbindir%|${sbindir}|" \
+	  -e "s|%sysconfdir%|${sysconfdir}|" \
+	  -e "s|%localstatedir%|${localstatedir}|" \
+	   $^ > $@ || rm -f $@
 
 install-systemd-service: $(top_builddir)/usbguard.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
