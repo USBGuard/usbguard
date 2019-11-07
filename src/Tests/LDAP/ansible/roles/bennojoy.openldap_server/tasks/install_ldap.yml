@@ -11,9 +11,9 @@
   yum: name="yum-utils" state=latest
   when: ansible_os_family == 'RedHat'
 
-- name: Clean yum transactions
-  shell: "yum-complete-transaction --cleanup-only"
-  when: ansible_os_family == 'RedHat'
+# - name: Clean yum transactions
+#  shell: "yum-complete-transaction --cleanup-only"
+#  when: ansible_os_family == 'RedHat'
 
 - name: turn off selinux
   selinux: state=permissive policy=targeted
