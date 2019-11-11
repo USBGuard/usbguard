@@ -11,8 +11,9 @@ $ git clean -x -f -d
 ```
 $ ./autogen.sh
 $ mkdir build; cd build
-$ ../configure --enable-full-test-suite
-$ make check
+$ ../configure --enable-full-test-suite --with-crypto-library=gcrypt --with-ldap
+$ make
+$ sudo make check
 $ cd ..; rm -rf build
 ```
 
@@ -23,7 +24,7 @@ $ cd ..; rm -rf build
 ```
 $ ./autogen.sh
 $ mkdir build; cd build
-$ ../configure
+$ ../configure --with-crypto-library=gcrypt
 $ make dist
 ```
 
@@ -39,7 +40,7 @@ $ git push origin usbguard-0.x.x
 ```
 $ sha256sum usbguard-0.x.y.tar.gz > usbguard-0.x.y.tar.gz.sum
 $ gpg --armor --detach-sign usbguard-0.x.y.tar.gz
-$ gpg --clearsign usbguard-0.7.5.tar.gz.sum
+$ gpg --clearsign usbguard-0.x.y.tar.gz.sum
 ```
 
 7. Create a new GitHub release using the associated tag; add the relevant section from CHANGELOG.md. Upload:

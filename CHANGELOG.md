@@ -1,5 +1,54 @@
 # Change Log
 
+
+## 0.7.6 - 2019-11-08
+
+### Added
+- Added missing options in manpage usbguard-daemon(8)
+- Extended the functionality of allow/block/reject commands
+ - the command can handle rule as a param and not only its ID
+ - e.g. in case of allow, command will allow each device that matches provided rule
+- Added debug info for malformed descriptors
+
+### Fixed/Changed
+- Changed default backend to uevent
+- Fixed handling of add uevents during scanning
+ - now we are sure that the enumeration is completed before processing any uevent
+ - we are trying to avoid a race where the kernel is still enumerating the devices
+ - and send the uevent while the parent is being authorised
+- Silenced 'bind' and 'unbind' uevents
+
+
+## 0.7.5 - 2019-07-02
+
+### Added
+- Added daemon configuration option HidePII
+- Added check to avoid conflict between ASAN and TSAN
+- Added daemon configuration option for authorized_default
+- Added devpath option to generate-policy
+- Added # line comments to the rule grammar
+- Added ImplicitPolicyTarget to get/set parameter methods
+- Added option to filter rules by label when listing
+- Added the label attribute to rule
+- Added PropertyParameterChanged signal
+- Added support for portX/connect_type attribute
+- Added temporary option to append-rule
+- Added versioning to DBus service
+- Added optional LDAP support
+
+### Fixed/Changed
+- Fixed invalid return value in Rule::Attribute::setSolveEqualsOrdered
+- Fixed KeyValueParser to validate keys only when known names are set
+- Fixed uninitialized variables found by coverity
+- Fixes and cleanups based on LGTM.com report
+- Hardened systemd service
+- Rename ListRules parameter 'query' to 'label'
+- Skip empty lines in usbguard-rule-parser
+
+### Removed
+- The proof-of-concept Qt applet was removed. It is going to be maintained in a simplified form as a separate project.
+
+
 ## 0.7.4 - 2018-07-12
 
 ### Fixed/Changed
@@ -7,6 +56,7 @@
 - Fixed conditional manual page generation & installation
 - Replaced Boost library based ext/stdio_filebuf.h implementation
   with a custom FDStreamBuf implementation
+
 
 ## 0.7.3 - 2018-07-11
 
