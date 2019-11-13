@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #pragma once
 
@@ -170,6 +171,8 @@ namespace usbguard
   {
     template<>
     bool isSubsetOf(const USBDeviceID& source, const USBDeviceID& target);
+    template<>
+    bool isSupersetOf(const USBDeviceID& source, const USBDeviceID& target);
   }
 
   class DLL_PUBLIC USBInterfaceType
@@ -203,6 +206,8 @@ namespace usbguard
   {
     template<>
     bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
+    template<>
+    bool isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target);
   }
 
   class USBDescriptorParser;

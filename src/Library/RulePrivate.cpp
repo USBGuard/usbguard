@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -140,6 +141,7 @@ namespace usbguard
     case Rule::SetOperator::AllOf:
     case Rule::SetOperator::Equals:
     case Rule::SetOperator::EqualsOrdered:
+    case Rule::SetOperator::MatchAll:
       meets_conditions = \
         (conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1));
       break;

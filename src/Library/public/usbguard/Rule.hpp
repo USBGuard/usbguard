@@ -16,6 +16,7 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //          Radovan Sroka <rsroka@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #pragma once
 
@@ -79,7 +80,8 @@ namespace usbguard
       NoneOf,
       Equals,
       EqualsOrdered,
-      Match /* Special operator: matches anything, cannot be used directly in a rule */
+      Match, /* Special operator: matches anything, cannot be used directly in a rule */
+      MatchAll
     };
 
     static const std::string setOperatorToString(const Rule::SetOperator& op);
@@ -238,6 +240,10 @@ namespace usbguard
 
           case SetOperator::EqualsOrdered:
             applies = setSolveEqualsOrdered(_values, target._values);
+            break;
+
+          case SetOperator::MatchAll:
+            applies = setSolveMatchAll(_values, target._values);
             break;
 
           default:
@@ -410,6 +416,26 @@ namespace usbguard
         }
 
         return true;
+      }
+
+      /*
+       * All of the items in target set must match an item in the source set
+       */
+      bool setSolveMatchAll(const std::vector<ValueType>& source_set, const std::vector<ValueType>& target_set) const
+      {
+        USBGUARD_LOG(Trace);
+        size_t match = 0;
+
+        for (auto const& target_item : target_set) {
+          for (auto const& source_item : source_set) {
+            if (Predicates::isSupersetOf(source_item, target_item)) {
+              match++;
+              break;
+            }
+          }
+        }
+
+        return match == target_set.size();
       }
 
       std::string _name;

@@ -23,7 +23,7 @@ function generate_target {
   echo -n ${TARGET[$RANDOM % 3]}
 }
 
-OPERATORS=(equals one-of none-of all-of equals-ordered)
+OPERATORS=(equals one-of none-of all-of equals-ordered match-all)
 
 function generate_hex {
   size=$1

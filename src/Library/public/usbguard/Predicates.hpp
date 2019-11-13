@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #pragma once
 
@@ -34,6 +35,15 @@ namespace usbguard
     {
       USBGUARD_LOG(Trace) << "generic isSubsetOf";
       return source == target;
+    }
+
+    template<typename T>
+    bool isSupersetOf(const T& source, const T& target)
+    {
+      USBGUARD_LOG(Error) << "Not implemented";
+      (void) source;
+      (void) target;
+      return true;
     }
   }
 } /* namespace usbguard */

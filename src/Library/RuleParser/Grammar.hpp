@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #pragma once
 #ifdef HAVE_BUILD_CONFIG_H
@@ -55,12 +56,13 @@ namespace usbguard
     struct str_none_of : TAOCPP_PEGTL_STRING("none-of") {};
     struct str_equals : TAOCPP_PEGTL_STRING("equals") {};
     struct str_equals_ordered : TAOCPP_PEGTL_STRING("equals-ordered") {};
+    struct str_match_all: TAOCPP_PEGTL_STRING("match-all") {};
 
     /*
      * Generic rule attribute
      */
     struct multiset_operator
-      : sor<str_all_of, str_one_of, str_none_of, str_equals_ordered, str_equals> {};
+      : sor<str_all_of, str_one_of, str_none_of, str_equals_ordered, str_equals, str_match_all> {};
 
     template<class attribute_value_rule>
     struct attribute_value_multiset
