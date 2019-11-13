@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -367,7 +368,8 @@ namespace usbguard
     { "none-of", Rule::SetOperator::NoneOf },
     { "equals", Rule::SetOperator::Equals },
     { "equals-ordered", Rule::SetOperator::EqualsOrdered },
-    { "match", Rule::SetOperator::Match }
+    { "match", Rule::SetOperator::Match },
+    { "match-all", Rule::SetOperator::MatchAll}
   };
 
   const std::string Rule::setOperatorToString(const Rule::SetOperator& op)

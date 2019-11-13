@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+//          Marek Tamaskovic <mtamasko@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -111,6 +112,15 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace) << "source=" << source.toString() << " target=" << target.toString();
     const bool result = source.isSubsetOf(target);
+    USBGUARD_LOG(Trace) << "result=" << result;
+    return result;
+  }
+
+  template<>
+  bool Predicates::isSupersetOf(const USBDeviceID& source, const USBDeviceID& target)
+  {
+    USBGUARD_LOG(Trace) << "source=" << source.toString() << " target=" << target.toString();
+    const bool result = target.isSubsetOf(source);
     USBGUARD_LOG(Trace) << "result=" << result;
     return result;
   }
@@ -220,6 +230,12 @@ namespace usbguard
 
   template<>
   bool Predicates::isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target)
+  {
+    return source.appliesTo(target);
+  }
+
+  template<>
+  bool Predicates::isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target)
   {
     return source.appliesTo(target);
   }

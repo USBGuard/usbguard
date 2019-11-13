@@ -93,6 +93,9 @@ where the optional 'operator' is one of:
 *equals-ordered*::
     The device attribute set must contain exactly the same set of values in the same order for the rule to match.
 
+*match-all*::
+   The device attribute set must be a subset of the specified values for the rule to match.
+
 If the operator is not specified it is set to *equals*.
 
 [.underline]#List of attributes:#
