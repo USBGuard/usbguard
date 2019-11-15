@@ -507,8 +507,14 @@ namespace usbguard
       const int signal_num = sigwaitinfo(&signal_set, &signal_info);
 
       if (signal_num <= 0) {
-        USBGUARD_LOG(Error) << "sigwaitinfo failed: errno=" << errno << "; Shutting down.";
-        break;
+        if (errno == EINTR) {
+          USBGUARD_LOG(Info) << "sigwaitinfo interrupted: [EINTR]. Ignoring.";
+          continue;
+        }
+        else {
+          USBGUARD_LOG(Error) << "sigwaitinfo failed: errno=" << errno << "; Shutting down.";
+          throw Exception("Daemon::run", "sigwaitinfo", "failed");
+        }
       }
 
       switch (signal_num) {
@@ -523,8 +529,10 @@ namespace usbguard
         exit_loop = false;
         break;
 
+      /* should not be reachable */
       default:
         USBGUARD_LOG(Warning) << "Received signal " << signal_num << ". Ignoring!";
+        continue;
       }
     }
     while (!exit_loop);
@@ -719,7 +727,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "entry: label=" << label;
     std::vector<Rule> rules;
 
-    for(auto const& rule : _policy.getRuleSet()->getRules()) {
+    for (auto const& rule : _policy.getRuleSet()->getRules()) {
       if (label.empty() || rule->getLabel() == label) {
         rules.push_back(*rule);
       }
