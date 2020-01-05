@@ -250,7 +250,7 @@ libseccomp_summary="not found"]
 PKG_CHECK_MODULES([libcapng], [libcap-ng >= 0.7.0],
 [AC_DEFINE([HAVE_LIBCAPNG], [1], [cap-ng API usable])
 libcap_ng_summary="system-wide; $libcapng_LIBS"],
-[AC_MSG_NOTICE([libseccomp development files not found! Seccomp support will be turned OFF])
+[AC_MSG_NOTICE([libcap-ng development files not found! Support for POSIX 1003.1e capabilities will be turned OFF])
 libcap_ng_summary="not found"]
 )
 
