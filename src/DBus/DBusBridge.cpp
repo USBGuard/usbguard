@@ -337,6 +337,11 @@ namespace usbguard
     g_variant_builder_add(builder, "{ss}",
       "with-interface",
       with_interface_string.c_str());
+
+    g_variant_builder_add(builder, "{ss}",
+      "with-connect-type",
+      device_rule.getWithConnectType().c_str());
+
     return builder;
   }
 } /* namespace usbguard */
