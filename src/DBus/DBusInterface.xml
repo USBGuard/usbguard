@@ -184,6 +184,7 @@
         - hash
         - parent-hash
         - with-interface
+        - with-connect-type (either "hardwired", "hotplug", or the empty string for unknown)
 
       The USB interface types are represented as strings of the form AA:BB:CC, where AA,
       BB, and CC are hexadecimal numbers representing the class, subclass and protocol
@@ -217,6 +218,7 @@
         - hash
         - parent-hash
         - with-interface
+        - with-connect-type (either "hardwired", "hotplug", or the empty string for unknown)
 
      -->
     <signal name="DevicePolicyChanged">
