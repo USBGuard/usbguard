@@ -207,6 +207,9 @@
        @target_new: Current authorization target in numerical form.
        @device_rule: Device specific rule.
        @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
+                 Reserved values are:
+                     4294967294 (UINT32_MAX - 1) for an implicit rule, e.g. 
+                     ImplicitPolicyTarget or InsertedDevicePolicy.
        @attributes: A dictionary of device attributes and their values.
 
       Notify about a change of a USB device authorization target.
