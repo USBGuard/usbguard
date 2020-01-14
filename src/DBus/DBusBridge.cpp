@@ -138,7 +138,7 @@ namespace usbguard
     if (method_name == "appendRule") {
       const char* rule_spec_cstr = nullptr;
       uint32_t parent_id = 0;
-      bool temporary = false;
+      gboolean temporary = false;
       g_variant_get(parameters, "(&sub)", &rule_spec_cstr, &parent_id, &temporary);
       std::string rule_spec(rule_spec_cstr);
       const uint32_t rule_id = appendRule(rule_spec, parent_id, !temporary);
