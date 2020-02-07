@@ -29,11 +29,35 @@
 
 namespace usbguard
 {
+  /**
+   * @brief Allows reacting to device events.
+   */
   class DLL_PUBLIC DeviceManagerHooks
   {
   public:
+    /**
+     * @brief Device manager hook can react to USB device event
+     * through this method.
+     *
+     * @param event USB device event.
+     * @param device USB device that caused the event.
+     */
     virtual void dmHookDeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device);
+
+    /**
+     * @brief Device manager hook can assign ID to the USB device through
+     * this method.
+     *
+     * @return New ID of USB device.
+     */
     virtual uint32_t dmHookAssignID() = 0;
+
+    /**
+     * @brief Device manager hook can react to USB device exceptions through
+     * this method.
+     *
+     * @param message Exception message.
+     */
     virtual void dmHookDeviceException(const std::string& message) = 0;
   };
 } /* namespace usbguard */

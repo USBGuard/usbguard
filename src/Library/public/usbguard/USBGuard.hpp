@@ -24,8 +24,32 @@
 
 namespace usbguard
 {
+  /**
+   * @brief Retrieves daemon config path from environment variable
+   * \p USBGUARD_DAEMON_CONF\. If it fails, then it retrieves daemon config
+   * path from build-time path \p USBGUARD_DAEMON_CONF_PATH.
+   *
+   * @return Daemon config path.
+   */
   DLL_PUBLIC std::string getDaemonConfigPath();
+
+  /**
+   * @brief Reads daemon config file and retrieves setting value of
+   * \p IPCAccessControlFiles.
+   *
+   * @return IPCAccessControlFiles path.
+   * @throw Exception If setting \p IPCAccessControlFiles is not set in
+   * daemon config file.
+   */
   DLL_PUBLIC std::string getIPCAccessControlFilesPath();
+
+  /**
+   * Returns string \":<name>\" if name is group name, \"<name>\" otherwise.
+   *
+   * @param name User name or group name.
+   * @param is_group Determines if name is a group name.
+   * @return \p IPCAccessControlFile basename.
+   */
   DLL_PUBLIC std::string getIPCAccessControlFileBasename(const std::string& name, bool is_group);
 } /* namespace usbguard */
 

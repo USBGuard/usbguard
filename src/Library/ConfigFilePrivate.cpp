@@ -136,8 +136,8 @@ namespace usbguard
     std::string config_line;
     size_t config_line_number = 0;
     KeyValueParser kvparser(_known_names, "=",
-			    /*case_sensitive=*/true,
-			    /*validate_keys=*/!_known_names.empty());
+      /*case_sensitive=*/true,
+      /*validate_keys=*/!_known_names.empty());
 
     while (std::getline(_stream, config_line)) {
       ++config_line_number;

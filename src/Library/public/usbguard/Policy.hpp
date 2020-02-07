@@ -53,6 +53,13 @@ namespace usbguard
     uint32_t assignID(std::shared_ptr<Rule> rule);
     uint32_t assignID();
 
+    /**
+     * @brief Converts EventType to its string representation.
+     *
+     * @param event EventType to convert.
+     * @return String representation of given EventType.
+     * @throw USBGUARD_BUG If given EventType is unknown.
+     */
     static std::string eventTypeToString(EventType event);
   private:
 

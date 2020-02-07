@@ -33,6 +33,9 @@
 
 namespace usbguard
 {
+  /**
+   * @brief USBGuard exception.
+   */
   class DLL_PUBLIC Exception : public std::exception
   {
   public:
@@ -81,6 +84,13 @@ namespace usbguard
       _reason = reason_val;
     }
 
+    /**
+     * @brief Returns exception message.
+     *
+     * Format: \<context\>: [\<object\>: ]\<reason\>
+     *
+     * @return Exception message.
+     */
     virtual std::string message() const noexcept
     {
       try {

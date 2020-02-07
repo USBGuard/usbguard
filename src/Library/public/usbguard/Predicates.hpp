@@ -26,9 +26,14 @@ namespace usbguard
 {
   namespace Predicates DLL_PUBLIC
   {
-    /*
-     * Return true if the source set is a subset of the
-     * target set. Otherwise return false.
+    /**
+     * @brief Returns true if the source set is a subset of the
+     * target set, false otherwise.
+     *
+     * @param source Source set.
+     * @param target Target set.
+     * @return True if the source set is a subset of the
+     * target set, false otherwise.
      */
     template<typename T>
     bool isSubsetOf(const T& source, const T& target)
@@ -37,6 +42,17 @@ namespace usbguard
       return source == target;
     }
 
+    /**
+     * @brief Returns true if the source set is a superset of the
+     * target set, false otherwise.
+     *
+     * @todo Implement.
+     *
+     * @param source Source set.
+     * @param target Target set.
+     * @return True if the source set is a superset of the
+     * target set, false otherwise.
+     */
     template<typename T>
     bool isSupersetOf(const T& source, const T& target)
     {

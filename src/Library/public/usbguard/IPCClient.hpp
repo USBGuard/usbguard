@@ -32,43 +32,150 @@
 namespace usbguard
 {
   class IPCClientPrivate;
+
+  /**
+   * @brief Communicates with USBGuard service
+   * (\link IPCServer IPCServer\endlink).
+   */
   class DLL_PUBLIC IPCClient : public Interface
   {
   public:
+
+    /**
+     * @brief Constructs IPC client.
+     *
+     * @param connected If this flag is set to true, then it tries to connect
+     * to USBGuard \link IPCServer IPC service\endlink and starts IPC client
+     * main loop.
+     * @see \link connect() connect()\endlink
+     */
     IPCClient(bool connected = false);
+
+    /**
+     * @brief Disconnects from an USBGuard \link IPCServer IPC service\endlink
+     * and destructs this object.
+     *
+     * @see \link disconnect() disconnect()\endlink
+     */
     virtual ~IPCClient();
 
+    /**
+     * @brief Creates connection to an USBGuard
+     * \link IPCServer IPC service\endlink.
+     *
+     * Starts IPC client main loop.
+     *
+     * @throw ErrnoException If there is no service called \"usbguard\".
+     * @throw Exception If we received bad file descriptor to poll.
+     */
     void connect();
+
+    /**
+     * @brief Disconnects from an USBGuard \link IPCServer IPC service\endlink.
+     *
+     * Stops IPC client main loop.
+     */
     void disconnect();
+
+    /**
+     * @brief Checks whether client is connected to USBGuard \link IPCServer
+     * IPC service\endlink.
+     *
+     * @return True if this client is connected to USBGuard IPC service,
+     * false otherwise.
+     */
     bool isConnected() const;
+
+    /**
+     * @brief Wait for IPC client main loop to finish its work.
+     */
     void wait();
 
+    /**
+     * @copydoc Interface::setParameter()
+     */
     std::string setParameter(const std::string& name, const std::string& value) override;
+
+    /**
+     * @copydoc Interface::getParameter()
+     */
     std::string getParameter(const std::string& name) override;
 
+    /**
+     * @copydoc Interface::appendRule()
+     */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent) override;
+
+    /**
+     * @copydoc Interface::removeRule()
+     */
     void removeRule(uint32_t id) override;
+
+    /**
+     * @copydoc Interface::listRules()
+     */
     const std::vector<Rule> listRules(const std::string& label) override;
+
+    /**
+     * @brief List the current rule set (policy) used by the USBGuard daemon.
+     *
+     * The rules are returned in the same order as they are evaluated.
+     *
+     * @return Vector of rules.
+     */
     const std::vector<Rule> listRules()
     {
       return listRules("");
     }
 
+    /**
+     * @copydoc Interface::applyDevicePolicy()
+     */
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) override;
+
+    /**
+     * @copydoc Interface::listDevices()
+     */
     const std::vector<Rule> listDevices(const std::string& query) override;
-    const std::vector<Rule> listDevices() /* NOTE: left for compatibility */
+
+    /**
+     * @brief List all devices recognized by USBGuard daemon.
+     *
+     * @note Left for compatibility.
+     *
+     * @return Vector of device specific rules.
+     */
+    const std::vector<Rule> listDevices()
     {
       return listDevices("match");
     }
 
+    /**
+     * @brief Defines algorithm to perform in the case of IPC connection.
+     */
     virtual void IPCConnected() {}
 
+    /**
+     * @brief Defines algorithm to perform in the case of IPC disconnection.
+     *
+     * @param exception_initiated Determines whether disconnection was caused
+     * by an exception.
+     * @param exception Exception that caused the disconnection.
+     * Exception is valid only if \p exception_initiated is set to true.
+     */
     virtual void IPCDisconnected(bool exception_initiated, const IPCException& exception)
     {
       (void)exception_initiated;
       (void)exception;
     }
 
+    /**
+     * @brief Defines algorithm to perform in the case that USB device presence
+     * has been changed.
+     *
+     * @see \link Interface::DevicePresenceChanged()
+     * DevicePresenceChanged()\endlink
+     */
     virtual void DevicePresenceChanged(uint32_t id,
       DeviceManager::EventType event,
       Rule::Target target,
@@ -80,6 +187,13 @@ namespace usbguard
       (void)device_rule;
     }
 
+    /**
+     * @brief Defines algorithm to perform in the case that USB device
+     * authorization target has been changed.
+     *
+     * @see \link Interface::DevicePolicyChanged()
+     * DevicePolicyChanged()\endlink
+     */
     virtual void DevicePolicyChanged(uint32_t id,
       Rule::Target target_old,
       Rule::Target target_new,
@@ -93,6 +207,13 @@ namespace usbguard
       (void)rule_id;
     }
 
+    /**
+     * @brief Defines algorithm to perform in the case that property parameter
+     * has been changed.
+     *
+     * @see \link Interface::PropertyParameterChanged()
+     * PropertyParameterChanged()\endlink
+     */
     virtual void PropertyParameterChanged(const std::string& name,
       const std::string& value_old,
       const std::string& value_new) override
@@ -102,6 +223,12 @@ namespace usbguard
       (void)value_new;
     }
 
+    /**
+     * @brief Defines algorithm to perform in the case
+     * that exception has arose.
+     *
+     * @see \link Interface::ExceptionMessage() ExceptionMessage()\endlink
+     */
     virtual void ExceptionMessage(const std::string& context,
       const std::string& object,
       const std::string& reason) override
