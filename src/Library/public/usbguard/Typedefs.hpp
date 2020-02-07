@@ -23,6 +23,13 @@
 
 namespace usbguard
 {
+  /**
+   * @brief Checks if \p a mathes \p b.
+   *
+   * @param a First value.
+   * @param b Second value.
+   * @return True if \p a mathes \p b, false otherwise.
+   */
   template<typename T>
   bool matches(const T& a, const T& b)
   {
@@ -46,13 +53,13 @@ namespace usbguard
     #ifdef __GNUC__
       #define DLL_PUBLIC __attribute__ ((dllexport))
     #else
-      #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+      #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also support this syntax.
     #endif
   #else
     #ifdef __GNUC__
       #define DLL_PUBLIC __attribute__ ((dllimport))
     #else
-      #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+      #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also support this syntax.
     #endif
   #endif
   #define DLL_LOCAL

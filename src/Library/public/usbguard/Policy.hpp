@@ -55,6 +55,13 @@ namespace usbguard
     void save(void);
 
 
+    /**
+     * @brief Converts EventType to its string representation.
+     *
+     * @param event EventType to convert.
+     * @return String representation of given EventType.
+     * @throw USBGUARD_BUG If given EventType is unknown.
+     */
     static std::string eventTypeToString(EventType event);
   private:
 

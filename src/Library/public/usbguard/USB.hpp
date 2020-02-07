@@ -34,22 +34,29 @@
 
 namespace usbguard
 {
-  /*
-   * Maximum lenght of a string that is read from a USB descriptor
+  /**
+   * @brief Maximum lenght of a string that is read from a USB descriptor.
+   *
    * Since the string descriptors have an 8-bit length field, the
    * maximum lenght of a string stored in a string descriptor is
-   * UINT8_MAX minus the size of the length field (1 byte) and the
-   * size of the type field (1 byte).
+   * \p UINT8_MAX minus the size of the length field (1 Byte) and the
+   * size of the type field (1 Byte).
    */
   const size_t USB_GENERIC_STRING_MAX_LENGTH = UINT8_MAX - 2;
 
-  /* Maximum lenght of the vendor id in string form */
+  /**
+   * @brief Maximum length of the vendor id in string form.
+   */
   const size_t USB_VID_STRING_MAX_LENGTH = 4;
 
-  /* Maximum lenght of the product id in string form */
+  /**
+   * @brief Maximum lenght of the product id in string form.
+   */
   const size_t USB_PID_STRING_MAX_LENGTH = 4;
 
-  /* Maximum lenght of the port in string form */
+  /**
+   * @brief Maximum lenght of the port in string form.
+   */
   const size_t USB_PORT_STRING_MAX_LENGTH = PATH_MAX;
 
   /*
@@ -142,39 +149,166 @@ namespace usbguard
     uint8_t bSynchAddress;
   } __attribute__((packed));
 
+  /**
+   * @brief Represents ID of a USB device.
+   *
+   * Format: \<\p vendor \p id\>:\<\p product \p id\>
+   * \n
+   * Example: ffff:ffff
+   */
   class DLL_PUBLIC USBDeviceID
   {
   public:
+    /**
+     * @brief Default constructor.
+     */
     USBDeviceID() = default;
+
+    /**
+     * @brief Constructs a new ID with \p vendor_id and \p product_id.
+     *
+     * Also performs \link checkDeviceID() checkDeviceID()\endlink.
+     *
+     * @param vendor_id Vendor ID.
+     * @param product_id Product ID.
+     * @throw runtime_error If ID would have invalid format.
+     */
     USBDeviceID(const std::string& vendor_id, const std::string& product_id = std::string());
+
+    /**
+     * @brief Default copy constructor.
+     *
+     * @param rhs USBDeviceID to copy.
+     */
     USBDeviceID(const USBDeviceID& rhs) = default;
+
+    /**
+     * @brief Default copy assignment.
+     *
+     * @param rhs USBDeviceID to copy.
+     * @return New USBDeviceID object.
+     */
     USBDeviceID& operator=(const USBDeviceID& rhs) = default;
 
+    /**
+     * @brief Checks if ID has a valid format.
+     *
+     * If vendor id is empty or \p * then product id must also be empty
+     * or \p *. Both vendor id and product id can not be larger then
+     * their maximum size.
+     *
+     * @param vendor_id Vendor ID.
+     * @param product_id Product ID.
+     * @throw runtime_error If ID has invalid format.
+     */
     static void checkDeviceID(const std::string& vendor_id, const std::string& product_id);
 
+    /**
+     * @brief Sets vendor ID.
+     *
+     * Also performs \link checkDeviceID() checkDeviceID()\endlink.
+     *
+     * @param vendor_id Vendor ID.
+     * @throw runtime_error If vendor ID invalidates ID format.
+     * Respectively, if setting \p vendor_id would cause
+     * \link checkDeviceID() checkDeviceID()\endlink to fail.
+     */
     void setVendorID(const std::string& vendor_id);
+
+    /**
+     * @brief Sets product ID.
+     *
+     * Also performs \link checkDeviceID() checkDeviceID()\endlink.
+     *
+     * @param product_id Product ID.
+     * @throw runtime_error If product ID invalidates ID format.
+     * Respectively, if setting \p product_id would cause \link checkDeviceID()
+     * checkDeviceID()\endlink to fail.
+     */
     void setProductID(const std::string& product_id);
 
+    /**
+     * @brief Returns vendor ID.
+     *
+     * @return Vendor ID.
+     */
     const std::string& getVendorID() const;
+
+    /**
+     * @brief Returns product ID.
+     *
+     * @return Product ID.
+     */
     const std::string& getProductID() const;
 
+    /**
+     * @brief Returns ID in form of a string.
+     *
+     * String has the form: \<vendor id\>:\<product id\>.
+     *
+     * @return ID in form of a string.
+     */
     std::string toRuleString() const;
+
+    /**
+     * @brief Same as toRuleString().
+     *
+     * @return ID in form of a string.
+     */
     std::string toString() const;
+
+    /**
+     * @brief Checks if ID is subset of other ID.
+     *
+     * Basically checks if both IDs have the same vendor and product ID.
+     * Either vendor or product ID can be empty and it might still be a subset.
+     *
+     * @param rhs ID to compare with.
+     * @return True if this ID is subset of rhs ID, false otherwise.
+     */
     bool isSubsetOf(const USBDeviceID& rhs) const;
 
   private:
-    std::string _vendor_id;
-    std::string _product_id;
+    std::string _vendor_id; /**< Vendor ID */
+    std::string _product_id; /**< Product ID */
   };
 
   namespace Predicates DLL_PUBLIC
   {
+    /**
+     * @brief Checks if source ID is subset of target ID.
+     *
+     * Basically checks if both IDs have the same vendor and product ID.
+     * Either vendor or product ID can be empty and it might still be a subset.
+     *
+     * @param source First USB device ID.
+     * @param target Second USB device ID.
+     * @return True if source ID is subset of target ID, false otherwise.
+     */
     template<>
     bool isSubsetOf(const USBDeviceID& source, const USBDeviceID& target);
+
+    /**
+     * @brief Checks if source ID is superset of target ID.
+     *
+     * Basically checks if source applies to target.
+     *
+     * @param source First USB device ID.
+     * @param target Second USB device ID.
+     * @return True if source ID is subset of target ID, false otherwise.
+     */
     template<>
     bool isSupersetOf(const USBDeviceID& source, const USBDeviceID& target);
   }
 
+  /**
+   * @brief Represents USB interface.
+   *
+   * Format: three 8b numbers separated by a colon, where first number
+   * represents interface class, second number represents interface subclass
+   * and third number represents interface protocol.\n
+   * Example: ff:ff:ff
+   */
   class DLL_PUBLIC USBInterfaceType
   {
   public:
@@ -183,27 +317,115 @@ namespace usbguard
     static const uint8_t MatchProtocol = 1<<2;
     static const uint8_t MatchAll = MatchClass|MatchSubClass|MatchProtocol;
 
+    /**
+     * @brief Constructs new interface by setting everything to zero.
+     */
     USBInterfaceType();
+
+    /**
+     * @brief Constructs new interface with given class, subclass,
+     * protocol and mask.
+     *
+     * Mask by default masks everything.
+     *
+     * @param bClass Interface mask.
+     * @param bSubClass Interface subclass.
+     * @param bProtocol Interface protocol.
+     * @param mask Interface mask.
+     */
     USBInterfaceType(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
+
+    /**
+     * @brief Constructs new interface from existing interface descriptor
+     * and sets mask.
+     *
+     * Mask by default masks everything.
+     *
+     * @param descriptor Interface descriptor.
+     * @param mask Interface mask.
+     */
     USBInterfaceType(const USBInterfaceDescriptor& descriptor, uint8_t mask = MatchAll);
+
+    /**
+     * @brief Constructs new interface from a string.
+     *
+     * @throw runtime_error If string is not in the correct interface format.
+     */
     USBInterfaceType(const std::string& type_string);
 
+    /**
+     * @brief Compares two interfaces for equality.
+     *
+     * Interfaces are equal if they have the same class, subclass,
+     * protocol and mask.
+     *
+     * @param rhs Interface to compare with.
+     * @return True if interfaces are equal, false otherwise.
+     */
     bool operator==(const USBInterfaceType& rhs) const;
+
+    /**
+     * @brief Checks whether non-masked parts of interface match rhs interface.
+     *
+     * @param rhs Interface to compare with.
+     * @return True if non-masked parts of interface match rhs interface,
+     * false otherwise.
+     */
     bool appliesTo(const USBInterfaceType& rhs) const;
 
+    /**
+     * @brief Returns string representation of interface.
+     *
+     * Internally calls static version of
+     * \link typeString() typeString()\endlink.
+     *
+     * @return String representation of interface.
+     */
     const std::string typeString() const;
+
+    /**
+     * @brief Returns string representation of interface.
+     *
+     * Synonym for \link typeString() typeString()\endlink.
+     *
+     * @return String representation of interface.
+     */
     const std::string toRuleString() const;
+
+    /**
+     * @brief Returns string representation of interface.
+     *
+     * Masked parts of interface are exchanged with \p *.\n
+     * Example: 00:*:*
+     *
+     * @param bClass Interface class.
+     * @param bSubClass Interface subclass.
+     * @param bProtocol Interface protocol.
+     * @param mask Interface mask, default value is to mask everything.
+     * @return String representation of interface.
+     */
     static const std::string typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
 
   private:
-    uint8_t _bClass;
-    uint8_t _bSubClass;
-    uint8_t _bProtocol;
-    uint8_t _mask;
+    uint8_t _bClass; /**< Interface class. */
+    uint8_t _bSubClass; /**< Interface subclass */
+    uint8_t _bProtocol; /**< Interface protocol */
+    uint8_t _mask; /**< least significant bit masks interface class,
+                        2nd least significant bit masks interface subclass and
+                        3rd least significant bit masks interface protocol. */
   };
 
   namespace Predicates DLL_PUBLIC
   {
+    /**
+     * @brief Checks whether non-masked parts of interface source match
+     * target interface.
+     *
+     * @param source First interface.
+     * @param target Second interface.
+     * @return True if non-masked parts of interface source match
+     * targer interface.
+     */
     template<>
     bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
     template<>
@@ -219,43 +441,66 @@ namespace usbguard
     virtual void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
   };
 
+  /**
+   * @brief Parses USB descriptors.
+   */
   class DLL_PUBLIC USBDescriptorParser
   {
   public:
     USBDescriptorParser(USBDescriptorParserHooks& hooks);
 
     /**
-     * Initiate parsing of USB descriptors from an input stream.
+     * @brief Initiate parsing of USB descriptors from an input stream.
      *
-     * Returns number of bytes succesfully parsed/processed from
-     * the stream.
+     * @param stream Stream to parse.
+     * @return Number of bytes succesfully parsed/processed from the stream.
      */
     size_t parse(std::istream& stream);
 
     /**
-     * Return a pointer to a USBDescriptor of type bDescriptorType that
-     * is stored in the USB descriptor state. If there's no such descriptor,
-     * then nullptr is returned.
+     * @brief Returns a pointer to a USBDescriptor of type bDescriptorType that
+     * is stored in the USB descriptor state.
+     *
+     * If there's no such descriptor, then \p nullptr is returned.
+     *
+     * @param bDescriptorType Type of descriptor.
+     * @return Pointer to a USBDescriptor of type \p bDescriptorType
+     * or \p nullptr if there's no such descriptor.
      */
     const std::vector<USBDescriptor>* getDescriptor(uint8_t bDescriptorType) const;
 
     /**
-     * Set the active instance of an USB descriptor of bDescriptorType type.
+     * @brief Set the active instance of an USB descriptor
+     * of type \p bDescriptorType.
+     *
+     * @param bDescriptorType Type of descriptor.
+     * @descriptor Descriptor to set.
      */
     void setDescriptor(uint8_t bDescriptorType, const USBDescriptor& descriptor);
 
     /**
-     * Delete the active instance of an USB descriptor of bDescriptorType type.
+     * @brief Delete the active instance of an USB descriptor
+     * of \p bDescriptorType type.
+     *
+     * @param bDescriptorType Type of descriptor to remove.
      */
     void delDescriptor(uint8_t bDescriptorType);
 
     /**
-     * Returns true if the descriptor state contains a USB descriptor of type bDescriptorType.
+     *
+     * @brief Checks whether descriptor state contains a USB descriptor of type
+     * \p bDescriptorType.
+     *
+     * @param bDescriptorType Type of descriptor.
+     * @return True if the descriptor state contains a USB descriptor of type
+     * bDescriptorType, false otherwise.
      */
     bool haveDescriptor(uint8_t bDescriptorType) const;
 
     /**
-     * Returns a vector of (bDescriptorType, count) pairs.
+     * @brief Returns a vector of (\p bDescriptorType, \p count) pairs.
+     *
+     * @return Vector of (\p bDescriptorType, \p count) pairs.
      */
     const std::vector<std::pair<uint8_t, size_t>> getDescriptorCounts() const;
 
