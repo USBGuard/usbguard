@@ -1,5 +1,0 @@
-[D-BUS Service]
-Name=org.usbguard1
-Exec=%{sbindir}%/usbguard-dbus --system
-SystemdService=dbus-org.usbguard.service
-

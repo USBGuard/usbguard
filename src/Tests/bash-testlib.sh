@@ -240,3 +240,26 @@ function execute()
 
   return $job_rc
 }
+
+function setup_test_dbus_policy() {
+  local config_file='/etc/dbus-1/system.d/test.org.usbguard1.conf'
+  if [[ -e "${config_file}" ]]; then
+    return
+  fi
+
+  sudo -n tee "${config_file}" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE busconfig PUBLIC
+  "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+<busconfig>
+  <policy user="root">
+    <allow own="org.usbguard1"/>
+  </policy>
+</busconfig>
+EOF
+  sudo -n dbus-send --system --dest=org.freedesktop.DBus --type=method_call \
+    /org org.freedesktop.DBus.ReloadConfig
+}
+
+setup_test_dbus_policy

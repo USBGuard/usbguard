@@ -28,6 +28,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include <cstddef>
 #include <cstdint>
@@ -125,7 +126,7 @@ namespace usbguard
     void addAllowedGroupname(const std::string& groupname, const IPCServer::AccessControl& ac);
 
   private:
-    std::unique_ptr<IPCServerPrivate> d_pointer;
+    std::vector<std::unique_ptr<IPCServerPrivate>> d_pointers;
   };
 } /* namespace usbguard */
 

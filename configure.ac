@@ -327,7 +327,7 @@ CPPFLAGS=$SAVE_CPPFLAGS
 #
 # GLib D-Bus
 #
-AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
+AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build with DBus support]), [], [with_dbus=yes])
 if test "x$with_dbus" = xyes; then
   #
   # Check for required D-Bus modules
