@@ -104,7 +104,7 @@ install:
 - tar -xzvf protobuf-cpp-3.11.3.tar.gz
 - CXXB=${CXX}
 - CXX=g++
-- pushd protobuf-3.11.3 && ./configure && make && sudo make install && sudo ldconfig && popd
+- pushd protobuf-3.11.3 && ./configure && make -j$(nproc) && sudo make install && sudo ldconfig && popd
 - CXX=${CXXB}
 before_script:
 - ./autogen.sh
