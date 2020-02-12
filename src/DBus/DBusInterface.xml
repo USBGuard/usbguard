@@ -83,7 +83,9 @@
 
       Append a new rule to the current policy. Using the parent_id
       parameter, the rule can be inserted anywhere in the policy,
-      not only at the end. When the rule is successfully appended,
+      not only at the end. 4294967293 (UINT32_MAX-2) is the last possible
+      ID and thus, when using this as parent id, the rule is effectively
+      appended to the list of rules. When the rule is successfully appended,
       the id assigned to the new rule is returned.
      -->
     <method name="appendRule">
@@ -206,6 +208,9 @@
        @target_new: Current authorization target in numerical form.
        @device_rule: Device specific rule.
        @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
+                 Reserved values are:
+                     4294967294 (UINT32_MAX - 1) for an implicit rule, e.g. 
+                     ImplicitPolicyTarget or InsertedDevicePolicy.
        @attributes: A dictionary of device attributes and their values.
 
       Notify about a change of a USB device authorization target.
