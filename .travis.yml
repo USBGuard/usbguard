@@ -7,7 +7,6 @@ compiler:
 - gcc
 os: linux
 dist: bionic
-sudo: required
 matrix:
   include:
     - os: linux
