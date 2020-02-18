@@ -189,8 +189,7 @@ namespace usbguard
     std::function<std::string(const std::string&, const struct dirent*)> filter,
     std::function<int(const std::string&, const std::string&)> loader,
     std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
-      [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool
-  {
+  [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool {
     return a.first < b.first;
   },
   bool directory_required = false);
@@ -219,6 +218,12 @@ namespace usbguard
    *  - resolve /foo/../bar/ to /bar
    */
   std::string normalizePath(const std::string& path);
+
+  /*
+   * Get files in directory
+   */
+  std::vector<std::string> getConfigsFromDir(const std::string& path);
+
 
   /*
    * Restorer class

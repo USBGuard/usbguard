@@ -33,6 +33,8 @@
 namespace usbguard
 {
 
+  Atomic<uint32_t> RuleSet::_id_next {0};
+
   RuleSet::RuleSet(Interface* const interface_ptr)
     : _interface_ptr(interface_ptr)
   {
@@ -82,6 +84,7 @@ namespace usbguard
      * assigned, do it now. Otherwise update the sequence
      * number counter so that we don't generate a duplicit
      * one if assignID() gets called in the future.
+     *
      */
     if (rule_ptr->getRuleID() == Rule::DefaultID) {
       assignID(rule_ptr);
@@ -199,11 +202,15 @@ namespace usbguard
   std::vector<std::shared_ptr<const Rule>> RuleSet::getRules()
   {
     std::vector<std::shared_ptr<const Rule>> rules;
+#if 0
 
     for (auto const& rule : _rules) {
       rules.push_back(rule);
     }
 
+#else
+    std::copy(_rules.begin(), _rules.end(), std::back_inserter(rules));
+#endif
     return rules;
   }
 

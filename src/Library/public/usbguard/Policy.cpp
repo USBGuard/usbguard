@@ -28,67 +28,158 @@ namespace usbguard
 {
   Policy::Policy()
   {
-    _ruleset_ptr = nullptr;
+    _rulesets_ptr = std::vector<std::shared_ptr<RuleSet>>();
   }
 
-  void Policy::setRuleSet(std::shared_ptr<RuleSet> ptr)
+  void Policy::setRuleSet(std::vector<std::shared_ptr<RuleSet>> ptr)
   {
-    _ruleset_ptr = ptr;
+    _rulesets_ptr = ptr;
   }
 
-  std::shared_ptr<RuleSet> Policy::getRuleSet()
+  std::vector<std::shared_ptr<RuleSet>> Policy::getRuleSet()
   {
-    return _ruleset_ptr;
+    return _rulesets_ptr;
   }
 
   void Policy::setDefaultTarget(Rule::Target target)
   {
-    _ruleset_ptr->setDefaultTarget(target);
+    _defaultTarget = target;
+
+    for (auto ruleset : _rulesets_ptr) {
+      ruleset->setDefaultTarget(target);
+    }
   }
 
   Rule::Target Policy::getDefaultTarget() const
   {
-    return _ruleset_ptr->getDefaultTarget();
+    return _defaultTarget;
   }
 
-  uint32_t Policy::appendRule(const Rule& rule, uint32_t parent_id)
+  uint32_t Policy::appendRule(const Rule& _rule, uint32_t parent_id)
   {
-    return _ruleset_ptr->appendRule(rule, parent_id);
+    USBGUARD_LOG(Trace) << "parent_id=" << parent_id;
+    auto rule = std::make_shared<Rule>(_rule);
+
+    // If the parent_id is set to Rule::LastID then we get the the ID of the last rule in rulesets
+    if (parent_id == Rule::LastID) {
+      auto ruleset = _rulesets_ptr.back();
+
+      if (rule->getRuleID() == Rule::DefaultID) {
+        assignID(rule);
+      }
+
+      auto rules = ruleset->getRules();
+      return ruleset->appendRule(*rule, rules.back()->getRuleID());
+    }
+
+    for (auto ruleset : _rulesets_ptr) {
+      try {
+        // Find if rule with parent_id is in the ruleset
+        auto _parent_rule = ruleset->getRule(parent_id);
+
+        /* if the method did not throw the exception that means the parent_id is
+        in the ruleset and now we will try to append the rule */
+        if (rule->getRuleID() == Rule::DefaultID) {
+          assignID(rule);
+        }
+
+        return ruleset->appendRule(*rule, parent_id);
+      }
+      catch (const std::exception& e) {
+        continue;
+      }
+    }
+
+    throw Exception("Policy append", "rule", "Invalid parent ID");
   }
 
   uint32_t Policy::upsertRule(const Rule& match_rule, const Rule& new_rule, const bool parent_insensitive)
   {
-    return _ruleset_ptr->upsertRule(match_rule, new_rule, parent_insensitive);
+    for (auto ruleset : _rulesets_ptr) {
+      try {
+        // Find if rule with parent_id is in the ruleset
+        auto _parent_rule = ruleset->getRule(match_rule.getRuleID());
+        /* if the method did not throw the exception that means the parent_id is
+        in the ruleset and now we will try to upsert the rule */
+        return ruleset->upsertRule(match_rule, new_rule, parent_insensitive);
+      }
+      catch (const std::exception& e) {
+        continue;
+      }
+    }
+
+    throw Exception("Policy upsert", "rule", "Invalid parent ID");
   }
 
   std::shared_ptr<Rule> Policy::getRule(uint32_t id)
   {
-    return _ruleset_ptr->getRule(id);
+    for (auto ruleset_item : _rulesets_ptr) {
+      try {
+        return ruleset_item->getRule(id);
+      }
+      catch (const std::exception& e) {
+        continue;
+      }
+    }
+
+    throw Exception("Policy lookup", "rule id", "id doesn't exist");
   }
 
   bool Policy::removeRule(uint32_t id)
   {
-    return _ruleset_ptr->removeRule(id);
+    for (auto ruleset_item : _rulesets_ptr) {
+      try {
+        return ruleset_item->removeRule(id);
+      }
+      catch (const std::exception& e) {
+        continue;
+      }
+    }
+
+    throw Exception("Policy remove", "rule id", "id doesn't exist");
   }
 
   std::shared_ptr<Rule> Policy::getFirstMatchingRule(std::shared_ptr<const Rule> device_rule, uint32_t from_id) const
   {
-    return _ruleset_ptr->getFirstMatchingRule(device_rule, from_id);
+    // Try to find Rule with ID different then Rule:ImplicitID.
+    for (auto ruleset : _rulesets_ptr) {
+      // try to get matching rule
+      auto matchingRule = ruleset->getFirstMatchingRule(device_rule, from_id);
+
+      // if it is not the implicit rule return the rule
+      if (matchingRule->getRuleID() != Rule::ImplicitID) {
+        return matchingRule;
+      }
+    }
+
+    // if we have not found the rule return the implicit one
+    return _rulesets_ptr.front()->getFirstMatchingRule(device_rule, from_id);
   }
 
   std::vector<std::shared_ptr<const Rule>> Policy::getRules()
   {
-    return _ruleset_ptr->getRules();
+    std::vector<std::shared_ptr<const Rule>> rules;
+
+    // copy all rules from ruleset to rules vector
+    for (auto ruleset : _rulesets_ptr) {
+      // obtain vector of rules
+      auto _rules = ruleset->getRules();
+      // copy them to buffer which will be returned
+      std::copy(_rules.begin(), _rules.end(), std::back_inserter(rules));
+    }
+
+    // return rules
+    return rules;
   }
 
   uint32_t Policy::assignID(std::shared_ptr<Rule> rule)
   {
-    return _ruleset_ptr->assignID(rule);
+    return _rulesets_ptr.front()->assignID(rule);
   }
 
   uint32_t Policy::assignID()
   {
-    return _ruleset_ptr->assignID();
+    return _rulesets_ptr.front()->assignID();
   }
 
   std::string Policy::eventTypeToString(Policy::EventType event)
@@ -105,6 +196,13 @@ namespace usbguard
 
     default:
       throw USBGUARD_BUG("unknown Policy::EventType value");
+    }
+  }
+
+  void Policy::save(void)
+  {
+    for (auto ruleset : _rulesets_ptr) {
+      ruleset->save();
     }
   }
 } /* namespace usbguard */

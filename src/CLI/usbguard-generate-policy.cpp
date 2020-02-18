@@ -155,7 +155,7 @@ namespace usbguard
     generator.setExplicitCatchAllRule(with_catchall,
       Rule::targetFromString(catchall_target));
     generator.generate();
-    auto ruleset = generator.refRuleSet();
+    auto rulesets = generator.refRuleSet();
     char array[HOST_NAME_MAX];
     int rc = gethostname(array, HOST_NAME_MAX);
     std::string hostname;
@@ -171,7 +171,9 @@ namespace usbguard
     }
 
     if (!ldif) {
-      ruleset->serialize(std::cout);
+      for (auto ruleset : rulesets) {
+        ruleset->serialize(std::cout);
+      }
     }
     else if (ldif && with_base) {
       std::map<std::string, std::string> values = {
@@ -180,7 +182,7 @@ namespace usbguard
         {"USBGUARD_BASE", base},
         {"OBJCLASS", objclass}
       };
-      LDAPUtil::serializeLDIF(ruleset, std::cout, values);
+      LDAPUtil::serializeLDIF(rulesets, std::cout, values);
     }
     else {
       std::cerr << "If you want to generate ldif you must specify USBGuardBase" << std::endl;

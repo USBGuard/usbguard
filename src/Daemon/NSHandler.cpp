@@ -122,7 +122,7 @@ namespace usbguard
     return *NSHandler::_self;
   }
 
-  std::shared_ptr<RuleSet> NSHandler::getRuleSet(Interface* const interface_ptr)
+  std::vector<std::shared_ptr<RuleSet>> NSHandler::getRuleSet(Interface* const interface_ptr)
   {
     RuleSetFactory::setInterface(interface_ptr);
     return RuleSetFactory::generateRuleSetBySource(_source);
@@ -133,9 +133,19 @@ namespace usbguard
     _rulesPath = path;
   }
 
+  void NSHandler::setRulesDirPath(std::string& ruledir_path)
+  {
+    _rulesDirPath = ruledir_path;
+  }
+
   std::string& NSHandler::getRulesPath()
   {
     return _rulesPath;
+  }
+
+  std::string& NSHandler::getRulesDirPath()
+  {
+    return _rulesDirPath;
   }
 
   void NSHandler::parseNSSwitch()

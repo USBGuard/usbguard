@@ -42,7 +42,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <grp.h>
@@ -57,6 +56,7 @@ namespace usbguard
    */
   static const std::vector<std::string> G_config_known_names = {
     "RuleFile",
+    "RuleFolder",
     "ImplicitPolicyTarget",
     "PresentDevicePolicy",
     "PresentControllerPolicy",
@@ -132,7 +132,7 @@ namespace usbguard
     _config.close();
   }
 
-  int Daemon::checkPermissions(const std::string& path,
+  int Daemon::checkFilePermissions(const std::string& path,
     const mode_t permissions)
   {
     struct stat file_stat;
@@ -172,12 +172,23 @@ namespace usbguard
     return 0;
   }
 
+  void Daemon::checkFolderPermissions(const std::string& path,
+    const mode_t permissions)
+  {
+    auto configFiles = getConfigsFromDir(path);
+
+    for (auto configFile : configFiles) {
+      auto config_path = configFile;
+      checkFilePermissions(config_path, permissions);
+    }
+  }
+
   void Daemon::loadConfiguration(const std::string& path, const bool check_permissions)
   {
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
 
     if (check_permissions) {
-      checkPermissions(path, (S_IRUSR | S_IWUSR));
+      checkFilePermissions(path, (S_IRUSR | S_IWUSR));
     }
 
     _config.open(path, /*readonly=*/true);
@@ -189,10 +200,28 @@ namespace usbguard
       const std::string& rulefile_path = _config.getSettingValue("RuleFile");
 
       if (check_permissions) {
-        checkPermissions(rulefile_path, (S_IRUSR | S_IWUSR));
+        checkFilePermissions(rulefile_path, (S_IRUSR | S_IWUSR));
       }
 
       _nss.setRulesPath(rulefile_path);
+    }
+
+    /* RuleDir */
+    if (_config.hasSettingValue("RuleFolder")) {
+      std::string ruledir_path = _config.getSettingValue("RuleFolder");
+
+      /* Check proper ending in path and correct it if corrupted */
+      if (ruledir_path.back() != '/') {
+        ruledir_path.append("/");
+      }
+
+      ruledir_path = normalizePath(ruledir_path);
+
+      if (check_permissions) {
+        checkFolderPermissions(ruledir_path, (S_IRUSR | S_IWUSR));
+      }
+
+      _nss.setRulesDirPath(ruledir_path);
     }
 
     loadRules();
@@ -367,10 +396,12 @@ namespace usbguard
   void Daemon::loadRules()
   {
     USBGUARD_LOG(Info) << "Loading RuleSet";
-    auto ruleset = _nss.getRuleSet(this);
+    auto rulesets = _nss.getRuleSet(this);
 
     try {
-      ruleset->load();
+      for (auto ruleset : rulesets) {
+        ruleset->load();
+      }
     }
     catch (const RuleParserError& ex) {
       throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
@@ -382,7 +413,7 @@ namespace usbguard
       throw Exception("Rules", _nss.getSourceInfo(), "unknown exception");
     }
 
-    _policy.setRuleSet(ruleset);
+    _policy.setRuleSet(rulesets);
   }
 
   void Daemon::loadIPCAccessControlFiles(const std::string& path)
@@ -648,7 +679,7 @@ namespace usbguard
     const uint32_t id = _policy.upsertRule(match_rule, new_rule, parent_insensitive);
 
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.getRuleSet()->save();
+      _policy.save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -702,10 +733,10 @@ namespace usbguard
       << " parent_id=" << parent_id;
     const Rule rule = Rule::fromString(rule_spec);
     /* TODO: reevaluate the firewall rules for all active devices */
-    const uint32_t id = _policy.getRuleSet()->appendRule(rule, parent_id);
+    const uint32_t id = _policy.appendRule(rule, parent_id);
 
     if (_config.hasSettingValue("RuleFile") && permanent) {
-      _policy.getRuleSet()->save();
+      _policy.save();
     }
 
     USBGUARD_LOG(Trace) << "return: id=" << id;
@@ -718,7 +749,7 @@ namespace usbguard
     _policy.removeRule(id);
 
     if (_config.hasSettingValue("RuleFile")) {
-      _policy.getRuleSet()->save();
+      _policy.save();
     }
   }
 
@@ -727,9 +758,11 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "entry: label=" << label;
     std::vector<Rule> rules;
 
-    for (auto const& rule : _policy.getRuleSet()->getRules()) {
-      if (label.empty() || rule->getLabel() == label) {
-        rules.push_back(*rule);
+    for (auto ruleset : _policy.getRuleSet()) {
+      for (auto const& rule : ruleset->getRules()) {
+        if (label.empty() || rule->getLabel() == label) {
+          rules.push_back(*rule);
+        }
       }
     }
 

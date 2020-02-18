@@ -514,6 +514,29 @@ namespace usbguard
 
     return normalized_path;
   }
+
+  std::vector<std::string> getConfigsFromDir(const std::string& path)
+  {
+    std::vector<std::string> rulefile_list;
+    DIR* dir_fd = opendir(path.c_str());
+    struct dirent* dp;
+    struct stat path_stat;
+    std::string file_name;
+
+    while ((dp = readdir(dir_fd)) != NULL) { // iterate over directory for file entries
+      file_name = path + '/' + dp->d_name;
+
+      if (stat(file_name.c_str(), &path_stat) == 0) {
+        if (S_ISREG(path_stat.st_mode)) { // check if entry is a file
+          rulefile_list.push_back(file_name); // add it to output
+        }
+      }
+    }
+
+    // cleanup
+    closedir(dir_fd);
+    return rulefile_list;
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

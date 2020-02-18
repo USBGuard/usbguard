@@ -38,8 +38,8 @@ namespace usbguard
 
     Policy();
 
-    void setRuleSet(std::shared_ptr<RuleSet> ptr);
-    std::shared_ptr<RuleSet> getRuleSet();
+    void setRuleSet(std::vector<std::shared_ptr<RuleSet>> ptr);
+    std::vector<std::shared_ptr<RuleSet>> getRuleSet();
 
     void setDefaultTarget(Rule::Target target);
     Rule::Target getDefaultTarget() const;
@@ -52,11 +52,14 @@ namespace usbguard
     std::vector<std::shared_ptr<const Rule>> getRules();
     uint32_t assignID(std::shared_ptr<Rule> rule);
     uint32_t assignID();
+    void save(void);
+
 
     static std::string eventTypeToString(EventType event);
   private:
 
-    std::shared_ptr<RuleSet> _ruleset_ptr;
+    std::vector<std::shared_ptr<RuleSet>> _rulesets_ptr;
+    Rule::Target _defaultTarget;
   };
 } /* namespace usbguard */
 

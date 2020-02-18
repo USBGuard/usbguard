@@ -45,8 +45,8 @@ namespace usbguard
 
     static void setInterface(Interface* ptr);
 
-    static std::shared_ptr<RuleSet> generateDefaultRuleSet();
-    static std::shared_ptr<RuleSet> generateRuleSetBySource(NSHandler::SourceType type);
+    static std::vector<std::shared_ptr<RuleSet>> generateDefaultRuleSet();
+    static std::vector<std::shared_ptr<RuleSet>> generateRuleSetBySource(NSHandler::SourceType type);
 
   private:
     static Interface* interface_ptr;

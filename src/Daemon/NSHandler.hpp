@@ -52,8 +52,12 @@ namespace usbguard
     ~NSHandler();
 
     void setRulesPath(const std::string& path);
+    void setRulesDirPath(std::string& ruledir_path);
+
     std::string& getRulesPath();
-    std::shared_ptr<RuleSet> getRuleSet(Interface* const interface_ptr);
+    std::string& getRulesDirPath();
+
+    std::vector<std::shared_ptr<RuleSet>> getRuleSet(Interface* const interface_ptr);
     void parseNSSwitch();
 
     void setNSSwitchPath(const std::string& path);
@@ -73,6 +77,7 @@ namespace usbguard
     std::string _nsswitch_path;
     SourceType _source;
     std::string _rulesPath;
+    std::string _rulesDirPath;
 
 #ifdef HAVE_LDAP
     std::shared_ptr<LDAPHandler> _ldap = nullptr;

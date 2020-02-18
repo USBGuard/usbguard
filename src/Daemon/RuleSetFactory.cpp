@@ -20,8 +20,12 @@
   #include <build-config.h>
 #endif
 
+#include <algorithm>
+
 #include "usbguard/RuleSet.hpp"
 #include "usbguard/MemoryRuleSet.hpp"
+
+#include "Common/Utility.hpp"
 
 #include "FileRuleSet.hpp"
 
@@ -43,21 +47,32 @@ namespace usbguard
     RuleSetFactory::interface_ptr = ptr;
   }
 
-  std::shared_ptr<RuleSet> RuleSetFactory::generateDefaultRuleSet()
+  std::vector<std::shared_ptr<RuleSet>> RuleSetFactory::generateDefaultRuleSet()
   {
-    auto rule_set = std::make_shared<MemoryRuleSet>(RuleSetFactory::interface_ptr);
-    return  std::dynamic_pointer_cast<RuleSet>(rule_set);
+    std::shared_ptr<MemoryRuleSet> rule_set = std::make_shared<MemoryRuleSet>(RuleSetFactory::interface_ptr);
+    std::shared_ptr<RuleSet> _rule_set = std::dynamic_pointer_cast<RuleSet>(rule_set);
+    std::vector<std::shared_ptr<RuleSet>> vec;
+    vec.push_back(_rule_set);
+    return vec;
   }
 
-  std::shared_ptr<RuleSet> RuleSetFactory::generateRuleSetBySource(NSHandler::SourceType type)
+  std::vector<std::shared_ptr<RuleSet>> RuleSetFactory::generateRuleSetBySource(NSHandler::SourceType type)
   {
     NSHandler& ns = NSHandler::getRef();
-    std::shared_ptr<RuleSet> ruleSet(nullptr);
+    std::vector<std::shared_ptr<RuleSet>> ruleSet;
 
     switch (type) {
     case NSHandler::SourceType::LOCAL:
       if (ns.getRulesPath() != "") {
-        ruleSet.reset(new FileRuleSet(interface_ptr, ns.getRulesPath()));
+        ruleSet.emplace_back(new FileRuleSet(interface_ptr, ns.getRulesPath()));
+      }
+
+      if (!ns.getRulesDirPath().empty()) {
+        for (auto path : getConfigsFromDir(ns.getRulesDirPath())) {
+          auto frs = std::make_shared<FileRuleSet>(interface_ptr, path);
+          auto rs = std::dynamic_pointer_cast<RuleSet>(frs);
+          ruleSet.push_back(rs);
+        }
       }
       else {
         USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
@@ -68,7 +83,7 @@ namespace usbguard
 #ifdef HAVE_LDAP
 
     case NSHandler::SourceType::LDAP:
-      ruleSet.reset(new LDAPRuleSet(interface_ptr, ns.getLDAPHandler()));
+      ruleSet.emplace_back(new LDAPRuleSet(interface_ptr, ns.getLDAPHandler()));
       break;
 #endif
 
