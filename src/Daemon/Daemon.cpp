@@ -613,7 +613,7 @@ namespace usbguard
       }
       while (true);
 
-      throw Exception("Deamonize", "signal",  "Waiting on pid file write timeout!");
+      throw Exception("Daemonize", "signal",  "Waiting on pid file write timeout!");
     }
 
     /* Now we are forked */
