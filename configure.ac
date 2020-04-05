@@ -325,17 +325,17 @@ AC_LANG_POP
 CPPFLAGS=$SAVE_CPPFLAGS
 
 #
-# GLib D-Bus
+# GDBus
 #
 AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
 if test "x$with_dbus" = xyes; then
   #
   # Check for required D-Bus modules
   #
-  PKG_CHECK_MODULES([dbus], [dbus-1 dbus-glib-1 >= 0.100 gio-2.0],
-  [AC_DEFINE([HAVE_DBUS], [1], [Required GLib DBus API available])
+  PKG_CHECK_MODULES([dbus], [dbus-1 gio-2.0],
+  [AC_DEFINE([HAVE_DBUS], [1], [Required GDBus API available])
   dbus_summary="system-wide; $dbus_CFLAGS $dbus_LIBS"],
-  [AC_MSG_FAILURE([Required D-Bus modules (dbus-1, dbus-glib-1, gio-2.0) not found!])]
+  [AC_MSG_FAILURE([Required D-Bus modules (dbus-1, gio-2.0) not found!])]
   )
 
   #
@@ -702,7 +702,7 @@ echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"
 echo "      Catch: $catch_summary"
 echo "      PEGTL: $pegtl_summary; version <= 2.6.0: $have_pegtl_lte_260"
-echo " GLib D-Bus: $dbus_summary"
+echo "      GDBus: $dbus_summary"
 echo "   umockdev: $umockdev_summary"
 echo
 echo "## Directories"
