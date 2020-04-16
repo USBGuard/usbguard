@@ -59,7 +59,7 @@ namespace usbguard
     stream << "  -p, --with-ports       Generate port specific rules for all devices." << std::endl;
     stream << "  -P, --no-ports-sn      Don't generate port specific rule for devices" << std::endl;
     stream << "                         without an iSerial value." << std::endl;
-    stream << "  -d, --devpath          Only generate a rule for the device at the specified" << std::endl;
+    stream << "  -d, --devpath <D>      Only generate a rule for the device at the specified" << std::endl;
     stream << "                         sub path of /sys." << std::endl;
     stream << "  -t, --target <T>       Generate an explicit \"catch all\" rule with the" << std::endl;
     stream << "                         specified target. Possible targets: allow, block, reject." << std::endl;

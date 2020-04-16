@@ -11,6 +11,10 @@ usbguard - USBGuard command-line interface
 
 usbguard [OPTIONS] <subcommand> [SUBCOMMAND-OPTIONS] ...
 
+usbguard get-parameter 'name'
+
+usbguard set-parameter 'name' 'value'
+
 usbguard list-devices
 
 usbguard allow-device 'id' | 'rule'
@@ -43,7 +47,30 @@ It also provides a tool for generating initial USBGuard policies based on USB de
 
 == SUBCOMMANDS
 
-=== *list-devices*
+=== *get-parameter* ['OPTIONS'] 'name'
+Get the value of a runtime parameter.
+Parameter 'name' is one of 'InsertedDevicePolicy' and 'ImplicitPolicyTarget'.
+
+Available options:
+
+*-h, --help*::
+    Show help.
+
+
+=== *set-parameter* ['OPTIONS'] 'name' 'value'
+Set the value of a runtime parameter.
+Parameter 'name' is one of 'InsertedDevicePolicy' and 'ImplicitPolicyTarget'.
+
+Available options:
+
+*-v, --verbose*::
+    Print the previous and new attribute value.
+
+*-h, --help*::
+    Show help.
+
+
+=== *list-devices* ['OPTIONS']
 List all USB devices recognized by the USBGuard daemon.
 
 Available options:
@@ -58,7 +85,7 @@ Available options:
     Show help.
 
 
-=== *allow-device* ['OPTIONS'] <'id' | 'rule'>
+=== *allow-device* ['OPTIONS'] < 'id' | 'rule' >
 Authorize a device identified by either the device 'id' or a specific 'rule' to interact with the system. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
@@ -71,7 +98,7 @@ Available options:
     Show help.
 
 
-=== *block-device* ['OPTIONS'] <'id' | 'rule'>
+=== *block-device* ['OPTIONS'] < 'id' | 'rule' >
 Deauthorize a device identified by either the device 'id' or a specific 'rule'. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
@@ -84,7 +111,7 @@ Available options:
     Show help.
 
 
-=== *reject-device* ['OPTIONS'] <'id' | 'rule'>
+=== *reject-device* ['OPTIONS'] < 'id' | 'rule' >
 Deauthorize and remove a device identified by either the device 'id' or a specific 'rule'. A rule might apply to multiple devices. Note that the device 'id' refers to the very first number of the list-devices command output.
 
 Available options:
@@ -105,6 +132,9 @@ Available options:
 *-d, --show-devices*::
     Show all devices which are affected by the specific rule.
 
+*-l, --label* 'label'::
+    Only show rules having a specific label.
+
 *-h, --help*::
     Show help.
 
@@ -116,6 +146,9 @@ Available options:
 
 *-a, --after* 'id'::
     Append the new rule after a rule with the specified rule 'id'.
+
+*-t, --temporary*::
+    Make the decision temporary. The rule policy file will not be updated.
 
 *-h, --help*::
     Show help.
@@ -145,6 +178,9 @@ Available options:
     This is a security measure to limit devices that cannot be uniquely identified to connect only via a specific port.
     This makes it harder to bypass the policy since the real device will occupy the allowed USB port most of the time.
 
+*-d, --devpath* 'devpath'::
+    Only generate a rule for the device at the specified sub path of /sys.
+
 *-t, --target* 'target'::
     Generate an explicit "catch all" rule with the specified target.
     The target can be one of the following values: *allow*, *block*, *reject*
@@ -154,6 +190,19 @@ Available options:
 
 *-H, --hash-only*::
     Generate a hash-only policy.
+
+*-L, --ldif*::
+    Generate a ldif policy for LDAP.
+
+*-b, --usbguardbase* 'base'::
+    Generate a ldif policy for LDAP with this base.
+    This option is required when --ldif was specified.
+
+*-o, --objectclass* 'objectclass'::
+    Generate a ldif policy for LDAP with this objectClass.
+
+*-n, --name-prefix* 'prefix'::
+    Generate a ldif policy for LDAP with this name prefix.
 
 *-h, --help*::
     Show help.
@@ -212,6 +261,9 @@ Available options:
 *-P, --parameters* 'privileges'::
     Run-time parameter related privileges.
 
+*-N, --no-root-check*::
+    Disable root privileges checking.
+
 *-h, --help*::
     Show help.
 
@@ -237,6 +289,9 @@ Available options:
 
 *-g, --group*::
     The specified 'name' represents a groupname or GID.
+
+*-N, --no-root-check*::
+    Disable root privileges checking.
 
 *-h, --help*::
     Show help.
