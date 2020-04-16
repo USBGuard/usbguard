@@ -202,3 +202,8 @@ AuditBackend=FileAudit
 #
 AuditFilePath=%localstatedir%/log/usbguard/usbguard-audit.log
 
+#
+# Hides personally identifiable information such as device serial numbers and
+# hashes of descriptors (which include the serial number) from audit entries.
+#
+HidePII=false
