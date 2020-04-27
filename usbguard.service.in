@@ -19,7 +19,6 @@ ProtectControlGroups=yes
 ProtectHome=yes
 ProtectKernelModules=yes
 ProtectSystem=yes
-PIDFile=/run/usbguard.pid
 ReadOnlyPaths=-/
 ReadWritePaths=-/dev/shm -%localstatedir%/log/usbguard -/tmp -%sysconfdir%/usbguard/
 Restart=on-failure
