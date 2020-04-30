@@ -535,6 +535,13 @@ namespace usbguard
           << "reading from uevent source would block thread execution";
         return;
       }
+      else if (saved_errno == ENOBUFS) {
+        USBGUARD_LOG(Error) << "ueventProcessRead: "
+          << "failed to read pending uevent (returning): "
+          << "rc=" << rc << " errno=" << saved_errno;
+        usleep(1000);
+        return;
+      }
       else {
         USBGUARD_LOG(Error) << "ueventProcessRead: "
           << "failed to read pending uevent: "
