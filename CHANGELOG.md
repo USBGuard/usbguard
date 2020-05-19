@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.7.7 - 2020-05-19
+
+### Added
+- Added readwritepath to service file
+- Added match-all keyword to rules language
+- Added rules.d feature
+ - daemon can load multiple rule files from rules.d/
+- Included with-connect-type in dbus signal
+
+### Fixed/Changed
+- Fixed sigwaitinfo handling
+- Fixed possible data corruption on stack with appendRule via dbus
+- Fixed ENOBUFS errno handling on netlink socket
+ - daemon can survive and wait until socket is readable again
+
+### Removed
+- Dropped unused PIDFile from service file
+- Dropped deprecated dbus-glib dependency
+
 
 ## 0.7.6 - 2019-11-08
 
