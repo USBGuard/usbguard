@@ -63,7 +63,7 @@ namespace usbguard
 
     switch (type) {
     case NSHandler::SourceType::LOCAL:
-      if (ns.getRulesPath() != "") {
+      if (!ns.getRulesPath().empty()) {
         ruleSet.emplace_back(new FileRuleSet(interface_ptr, ns.getRulesPath()));
       }
 
@@ -74,7 +74,7 @@ namespace usbguard
           ruleSet.push_back(rs);
         }
       }
-      else {
+      else if (ns.getRulesPath().empty()){
         USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
         ruleSet = generateDefaultRuleSet();
       }
