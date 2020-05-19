@@ -69,7 +69,7 @@ namespace usbguard
       }
 
       auto rules = ruleset->getRules();
-      return ruleset->appendRule(*rule, rules.back()->getRuleID());
+      return ruleset->appendRule(*rule);
     }
 
     for (auto ruleset : _rulesets_ptr) {
