@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.7.8 - 2020-05-20
+
+### Fixed
+- Fixed segfaults with rules.d feature
+
+
 ## 0.7.7 - 2020-05-19
 
 ### Added
