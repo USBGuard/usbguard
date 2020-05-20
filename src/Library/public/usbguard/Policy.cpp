@@ -93,22 +93,34 @@ namespace usbguard
     throw Exception("Policy append", "rule", "Invalid parent ID");
   }
 
+  /*
+   * the following function is called as a consequence of allowing device permanently
+   * new-rule is exact Rule object constructed from device with all his attributes
+   * and with proper target {allow|block|reject}
+   * match-rule is Rule object with match target, it is also constructed from the same device as
+   * the new-rule but it contains minimal subset of attributes
+   * we are trying to match our match-rule against each rule in all rulesets
+   * if our match-rule can be applied to some rule in a ruleset
+   * we will replace the matched rule with our new-rule so we are basically
+   * doing an update of existing rule in case when it differs in
+   * ports, parent or perhaps some other attributes that are not specifying
+   * device itself
+   */
   uint32_t Policy::upsertRule(const Rule& match_rule, const Rule& new_rule, const bool parent_insensitive)
   {
-    for (auto ruleset : _rulesets_ptr) {
-      try {
-        // Find if rule with parent_id is in the ruleset
-        auto _parent_rule = ruleset->getRule(match_rule.getRuleID());
-        /* if the method did not throw the exception that means the parent_id is
-        in the ruleset and now we will try to upsert the rule */
-        return ruleset->upsertRule(match_rule, new_rule, parent_insensitive);
-      }
-      catch (const std::exception& e) {
-        continue;
-      }
+    if (_rulesets_ptr.empty()) {
+      throw Exception("Policy upsert", "rule", "There is no ruleset to upsert into");
     }
 
-    throw Exception("Policy upsert", "rule", "Invalid parent ID");
+    for (auto ruleset : _rulesets_ptr) {
+      uint32_t id = ruleset->upsertRule(match_rule, new_rule, parent_insensitive);
+      if (id == Rule::DefaultID)
+	continue;
+      else
+	return id;
+    }
+
+    return _rulesets_ptr.back()->appendRule(new_rule, Rule::LastID, /*lock*/true);
   }
 
   std::shared_ptr<Rule> Policy::getRule(uint32_t id)

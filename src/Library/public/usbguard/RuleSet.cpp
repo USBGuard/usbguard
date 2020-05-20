@@ -147,7 +147,7 @@ namespace usbguard
       return id;
     }
     else {
-      return appendRule(new_rule, Rule::LastID, /*lock=*/false);
+      return Rule::DefaultID;
     }
   }
 
