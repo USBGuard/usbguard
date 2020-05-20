@@ -14,7 +14,13 @@ RuleFile=%sysconfdir%/usbguard/rules.conf
 #
 # The USBGuard daemon will use this folder to load the policy
 # rule set from it and to write new rules received via the
-# IPC interface.
+# IPC interface. Usually, we set the option to
+# /etc/usbguard/rules.d/. The USBGuard daemon is supposed to
+# behave like any other standard Linux daemon therefore it
+# loads rule files in alpha-numeric order. File names inside
+# RuleFolder directory should start with a two-digit number
+# prefix indicating the position, in which the rules are
+# scanned by the daemon.
 #
 # RuleFolder=/path/to/rulesfolder/
 #
