@@ -523,6 +523,10 @@ namespace usbguard
     struct stat path_stat;
     std::string file_name;
 
+    if (!dir_fd) {
+      throw Exception("getConfigsFromDir", "opendir: " + path , strerror(errno));
+    }
+
     while ((dp = readdir(dir_fd)) != NULL) { // iterate over directory for file entries
       file_name = path + '/' + dp->d_name;
 
