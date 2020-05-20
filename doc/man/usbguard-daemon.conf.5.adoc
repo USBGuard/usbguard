@@ -21,7 +21,10 @@ It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8
 
 *RuleFolder*='path'::
     The USBGuard daemon will use this folder to load the policy rule set from
-    it and to write new rules received via the IPC interface.
+    it and to write new rules received via the IPC interface. Usually, we set
+    the option to `/etc/usbguard/rules.d/`. The USBGuard daemon is supposed to
+    behave like any other standard Linux daemon therefore it loads rule files in
+    alpha-numeric order.
 
 *ImplicitPolicyTarget*='target'::
     How to treat USB devices that don't match any rule in the policy. Target
