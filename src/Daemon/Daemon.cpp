@@ -1029,7 +1029,9 @@ namespace usbguard
     }
 
     /* Generate a match rule for upsert */
-    std::shared_ptr<Rule> match_rule = device->getDeviceRule(false, false, /*match_rule=*/true);
+    std::shared_ptr<Rule> match_rule = device->getDeviceRule(/*with-port=*/false,
+							     /*with-parent-hash=*/false,
+							     /*match_rule=*/true);
     const std::string match_spec = match_rule->toString();
     USBGUARD_LOG(Debug) << "match_spec=" << match_spec;
     /* Generate new device rule */
