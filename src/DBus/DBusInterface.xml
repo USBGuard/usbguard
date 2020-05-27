@@ -213,7 +213,11 @@
                      ImplicitPolicyTarget or InsertedDevicePolicy.
        @attributes: A dictionary of device attributes and their values.
 
-      Notify about a change of a USB device authorization target.
+      This signal fires whenever a device is present (i.e. during startup
+      of the daemon), inserted (i.e. plugged in), or updated (i.e. when a rule
+      has been updated).
+
+      This signal is poorly named. It should probably be called "RuleApplied".
 
       The device attribute dictionary contains the following attributes:
         - id (the USB device ID in the form VID:PID)
