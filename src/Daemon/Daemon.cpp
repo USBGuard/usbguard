@@ -854,16 +854,16 @@ namespace usbguard
       else {
         USBGUARD_LOG(Debug) << "Implicit rule matched";
       }
-
-      std::shared_ptr<const Rule> device_rule = \
-        device_post->getDeviceRule(/*with_port=*/true,
-          /*with_parent_hash=*/true);
-      DevicePolicyChanged(device->getID(),
-        target_old,
-        device_post->getTarget(),
-        device_rule->toString(),
-        matched_rule->getRuleID());
     }
+
+    std::shared_ptr<const Rule> device_rule = \
+      device_post->getDeviceRule(/*with_port=*/true,
+        /*with_parent_hash=*/true);
+    DevicePolicyChanged(device->getID(),
+      target_old,
+      device_post->getTarget(),
+      device_rule->toString(),
+      matched_rule->getRuleID());
 
     matched_rule->updateMetaDataCounters(/*applied=*/true);
     audit_event.success();
