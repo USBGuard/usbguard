@@ -51,7 +51,7 @@ It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8
     The USBGuard daemon modifies some of the default authorization state
     attributes of controller devices. This setting, enables you to define what
     value the default authorization is set to. Authorized default should be one
-    of `keep` (do not change autorization state), `wired` (new wired USB
+    of `keep` (do not change authorization state), `wired` (new wired USB
     devices start out authorized, wireless do not), `none` (every new device
     starts out deauthorized), `all` (every new device starts out authorized) or
     `internal` (internal devices start out authorized, external do not).
@@ -151,7 +151,7 @@ Available sections and privileges:
  ** list: Get values of run-time parameters.
 
 The following is a generally usable and reasonably safe example of an access control file.
-It allows to modify USB device authorization state (`Devices=modify`), list USB devices (`Devices=list`), listen to USB device related events (`Devices=listen`), list USB authorization policy rules (`Policy=list`) and listen to exception events (`Exceptions=listen`):
+It allows one to modify USB device authorization state (`Devices=modify`), list USB devices (`Devices=list`), listen to USB device related events (`Devices=listen`), list USB authorization policy rules (`Policy=list`) and listen to exception events (`Exceptions=listen`):
 
 ....
 Devices=modify list listen
