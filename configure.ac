@@ -279,7 +279,7 @@ else
 fi
 
 AC_ARG_ENABLE([umockdev],
-              [AS_HELP_STRING([--enable-umockdev], [Enables Seccomp support if available (default=yes)])],
+              [AS_HELP_STRING([--enable-umockdev], [Enables umockdev support if available (default=yes)])],
               [use_umockdev=$enableval], [use_umockdev=yes])
 
 if test "x$use_umockdev" = xyes; then
