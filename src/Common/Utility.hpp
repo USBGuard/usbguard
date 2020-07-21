@@ -192,7 +192,7 @@ namespace usbguard
   [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool {
     return a.first < b.first;
   },
-  bool directory_required = false);
+  bool directory_required = true);
 
   /**
    * Remove prefix from string.
