@@ -524,7 +524,7 @@ namespace usbguard
     std::string file_name;
 
     if (!dir_fd) {
-      throw Exception("getConfigsFromDir", "opendir: " + path , strerror(errno));
+      throw Exception("getConfigsFromDir", "opendir: " + path, strerror(errno));
     }
 
     while ((dp = readdir(dir_fd)) != NULL) { // iterate over directory for file entries

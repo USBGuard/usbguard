@@ -327,8 +327,13 @@ namespace usbguard
 
     /* IPCAccessControlFiles */
     if (_config.hasSettingValue("IPCAccessControlFiles")) {
-      const std::string value = _config.getSettingValue("IPCAccessControlFiles");
-      loadIPCAccessControlFiles(value);
+      const std::string ipc_dir = _config.getSettingValue("IPCAccessControlFiles");
+
+      if (check_permissions) {
+        checkFolderPermissions(ipc_dir, (S_IRUSR | S_IWUSR));
+      }
+
+      loadIPCAccessControlFiles(ipc_dir);
     }
 
     /* AuditBackend */
@@ -1030,8 +1035,8 @@ namespace usbguard
 
     /* Generate a match rule for upsert */
     std::shared_ptr<Rule> match_rule = device->getDeviceRule(/*with-port=*/false,
-							     /*with-parent-hash=*/false,
-							     /*match_rule=*/true);
+        /*with-parent-hash=*/false,
+        /*match_rule=*/true);
     const std::string match_spec = match_rule->toString();
     USBGUARD_LOG(Debug) << "match_spec=" << match_spec;
     /* Generate new device rule */
