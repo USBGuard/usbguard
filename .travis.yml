@@ -119,7 +119,7 @@ addons:
   coverity_scan:
     project:
       name: USBGuard/usbguard
-    notification_email: dnk1618@gmail.com
+    notification_email: rsroka@redhat.com
     build_command: make
     branch_pattern: coverity_scan
 
