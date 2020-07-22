@@ -103,12 +103,14 @@ install:
 - cd src/Tests/LDAP/ansible
 - ansible-playbook -i ./hosts -u root --connection=local playbook.yml
 - popd
+- pushd /tmp
 - wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.3/protobuf-cpp-3.11.3.tar.gz
 - tar -xzvf protobuf-cpp-3.11.3.tar.gz
 - CXXB=${CXX}
 - CXX=g++
 - pushd protobuf-3.11.3 && ./configure && make -j$(nproc) && sudo make install && sudo ldconfig && popd
 - CXX=${CXXB}
+- popd
 before_script:
 - ./autogen.sh
 - mkdir build && cd build
