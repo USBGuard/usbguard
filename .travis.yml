@@ -73,6 +73,10 @@ matrix:
           packages: ['libgcrypt-dev']
       env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
 
+    - os: linux
+      compiler: gcc
+      env: CONFIGURE_ARGS=--without-ldap
+
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -y ansible
@@ -109,7 +113,7 @@ before_script:
 - ./autogen.sh
 - mkdir build && cd build
 - echo ${COMPILER_CXX} ${COMPILER_C}
-- CXX=${COMPILER_CXX} CC=${COMPILER_C} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap $CONFIGURE_ARGS
+- CXX=${COMPILER_CXX} CC=${COMPILER_C} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite $CONFIGURE_ARGS
 script:
 - test $TRAVIS_BRANCH != coverity_scan || exit 0
 - if test -n "$MAKE_ARGS"; then make $MAKE_ARGS; else make all; VERBOSE=1 make check; fi
