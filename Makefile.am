@@ -228,6 +228,10 @@ libusbguard_la_SOURCES=\
 	src/Library/Base64.hpp \
 	src/Library/ConfigFilePrivate.cpp \
 	src/Library/ConfigFilePrivate.hpp \
+	src/Library/DeviceBase.cpp \
+	src/Library/DeviceBase.hpp \
+	src/Library/DeviceManagerBase.cpp \
+	src/Library/DeviceManagerBase.hpp \
 	src/Library/DeviceManagerPrivate.cpp \
 	src/Library/DeviceManagerPrivate.hpp \
 	src/Library/DevicePrivate.cpp \
