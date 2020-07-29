@@ -22,103 +22,39 @@
 #endif
 
 #if defined(HAVE_UEVENT)
-
 #include "Common/Thread.hpp"
-#include "SysFSDevice.hpp"
-
-#include "usbguard/Typedefs.hpp"
-#include "usbguard/DeviceManager.hpp"
-#include "usbguard/Device.hpp"
-#include "usbguard/Rule.hpp"
-#include "usbguard/USB.hpp"
-
-#include <condition_variable>
-#include <istream>
-
-#include <sys/stat.h>
-#include <dirent.h>
+#include "DeviceManagerBase.hpp"
 
 namespace usbguard
 {
-  class UEventDeviceManager;
+  class UEvent;
 
-  class UEventDevice : public Device, public USBDescriptorParserHooks
+  class UEventDeviceManager : public DeviceManagerBase
   {
-  public:
-    UEventDevice(UEventDeviceManager& device_manager, SysFSDevice& sysfs_device);
-
-    SysFSDevice& sysfsDevice();
-    const std::string& getSysPath() const;
-    bool isController() const override;
-    std::string getSystemName() const override;
-
-  private:
-    void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-      USBDescriptor* descriptor_out) override;
-    void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override;
-    bool isLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
-    void updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
-
-    SysFSDevice _sysfs_device;
-  };
-
-  class UEventDeviceManager : public DeviceManager
-  {
-    using DeviceManager::insertDevice;
-
   public:
     UEventDeviceManager(DeviceManagerHooks& hooks);
     ~UEventDeviceManager();
-
-    void setEnumerationOnlyMode(bool state) override;
 
     void start() override;
     void stop() override;
     void scan() override;
     void scan(const std::string& devpath) override;
 
-    std::shared_ptr<Device> applyDevicePolicy(uint32_t id, Rule::Target target) override;
-    void insertDevice(std::shared_ptr<UEventDevice> device);
-    std::shared_ptr<Device> removeDevice(const std::string& syspath);
-
-    uint32_t getIDFromSysfsPath(const std::string& syspath) const;
-
-
   private:
     static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
       const std::pair<std::string, std::string>& b);
-    static std::string ueventEnumerateFilterDevice(const std::string& filepath, const struct dirent* direntry);
 
-    void sysfsApplyTarget(SysFSDevice& sysfs_device, Rule::Target target);
     void thread();
-
-    int ueventOpen();
     void ueventProcessRead();
     void ueventProcessUEvent(UEvent uevent);
     void ueventProcessAction(const std::string& action, const std::string& sysfs_devpath);
     int ueventEnumerateDevices();
     int ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath);
 
-    void processDevicePresence(SysFSDevice& sysfs_device);
-    void processDeviceInsertion(SysFSDevice& sysfs_device, bool signal_present);
-    void processDevicePresence(uint32_t id);
-    void processDeviceRemoval(const std::string& sysfs_devpath);
     void processBacklog();
 
     Thread<UEventDeviceManager> _thread;
-    int _uevent_fd;
-    int _wakeup_fd;
     std::vector<UEvent> _backlog;
-
-    bool isPresentSysfsPath(const std::string& sysfs_path) const;
-    bool knownSysfsPath(const std::string& sysfs_path, uint32_t* id = nullptr) const;
-    void learnSysfsPath(const std::string& sysfs_path, uint32_t id = 0);
-    void forgetSysfsPath(const std::string& sysfs_path);
-
-    std::map<std::string, uint32_t> _sysfs_path_to_id_map;
-
-    bool _enumeration_only_mode;
-    std::atomic<bool> _enumeration;
   };
 } /* namespace usbguard */
 #endif /* HAVE_UEVENT */
