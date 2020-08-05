@@ -60,8 +60,6 @@ namespace usbguard
      */
     enum class AuthorizedDefaultType {
       Keep = -128, /**< Do not change the authorization state. */
-      Wired = -1, /**< New wired USB devices start out authorized,
-                    wireless USB devices do not. */
       None = 0, /**< Every new device starts out deauthorized. */
       All = 1, /**< Every new device starts out authorized. */
       Internal = 2, /**< Internal devices start out authorized,

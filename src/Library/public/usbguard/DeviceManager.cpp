@@ -71,7 +71,6 @@ namespace usbguard
 
   static const std::vector<std::pair<std::string, DeviceManager::AuthorizedDefaultType>> authorized_default_type_strings = {
     { "keep", DeviceManager::AuthorizedDefaultType::Keep },
-    { "wired", DeviceManager::AuthorizedDefaultType::Wired },
     { "none", DeviceManager::AuthorizedDefaultType::None },
     { "all", DeviceManager::AuthorizedDefaultType::All },
     { "internal", DeviceManager::AuthorizedDefaultType::Internal }
