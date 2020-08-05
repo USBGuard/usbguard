@@ -91,8 +91,6 @@ InsertedDevicePolicy=apply-policy
 # default authorization is set to.
 #
 # * keep         - do not change the authorization state
-# * wired        - new wired USB devices start out authorized, wireless USB
-#                  devices do not
 # * none         - every new device starts out deauthorized
 # * all          - every new device starts out authorized
 # * internal     - internal devices start out authorized, external devices start

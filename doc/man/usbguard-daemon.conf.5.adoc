@@ -56,8 +56,7 @@ It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8
     The USBGuard daemon modifies some of the default authorization state
     attributes of controller devices. This setting, enables you to define what
     value the default authorization is set to. Authorized default should be one
-    of `keep` (do not change authorization state), `wired` (new wired USB
-    devices start out authorized, wireless do not), `none` (every new device
+    of `keep` (do not change authorization state), `none` (every new device
     starts out deauthorized), `all` (every new device starts out authorized) or
     `internal` (internal devices start out authorized, external do not).
     Default: none
