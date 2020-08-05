@@ -45,7 +45,7 @@ namespace usbguard
       _method_class_ptr = thread._method_class_ptr;
       _method = thread._method;
       std::swap(_thread, thread._thread);
-      _stop_request = thread._stop_request;
+      _stop_request = thread._stop_request.load();
     }
 
     Thread& operator=(Thread& thread)
@@ -53,7 +53,7 @@ namespace usbguard
       _method_class_ptr = thread._method_class_ptr;
       _method = thread._method;
       std::swap(_thread, thread._thread);
-      _stop_request = thread._stop_request;
+      _stop_request = thread._stop_request.load();
       return *this;
     }
 
