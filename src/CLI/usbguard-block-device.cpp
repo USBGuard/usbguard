@@ -104,7 +104,10 @@ namespace usbguard
       for (auto rule_device : ipc.listDevices(argv[0])) {
         if (rule.appliesTo(rule_device)) {
           id = rule_device.getRuleID();
-          ipc.applyDevicePolicy(id, Rule::Target::Block, permanent);
+          try {
+            ipc.applyDevicePolicy(id, Rule::Target::Block, permanent);
+          }
+          catch (const usbguard::Exception& ex) {}
         }
       }
     }
