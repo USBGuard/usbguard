@@ -81,7 +81,7 @@ EOF
 
 # Create a dummy USB mass storage device
 sudo -n dd bs=4096 count=1 if=/dev/zero of=/tmp/usbguard_disk
-sudo -n modprobe dummy_hcd
+sudo -n modprobe dummy_hcd || exit 77 # Skip test if dummy_hcd is missing
 sudo -n rmmod g_mass_storage
 sudo -n modprobe g_mass_storage file=/tmp/usbguard_disk iSerialNumber=555666111
 
