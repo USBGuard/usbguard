@@ -52,7 +52,7 @@ if [[ -n "${WORDS}" ]]; then
   echo "========================================"
   echo -e "${WORDS}"
   echo "========================================"
-  echo "To whitelist a word, add it to this dictionary:"
+  echo "To exmpemt a word, add it to this dictionary:"
   echo "  $(readlink -f "${EXTRA_DICTIONARY}")"
   echo
   retval=1

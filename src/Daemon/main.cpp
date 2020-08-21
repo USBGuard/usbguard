@@ -62,7 +62,7 @@ static void printUsage(std::ostream& stream, const char* arg0)
   stream << "  -P         Disable permissions check on conf and policy files" << std::endl;
   stream << "             (default: /etc/usbguard/usbguard-daemon.conf)" << std::endl;
   stream << "  -C         Drop capabilities to limit privileges of the process." << std::endl;
-  stream << "  -W         Use a seccomp whitelist to limit available syscalls to the process." << std::endl;
+  stream << "  -W         Use a seccomp allowlist to limit available syscalls to the process." << std::endl;
   stream << "  -h         Show this usage screen." << std::endl;
   stream << std::endl;
 }
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
   bool log_syslog = false;
   bool log_console = true;
   bool log_file = false;
-  bool use_seccomp_whitelist = false;
+  bool use_seccomp_allowlist = false;
   bool drop_capabilities = false;
   bool check_permissions = true;
   bool daemonize = false;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
       break;
 
     case 'W':
-      use_seccomp_whitelist = true;
+      use_seccomp_allowlist = true;
       break;
 
     case 'C':
@@ -159,8 +159,8 @@ int main(int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  /* Setup seccomp whitelist & drop capabilities */
-  if (use_seccomp_whitelist) {
+  /* Setup seccomp allowlist & drop capabilities */
+  if (use_seccomp_allowlist) {
     if (!setupSeccompWhitelist()) {
       return EXIT_FAILURE;
     }
