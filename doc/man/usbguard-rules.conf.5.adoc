@@ -297,7 +297,7 @@ The following set of rules forms a policy that allows USB flash disks and explic
 ....
 +
 The policy rejects all USB flash disk devices with an interface from the HID/Keyboard, Communications and Wireless classes.
-Note that blacklisting is the wrong approach and you shouldn't just blacklist a set of devices and allow the rest.
+Note that default allow is the wrong approach and you shouldn't just reject a set of devices and allow the rest.
 The policy above assumes that blocking is the default.
 Rejecting a set of devices considered as "bad" is a good approach how to limit the exposure of the OS to such devices as much as possible.
 
