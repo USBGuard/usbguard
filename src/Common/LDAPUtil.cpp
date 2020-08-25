@@ -33,6 +33,7 @@ namespace usbguard
     "USBGuardRuleOrder",
     "USBID",
     "USBSerial",
+    "USBWithConnectType",
     "USBName",
     "USBHash",
     "USBParentHash",
@@ -47,6 +48,7 @@ namespace usbguard
     "USBGuardOrder", /* just for indexing */
     "id",
     "serial",
+    "with-connect-type",
     "name",
     "hash",
     "parent-hash",

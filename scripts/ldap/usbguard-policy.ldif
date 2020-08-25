@@ -7,6 +7,7 @@ USBGuardHost: Axis
 USBGuardOrder: 0
 DeviceID: 1038:1702
 DeviceSerial: ""
+DeviceWithConnectType: "hotplug"
 DeviceName: "SteelSeries Rival 100 Gaming Mouse"
 DeviceHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
 DeviceParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="

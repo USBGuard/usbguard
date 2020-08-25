@@ -7,6 +7,7 @@ USBGuardHost: *
 USBRuleOrder: 0
 USBID: 1038:1702
 USBSerial: ""
+USBWithConnectType: "hotplug"
 USBName: "SteelSeries Rival 100 Gaming Mouse"
 USBHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
 USBParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="
