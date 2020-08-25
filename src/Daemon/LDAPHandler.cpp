@@ -173,6 +173,7 @@ namespace usbguard
 
           case LDAPUtil::LDAP_KEY_INDEX::USBID:
           case LDAPUtil::LDAP_KEY_INDEX::USBSerial:
+          case LDAPUtil::LDAP_KEY_INDEX::USBWithConnectType:
           case LDAPUtil::LDAP_KEY_INDEX::USBName:
           case LDAPUtil::LDAP_KEY_INDEX::USBHash:
           case LDAPUtil::LDAP_KEY_INDEX::USBParentHash:

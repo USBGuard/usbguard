@@ -65,6 +65,7 @@ USBGuardHost: *
 USBGuardRuleOrder: 0
 USBID: 1038:1702
 USBSerial: ""
+USBWithConnectType: "hotplug"
 USBName: "SteelSeries Rival 100 Gaming Mouse"
 USBHash: "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk="
 USBParentHash: "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4="
@@ -129,7 +130,7 @@ ROOTPW passme
 EOF
 
 sudo -n cat > "${TMPDIR}/result" <<EOF
-1: allow id 1038:1702 serial "" name "SteelSeries Rival 100 Gaming Mouse" hash "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk=" parent-hash "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4=" via-port "2-3"
+1: allow id 1038:1702 serial "" name "SteelSeries Rival 100 Gaming Mouse" hash "Ty9aMqdLp96HdR+3R3oFUeWy250MhWmb8zznl5+uHWk=" parent-hash "OkrTUwAUxn55t8+ezGtkhdgxjz9TIluGUS+bjFE+iC4=" via-port "2-3" with-connect-type "hotplug"
 2: allow id 1038:1702 serial "" name "Keyboard..." hash "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=" parent-hash "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=" with-interface { 03:01:01 03:00:00 03:00:00 }
 3: allow
 4: allow id 1038:1702 serial "" name "Flash" hash "ccccccccccccccccccccccccccccccccccccccccccccc=" parent-hash "ddddddddddddddddddddddddddddddddddddddddddddd="

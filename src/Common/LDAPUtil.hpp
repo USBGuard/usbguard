@@ -38,6 +38,7 @@ namespace usbguard
       USBGuardRuleOrder,
       USBID,
       USBSerial,
+      USBWithConnectType,
       USBName,
       USBHash,
       USBParentHash,
