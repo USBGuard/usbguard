@@ -765,7 +765,7 @@ namespace usbguard
 
     for (auto ruleset : _policy.getRuleSet()) {
       for (auto const& rule : ruleset->getRules()) {
-        if (label.empty() || rule->getLabel() == label) {
+        if (label.empty() || (!rule->attributeLabel().empty() && rule->getLabel() == label)) {
           rules.push_back(*rule);
         }
       }
