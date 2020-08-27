@@ -152,6 +152,11 @@ If the operator is not specified it is set to *equals*.
 *with-connect-type* [operator] { "connect-type" ... }::
     Match a set of USB port/connect_type device attributes.
 
+*label* "label"::
+    Associates arbitrary string with a rule. Label is useful for storing
+    some contextual information about rule or for filtering rules by label.
+    This attribute is not used when testing if a rule applies to a device.
+
 The 'usb-device-id' is a colon delimited pair in the form 'vendor_id:product_id'.
 All USB devices have this ID assigned by the manufacturer and it should uniquely identify a USB product type.
 Both 'vendor_id' and 'product_id' are 16-bit numbers represented in hexadecimal base.
