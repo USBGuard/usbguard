@@ -29,6 +29,7 @@
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 #include <fstream>
 #include <memory>
+#include <unistd.h>
 
 namespace usbguard
 {
