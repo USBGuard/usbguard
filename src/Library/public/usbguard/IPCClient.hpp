@@ -21,6 +21,7 @@
 #include "DeviceManager.hpp"
 #include "Exception.hpp"
 #include "Interface.hpp"
+#include "IPCServer.hpp"
 #include "Typedefs.hpp"
 
 #include <string>
@@ -28,6 +29,9 @@
 #include <memory>
 
 #include <cstdint>
+#include <unistd.h>
+#include <sys/types.h>
+
 
 namespace usbguard
 {
@@ -149,6 +153,9 @@ namespace usbguard
     {
       return listDevices("match");
     }
+
+    // TODO documentation
+    bool checkIPCPermissions(const IPCServer::AccessControl& access_control);
 
     /**
      * @brief Defines algorithm to perform in the case of IPC connection.

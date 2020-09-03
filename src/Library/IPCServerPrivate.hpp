@@ -143,6 +143,8 @@ namespace usbguard
     void handleSetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response);
     void handleGetParameter(IPC::MessagePointer& request, IPC::MessagePointer& response);
 
+    void handleCheckIPCPermissions(IPC::MessagePointer& request, IPC::MessagePointer& response);
+
     IPCServer& _p_instance;
 
     qb_loop_t* _qb_loop;

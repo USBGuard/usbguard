@@ -89,10 +89,17 @@ namespace usbguard
       }
     }
 
-    usbguard::IPCClient ipc(/*connected=*/true);
+    IPCServer::AccessControl access_control(IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::MODIFY);
 
-    for (auto device_rule : ipc.listDevices(query)) {
-      std::cout << device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
+    try {
+      usbguard::IPCClient ipc(/*connected=*/true);
+      if (ipc.checkIPCPermissions(access_control)) 
+        std::cout << "Permission: granted" << std::endl;
+      else
+        std::cout << "Permission: denied" << std::endl;
+    } catch (...) {
+      std::cout << "Permission: denied" << std::endl;
+      return EXIT_SUCCESS;
     }
 
     return EXIT_SUCCESS;

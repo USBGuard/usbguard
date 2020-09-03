@@ -84,6 +84,8 @@ namespace usbguard
       IPCServer::AccessControl::Privilege::MODIFY);
     registerHandler<IPC::getParameter>(&IPCServerPrivate::handleGetParameter, IPCServer::AccessControl::Section::PARAMETERS,
       IPCServer::AccessControl::Privilege::LIST);
+    registerHandler<IPC::checkIPCPermissions>(&IPCServerPrivate::handleCheckIPCPermissions, IPCServer::AccessControl::Section::ALL,
+      IPCServer::AccessControl::Privilege::NONE);
   }
 
   void IPCServerPrivate::initIPC()
@@ -987,6 +989,19 @@ namespace usbguard
     IPC::getParameter* const message_out = message_in->New();
     message_out->MergeFrom(*message_in);
     message_out->mutable_response()->set_value(value);
+    response.reset(message_out);
+  }
+
+  void IPCServerPrivate::handleCheckIPCPermissions(IPC::MessagePointer& request, IPC::MessagePointer& response)
+  {
+    const IPC::checkIPCPermissions* const message_in = static_cast<const IPC::checkIPCPermissions*>(request.get());
+    uid_t uid = message_in->request().uid();
+    gid_t gid = message_in->request().gid();
+    IPCServer::AccessControl access_control(message_in->request().access_control());
+    auto value = qbIPCConnectionAllowed(uid, gid, &access_control);
+    IPC::checkIPCPermissions* const message_out = message_in->New();
+    message_out->MergeFrom(*message_in);
+    message_out->mutable_response()->set_permit(value);
     response.reset(message_out);
   }
 

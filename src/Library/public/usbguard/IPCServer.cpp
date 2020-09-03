@@ -135,6 +135,10 @@ namespace usbguard
   bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section,
     IPCServer::AccessControl::Privilege privilege) const
   {
+    if (privilege == Privilege::NONE) {
+      return true;
+    }
+
     if (section == Section::ALL || section == Section::NONE) {
       throw USBGUARD_BUG("Cannot test against ALL, NONE sections");
     }
