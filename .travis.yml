@@ -77,6 +77,56 @@ matrix:
       compiler: gcc
       env: CONFIGURE_ARGS=--without-ldap
 
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          packages: ['g++-9', 'gcc-9']
+      env: COMPILER_CXX=g++-9 COMPILER_C=gcc-9
+    
+    - os: linux
+      arch: ppc64le
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          packages: ['clang-6.0']
+      env: COMPILER_CXX=clang++-6.0 COMPILER_C=clang-6.0
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env: COVERAGE=yes CONFIGURE_ARGS="--enable-coverage --disable-shared" USBGUARD_TESTS_VALGRIND=off
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env: MAKE_ARGS="distcheck DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-pegtl DISTCHECK_CONFIGURE_FLAGS+=--with-bundled-catch"
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env: CONFIGURE_ARGS=--enable-debug-build
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      addons:
+        apt:
+          packages: ['libgcrypt-dev']
+      env: CONFIGURE_ARGS=--with-crypto-library=gcrypt
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env: CONFIGURE_ARGS=--without-ldap
+
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -y ansible
