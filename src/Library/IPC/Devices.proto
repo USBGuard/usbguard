@@ -51,6 +51,13 @@ message DevicePolicyChangedSignal {
   required uint32 rule_id = 5;
 }
 
+message DevicePolicyAppliedSignal {
+  required uint32 id = 1;
+  required uint32 target_new = 2;
+  required string device_rule = 3;
+  required uint32 rule_id = 4;
+}
+
 message PropertyParameterChangedSignal {
   required string name = 1;
   required string value_old = 2;

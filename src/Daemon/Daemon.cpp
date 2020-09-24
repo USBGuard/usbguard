@@ -850,6 +850,9 @@ namespace usbguard
         matched_rule->getTarget());
     const bool target_changed = target_old != device_post->getTarget();
 
+    std::shared_ptr<const Rule> device_rule = \
+        device_post->getDeviceRule(/*with_port=*/true,
+          /*with_parent_hash=*/true);
     if (target_changed || matched_rule->getRuleID() == Rule::ImplicitID) {
       if (target_changed) {
         USBGUARD_LOG(Debug) << "Device target changed:"
@@ -860,15 +863,17 @@ namespace usbguard
         USBGUARD_LOG(Debug) << "Implicit rule matched";
       }
 
-      std::shared_ptr<const Rule> device_rule = \
-        device_post->getDeviceRule(/*with_port=*/true,
-          /*with_parent_hash=*/true);
       DevicePolicyChanged(device->getID(),
         target_old,
         device_post->getTarget(),
         device_rule->toString(),
         matched_rule->getRuleID());
     }
+
+    DevicePolicyApplied(device->getID(),
+        device_post->getTarget(),
+        device_rule->toString(),
+        matched_rule->getRuleID());
 
     matched_rule->updateMetaDataCounters(/*applied=*/true);
     audit_event.success();

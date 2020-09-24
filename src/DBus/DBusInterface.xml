@@ -152,8 +152,8 @@
       If the permanent flag is set to True, a rule will be appended to the policy or an exiting device
       rule will be modified in order to permanently store the authorization decision.
 
-      Sucessfull exection of this method will cause the DevicePolicyChanged signal to be broadcasted if
-      the device authorization target was different than the applied target.
+      Successful execution of this method will cause the DevicePolicyChanged signal to be broadcasted if
+      the device authorization target was different from the applied target.
       -->
     <method name="applyDevicePolicy">
       <arg name="id" direction="in" type="u"/>
@@ -205,6 +205,7 @@
       DevicePolicyChanged:
        @id: Device id of the device
        @target_old: Previous authorization target in numerical form.
+                    0 = Allow. 1 = Block. 2 = Reject.
        @target_new: Current authorization target in numerical form.
        @device_rule: Device specific rule.
        @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
@@ -229,6 +230,41 @@
     <signal name="DevicePolicyChanged">
       <arg name="id" direction="out" type="u"/>
       <arg name="target_old" direction="out" type="u"/>
+      <arg name="target_new" direction="out" type="u"/>
+      <arg name="device_rule" direction="out" type="s"/>
+      <arg name="rule_id" direction="out" type="u"/>
+      <arg name="attributes" direction="out" type="a{ss}"/>
+    </signal>
+
+    <!--
+      DevicePolicyApplied:
+       @id: Device id of the device
+       @target_new: Current authorization target in numerical form.
+                    0 = Allow. 1 = Block. 2 = Reject.
+       @device_rule: Device specific rule.
+       @rule_id: A rule id of the matched rule. Otherwise a reserved rule id value is used.
+                 Reserved values are:
+                     4294967294 (UINT32_MAX - 1) for an implicit rule, e.g. 
+                     ImplicitPolicyTarget or InsertedDevicePolicy.
+       @attributes: A dictionary of device attributes and their values.
+
+      Notify about a change of a USB device.
+      This is a superset of DevicePolicyChanged and will always be thrown
+      when a device is inserted, authorised, or rejected.
+
+      The device attribute dictionary contains the following attributes:
+        - id (the USB device ID in the form VID:PID)
+        - name
+        - serial
+        - via-port
+        - hash
+        - parent-hash
+        - with-interface
+        - with-connect-type (either "hardwired", "hotplug", or the empty string for unknown)
+
+     -->
+    <signal name="DevicePolicyApplied">
+      <arg name="id" direction="out" type="u"/>
       <arg name="target_new" direction="out" type="u"/>
       <arg name="device_rule" direction="out" type="s"/>
       <arg name="rule_id" direction="out" type="u"/>

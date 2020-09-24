@@ -270,6 +270,27 @@ namespace usbguard
     }
   }
 
+  void DBusBridge::DevicePolicyApplied(uint32_t id,
+    Rule::Target target_new,
+    const std::string& device_rule,
+    uint32_t rule_id)
+  {
+    GVariantBuilder* gv_builder_attributes = deviceRuleToAttributes(device_rule);
+    g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
+      DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePolicyApplied",
+      g_variant_new("(uusua{ss})",
+        id,
+        Rule::targetToInteger(target_new),
+        device_rule.c_str(),
+        rule_id,
+        gv_builder_attributes),
+      nullptr);
+
+    if (gv_builder_attributes != nullptr) {
+      g_variant_builder_unref(gv_builder_attributes);
+    }
+  }
+
   void DBusBridge::PropertyParameterChanged(const std::string& name,
     const std::string& value_old,
     const std::string& value_new)
