@@ -127,6 +127,28 @@ namespace usbguard
     }
   }
 
+  void IPCSignalWatcher::DevicePolicyApplied(uint32_t id,
+    Rule::Target target_new,
+    const std::string& device_rule,
+    uint32_t rule_id)
+  {
+    std::cout << "[device] PolicyApplied: id=" << id << std::endl;
+    std::cout << " target_new=" << Rule::targetToString(target_new) << std::endl;
+    std::cout << " device_rule=" << device_rule << std::endl;
+    std::cout << " rule_id=" << rule_id << std::endl;
+
+    if (hasOpenExecutable()) {
+      const std::map<std::string, std::string> env = {
+        { "USBGUARD_IPC_SIGNAL", "Device.PolicyApplied" },
+        { "USBGUARD_DEVICE_ID", std::to_string(id) },
+        { "USBGUARD_DEVICE_TARGET_NEW", Rule::targetToString(target_new) },
+        { "USBGUARD_DEVICE_RULE", device_rule },
+        { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) }
+      };
+      runExecutable(env);
+    }
+  }
+
   void IPCSignalWatcher::PropertyParameterChanged(const std::string& name,
     const std::string& value_old,
     const std::string& value_new)

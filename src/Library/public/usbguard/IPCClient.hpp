@@ -223,6 +223,24 @@ namespace usbguard
     }
 
     /**
+     * @brief Defines actions to perform when a USB device
+     * has been inserted, accepted, or rejected.
+     *
+     * @see \link Interface::DevicePolicyApplied()
+     * DevicePolicyApplied()\endlink
+     */
+    virtual void DevicePolicyApplied(uint32_t id,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id) override
+    {
+      (void)id;
+      (void)target_new;
+      (void)device_rule;
+      (void)rule_id;
+    }
+
+    /**
      * @brief Defines algorithm to perform in the case that property parameter
      * has been changed.
      *

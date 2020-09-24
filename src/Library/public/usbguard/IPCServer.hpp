@@ -324,6 +324,14 @@ namespace usbguard
       uint32_t rule_id);
 
     /**
+     * @copydoc Interface::DevicePolicyApplied()
+     */
+    void DevicePolicyApplied(uint32_t id,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id);
+
+    /**
      * @copydoc Interface::PropertyParameterChanged()
      */
     void PropertyParameterChanged(const std::string& name,

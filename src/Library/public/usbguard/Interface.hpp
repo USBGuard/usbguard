@@ -190,6 +190,32 @@ namespace usbguard
       uint32_t rule_id) = 0;
 
     /**
+     * @brief Notify about the acceptance or rejection of a device.
+     *
+     * This signal is thrown whenever a device is inserted.
+     * It is also thrown when a device has been allowed or rejected.
+     *
+     * The device attribute dictionary contains the following attributes:
+     * - id (the USB device ID in the form VID:PID)
+     * - name
+     * - serial
+     * - via-port
+     * - hash
+     * - parent-hash
+     * - with-interface
+     *
+     * @param id ID of the device.
+     * @param target_new Current authorization target.
+     * @param device_rule Device specific rule.
+     * @param rule_id Rule ID of the matched rule.
+     * Otherwise a reserved rule ID value is used.
+     */
+    virtual void DevicePolicyApplied(uint32_t id,
+      Rule::Target target_new,
+      const std::string& device_rule,
+      uint32_t rule_id) = 0;
+
+    /**
      * @brief Notify about a change of a property parameter.
      *
      * @param name Policy name.

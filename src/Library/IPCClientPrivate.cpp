@@ -85,6 +85,7 @@ namespace usbguard
     registerHandler<IPC::Exception>(&IPCClientPrivate::handleException);
     registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
     registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
+    registerHandler<IPC::DevicePolicyAppliedSignal>(&IPCClientPrivate::handleDevicePolicyAppliedSignal);
     registerHandler<IPC::PropertyParameterChangedSignal>(&IPCClientPrivate::handlePropertyParameterChangedSignal);
 
     if (connected) {
@@ -517,6 +518,17 @@ namespace usbguard
       reinterpret_cast<const IPC::DevicePolicyChangedSignal*>(message_in.get());
     _p_instance.DevicePolicyChanged(signal->id(),
       Rule::targetFromInteger(signal->target_old()),
+      Rule::targetFromInteger(signal->target_new()),
+      signal->device_rule(),
+      signal->rule_id());
+  }
+
+  void IPCClientPrivate::handleDevicePolicyAppliedSignal(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)
+  {
+    (void)message_out;
+    const IPC::DevicePolicyAppliedSignal* const signal = \
+      reinterpret_cast<const IPC::DevicePolicyAppliedSignal*>(message_in.get());
+    _p_instance.DevicePolicyApplied(signal->id(),
       Rule::targetFromInteger(signal->target_new()),
       signal->device_rule(),
       signal->rule_id());
