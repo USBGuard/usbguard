@@ -1,6 +1,7 @@
 env:
   global:
-  - secure: "mAKqsfksFjBmvtjVEUiUkJ1rG7pp4dGZrTez2SRoEu+bEDh620O931SwBYyWMAdKRNGt9zrV22EASXM9ug1AHboFTOnMM17YCLw/nbioV92EIYV7O+infO9dkGpn0wDVa/jPIiJB++5xeeIF8Lgq7td6wP4jE8WMl97PL5wtEMs="
+    - secure: mAKqsfksFjBmvtjVEUiUkJ1rG7pp4dGZrTez2SRoEu+bEDh620O931SwBYyWMAdKRNGt9zrV22EASXM9ug1AHboFTOnMM17YCLw/nbioV92EIYV7O+infO9dkGpn0wDVa/jPIiJB++5xeeIF8Lgq7td6wP4jE8WMl97PL5wtEMs=
+    - XML_CATALOG_FILES="/etc/xml/catalog"
 language: cpp
 compiler:
 - clang
@@ -87,7 +88,7 @@ before_install:
 - sudo apt-get install -y libprotobuf-dev protobuf-compiler
 - sudo apt-get install -y libldap-dev
 - sudo apt-get install -y valgrind
-- sudo apt-get install -y asciidoc docbook-xml
+- sudo apt-get install -y asciidoc docbook-xml docbook-xsl
 - sudo apt-get install -y umockdev libumockdev-dev
 - sudo gem install coveralls-lcov
 - sudo apt-get install clang
@@ -104,7 +105,7 @@ install:
 - ansible-playbook -i ./hosts -u root --connection=local playbook.yml
 - popd
 - pushd /tmp
-- wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.3/protobuf-cpp-3.11.3.tar.gz
+- wget --retry-on-http-error=429 --timeout=1 --tries=20 https://github.com/protocolbuffers/protobuf/releases/download/v3.11.3/protobuf-cpp-3.11.3.tar.gz
 - tar -xzvf protobuf-cpp-3.11.3.tar.gz
 - CXXB=${CXX}
 - CXX=g++
