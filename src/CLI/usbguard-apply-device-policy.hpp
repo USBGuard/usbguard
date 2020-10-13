@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Red Hat, Inc.
+// Copyright (C) 2020 Red Hat, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,25 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Authors: Daniel Kopecek <dkopecek@redhat.com>
-//          Attila Lakatos <alakatos@redhat.com>
+// Authors: Attila Lakatos <alakatos@redhat.com>
 //
+#pragma once
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
-#include "usbguard.hpp"
-#include "usbguard-reject-device.hpp"
-#include "usbguard-apply-device-policy.hpp"
-
-#include <iostream>
+#include "usbguard/RuleParser.hpp"
 
 namespace usbguard
 {
-  int usbguard_reject_device(int argc, char* argv[])
-  {
-    return usbguard_apply_device_policy(argc, argv, Rule::Target::Reject);
-  }
+  int usbguard_apply_device_policy(int argc, char** argv, Rule::Target target);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */
