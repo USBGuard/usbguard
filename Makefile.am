@@ -16,6 +16,7 @@
 ##
 ## Authors: Daniel Kopecek <dkopecek@redhat.com>
 ##          Jiri Vymazal   <jvymazal@redhat.com>
+##          Attila Lakatos <alakatos@redhat.com>
 ##
 SUBDIRS=src/Tests/
 
@@ -395,6 +396,8 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-block-device.cpp \
 	src/CLI/usbguard-reject-device.hpp \
 	src/CLI/usbguard-reject-device.cpp \
+	src/CLI/usbguard-apply-device-policy.hpp \
+	src/CLI/usbguard-apply-device-policy.cpp \
 	src/CLI/usbguard-list-rules.hpp \
 	src/CLI/usbguard-list-rules.cpp \
 	src/CLI/usbguard-append-rule.hpp \
