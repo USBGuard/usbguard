@@ -27,13 +27,12 @@
 #include "usbguard/IPCServer.hpp"
 
 #include <iostream>
-
 #include <unistd.h>
 #include <sys/stat.h>
 
 namespace usbguard
 {
-  static const char* options_short = "hugp:d:e:P:N";
+  static const char* options_short = "hugp:d:e:P:";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
@@ -43,7 +42,6 @@ namespace usbguard
     { "devices", required_argument, nullptr, 'd' },
     { "exceptions", required_argument, nullptr, 'e' },
     { "parameters", required_argument, nullptr, 'P' },
-    { "no-root-check", no_argument, nullptr, 'N' },
     { nullptr, 0, nullptr, 0 }
   };
 
@@ -58,7 +56,6 @@ namespace usbguard
     stream << "  -d, --devices <privileges>     Device related privileges." << std::endl;
     stream << "  -e, --exceptions <privileges>  Exceptions related privileges." << std::endl;
     stream << "  -P, --parameters <privileges>  Run-time parameter related privileges." << std::endl;
-    stream << "  -N, --no-root-check            Disable root privileges checking." << std::endl;
     stream << "  -h, --help                     Show this help." << std::endl;
     stream << std::endl;
   }
@@ -88,7 +85,6 @@ namespace usbguard
   {
     int opt = 0;
     bool opt_is_group = false;
-    bool opt_no_root_check = false;
     IPCServer::AccessControl access_control;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
@@ -121,10 +117,6 @@ namespace usbguard
         access_control.merge(std::string("Parameters=").append(optarg));
         break;
 
-      case 'N':
-        opt_no_root_check = true;
-        break;
-
       case '?':
         showHelp(std::cerr);
 
@@ -141,11 +133,9 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    if (!opt_no_root_check) {
-      if (!(getuid() == 0 && geteuid() == 0)) {
-        USBGUARD_LOG(Error) << "This subcommand requires root privileges. Please retry as root.";
-        return EXIT_FAILURE;
-      }
+    if (!(getuid() == 0 && geteuid() == 0)) {
+      USBGUARD_LOG(Error) << "This subcommand requires root privileges. Please retry as root.";
+      return EXIT_FAILURE;
     }
 
     const std::string name(argv[0]);
