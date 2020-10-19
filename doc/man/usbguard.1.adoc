@@ -261,9 +261,6 @@ Available options:
 *-P, --parameters* 'privileges'::
     Run-time parameter related privileges.
 
-*-N, --no-root-check*::
-    Disable root privileges checking.
-
 *-h, --help*::
     Show help.
 
@@ -289,9 +286,6 @@ Available options:
 
 *-g, --group*::
     The specified 'name' represents a groupname or GID.
-
-*-N, --no-root-check*::
-    Disable root privileges checking.
 
 *-h, --help*::
     Show help.

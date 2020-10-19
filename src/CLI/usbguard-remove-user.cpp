@@ -27,18 +27,16 @@
 #include "usbguard/IPCServer.hpp"
 
 #include <iostream>
-
 #include <unistd.h>
 
 namespace usbguard
 {
-  static const char* options_short = "hugN";
+  static const char* options_short = "hug";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
     { "user", no_argument, nullptr, 'u' },
     { "group", no_argument, nullptr, 'g' },
-    { "no-root-check", no_argument, nullptr, 'N' },
     { nullptr, 0, nullptr, 0  }
   };
 
@@ -49,7 +47,6 @@ namespace usbguard
     stream << " Options:" << std::endl;
     stream << "  -u, --user           The specified name represents a username or UID (default)." << std::endl;
     stream << "  -g, --group          The specified name represents a groupname or GID." << std::endl;
-    stream << "  -N, --no-root-check  Disable root privileges checking." << std::endl;
     stream << "  -h, --help           Show this help." << std::endl;
     stream << std::endl;
   }
@@ -70,7 +67,6 @@ namespace usbguard
   {
     int opt = 0;
     bool opt_is_group = false;
-    bool opt_no_root_check = false;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
       switch (opt) {
@@ -85,10 +81,6 @@ namespace usbguard
       case 'h':
         showHelp(std::cout);
         return EXIT_SUCCESS;
-
-      case 'N':
-        opt_no_root_check = true;
-        break;
 
       case '?':
         showHelp(std::cerr);
@@ -106,11 +98,9 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    if (!opt_no_root_check) {
-      if (!(getuid() == 0 && geteuid() == 0)) {
-        USBGUARD_LOG(Error) << "This subcommand requires root privileges. Please retry as root.";
-        return EXIT_FAILURE;
-      }
+    if (!(getuid() == 0 && geteuid() == 0)) {
+      USBGUARD_LOG(Error) << "This subcommand requires root privileges. Please retry as root.";
+      return EXIT_FAILURE;
     }
 
     const std::string name(argv[0]);
