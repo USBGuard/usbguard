@@ -130,14 +130,14 @@ Access to the USBGuard IPC interface can be limited per user or group.
 Furthermore, by using the IPC Access Control files, it is possible to limit the access down to the level of Sections and Privileges as explained below.
 
 === *Recommended*: *IPCAccessControlFiles*
-When you set *IPCAccessControlFiles* option, the daemon will look for IPC access control files in the directory specified by the setting value.
+When you set *IPCAccessControlFiles* option, the daemon will look for IPC access control files in the directory specified by the set value.
 Each file in the directory is processed as follows:
 
- 1. The basename of the file is interpreted as an username, UID, groupname or GID.
-    If the names starts with `:` (colon), it is assumed that the rest of the name represents a group identifier (groupname or GID in case of a numeric-only string).
-    Otherwise, it is interpreted as an user identifier (username or UID in case of numeric-only string).
+ 1. The basename of the file is interpreted as a username, UID, groupname or GID.
+    If the name starts with `:` (colon), it is assumed that the rest of the name represents a group identifier (groupname or GID in case of a numeric-only string).
+    Otherwise, it is interpreted as a user identifier (username or UID in case of numeric-only string).
 
- 2. The contents of the file are parsed as `Section=privilege [privilege ...]` formatted lines which specify the section privileges.
+ 2. The contents of the file are parsed as `Section=[privilege1][,privilege2] ...` formatted lines which specify the section privileges.
     If a section is omitted, it is assumed that no privileges are given for that section.
 
 Available sections and privileges:
@@ -166,13 +166,16 @@ The following is a generally usable and reasonably safe example of an access con
 It allows one to modify USB device authorization state (`Devices=modify`), list USB devices (`Devices=list`), listen to USB device related events (`Devices=listen`), list USB authorization policy rules (`Policy=list`) and listen to exception events (`Exceptions=listen`):
 
 ....
-Devices=modify list listen
+Devices=modify,list,listen
 Policy=list
 Exceptions=listen
 ....
 
-Instead of creating the access control files by yourself, you can use the `usbguard add-user` or `usbguard remove-user` CLI commands.
+You can create or remove the IPC access control files using `usbguard add-user` and `usbguard
+remove-user` CLI commands.
 See usbguard(1) for more details.
+If you want to create the IPC access control files manually, you need to set the files permissions
+to `0600`.
 
 
 === Legacy: *IPCAllowedUsers* and *IPCAllowedGroups*
