@@ -157,18 +157,20 @@ IPCAllowedGroups=
 #
 # IPC access control definition files path.
 #
-# The files at this location will be interpreted by the daemon
-# as access control definition files. The (base)name of a file
-# should be in the form:
+# The files at this location will be interpreted by the USBGuard
+# daemon as access control definition files for the IPC interface.
+# The (base)name of a file should be in the form:
 #
 #   [user][:<group>]
 #
-# and should contain lines in the form:
+# where user is either username or UID and group is either groupname or GID.
+# IPC access control files should contain lines in the form:
 #
-#   <section>=[privilege] ...
+#   <section>=[privilege1][,privilege2] ...
 #
 # This way each file defines who is able to connect to the IPC
-# bus and what privileges he has.
+# bus and what privileges he has. Note that the IPC access control
+# files need to have file permissions set to 0600.
 #
 IPCAccessControlFiles=%sysconfdir%/usbguard/IPCAccessControl.d/
 
