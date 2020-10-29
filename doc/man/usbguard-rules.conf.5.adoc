@@ -241,6 +241,11 @@ List of conditions:
     Evaluates always to false.
 
 
+=== Partial rule
+Partial rule is a rule without a rule target.
+Partial rules may by used by some commands of *usbguard* CLI tool.
+
+
 == Initial policy
 Using the *usbguard* CLI tool and its *generate-policy* subcommand, you can generate an initial policy for your system instead of writing one from scratch.
 The tool generates an *allow* policy for all devices connected to the system at the time of execution.

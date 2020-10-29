@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Authors: Attila Lakatos <alakatos@redhat.com>
+// Authors: Attila Lakatos <alakatos@redhat.com>, Zoltan Fridrich <zfridric@redhat.com>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
@@ -27,6 +27,7 @@
 #include "usbguard/IPCClient.hpp"
 
 #include <iostream>
+#include <list>
 
 namespace usbguard
 {
@@ -41,7 +42,7 @@ namespace usbguard
   static void showHelp(std::ostream& stream, Rule::Target target)
   {
     std::string target_string = Rule::targetToString(target);
-    stream << " Usage: " << usbguard_arg0 << " " << target_string << "-device [OPTIONS] (<device-id> | <rule>)" << std::endl;
+    stream << " Usage: " << usbguard_arg0 << " " << target_string << "-device [OPTIONS] (<device-id> | <partial-rule>)" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific " << target_string << std::endl;
@@ -57,7 +58,6 @@ namespace usbguard
 
   int usbguard_apply_device_policy(int argc, char** argv, Rule::Target target)
   {
-    uint32_t id = 0;
     bool permanent = false;
     int opt = 0;
 
@@ -81,47 +81,43 @@ namespace usbguard
 
     argc -= optind;
     argv += optind;
-    usbguard::IPCClient ipc(/*connected=*/true);
 
     if (argc == 0) {
       showHelp(std::cerr, target);
       return EXIT_FAILURE;
     }
-    else if (argc == 1 && isNumeric(std::string(argv[0]))) { /* Change device policy by ID */
+
+    uint32_t id = 0;
+    usbguard::IPCClient ipc(/*connected=*/true);
+
+    if (argc == 1 && isNumeric(std::string(argv[0]))) { /* Change device policy by ID */
       id = std::stoul(argv[0]);
       ipc.applyDevicePolicy(id, target, permanent);
     }
     else { /* Change device policy by Rule */
-      std::string rule_string;
-      if (argc == 1)
-        rule_string = argv[0];
-      else {
-        std::vector<std::string> arguments(argv, argv + argc);
-        rule_string = joinElements(arguments.begin(), arguments.end());
-      }
+      std::list<std::string> args(argv, argv + argc);
+      args.push_front(Rule::targetToString(Rule::Target::Match));
+      std::string query = joinElements(args.begin(), args.end());
 
-      usbguard::Rule rule;
-      try {
-        rule = Rule::fromString(rule_string);
-      }
-      catch (const usbguard::RuleParserError& ex) {
-        std::cerr << "ERROR: " << ex.what() << std::endl;
-        showHelp(std::cerr, target);
-        return EXIT_FAILURE;
-      }
-
-      std::string rule_target = rule_string.substr(0, rule_string.find(" "));
-      for (auto rule_device : ipc.listDevices(rule_target)) {
-        if (rule.appliesTo(rule_device)) {
-          id = rule_device.getRuleID();
+      for (auto device_rule : ipc.listDevices(query)) {
+        if (target != device_rule.getTarget()) {
+          id = device_rule.getRuleID();
           try {
             ipc.applyDevicePolicy(id, target, permanent);
           }
-          catch (const usbguard::Exception& ex) {}
+          catch (const usbguard::Exception& ex) {
+            /*
+             * When a parent device is blocked/rejected, all its child
+             * devices are removed from the device map. If we try to apply
+             * device policy to a device whose parent has been
+             * blocked/rejected, therefore this device is not present in
+             * the device map anymore, we will receive an exception.
+             * We ignore such exceptions.
+             */
+          }
         }
       }
     }
-
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */
