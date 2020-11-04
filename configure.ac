@@ -75,15 +75,29 @@ CXXFLAGS_DEBUG_DISABLED=""
 # Libtool Versioning
 # See http://sources.redhat.com/autobook/autobook/autobook_91.html#SEC91 for details
 
-## increment if the interface has additions, changes, removals.
+#
+# The most recent interface number.
+#
+# Increment if the interface has additions, changes or removals.
+#
 LT_CURRENT=0
 
-## increment any time the source changes; set 0 to if you increment CURRENT
+#
+# The implementation number of the current interface.
+#
+# Increment if library source code changed at all.
+# Set to 0 if you increment CURRENT.
+#
 LT_REVISION=0
 
-## increment if any interfaces have been added; set to 0
-## if any interfaces have been changed or removed. removal has
-## precedence over adding, so set to 0 if both happened.
+#
+# The difference between the newest and oldest interfaces
+# that the library implements.
+#
+# Increment if any interfaces have been added.
+# Set to 0 if any interfaces have been changed or removed.
+# Removal has precedence over adding, so set to 0 if both happened.
+#
 LT_AGE=0
 
 AC_SUBST(LT_CURRENT)
