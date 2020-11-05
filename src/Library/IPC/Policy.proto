@@ -40,11 +40,29 @@ message removeRuleRequest {
 }
 
 message removeRuleResponse {
-  required uint32 id = 1;  
+  required uint32 id = 1;
 }
 
 message removeRule {
   required MessageHeader header = 1;
   required removeRuleRequest request = 2;
   optional removeRuleResponse response = 3;
+}
+
+
+message checkIPCPermissionsRequest {
+  required uint32 uid = 1;
+  required uint32 gid = 2;
+  required string section = 3;
+  required string privilege = 4;
+}
+
+message checkIPCPermissionsResponse {
+  required bool permit = 1;
+}
+
+message checkIPCPermissions {
+  required MessageHeader header = 1;
+  required checkIPCPermissionsRequest request = 2;
+  optional checkIPCPermissionsResponse response = 3;
 }
