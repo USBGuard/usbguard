@@ -79,9 +79,9 @@ namespace usbguard
     stream << "  get-parameter <name>           Get the value of a runtime parameter." << std::endl;
     stream << "  set-parameter <name> <value>   Set the value of a runtime parameter." << std::endl;
     stream << "  list-devices                   List all USB devices recognized by the USBGuard daemon." << std::endl;
-    stream << "  allow-device <id>              Authorize a device to interact with the system." << std::endl;
-    stream << "  block-device <id>              Deauthorize a device." << std::endl;
-    stream << "  reject-device <id>             Deauthorize and remove a device from the system." << std::endl;
+    stream << "  allow-device <id|rule|p-rule>  Authorize a device to interact with the system." << std::endl;
+    stream << "  block-device <id|rule|p-rule>  Deauthorize a device." << std::endl;
+    stream << "  reject-device <id|rule|p-rule> Deauthorize and remove a device from the system." << std::endl;
     stream << std::endl;
     stream << "  list-rules                     List the rule set (policy) used by the USBGuard daemon." << std::endl;
     stream << "  append-rule <rule>             Append a rule to the rule set." << std::endl;

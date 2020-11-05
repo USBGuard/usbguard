@@ -17,11 +17,11 @@ usbguard set-parameter 'name' 'value'
 
 usbguard list-devices
 
-usbguard allow-device 'id' | 'partial-rule'
+usbguard allow-device 'id' | 'rule' | 'partial-rule'
 
-usbguard block-device 'id' | 'partial-rule'
+usbguard block-device 'id' | 'rule' | 'partial-rule'
 
-usbguard reject-device 'id' | 'partial-rule'
+usbguard reject-device 'id' | 'rule' | 'partial-rule'
 
 usbguard list-rules
 
@@ -85,11 +85,11 @@ Available options:
     Show help.
 
 
-=== *allow-device* ['OPTIONS'] < 'id' | 'partial-rule' >
+=== *allow-device* ['OPTIONS'] < 'id' | 'rule' | 'partial-rule' >
 Authorize a device to interact with the system.
-Device can be identified by either a device 'id' or a 'partial-rule'.
-Partial rule can be used to allow multiple devices at once.
-Note that the device 'id' refers to the very first number of the list-devices command output.
+The device can be identified by either a device 'id', 'rule' or 'partial-rule' (rule without target).
+Both 'rule' and 'partial-rule' can be used to allow multiple devices at once.
+Note that 'id' refers to the internal device-rule ID (the very first number of the list-devices command output) rather than the device's ID attribute.
 
 Available options:
 
@@ -101,11 +101,11 @@ Available options:
     Show help.
 
 
-=== *block-device* ['OPTIONS'] < 'id' | 'partial-rule' >
+=== *block-device* ['OPTIONS'] < 'id' | 'rule' | 'partial-rule' >
 Deauthorize a device.
-Device can be identified by either a device 'id' or a 'partial-rule'.
-Partial rule can be used to block multiple devices at once.
-Note that the device 'id' refers to the very first number of the list-devices command output.
+The device can be identified by either a device 'id', 'rule' or 'partial-rule' (rule without target).
+Both 'rule' and 'partial-rule' can be used to block multiple devices at once.
+Note that 'id' refers to the internal device-rule ID (the very first number of the list-devices command output) rather than the device's ID attribute.
 
 Available options:
 
@@ -117,11 +117,11 @@ Available options:
     Show help.
 
 
-=== *reject-device* ['OPTIONS'] < 'id' | 'partial-rule' >
+=== *reject-device* ['OPTIONS'] < 'id' | 'rule' | 'partial-rule' >
 Deauthorize and remove a device.
-Device can be identified by either a device 'id' or a 'partial-rule'.
-Partial rule can be used to reject multiple devices at once.
-Note that the device 'id' refers to the very first number of the list-devices command output.
+The device can be identified by either a device 'id', 'rule' or 'partial-rule' (rule without target).
+Both 'rule' and 'partial-rule' can be used to reject multiple devices at once.
+Note that 'id' refers to the internal device-rule ID (the very first number of the list-devices command output) rather than the device's ID attribute.
 
 Available options:
 

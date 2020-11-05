@@ -1,6 +1,6 @@
 ....
     # Allow a device by ID(it is the very first number from the list-devices command output)
     $ sudo usbguard allow-device 10
-    # Allow all the devices named "Dell Wired Multimedia Keyboard"
-    $ sudo usbguard allow-device match name \"Dell Wired Multimedia Keyboard\"
+    # Allow all devices named "Dell Wired Multimedia Keyboard"
+    $ sudo usbguard allow-device name \"Dell Wired Multimedia Keyboard\"
 ....
