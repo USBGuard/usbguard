@@ -42,7 +42,8 @@ namespace usbguard
   static void showHelp(std::ostream& stream, Rule::Target target)
   {
     std::string target_string = Rule::targetToString(target);
-    stream << " Usage: " << usbguard_arg0 << " " << target_string << "-device [OPTIONS] (<device-id> | <partial-rule>)" << std::endl;
+    stream << " Usage: " << usbguard_arg0 << " " << target_string
+        << "-device [OPTIONS] (<id> | <rule> | <partial-rule>)" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific " << target_string << std::endl;
@@ -87,34 +88,47 @@ namespace usbguard
       return EXIT_FAILURE;
     }
 
-    uint32_t id = 0;
     usbguard::IPCClient ipc(/*connected=*/true);
 
-    if (argc == 1 && isNumeric(std::string(argv[0]))) { /* Change device policy by ID */
-      id = std::stoul(argv[0]);
+    /* If a single numeric argument is supplied interpret it as a rule ID */
+    if (argc == 1 && isNumeric(std::string(argv[0]))) {
+      uint32_t id = std::stoul(argv[0]);
       ipc.applyDevicePolicy(id, target, permanent);
-    }
-    else { /* Change device policy by Rule */
-      std::list<std::string> args(argv, argv + argc);
-      args.push_front(Rule::targetToString(Rule::Target::Match));
-      std::string query = joinElements(args.begin(), args.end());
+      return EXIT_SUCCESS;
+    }    
 
-      for (auto device_rule : ipc.listDevices(query)) {
-        if (target != device_rule.getTarget()) {
-          id = device_rule.getRuleID();
-          try {
-            ipc.applyDevicePolicy(id, target, permanent);
-          }
-          catch (const usbguard::Exception& ex) {
-            /*
-             * When a parent device is blocked/rejected, all its child
-             * devices are removed from the device map. If we try to apply
-             * device policy to a device whose parent has been
-             * blocked/rejected, therefore this device is not present in
-             * the device map anymore, we will receive an exception.
-             * We ignore such exceptions.
-             */
-          }
+    /*
+     * Interpret arguments as a rule/partial-rule
+     */
+
+    std::list<std::string> args(argv, argv + argc);
+    try { /* Check whether rule target has been supplied */
+      Rule::targetFromString(args.front());
+    }
+    catch (const std::runtime_error& ex) {
+      /*
+       * The rule contains no target => partial rule
+       * Supply a default match target
+       */
+      args.push_front(Rule::targetToString(Rule::Target::Match));
+    }
+    std::string query = joinElements(args.begin(), args.end());
+
+    for (auto device_rule : ipc.listDevices(query)) {
+      if (target != device_rule.getTarget()) {
+        uint32_t id = device_rule.getRuleID();
+        try {
+          ipc.applyDevicePolicy(id, target, permanent);
+        }
+        catch (const usbguard::Exception& ex) {
+          /*
+           * When a parent device is blocked/rejected, all its child
+           * devices are removed from the device map. If we try to apply
+           * device policy to a device whose parent has been
+           * blocked/rejected, therefore this device is not present in
+           * the device map anymore, we will receive an exception.
+           * We ignore such exceptions.
+           */
         }
       }
     }
