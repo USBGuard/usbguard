@@ -539,6 +539,7 @@ namespace usbguard
 
     // cleanup
     closedir(dir_fd);
+    std::sort(rulefile_list.begin(), rulefile_list.end());
     return rulefile_list;
   }
 } /* namespace usbguard */
