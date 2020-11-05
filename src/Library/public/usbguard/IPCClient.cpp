@@ -86,6 +86,11 @@ namespace usbguard
   {
     return d_pointer->listDevices(query);
   }
+
+  bool IPCClient::checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
+  {
+    return d_pointer->checkIPCPermissions(section, privilege);
+  }
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

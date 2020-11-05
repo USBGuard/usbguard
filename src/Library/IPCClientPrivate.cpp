@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <sys/poll.h>
 #include <sys/eventfd.h>
+#include <sys/types.h>
 
 namespace usbguard
 {
@@ -80,6 +81,7 @@ namespace usbguard
     registerHandler<IPC::removeRule>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::applyDevicePolicy>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::listDevices>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::checkIPCPermissions>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::Exception>(&IPCClientPrivate::handleException);
     registerHandler<IPC::DevicePresenceChangedSignal>(&IPCClientPrivate::handleDevicePresenceChangedSignal);
     registerHandler<IPC::DevicePolicyChangedSignal>(&IPCClientPrivate::handleDevicePolicyChangedSignal);
@@ -437,6 +439,21 @@ namespace usbguard
     }
 
     return devices;
+  }
+
+  bool IPCClientPrivate::checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
+  {
+    IPC::checkIPCPermissions message_out;
+    message_out.mutable_request()->set_uid(getuid());
+    message_out.mutable_request()->set_gid(getgid());
+    message_out.mutable_request()->set_section(
+        IPCServer::AccessControl::sectionToString(section)
+    );
+    message_out.mutable_request()->set_privilege(
+        IPCServer::AccessControl::privilegeToString(privilege)
+    );
+    auto message_in = qbIPCSendRecvMessage(message_out);
+    return message_in->response().permit();
   }
 
   void IPCClientPrivate::handleMethodResponse(IPC::MessagePointer& message_in, IPC::MessagePointer& message_out)

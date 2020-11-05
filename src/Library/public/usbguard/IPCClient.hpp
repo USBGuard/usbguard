@@ -21,6 +21,7 @@
 #include "DeviceManager.hpp"
 #include "Exception.hpp"
 #include "Interface.hpp"
+#include "IPCServer.hpp"
 #include "Typedefs.hpp"
 
 #include <string>
@@ -28,6 +29,9 @@
 #include <memory>
 
 #include <cstdint>
+#include <unistd.h>
+#include <sys/types.h>
+
 
 namespace usbguard
 {
@@ -149,6 +153,17 @@ namespace usbguard
     {
       return listDevices("match");
     }
+
+    /**
+     * @brief Check if IPC client has enough permission for queried section with privilege.
+     *
+     * @param section Section to be checked for.
+     * @param privilege Privilege to be checked for.
+     *
+     * @return True if IPC client has enough permission
+     * for (section, privilege), otherwise false.
+     */
+    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
 
     /**
      * @brief Defines algorithm to perform in the case of IPC connection.
