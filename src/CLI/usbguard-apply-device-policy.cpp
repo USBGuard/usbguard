@@ -95,26 +95,33 @@ namespace usbguard
       uint32_t id = std::stoul(argv[0]);
       ipc.applyDevicePolicy(id, target, permanent);
       return EXIT_SUCCESS;
-    }    
+    }
 
     /*
      * Interpret arguments as a rule/partial-rule
      */
 
-    std::list<std::string> args(argv, argv + argc);
+    std::string rule_string;
+    if (argc == 1)
+        rule_string = argv[0];
+    else {
+        std::vector<std::string> arguments(argv, argv + argc);
+        rule_string = joinElements(arguments.begin(), arguments.end());
+    }
+
     try { /* Check whether rule target has been supplied */
-      Rule::targetFromString(args.front());
+      std::string rule_target = rule_string.substr(0, rule_string.find(" "));
+      Rule::targetFromString(rule_target);
     }
     catch (const std::runtime_error& ex) {
       /*
        * The rule contains no target => partial rule
        * Supply a default match target
        */
-      args.push_front(Rule::targetToString(Rule::Target::Match));
+      rule_string.insert(0, Rule::targetToString(Rule::Target::Match) + " ");
     }
-    std::string query = joinElements(args.begin(), args.end());
 
-    for (auto device_rule : ipc.listDevices(query)) {
+    for (auto device_rule : ipc.listDevices(rule_string)) {
       if (target != device_rule.getTarget()) {
         uint32_t id = device_rule.getRuleID();
         try {
