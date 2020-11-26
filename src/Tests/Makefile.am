@@ -23,7 +23,7 @@ AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
 	-I$(top_srcdir)/src/Library/public \
-	@catch_CFLAGS@ 
+	@catch_CFLAGS@
 
 EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/custom.supp \
@@ -41,6 +41,7 @@ EXTRA_DIST=\
 	$(top_srcdir)/src/Tests/UseCase/002_cli_devices.sh \
 	$(top_srcdir)/src/Tests/UseCase/003_cli_devices_umockdev.sh \
 	$(top_srcdir)/src/Tests/UseCase/004_daemonize.sh \
+	$(top_srcdir)/src/Tests/UseCase/005_cli_devices_advanced.sh  \
 	$(top_srcdir)/src/Tests/UseCase/devices.umockdev \
 	$(top_srcdir)/src/Tests/Source/check-driver.sh \
 	$(top_srcdir)/src/Tests/Source/CheckScripts/copyright.sh \
@@ -84,7 +85,8 @@ TESTS+=\
 	UseCase/001_cli_policy.sh \
 	UseCase/002_cli_devices.sh \
 	UseCase/003_cli_devices_umockdev.sh \
-	UseCase/004_daemonize.sh
+	UseCase/004_daemonize.sh \
+	UseCase/005_cli_devices_advanced.sh
 endif
 
 if WITH_LDAP
