@@ -144,16 +144,20 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "_qb_conn=" << _qb_conn
       << " _qb_fd=" << _qb_fd;
 
+    std::unique_lock<std::mutex> disconnect_lock(_disconnect_mutex);
+
     if (_qb_conn != nullptr && _qb_fd >= 0) {
       qb_loop_poll_del(_qb_loop, _qb_fd);
       qb_ipcc_disconnect(_qb_conn);
       _qb_conn = nullptr;
       _qb_fd = -1;
+      disconnect_lock.unlock();
       stop(do_wait);
       USBGUARD_LOG(Trace) << "Signaling IPCDisconnected";
       _p_instance.IPCDisconnected(/*exception_initiated=*/true, exception);
     }
     else if (_thread.running()) {
+      disconnect_lock.unlock();
       stop(do_wait);
     }
   }
