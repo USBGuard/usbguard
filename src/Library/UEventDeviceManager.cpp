@@ -345,7 +345,7 @@ namespace usbguard
       uint32_t id = 0;
       const bool known_path = knownSysfsPath(sysfs_devpath, &id);
 
-      if (action == "add" || action == "change") {
+      if (action == "add" /*|| action == "change"*/) {
         if (known_path && id > 0) {
           processDevicePresence(id);
         }
