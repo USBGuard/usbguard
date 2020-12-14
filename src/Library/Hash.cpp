@@ -38,6 +38,12 @@ namespace usbguard
 #if defined(USBGUARD_USE_LIBSODIUM)
     crypto_hash_sha256_init(&_state);
 #endif
+#if defined(USBGUARD_USE_OPENSSL)
+    if ((_state = EVP_MD_CTX_new()) == nullptr)
+      throw std::runtime_error("Dynamic memory allocation of message digest context failed.");
+    if (!EVP_DigestInit_ex(_state, EVP_sha256(), nullptr))
+      throw std::runtime_error("Context initialization of message digest context failed.");
+#endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_open(&_state, GCRY_MD_SHA256, 0);
 #endif
@@ -49,6 +55,9 @@ namespace usbguard
 #if defined(USBGUARD_USE_LIBSODIUM)
     _state = rhs._state;
 #endif
+#if defined(USBGUARD_USE_OPENSSL)
+    _state = rhs._state;
+#endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_copy(&_state, rhs._state);
 #endif
@@ -58,6 +67,10 @@ namespace usbguard
   {
     release();
 #if defined(USBGUARD_USE_LIBSODIUM)
+    _state = rhs._state;
+    memset(&rhs._state, 0, sizeof _state);
+#endif
+#if defined(USBGUARD_USE_OPENSSL)
     _state = rhs._state;
     memset(&rhs._state, 0, sizeof _state);
 #endif
@@ -74,6 +87,10 @@ namespace usbguard
     _state = rhs._state;
     memset(&rhs._state, 0, sizeof _state);
 #endif
+#if defined(USBGUARD_USE_OPENSSL)
+    _state = rhs._state;
+    memset(&rhs._state, 0, sizeof _state);
+#endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     _state = rhs._state;
     rhs._state = nullptr;
@@ -83,12 +100,18 @@ namespace usbguard
 
   Hash::~Hash()
   {
+#if defined(USBGUARD_USE_OPENSSL)
+    EVP_MD_CTX_free(_state);
+#endif
     release();
   }
 
   void Hash::release()
   {
 #if defined(USBGUARD_USE_LIBSODIUM)
+    memset(&_state, 0, sizeof _state);
+#endif
+#if defined(USBGUARD_USE_OPENSSL)
     memset(&_state, 0, sizeof _state);
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
@@ -110,6 +133,10 @@ namespace usbguard
 #if defined(USBGUARD_USE_LIBSODIUM)
     crypto_hash_sha256_update(&_state, reinterpret_cast<const uint8_t*>(ptr), size);
 #endif
+#if defined(USBGUARD_USE_OPENSSL)
+    if (!EVP_DigestUpdate(_state, reinterpret_cast<const uint8_t*>(ptr), size))
+      throw std::runtime_error("Hashing data into message digest context failed.");
+#endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_write(_state, ptr, size);
 #endif
@@ -130,6 +157,10 @@ namespace usbguard
 #if defined(USBGUARD_USE_LIBSODIUM)
         crypto_hash_sha256_update(&_state, buffer, buflen);
 #endif
+#if defined(USBGUARD_USE_OPENSSL)
+        if (!EVP_DigestUpdate(_state, buffer, buflen))
+          throw std::runtime_error("Hashing data into message digest context failed.");
+#endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
         gcry_md_write(_state, buffer, buflen);
 #endif
@@ -147,6 +178,14 @@ namespace usbguard
     crypto_hash_sha256_final(&_state, hash_binary);
     const uint8_t* const hash_buffer = hash_binary;
     const size_t hash_buflen = sizeof hash_binary;
+#endif
+#if defined(USBGUARD_USE_OPENSSL)
+    uint8_t hash_binary[EVP_MAX_MD_SIZE];
+    unsigned int hash_len;
+    if (!EVP_DigestFinal_ex(_state, hash_binary, &hash_len))
+      throw std::runtime_error("Digest value retrieval failed.");
+    const uint8_t* const hash_buffer = hash_binary;
+    const size_t hash_buflen = hash_len;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_final(_state);
