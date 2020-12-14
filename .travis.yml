@@ -76,6 +76,13 @@ matrix:
 
     - os: linux
       compiler: gcc
+      addons:
+        apt:
+          packages: ['libssl-dev']
+      env: CONFIGURE_ARGS=--with-crypto-library=openssl
+
+    - os: linux
+      compiler: gcc
       env: CONFIGURE_ARGS=--without-ldap
 
 before_install:

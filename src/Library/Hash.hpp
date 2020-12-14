@@ -30,6 +30,8 @@
 
 #if defined(USBGUARD_USE_LIBSODIUM)
   #include <sodium.h>
+#elif defined(USBGUARD_USE_OPENSSL)
+  #include <openssl/evp.h>
 #elif defined(USBGUARD_USE_LIBGCRYPT)
   #include <gcrypt.h>
 #else
@@ -55,6 +57,9 @@ namespace usbguard
 
 #if defined(USBGUARD_USE_LIBSODIUM)
     crypto_hash_sha256_state _state;
+#endif
+#if defined(USBGUARD_USE_OPENSSL)
+    EVP_MD_CTX *_state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_hd_t _state {nullptr};

@@ -193,6 +193,16 @@ libsodium_available=yes,
 )
 
 #
+# libcrypto library (OpenSSL)
+#
+PKG_CHECK_MODULES([libcrypto], [libcrypto >= 1.0.0],
+[AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto API available])
+libcrypto_summary="system-wide; $libcrypto_CFLAGS $libcrypto_LIBS"]
+libcrypto_available=yes,
+[]
+)
+
+#
 # gcrypt library
 #
 AM_PATH_LIBGCRYPT([1.5.0],
@@ -211,12 +221,23 @@ libgcrypt_available=yes],
 #
 #  sodium ... libsodium
 #  gcrypt ... libgcrypt
+#  openssl ... libcrypto
 #
 AC_ARG_WITH([crypto-library], AS_HELP_STRING([--with-crypto-library],
-            [Select crypto backend library. Supported values: sodium, gcrypt.]),
+            [Select crypto backend library. Supported values: sodium, gcrypt, openssl.]),
             [with_crypto_library=$withval], [with_crypto_library=sodium])
 
 case "$with_crypto_library" in
+  openssl)
+    if test "x$libcrypto_available" = xyes; then
+      crypto_CFLAGS="$libcrypto_CFLAGS"
+      crypto_LIBS="$libcrypto_LIBS"
+      crypto_summary="$libcrypto_summary"
+      AC_DEFINE([USBGUARD_USE_OPENSSL], [1], [Use openssl as crypto backend])
+     else
+      AC_MSG_ERROR([The selected crypto backend library is not available.])
+    fi
+  ;;
   sodium)
     if test "x$libsodium_available" = xyes; then
       crypto_CFLAGS="$sodium_CFLAGS"
@@ -238,7 +259,7 @@ case "$with_crypto_library" in
     fi
   ;;
   *)
-  AC_MSG_FAILURE([Invalid crypto library selector. Supported selectors: sodium, gcrypt])
+  AC_MSG_FAILURE([Invalid crypto library selector. Supported selectors: sodium, gcrypt, openssl])
 esac
 AC_SUBST([crypto_CFLAGS])
 AC_SUBST([crypto_LIBS])
