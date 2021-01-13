@@ -80,7 +80,7 @@ CXXFLAGS_DEBUG_DISABLED=""
 #
 # Increment if the interface has additions, changes or removals.
 #
-LT_CURRENT=0
+LT_CURRENT=1
 
 #
 # The implementation number of the current interface.

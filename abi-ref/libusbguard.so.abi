@@ -1,7 +1,6 @@
-<abi-corpus path='build/.libs/libusbguard.so' architecture='elf-amd-x86_64' soname='libusbguard.so.0'>
+<abi-corpus path='build/.libs/libusbguard.so' architecture='elf-amd-x86_64' soname='libusbguard.so.1'>
   <elf-needed>
-    <dependency name='libqb.so.100'/>
-    <dependency name='libprotobuf.so.23'/>
+    <dependency name='libprotobuf.so.22'/>
     <dependency name='libpthread.so.0'/>
     <dependency name='libgcrypt.so.20'/>
     <dependency name='libdl.so.2'/>
@@ -14,6 +13,7 @@
     <dependency name='libc.so.6'/>
     <dependency name='ld-linux-x86-64.so.2'/>
     <dependency name='libgcc_s.so.1'/>
+    <dependency name='libqb.so.0'/>
   </elf-needed>
   <elf-function-symbols>
     <elf-symbol name='_ZN8usbguard10AuditEvent11setCommitedEb' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
@@ -355,6 +355,7 @@
     <elf-symbol name='_ZN8usbguard9IPCClient16ExceptionMessageERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZN8usbguard9IPCClient17applyDevicePolicyEjNS_4Rule6TargetEb' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZN8usbguard9IPCClient19DevicePolicyChangedEjNS_4Rule6TargetES2_RKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEj' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZN8usbguard9IPCClient19checkIPCPermissionsERKNS_9IPCServer13AccessControl7SectionERKNS2_9PrivilegeE' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZN8usbguard9IPCClient21DevicePresenceChangedEjNS_13DeviceManager9EventTypeENS_4Rule6TargetERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZN8usbguard9IPCClient24PropertyParameterChangedERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZN8usbguard9IPCClient4waitEv' type='func-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
@@ -3338,6 +3339,7 @@
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA25_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA26_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA31_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA33_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA39_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA41_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt4pairIjNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEC1IiRA44_KcLb1EEEOT_OT0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -3433,15 +3435,20 @@
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000000000EEEC2IlS1_ILl1ELl1EEvEERKNS0_IT_T0_EE' type='func-type' binding='weak-binding' visibility='default-visibility' alias='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000000000EEEC1IlS1_ILl1ELl1EEvEERKNS0_IT_T0_EE' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000000000EEEC2ImvEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' alias='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000000000EEEC1ImvEERKT_' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000000000EEEppEv' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000EEE4zeroEv' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000EEEC1IlvEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000EEEC2IlvEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' alias='_ZNSt6chrono8durationIlSt5ratioILl1ELl1000EEEC1IlvEERKT_' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC1IivEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC1IlvEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC2IivEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' alias='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC1IivEERKT_' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC2IlvEERKT_' type='func-type' binding='weak-binding' visibility='default-visibility' alias='_ZNSt6chrono8durationIlSt5ratioILl1ELl1EEEC1IlvEERKT_' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronoeqIlSt5ratioILl1ELl1000000000EElS2_EEbRKNS_8durationIT_T0_EERKNS3_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt6chronogtIlSt5ratioILl1ELl1000EElS2_EEbRKNS_8durationIT_T0_EERKNS3_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronoleIlSt5ratioILl1ELl1000000000EElS2_EEbRKNS_8durationIT_T0_EERKNS3_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronoltINS_3_V212steady_clockENS_8durationIlSt5ratioILl1ELl1000000000EEEES6_EEbRKNS_10time_pointIT_T0_EERKNS7_IS8_T1_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronoltIlSt5ratioILl1ELl1000000000EElS1_ILl1ELl1EEEEbRKNS_8durationIT_T0_EERKNS4_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronoltIlSt5ratioILl1ELl1000000000EElS2_EEbRKNS_8durationIT_T0_EERKNS3_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZNSt6chronoltIlSt5ratioILl1ELl1000EElS2_EEbRKNS_8durationIT_T0_EERKNS3_IT1_T2_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronomiINS_3_V212steady_clockENS_8durationIlSt5ratioILl1ELl1000000000EEEENS3_IlS4_ILl1ELl1EEEEEENSt11common_typeIJT0_T1_EE4typeERKNS_10time_pointIT_SA_EERKNSE_ISF_SB_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronomiINS_3_V212steady_clockENS_8durationIlSt5ratioILl1ELl1000000000EEEES6_EENSt11common_typeIJT0_T1_EE4typeERKNS_10time_pointIT_S8_EERKNSC_ISD_S9_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZNSt6chronomiINS_3_V212system_clockENS_8durationIlSt5ratioILl1ELl1000000000EEEENS3_IlS4_ILl1ELl1EEEEEENSt11common_typeIJT0_T1_EE4typeERKNS_10time_pointIT_SA_EERKNSE_ISF_SB_EE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -4721,10 +4728,12 @@
     <elf-symbol name='_ZSt4moveIRSt6vectorISt10shared_ptrIN8usbguard7RuleSetEESaIS4_EEEONSt16remove_referenceIT_E4typeEOS9_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRSt8functionIFbRKSt4pairINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES7_ESA_EEEONSt16remove_referenceIT_E4typeEOSF_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRSt9_Any_dataEONSt16remove_referenceIT_E4typeEOS3_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZSt4moveIRbEONSt16remove_referenceIT_E4typeEOS2_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRhEONSt16remove_referenceIT_E4typeEOS2_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRiEONSt16remove_referenceIT_E4typeEOS2_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRjEONSt16remove_referenceIT_E4typeEOS2_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4moveIRmEONSt16remove_referenceIT_E4typeEOS2_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZSt4sortIN9__gnu_cxx17__normal_iteratorIPNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt6vectorIS7_SaIS7_EEEEEvT_SD_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4sortIN9__gnu_cxx17__normal_iteratorIPSt4pairINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_ESt6vectorIS9_SaIS9_EEEESt8functionIFbRKS9_SH_EEEvT_SK_T0_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4sortIN9__gnu_cxx17__normal_iteratorIPSt4pairIhmESt6vectorIS3_SaIS3_EEEEEvT_S9_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapINSt13__future_base12_Result_base8_DeleterEENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS7_ESt18is_move_assignableIS7_EEE5valueEvE4typeERS7_SH_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -4737,9 +4746,11 @@
     <elf-symbol name='_ZSt4swapIPNSt13__future_base12_Result_baseEENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS7_ESt18is_move_assignableIS7_EEE5valueEvE4typeERS7_SH_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapIPNSt13__future_base13_State_baseV2EENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS7_ESt18is_move_assignableIS7_EEE5valueEvE4typeERS7_SH_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapISt9_Any_dataENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS5_ESt18is_move_assignableIS5_EEE5valueEvE4typeERS5_SF_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZSt4swapIbENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS4_ESt18is_move_assignableIS4_EEE5valueEvE4typeERS4_SE_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapIcSt11char_traitsIcESaIcEEvRNSt7__cxx1112basic_stringIT_T0_T1_EES9_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapIhENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS4_ESt18is_move_assignableIS4_EEE5valueEvE4typeERS4_SE_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapIhmEvRSt4pairIT_T0_ES4_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZSt4swapIiENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS4_ESt18is_move_assignableIS4_EEE5valueEvE4typeERS4_SE_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapIjENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS4_ESt18is_move_assignableIS4_EEE5valueEvE4typeERS4_SE_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt4swapImENSt9enable_ifIXsrSt6__and_IJSt6__not_ISt15__is_tuple_likeIT_EESt21is_move_constructibleIS4_ESt18is_move_assignableIS4_EEE5valueEvE4typeERS4_SE_' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIMNSt13__future_base13_State_baseV2EFvPSt8functionIFSt10unique_ptrINS0_12_Result_baseENS4_8_DeleterEEvEEPbEEOT_RNSt16remove_referenceISD_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -4775,6 +4786,7 @@
     <elf-symbol name='_ZSt7forwardIRA26_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIRA2_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIRA31_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZSt7forwardIRA33_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIRA39_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIRA41_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZSt7forwardIRA44_KcEOT_RNSt16remove_referenceIS3_E4typeE' type='func-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -5119,6 +5131,7 @@
     <elf-symbol name='_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard16IPCServerPrivateEFvvEPS4_EEEEEE' size='24' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard19UEventDeviceManagerEFvvEPS4_EEEEEE' size='24' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard21UMockdevDeviceManagerEFvvEPS4_EEEEEE' size='24' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZTINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' size='16' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTIPFbRKSt4pairINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES5_ES8_E' size='32' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE' size='16' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTISt14default_deleteIN8usbguard12AuditBackendEE' size='16' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -5150,6 +5163,7 @@
     <elf-symbol name='_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard16IPCServerPrivateEFvvEPS4_EEEEEE' size='92' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard19UEventDeviceManagerEFvvEPS4_EEEEEE' size='95' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJMN8usbguard21UMockdevDeviceManagerEFvvEPS4_EEEEEE' size='97' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='_ZTSNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE' size='53' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTSPFbRKSt4pairINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES5_ES8_E' size='74' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE' size='47' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZTSSt14default_deleteIN8usbguard12AuditBackendEE' size='46' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
@@ -5186,5 +5200,7 @@
     <elf-symbol name='_ZTVSt23_Sp_counted_ptr_inplaceINSt13__future_base13_State_baseV2ESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE' size='56' type='object-type' binding='weak-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag' size='16' type='object-type' binding='gnu-unique-binding' visibility='default-visibility' is-defined='yes'/>
     <elf-symbol name='_ZZNSt8__detail18__to_chars_10_implIjEEvPcjT_E8__digits' size='201' type='object-type' binding='gnu-unique-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='__start___verbose' size='40' type='object-type' binding='global-binding' visibility='default-visibility' is-defined='yes'/>
+    <elf-symbol name='__stop___verbose' size='40' type='object-type' binding='global-binding' visibility='default-visibility' alias='__start___verbose' is-defined='yes'/>
   </elf-variable-symbols>
 </abi-corpus>

@@ -1,5 +1,24 @@
 # Change Log
 
+## 1.0.0 - 2021-01-13
+
+### Added
+- Added openssl support
+- Starting with libtool versioning
+- Added interface for IPC permission query
+- Introduced partial rule concept fo CLI
+- Added WithConnectType for ldap rule
+
+### Fixed/Changed
+- Daemon does not apply the policy when
+  "change" action event appears anymore
+- IPCClientPrivate@disconnect is thread safe
+- Enforced loading of files from .d/ direcory
+  in alfabetical order
+- Improved CLI behaviour to be consistent
+- Clarified rule's label documentation
+
+
 ## 0.7.8 - 2020-05-20
 
 ### Fixed
