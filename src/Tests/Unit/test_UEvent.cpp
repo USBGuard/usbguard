@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include <catch.hpp>
-#include <UEvent.hpp>
+#include <UEvent.cpp>
 
 using namespace usbguard;
 
