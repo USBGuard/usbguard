@@ -17,7 +17,7 @@
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
 #include <catch.hpp>
-#include <UMockdevDeviceDefinition.hpp>
+#include <UMockdevDeviceDefinition.cpp>
 
 #include "test_UMockdevDeviceDefinition.data.hpp"
 
