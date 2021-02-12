@@ -39,6 +39,8 @@ GLOB_EXCLUDE=(
 *ThirdParty/*
 *build/*
 *m4/*
+*.pb.*
+*build-config.h
 )
 
 ##################
