@@ -26,7 +26,11 @@
 #include <Common/Utility.hpp>
 
 #include <tao/pegtl.hpp>
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+#include <tao/pegtl/contrib/trace.hpp>
+#else
 #include <tao/pegtl/contrib/tracer.hpp>
+#endif
 
 namespace usbguard
 {
@@ -49,12 +53,12 @@ namespace usbguard
      *  S:linkname: device node symlink (without the /dev/ prefix); ignored right now.
      */
 
-    struct str_path_prefix : TAOCPP_PEGTL_STRING("P:") {};
-    struct str_property_prefix : TAOCPP_PEGTL_STRING("E:") {};
-    struct str_ascii_attr_prefix : TAOCPP_PEGTL_STRING("A:") {};
-    struct str_binary_attr_prefix : TAOCPP_PEGTL_STRING("H:") {};
-    struct str_link_prefix : TAOCPP_PEGTL_STRING("L:") {};
-    struct str_name_prefix : TAOCPP_PEGTL_STRING("N:") {};
+    struct str_path_prefix : TAO_PEGTL_STRING("P:") {};
+    struct str_property_prefix : TAO_PEGTL_STRING("E:") {};
+    struct str_ascii_attr_prefix : TAO_PEGTL_STRING("A:") {};
+    struct str_binary_attr_prefix : TAO_PEGTL_STRING("H:") {};
+    struct str_link_prefix : TAO_PEGTL_STRING("L:") {};
+    struct str_name_prefix : TAO_PEGTL_STRING("N:") {};
 
     struct line_rest
       : star<not_at<ascii::eol>, not_at<eof>, ascii::any> {};
@@ -330,7 +334,11 @@ namespace usbguard
 
     try {
       tao::pegtl::string_input<> input(definitions_string, "<string>");
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+      tao::pegtl::complete_trace<UMockdevParser::grammar, UMockdevParser::actions>(input, definitions, umockdev_name);
+#else
       tao::pegtl::parse<UMockdevParser::grammar, UMockdevParser::actions, tao::pegtl::tracer>(input, definitions, umockdev_name);
+#endif
     }
     catch (...) {
       USBGUARD_LOG(Error) << "UMockdevDeviceDefinition: " << "<string>" << ": parsing failed at line <LINE>";

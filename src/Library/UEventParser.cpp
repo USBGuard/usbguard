@@ -28,7 +28,11 @@
 
 #include <fstream>
 
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+#include <tao/pegtl/contrib/trace.hpp>
+#else
 #include <tao/pegtl/contrib/tracer.hpp>
+#endif
 using namespace tao;
 
 namespace usbguard
@@ -130,7 +134,11 @@ namespace usbguard
         tao::pegtl::parse<G, UEventParser::actions>(in, uevent);
       }
       else {
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+        tao::pegtl::complete_trace<G, UEventParser::actions>(in, uevent);
+#else
         tao::pegtl::parse<G, UEventParser::actions, tao::pegtl::tracer>(in, uevent);
+#endif
       }
     }
     catch (...) {
