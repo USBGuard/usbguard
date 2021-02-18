@@ -54,7 +54,7 @@ AX_CHECK_COMPILE_FLAG([-Wno-implicit-fallthrough],
 #
 # Final project CXXFLAGS are set after configure checks.
 #
-CXXFLAGS="-std=c++11 $EXTERNAL_CXXFLAGS"
+CXXFLAGS="-std=c++17 $EXTERNAL_CXXFLAGS"
 CFLAGS="-std=c99 $EXTERNAL_CFLAGS"
 CPPFLAGS="-DHAVE_BUILD_CONFIG_H $EXTERNAL_CPPFLAGS"
 
@@ -350,7 +350,7 @@ if test "x$with_bundled_catch" = xyes; then
 	catch_summary="bundled; $catch_CFLAGS $catch_LIBS"
 else
 	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++11 $CPPFLAGS -I/usr/include/catch"
+	CPPFLAGS="-std=c++17 $CPPFLAGS -I/usr/include/catch"
 	AC_LANG_PUSH([C++])
 	AC_CHECK_HEADER([catch.hpp], [], [AC_MSG_FAILURE(catch.hpp not found or not usable. Re-run with --with-bundled-catch to use the bundled library.)])
 	AC_LANG_POP
@@ -383,7 +383,7 @@ AC_SUBST([pegtl_AC_CFLAGS])
 AC_SUBST([pegtl_LIBS])
 
 SAVE_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="-std=c++11 $CPPFLAGS $pegtl_AC_CFLAGS"
+CPPFLAGS="-std=c++17 $CPPFLAGS $pegtl_AC_CFLAGS"
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADER([tao/pegtl.hpp],
 		[AC_DEFINE([HAVE_TAO_PEGTL_HPP], [1], [PEGTL header file with .hpp extension is present])],

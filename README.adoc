@@ -15,7 +15,7 @@ image::https://img.shields.io/github/license/USBGuard/usbguard.svg[License, link
 == About
 
 USBGuard is a software framework for implementing USB device authorization policies (what kind of USB devices are authorized) as well as method of use policies (how a USB device may interact with the system).
-Simply put, it is a USB device whitelisting tool.
+Simply put, it is a USB device allowlisting tool.
 
 WARNING: The 0.x releases are not production ready packages.
 They serve for tech-preview and user feedback purposes only.
@@ -35,7 +35,8 @@ Please share your feedback or request a feature in the Github issue trackers for
 
 == Compilation & Installation
 
-To compile the sources from a release tarball, you'll need the development files for:
+To compile the source code, you will require at least C{plus}{plus}17. +
+If you are compiling sources from a release tarball, you'll need the development files for:
 
  * https://github.com/ClusterLabs/libqb[libqb] - used for local UNIX socket based IPC
  * https://github.com/google/protobuf[protobuf] - used for IPC message (de)serialization
