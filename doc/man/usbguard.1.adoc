@@ -81,6 +81,9 @@ Available options:
 *-b, --blocked*::
     List blocked devices.
 
+*-t, --tree*::
+    List devices in a tree format.
+
 *-h, --help*::
     Show help.
 

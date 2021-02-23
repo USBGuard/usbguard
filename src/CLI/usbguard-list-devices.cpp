@@ -26,15 +26,18 @@
 #include "usbguard/IPCClient.hpp"
 
 #include <iostream>
+#include <map>
+#include <vector>
 
 namespace usbguard
 {
-  static const char* options_short = "hab";
+  static const char* options_short = "habt";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
-    { "blocked", no_argument, nullptr, 'b' },
     { "allowed", no_argument, nullptr, 'a' },
+    { "blocked", no_argument, nullptr, 'b' },
+    { "tree", no_argument, nullptr, 't' },
     { nullptr, 0, nullptr, 0 }
   };
 
@@ -45,14 +48,133 @@ namespace usbguard
     stream << " Options:" << std::endl;
     stream << "  -a, --allowed  List allowed devices." << std::endl;
     stream << "  -b, --blocked  List blocked devices." << std::endl;
+    stream << "  -t, --tree     List devices in a tree format." << std::endl;
     stream << "  -h, --help     Show this help." << std::endl;
     stream << std::endl;
+  }
+
+  /**
+   * @brief Prints list of devices in a classic format
+   *
+   * @param rules Device rules to print
+   */
+  static void classicFormat(const std::vector<Rule>& rules)
+  {
+    for (const auto& rule : rules) {
+      std::cout << rule.getRuleID() << ": " << rule.toString() << std::endl;
+    }
+  }
+
+  /**
+   * @brief Recursively prints the tree nodes
+   *
+   * @param tree Rules organized into a tree structure
+   * @param node Node of a tree
+   * @param prefix Helper string used for prefixing the output
+   */
+  static void printNode(
+    const std::map<std::string, std::pair<Rule, std::vector<std::string>>>& tree,
+    const std::pair<Rule, std::vector<std::string>>& node,
+    const std::string& prefix)
+  {
+    const auto& rule = node.first;
+    const auto& children = node.second;
+
+    if (rule) {
+      std::cout << rule.getRuleID() << ": "
+        << Rule::targetToString(rule.getTarget()) << " "
+        << rule.getName() << std::endl;
+    }
+
+    if (children.empty()) {
+      return;
+    }
+
+    for (unsigned i = 0; i < children.size() - 1; ++i) {
+      std::cout << prefix << "├── ";
+      printNode(tree, tree.at(children[i]), prefix + "│   ");
+    }
+
+    std::cout << prefix << "└── ";
+    printNode(tree, tree.at(children.back()), prefix + "    ");
+  }
+
+  /**
+   * @brief Recursively prints the rule tree
+   *
+   * @param tree Rules organized into a tree structure
+   */
+  static void printTree(const std::map<std::string, std::pair<Rule, std::vector<std::string>>>& tree)
+  {
+    std::cout << "." << std::endl;
+    std::vector<std::pair<Rule, std::vector<std::string>>> roots;
+
+    for (const auto& it : tree) {
+      if (!it.second.first) {
+        roots.push_back(it.second);
+      }
+    }
+
+    for (const auto& root : roots) {
+      auto children = root.second;
+
+      for (const auto& child : children) {
+        if (root == roots.back() && child == children.back()) {
+          std::cout << "└── ";
+          printNode(tree, tree.at(child), "    ");
+        }
+        else {
+          std::cout << "├── ";
+          printNode(tree, tree.at(child), "│   ");
+        }
+      }
+    }
+  }
+
+  /**
+   * @brief Prints list of devices in a tree format
+   *
+   * Complexity O(n*log(n)), where n = rules.size
+   *
+   * @param rules Device rules to print
+   */
+  static void treeFormat(const std::vector<Rule>& rules)
+  {
+    /*
+     * key: hash
+     * value: (rule, children_hashes)
+     */
+    std::map<std::string, std::pair<Rule, std::vector<std::string>>> tree;
+
+    for (const auto& rule : rules) {
+      auto hash = rule.getHash();
+      auto p_hash = rule.getParentHash();
+      auto hash_it = tree.find(hash);
+      auto p_hash_it = tree.find(p_hash);
+
+      if (p_hash_it == tree.end()) {
+        tree.insert({p_hash, {{}, {hash}}});
+      }
+      else {
+        p_hash_it->second.second.push_back(hash);
+      }
+
+      if (hash_it == tree.end()) {
+        tree.insert({hash, {rule, {}}});
+      }
+      else {
+        hash_it->second.first = rule;
+      }
+    }
+
+    printTree(tree);
   }
 
   int usbguard_list_devices(int argc, char* argv[])
   {
     bool list_blocked = false;
     bool list_allowed = false;
+    bool tree_format = false;
     int opt = 0;
 
     while ((opt = getopt_long(argc, argv, options_short, options_long, nullptr)) != -1) {
@@ -69,6 +191,10 @@ namespace usbguard
         list_blocked = true;
         break;
 
+      case 't':
+        tree_format = true;
+        break;
+
       case '?':
         showHelp(std::cerr);
 
@@ -77,22 +203,20 @@ namespace usbguard
       }
     }
 
-    const bool list_everything = (list_blocked == list_allowed);
     std::string query = "match";
 
-    if (!list_everything) {
-      if (list_allowed) {
-        query = "allow";
-      }
-      else {
-        query = "block";
-      }
+    if (list_blocked != list_allowed) {
+      query = list_allowed ? "allow" : "block";
     }
 
     usbguard::IPCClient ipc(/*connected=*/true);
+    auto device_rules = ipc.listDevices(query);
 
-    for (auto device_rule : ipc.listDevices(query)) {
-      std::cout << device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
+    if (tree_format) {
+      treeFormat(device_rules);
+    }
+    else {
+      classicFormat(device_rules);
     }
 
     return EXIT_SUCCESS;
