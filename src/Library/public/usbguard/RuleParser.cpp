@@ -34,7 +34,11 @@
 #include <stdexcept>
 #include <stdlib.h>
 
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+#include <tao/pegtl/contrib/trace.hpp>
+#else
 #include <tao/pegtl/contrib/tracer.hpp>
+#endif
 
 namespace usbguard
 {
@@ -48,7 +52,11 @@ namespace usbguard
         tao::pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(input, rule);
       }
       else {
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+        tao::pegtl::complete_trace<RuleParser::rule_grammar, RuleParser::rule_parser_actions>(input, rule);
+#else
         tao::pegtl::parse<RuleParser::rule_grammar, RuleParser::rule_parser_actions, tao::pegtl::tracer>(input, rule);
+#endif
       }
 
       return rule;
@@ -56,7 +64,11 @@ namespace usbguard
     catch (const tao::pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
       error.setHint(ex.what());
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+      error.setOffset(ex.positions().front().column);
+#else
       error.setOffset(ex.positions[0].byte_in_line);
+#endif
 
       if (!file.empty() || line != 0) {
         error.setFileInfo(file, line);
