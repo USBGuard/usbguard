@@ -20,7 +20,11 @@
 
 #include <cstdint>
 
+#if TAO_PEGTL_VERSION_MAJOR >= 3
+#include <tao/pegtl/contrib/trace.hpp>
+#else
 #include <tao/pegtl/contrib/tracer.hpp>
+#endif
 #include <UEvent.hpp>
 
 using namespace usbguard;
