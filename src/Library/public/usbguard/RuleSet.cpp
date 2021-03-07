@@ -72,6 +72,7 @@ namespace usbguard
   uint32_t RuleSet::appendRule(const Rule& rule, uint32_t parent_id, bool lock)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex, std::defer_lock);
+    USBGUARD_LOG(Debug) << "appendRule parent:" << parent_id;
 
     if (lock) {
       op_lock.lock();
