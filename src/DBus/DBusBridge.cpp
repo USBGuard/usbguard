@@ -162,6 +162,7 @@ namespace usbguard
   void DBusBridge::handleDevicesMethodCall(const std::string& method_name, GVariant* parameters,
     GDBusMethodInvocation* invocation)
   {
+    USBGUARD_LOG(Debug) << "dbus devices method call: " << method_name;
     if (method_name == "listDevices") {
       const char* query_cstr = nullptr;
       g_variant_get(parameters, "(&s)", &query_cstr);
@@ -199,6 +200,7 @@ namespace usbguard
       uint32_t target_integer = 0;
       gboolean permanent = false;
       g_variant_get(parameters, "(uub)", &device_id, &target_integer, &permanent);
+      USBGUARD_LOG(Debug) << "DBus: applyDevicePolicy: Parsed device_id: " << device_id << " target_integer: " << target_integer << " and permanent: " << permanent;
       const Rule::Target target = Rule::targetFromInteger(target_integer);
       const uint32_t rule_id = applyDevicePolicy(device_id, target, permanent);
       g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));

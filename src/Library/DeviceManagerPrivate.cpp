@@ -117,6 +117,7 @@ namespace usbguard
       return _device_map.at(id);
     }
     catch (...) {
+      USBGUARD_LOG(Debug) << "Lookup error: " << id;
       throw Exception("Device lookup", "device id", "id doesn't exist");
     }
   }
