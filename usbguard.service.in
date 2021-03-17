@@ -5,7 +5,7 @@ Documentation=man:usbguard-daemon(8)
 
 [Service]
 AmbientCapabilities=
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_AUDIT_WRITE
 DevicePolicy=closed
 ExecStart=%sbindir%/usbguard-daemon -f -s -c %sysconfdir%/usbguard/usbguard-daemon.conf
 IPAddressDeny=any
