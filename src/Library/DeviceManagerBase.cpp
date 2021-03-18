@@ -149,8 +149,6 @@ namespace usbguard
     }
 
 #endif
-    /* UNREACHABLE */
-    return std::string();
   }
 
   int DeviceManagerBase::ueventOpen()

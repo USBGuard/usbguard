@@ -98,10 +98,6 @@ namespace usbguard
      *
      */
     FDInputStream descriptor_stream(sysfs_device.openAttribute("descriptors"));
-    /*
-     * Find out the descriptor data stream size
-     */
-    size_t descriptor_expected_size = 0;
 
     if (!descriptor_stream.good()) {
       throw ErrnoException("DeviceBase", sysfs_device.getPath(), errno);
@@ -110,7 +106,7 @@ namespace usbguard
     initializeHash();
     USBDescriptorParser parser(*this);
 
-    if ((descriptor_expected_size = parser.parse(descriptor_stream)) < sizeof(USBDeviceDescriptor)) {
+    if (parser.parse(descriptor_stream) < sizeof(USBDeviceDescriptor)) {
       throw Exception("DeviceBase", sysfs_device.getPath(),
         "USB descriptor parser processed less data than the size of a USB device descriptor");
     }
