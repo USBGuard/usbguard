@@ -1,5 +1,5 @@
 - hosts: all
-  sudo: true
+  become: true
   roles:
     - role: bennojoy.openldap_server
       openldap_server_domain_name: example.com
