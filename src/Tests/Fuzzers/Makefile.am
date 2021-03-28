@@ -20,7 +20,7 @@ AM_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/Library \
 	-I$(top_srcdir)/src/Library/public \
-	-I$(top_srcdir)/src/ThirdParty/PEGTL/include
+	@pegtl_CFLAGS@
 
 AM_LDFLAGS=\
 	-static $(top_builddir)/libusbguard.la -lFuzzingEngine
