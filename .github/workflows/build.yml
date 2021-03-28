@@ -1,0 +1,126 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libgcrypt-dev"
+        }
+        - {
+            name: "Ubuntu_CLANG",
+            os: ubuntu-latest,
+            cc: "clang",
+            cxx: "clang++",
+            crypto: "libgcrypt-dev"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libgcrypt-dev",
+            configure_args: "--without-ldap"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libgcrypt-dev",
+            configure_args: "--enable-debug-build"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libgcrypt-dev",
+            configure_args: "--enable-asan"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libgcrypt-dev",
+            configure_args: "--with-crypto-library=gcrypt"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libsodium-dev",
+            configure_args: "--with-crypto-library=sodium"
+        }
+        - {
+            name: "Ubuntu_GCC",
+            os: ubuntu-latest,
+            cc: "gcc",
+            cxx: "g++",
+            crypto: "libssl-dev",
+            configure_args: "--with-crypto-library=openssl"
+        }
+
+
+
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: installing dependencies
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get install -y ansible
+        sudo apt-get install -y libudev-dev libsodium-dev libqb-dev libcap-ng-dev libseccomp-dev
+        sudo apt-get install -y libglib2.0-dev libdbus-glib-1-dev libxml2-utils libpolkit-gobject-1-dev xsltproc
+        sudo apt-get install -y lcov
+        sudo apt-get install -y aspell aspell-en
+        sudo apt-get install -y libprotobuf-dev protobuf-compiler
+        sudo apt-get install -y libldap-dev
+        sudo apt-get install -y valgrind
+        sudo apt-get install -y asciidoc docbook-xml docbook-xsl
+        sudo apt-get install -y umockdev libumockdev-dev
+        sudo gem install coveralls-lcov
+        sudo apt-get install -y ${{ matrix.config.cc }}
+        sudo apt-get install -y ${{ matrix.config.cxx }} || true
+        sudo apt-get install -y ${{ matrix.config.crypto }}
+        curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netcologne.dl.sourceforge.net/project/astyle/astyle/astyle%203.1/astyle_3.1_linux.tar.gz'
+      
+    - name: setup environment
+      run: |
+        pushd .
+        cd /tmp
+        tar zxvf astyle.tgz
+        cd astyle/build/gcc
+        make && sudo make install
+        popd
+        cd src/Tests/LDAP/ansible
+        ansible-playbook -i ./hosts -u root --connection=local playbook.yml
+
+    - name: build
+      run: |
+        ./autogen.sh
+        mkdir build && cd build
+        CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
+        make ${{ matrix.config.make_args }}
+      
+    - name: check
+      run: cd build && sudo make check
+
+    - name: dist
+      run: cd build && sudo make dist
