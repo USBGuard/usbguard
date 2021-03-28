@@ -1,7 +1,6 @@
 openldap_server_pkgs:
   - slapd
   - ldap-utils
-  - python-selinux
   - openssl
 
 openldap_server_app_path: "/etc/ldap/"

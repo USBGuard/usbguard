@@ -28,13 +28,13 @@
 #  when: ansible_os_family == 'Debian'
 
 - name: Install the openldap and required Packages for RedHat
-  yum: name={{ item }} state=installed
+  yum: name={{ item }} state=present
   with_items: "{{ openldap_server_pkgs }}"
   when: ansible_os_family == 'RedHat'
 
 
 - name: Install the openldap and required Packages for Ubuntu
-  apt: name={{ item }} state=installed
+  apt: name={{ item }} state=present
   with_items: "{{ openldap_server_pkgs }}"
 #  environment: env
   when: ansible_os_family == 'Debian'
