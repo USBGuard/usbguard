@@ -20,6 +20,7 @@
 
 #include <cstdint>
 
+#include <tao/pegtl.hpp>
 #if TAO_PEGTL_VERSION_MAJOR >= 3
 #include <tao/pegtl/contrib/trace.hpp>
 #else
