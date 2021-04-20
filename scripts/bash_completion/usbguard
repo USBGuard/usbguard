@@ -299,7 +299,7 @@ function _usbguard()
                 ;;
 
             add-user)
-                value_options="-p --policy -d --devices -e --exceptions -p --parameters"
+                value_options="-p --policy -d --devices -e --exceptions -P --parameters"
                 _count_args "" "@(${value_options// /|})"
 
                 if _usbguard_contains "$value_options" $prev; then
