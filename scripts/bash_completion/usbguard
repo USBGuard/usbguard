@@ -228,7 +228,7 @@ function _usbguard()
                 ;;
 
             list-devices)
-                opts="$opts -a --allowed -b --blocked"
+                opts="$opts -a --allowed -b --blocked -t --tree"
                 ;;
 
             list-rules)
