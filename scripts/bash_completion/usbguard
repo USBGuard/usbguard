@@ -191,9 +191,61 @@ function _usbguard_filter_shorts() {
     _upvars -v $Opts "$filter" 
 }
 
+
+function _usbguard_comp_list() {
+    # This function is used for list completion (comma separated words). If an option
+    # expects a comma separated list of arguments, you can call this function with the
+    # desired set of available list arguments. The function does already populate the
+    # COMPREPLY variable and you normally want to return from the completion script
+    # after calling it.
+    #
+    # Additionally to the array of available options, it is possible to specify an
+    # integer as second argument that specifies the maximum ammount of selectable
+    # options. After this amount of options was specified, space completion is enabled.
+    #
+    # Parameters
+    #   options         (string)        Space separated list of available list options
+    #   max             (int)           Maximum number of list items
+    #
+    # Returns
+    #   retval          (int)           Error / Success
+    #
+    local cur prev prev_arr options=" $1 " count=1
+
+    compopt -o nospace
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "$cur" != ?*,* ]]; then
+        mapfile -t COMPREPLY < <(compgen -W "${options}" -- "${cur}")
+        return 0
+
+    else
+        prev="${cur%,*}"
+        cur="${cur##*,}"
+        prev_arr=${prev//,/ }
+
+        for word in $prev_arr; do
+
+            count=$((count+1))
+            if _usbguard_contains "$options" $word; then
+                options=( "${options//[[:space:]]${word}[[:space:]]/ }" )
+                continue
+            fi
+
+        done
+
+        if [[ $count -ge $2 ]]; then
+            compopt +o nospace
+        fi
+
+        mapfile -t COMPREPLY < <(compgen -P "$prev," -W "${options}" -- "${cur}")
+        return 0
+    fi
+}
+
 function _usbguard()
 {
-    local args cur prev words cword value_options exclude
+    local args cur prev words cword value_options
 
     _init_completion || return
     _count_args
@@ -303,8 +355,8 @@ function _usbguard()
                 _count_args "" "@(${value_options// /|})"
 
                 if _usbguard_contains "$value_options" $prev; then
-                    opts="modify list listen"
-                    exclude=$opts
+                    _usbguard_comp_list "modify list listen" 3
+                    return 0
 
                 elif ! _usbguard_in_option && [[ $args -eq 2 ]]; then
                     _usergroup
@@ -329,7 +381,7 @@ function _usbguard()
         esac
     fi
 
-    _usbguard_filter "opts" "$exclude"
+    _usbguard_filter "opts"
     _usbguard_filter_shorts "opts"
 
 	mapfile -t COMPREPLY < <(compgen -W "${opts}" -- "${cur}") 
