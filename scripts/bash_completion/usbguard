@@ -1,62 +1,391 @@
-# Completion for usbguard
-get_ids()
+function _usbguard_get_ids()
 {
-    local id_column=4
-    usbguard list-devices 2>/dev/null | cut -d " " -f "${id_column}"
+    usbguard list-devices 2>/dev/null | cut -d ":" -f1
 }
-get_rules()
+
+function _usbguard_get_rules()
 {
-    local id_column=1
-    usbguard list-rules 2>/dev/null | cut -d ":" -f "${id_column}"
+    usbguard list-rules 2>/dev/null | cut -d ":" -f1
 }
-_usbguard()
+
+function _usbguard_in_option()
 {
-    local cur prev opts
-    COMPREPLY=()
+    # Determines whether the cursor is currently on an option value (word that
+    # starts with a dash). If it is the case, return true, false otherwise.
+    #
+    # Parameters
+    #   None
+    #
+    # Returns
+    #   retval          (int)           True / False
+    #
+    if [[ "$cur" == -* ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function _usbguard_contains() {
+    # Copied from https://github.com/qtc-de/completion-helpers
+    #
+	# Takes two strings containing space separated words and checks if one of the
+    # words in the second list matches one in the first.
+    # E.g.: `_usbguard_contains "test test2" "no nope test"` returns true.
+    #
+    # Parameters
+    #   list_lookup     (string)        Space separated words to search in
+    #   list_search     (string)        Space separated words to search
+    #
+    # Returns
+    #   retval          (int)           Error / Success
+    #
+    # Side effects
+    #   None
+    #
+    for word in $2; do
+
+        if [[ $1 =~ (^|[[:space:]])${word}($|[[:space:]]) ]]; then
+            return 0
+        fi
+
+    done;
+
+    return 1
+}
+
+function _usbguard_short_to_long() {
+    # Copied from https://github.com/qtc-de/completion-helpers
+    #
+	# Takes a short option name and a a list that represents the current option list.
+    # The functions assumes that the long option for a certain short option directly
+    # follows the short option inside the argument list. The corresponding long
+    # option is then returned inside the $long variable.
+    # 
+    # Parameters
+    #   short            (string)        Name of the short option (with - prefix)
+    #   opts             (list)          Space separated words (option list)
+    #
+    # Returns
+    #   retval           (int)           Error / Success
+    #
+    # Side effects
+    #   stores the corresponding long option inside the $long variable
+    #
+    local short ret
+
+    short=$1
+    shift
+
+    ret=0
+    long=
+
+    while (( "$#" )); do
+
+		if [[ "$1" == "$short" ]]; then
+            shift
+            if [[ $1 =~ ^--[^[:space:]]+$ ]]; then
+                long=$1
+                return 0
+            fi
+            return 1
+        fi
+
+        shift
+    done
+
+    return 1
+}
+
+function _usbguard_filter() {
+    # Copied from https://github.com/qtc-de/completion-helpers
+    #
+	# Takes the name of a variable that contains the current option list as a string.
+    # Iterates over the current command line and removes all options that are already
+    # present.
+    #
+    # A second string of space separated words can be passed
+    # that are excluded from filtering. This is useful, when certain options are allowed
+    # to appear multiple times.
+    #
+    # By default, the function will try to remove long options if their corresponding short
+    # options are used on the command line. To work correctly, this requires that each short
+    # option has a long option that directly follows the short option in the options list. If
+    # this assumption is incorrect, you should set a third parameter for _usbguard_filter to 'false'. 
+    #
+    # Parameters
+    #   opts            (string)        Space seperated words to filter (call by ref)
+    #   exclude         (string)        Space separated words to exclude
+    #   remove_longs    (string)        Decides whether short-to-long translation is attempted (true|false)
+    #
+    # Returns
+    #   retval           (int)           Error / Success
+    #
+    # Side effects
+    #   filtered option list is stored in first variable (passed by ref)
+    #
+    local Opts=$1 filter exclude cur long remove_longs
+
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="list-devices allow-device block-device reject-device list-rules append-rule remove-rule generate-policy watch read-descriptor"
-    case "${prev}" in
-        allow-device|block-device|reject-device)
-        local ids
-        ids=$( get_ids)
-	    # Maybe user running this is not allowed to list devices
-	    if [ $? -ne 0 ]; then
-            COMPREPLY=""
-            return 0
-	    fi
-            COMPREPLY=( $(compgen -W "${ids}"  "${cur}") )
-            return 0
-            ;;
+    filter=" ${!Opts} "
+    exclude=$2
+    remove_longs=$3
 
-        remove-rule)
-        local rules
-        rules=$( get_rules )
-	    # Maybe user running this is not allowed to list rules
-	    if [ $? -ne 0 ]; then
-            COMPREPLY=""
-            return 0
-	    fi
-            COMPREPLY=( $(compgen -W "${rules}"  "${cur}") )
-            return 0
-            ;;
+	# iterate over each word inside the current command line
+	for var in ${COMP_LINE}; do
 
-        generate-policy)
-            opts=" --with-ports --no-ports-sn --target --no-hashes --hash-only --help"
-            COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
-            return 0
-            ;;
+		# exclude the current word to allow full specified options to be space completed
+		if [[ "$var" == "$cur" ]]; then
+			continue;
 
-        list-device)
-            opts=" --allowed --blocked --help"
-            COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
-            return 0
-            ;;
-        *)
-        ;;
-    esac
+        # exclude words from the exclusion list
+        elif _usbguard_contains "$exclude" $var; then
+            continue
 
-    COMPREPLY=( $(compgen -W "${opts}" "${cur}") )
+        # otherwise remove the word from the filter list
+        else
+            # if short option, remove long option
+            if [[ "$remove_longs" != "false" && $var =~ ^-[a-zA-Z0-9]+$ ]]; then
+                _usbguard_short_to_long $var $filter && \
+                filter=( "${filter//[[:space:]]${long}[[:space:]]/ }" )
+            fi
+
+            # remove actual option
+            filter=( "${filter//[[:space:]]${var}[[:space:]]/ }" )
+        fi
+
+    done
+
+    _upvars -v $Opts "$filter" 
+}
+
+function _usbguard_filter_shorts() {
+    # Copied from https://github.com/qtc-de/completion-helpers
+    #
+	# Takes a string of space separated words and removes all short options from it.
+    # Completion of short options is a matter of taste. The maintainers of bash-completion
+    # do not recommend it. Instead, completions should only handle completion for arguments
+    # that are required by short options, but to not complete short options themselves.
+    #
+    # Parameters
+    #   opts            (string)        Space separated option list (call by ref)
+    #
+    # Returns
+    #   retval           (int)           Error / Success
+    #
+    # Side effects
+    #   filtered option list is stored in first variable (passed by ref)
+    #
+    local Opts=$1 filter
+
+    filter=" ${!Opts} "
+
+    for word in $filter; do
+
+        if [[ $word =~ ^-[a-zA-Z0-9]+$ ]]; then
+            filter=( "${filter//[[:space:]]${word}[[:space:]]/ }" )
+        fi
+
+    done
+
+    _upvars -v $Opts "$filter" 
+}
+
+
+function _usbguard_comp_list() {
+    # This function is used for list completion (comma separated words). If an option
+    # expects a comma separated list of arguments, you can call this function with the
+    # desired set of available list arguments. The function does already populate the
+    # COMPREPLY variable and you normally want to return from the completion script
+    # after calling it.
+    #
+    # Additionally to the array of available options, it is possible to specify an
+    # integer as second argument that specifies the maximum ammount of selectable
+    # options. After this amount of options was specified, space completion is enabled.
+    #
+    # Parameters
+    #   options         (string)        Space separated list of available list options
+    #   max             (int)           Maximum number of list items
+    #
+    # Returns
+    #   retval          (int)           Error / Success
+    #
+    local cur prev prev_arr options=" $1 " count=1
+
+    compopt -o nospace
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "$cur" != ?*,* ]]; then
+        mapfile -t COMPREPLY < <(compgen -W "${options}" -- "${cur}")
+        return 0
+
+    else
+        prev="${cur%,*}"
+        cur="${cur##*,}"
+        prev_arr=${prev//,/ }
+
+        for word in $prev_arr; do
+
+            count=$((count+1))
+            if _usbguard_contains "$options" $word; then
+                options=( "${options//[[:space:]]${word}[[:space:]]/ }" )
+                continue
+            fi
+
+        done
+
+        if [[ $count -ge $2 ]]; then
+            compopt +o nospace
+        fi
+
+        mapfile -t COMPREPLY < <(compgen -P "$prev," -W "${options}" -- "${cur}")
+        return 0
+    fi
+}
+
+function _usbguard()
+{
+    local args cur prev words cword value_options
+
+    _init_completion || return
+    _count_args
+
+    COMPREPLY=()
+
+    # If there was no positional argument provided yet, complete commands
+    if [[ $args -eq 1 ]]; then
+        opts="get-parameter set-parameter list-devices allow-device block-device reject-device list-rules append-rule"
+        opts="${opts} remove-rule generate-policy watch read-descriptor add-user remove-user"
+
+    else
+        opts='-h --help'
+        case "${words[1]}" in
+
+            get-parameter)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    opts="InsertedDevicePolicy ImplicitPolicyTarget"
+                fi
+                ;;
+
+            set-parameter)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    opts="InsertedDevicePolicy ImplicitPolicyTarget"
+
+                elif ! _usbguard_in_option && [[ $args -eq 3 ]]; then
+                    return 0
+
+                else
+                    opts="$opts -v --verbose"
+                fi
+                ;;
+
+            list-devices)
+                opts="$opts -a --allowed -b --blocked -t --tree"
+                ;;
+
+            list-rules)
+                if _usbguard_contains "-l --label" $prev; then
+                    return 0
+                fi
+
+                opts="$opts -d --show-devices -l --label"
+                ;;
+
+            allow-device|block-device|reject-device)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    opts=$(_usbguard_get_ids || :)
+                else
+                    opts="$opts -p --permanent"
+                fi
+                ;;
+
+            append-rule)
+                if _usbguard_contains "-a --after" $prev; then
+                    opts=$(_usbguard_get_rules || :)
+
+                elif ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    return 0
+
+                else
+                    opts="$opts -a --after -t --temporary"
+                fi
+                ;;
+
+            remove-rule)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    opts=$(_usbguard_get_rules || :)
+                fi
+                ;;
+
+            generate-policy)
+                if _usbguard_contains "-d --devpath" $prev; then
+                    _filedir
+                    return 0
+
+                elif _usbguard_contains "-t --target" $prev; then
+                    opts="allow block reject"
+
+                elif _usbguard_contains "-b --usbguardbase -o --objectclass -n --name-prefix" $prev; then
+                    return 0
+                
+                else
+                    opts="$opts -p --with-ports -P --no-ports-sn -d --devpath -t --target -X --no-hashes"
+                    opts="$opts -H --hash-only -L --ldif -b --usbguardbase -o --objectclass -n --name-prefix" 
+                fi
+                ;;
+
+            watch)
+                if _usbguard_contains "-e --exec" $prev; then
+                    _filedir
+                    return 0
+                fi
+
+                opts="$opts -w --wait -o --once -e --exec" 
+                ;;
+
+            read-descriptor)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    _filedir
+                    return 0
+                fi
+                ;;
+
+            add-user)
+                value_options="-p --policy -d --devices -e --exceptions -P --parameters"
+                _count_args "" "@(${value_options// /|})"
+
+                if _usbguard_contains "$value_options" $prev; then
+                    _usbguard_comp_list "modify list listen" 3
+                    return 0
+
+                elif ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    _usergroup
+                    return 0
+
+                else
+                    opts="$opts -u --user -g --group $value_options"
+                fi
+                ;;
+
+            remove-user)
+                if ! _usbguard_in_option && [[ $args -eq 2 ]]; then
+                    _usergroup
+                    return 0
+                fi
+
+                opts="$opts -u --user -g --group"
+                ;;
+
+            *)
+            ;;
+        esac
+    fi
+
+    _usbguard_filter "opts"
+    _usbguard_filter_shorts "opts"
+
+	mapfile -t COMPREPLY < <(compgen -W "${opts}" -- "${cur}") 
     return 0
 }
+
 complete -F _usbguard usbguard
