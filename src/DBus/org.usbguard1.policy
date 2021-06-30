@@ -15,6 +15,15 @@
     </defaults>
   </action>
 
+  <action id="org.usbguard.Policy1.insertRule">
+    <description>Append a new rule to the policy</description>
+    <message>Prevents from appending rules to the USBGuard policy</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
   <action id="org.usbguard.Policy1.appendRule">
     <description>Append a new rule to the policy</description>
     <message>Prevents from appending rules to the USBGuard policy</message>

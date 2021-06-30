@@ -77,6 +77,7 @@ namespace usbguard
     registerHandler<IPC::getParameter>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::setParameter>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::listRules>(&IPCClientPrivate::handleMethodResponse);
+    registerHandler<IPC::insertRule>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::appendRule>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::removeRule>(&IPCClientPrivate::handleMethodResponse);
     registerHandler<IPC::applyDevicePolicy>(&IPCClientPrivate::handleMethodResponse);
@@ -143,7 +144,6 @@ namespace usbguard
       << " do_wait=" << do_wait;
     USBGUARD_LOG(Trace) << "_qb_conn=" << _qb_conn
       << " _qb_fd=" << _qb_fd;
-
     std::unique_lock<std::mutex> disconnect_lock(_disconnect_mutex);
 
     if (_qb_conn != nullptr && _qb_fd >= 0) {
@@ -386,6 +386,18 @@ namespace usbguard
     return message_in->response().value();
   }
 
+  uint32_t IPCClientPrivate::insertRule(const std::string& rule_spec,
+    uint32_t parent_id, const std::string& ruleset, bool permanent)
+  {
+    IPC::insertRule message_out;
+    message_out.mutable_request()->set_rule(rule_spec);
+    message_out.mutable_request()->set_parent_id(parent_id);
+    message_out.mutable_request()->set_ruleset(ruleset);
+    message_out.mutable_request()->set_permanent(permanent);
+    auto message_in = qbIPCSendRecvMessage(message_out);
+    return message_in->response().id();
+  }
+
   uint32_t IPCClientPrivate::appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent)
   {
     IPC::appendRule message_out;
@@ -445,16 +457,17 @@ namespace usbguard
     return devices;
   }
 
-  bool IPCClientPrivate::checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
+  bool IPCClientPrivate::checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+    const IPCServer::AccessControl::Privilege& privilege)
   {
     IPC::checkIPCPermissions message_out;
     message_out.mutable_request()->set_uid(getuid());
     message_out.mutable_request()->set_gid(getgid());
     message_out.mutable_request()->set_section(
-        IPCServer::AccessControl::sectionToString(section)
+      IPCServer::AccessControl::sectionToString(section)
     );
     message_out.mutable_request()->set_privilege(
-        IPCServer::AccessControl::privilegeToString(privilege)
+      IPCServer::AccessControl::privilegeToString(privilege)
     );
     auto message_in = qbIPCSendRecvMessage(message_out);
     return message_in->response().permit();

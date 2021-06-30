@@ -55,42 +55,58 @@ namespace usbguard
     return _defaultTarget;
   }
 
-  uint32_t Policy::appendRule(const Rule& _rule, uint32_t parent_id)
+  std::shared_ptr<RuleSet> Policy::findRuleSetByRuleId(uint32_t rule_id) const
   {
-    USBGUARD_LOG(Trace) << "parent_id=" << parent_id;
-    auto rule = std::make_shared<Rule>(_rule);
+    if (rule_id == 0) {
+      return _rulesets_ptr.front();
+    }
 
-    // If the parent_id is set to Rule::LastID then we get the the ID of the last rule in rulesets
-    if (parent_id == Rule::LastID) {
-      auto ruleset = _rulesets_ptr.back();
-
-      if (rule->getRuleID() == Rule::DefaultID) {
-        assignID(rule);
-      }
-
-      auto rules = ruleset->getRules();
-      return ruleset->appendRule(*rule);
+    if (rule_id == Rule::LastID) {
+      return _rulesets_ptr.back();
     }
 
     for (auto ruleset : _rulesets_ptr) {
-      try {
-        // Find if rule with parent_id is in the ruleset
-        auto _parent_rule = ruleset->getRule(parent_id);
-
-        /* if the method did not throw the exception that means the parent_id is
-        in the ruleset and now we will try to append the rule */
-        if (rule->getRuleID() == Rule::DefaultID) {
-          assignID(rule);
+      for (const auto& rule : ruleset->getRules()) {
+        if (rule->getRuleID() == rule_id) {
+          return ruleset;
         }
-
-        return ruleset->appendRule(*rule, parent_id);
-      }
-      catch (const std::exception& e) {
-        continue;
       }
     }
 
-    throw Exception("Policy append", "rule", "Invalid parent ID");
+    return nullptr;
+  }
+
+  std::shared_ptr<RuleSet> Policy::findRuleSetByPrefix(const std::string& prefix) const
+  {
+    for (auto ruleset : _rulesets_ptr) {
+      if (ruleset->getName().substr(0, prefix.length()) == prefix) {
+        return ruleset;
+      }
+    }
+
+    return nullptr;
+  }
+
+  uint32_t Policy::insertRule(const Rule& rule, uint32_t parent_id, const std::string& ruleset)
+  {
+    USBGUARD_LOG(Trace) << "parent_id=" << parent_id << " ruleset=" << ruleset;
+    auto _rule = std::make_shared<Rule>(rule);
+    auto _ruleset = ruleset.empty() ? findRuleSetByRuleId(parent_id) : findRuleSetByPrefix(ruleset);
+
+    if (_ruleset == nullptr) {
+      throw Exception("Policy insert", "rule", "Failed to find a ruleset");
+    }
+
+    if (parent_id != 0 && parent_id != Rule::LastID && !_ruleset->hasRule(parent_id)) {
+      throw Exception("Policy insert", "rule", "Ruleset does not contain rule with given id");
+    }
+
+    return _ruleset->appendRule(*_rule, parent_id);
+  }
+
+  uint32_t Policy::appendRule(const Rule& _rule, uint32_t parent_id)
+  {
+    return insertRule(_rule, parent_id);
   }
 
   /*
@@ -114,10 +130,13 @@ namespace usbguard
 
     for (auto ruleset : _rulesets_ptr) {
       uint32_t id = ruleset->upsertRule(match_rule, new_rule, parent_insensitive);
-      if (id == Rule::DefaultID)
-	continue;
-      else
-	return id;
+
+      if (id == Rule::DefaultID) {
+        continue;
+      }
+      else {
+        return id;
+      }
     }
 
     return _rulesets_ptr.back()->appendRule(new_rule, Rule::LastID, /*lock*/true);
