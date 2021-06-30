@@ -22,6 +22,7 @@
 
 #include "FileRuleSet.hpp"
 
+#include "Common/Utility.hpp"
 #include "usbguard/Typedefs.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/RuleParser.hpp"
@@ -36,6 +37,7 @@ namespace usbguard
     : RuleSet(interface_ptr),
       _rulesPath(path)
   {
+    setName(filenameFromPath(path, false));
     setWritable();
     USBGUARD_LOG(Info) << "Creating FileRuleSet";
   }

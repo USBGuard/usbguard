@@ -62,6 +62,11 @@ namespace usbguard
     return d_pointer->getParameter(name);
   }
 
+  uint32_t IPCClient::insertRule(const std::string& rule_spec, uint32_t parent_id, const std::string& ruleset, bool permanent)
+  {
+    return d_pointer->insertRule(rule_spec, parent_id, ruleset, permanent);
+  }
+
   uint32_t IPCClient::appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent)
   {
     return d_pointer->appendRule(rule_spec, parent_id, permanent);
@@ -87,7 +92,8 @@ namespace usbguard
     return d_pointer->listDevices(query);
   }
 
-  bool IPCClient::checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
+  bool IPCClient::checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+    const IPCServer::AccessControl::Privilege& privilege)
   {
     return d_pointer->checkIPCPermissions(section, privilege);
   }

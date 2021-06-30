@@ -75,7 +75,7 @@ namespace usbguard
         }
       }
 
-      if (ruleSet.empty()){
+      if (ruleSet.empty()) {
         USBGUARD_LOG(Warning) << "RuleFile not set; Modification of the permanent policy won't be possible.";
         ruleSet = generateDefaultRuleSet();
       }

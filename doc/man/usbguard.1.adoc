@@ -157,7 +157,13 @@ Append the 'rule' to the current rule set.
 Available options:
 
 *-a, --after* 'id'::
-    Append the new rule after a rule with the specified rule 'id'.
+    Append the new rule after a rule with the specified rule 'id'
+    instead of appending it at the end of the rule set.
+    If 'id' is 0, then the rule is appended to the beginning
+    of the rule set.
+
+*-r, --ruleset* 'prefix'::
+    Append the new rule into a rule set with specified prefix.
 
 *-t, --temporary*::
     Make the decision temporary. The rule policy file will not be updated.

@@ -135,6 +135,19 @@ namespace usbguard
       return;
     }
 
+    if (method_name == "insertRule") {
+      const char* rule_spec_cstr = nullptr;
+      uint32_t parent_id = 0;
+      const char* ruleset_cstr = nullptr;
+      gboolean temporary = false;
+      g_variant_get(parameters, "(&sub)", &rule_spec_cstr, &parent_id, &ruleset_cstr, &temporary);
+      std::string rule_spec(rule_spec_cstr);
+      std::string ruleset(ruleset_cstr);
+      const uint32_t rule_id = insertRule(rule_spec, parent_id, ruleset, !temporary);
+      g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));
+      return;
+    }
+
     if (method_name == "appendRule") {
       const char* rule_spec_cstr = nullptr;
       uint32_t parent_id = 0;
@@ -337,11 +350,9 @@ namespace usbguard
     g_variant_builder_add(builder, "{ss}",
       "with-interface",
       with_interface_string.c_str());
-
     g_variant_builder_add(builder, "{ss}",
       "with-connect-type",
       device_rule.getWithConnectType().c_str());
-
     return builder;
   }
 } /* namespace usbguard */
