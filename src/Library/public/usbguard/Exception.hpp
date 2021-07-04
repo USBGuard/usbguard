@@ -126,7 +126,8 @@ namespace usbguard
     static std::string reasonFromErrno(const int errno_value)
     {
       char buffer[1024];
-      return std::string(strerror_r(errno_value, buffer, sizeof buffer));
+      strerror_r(errno_value, buffer, sizeof buffer);
+      return std::string(buffer);
     }
   };
 
