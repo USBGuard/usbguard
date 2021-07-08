@@ -36,10 +36,8 @@ namespace usbguard
       throw Exception("IPC access control", "name too long", name);
     }
 
-    const std::string valid_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
-
-    if (name.find_first_not_of(valid_chars) != std::string::npos) {
-      throw Exception("IPC access control", "name contains invalid character(s)", name);
+    if (!isValidName(name)) {
+      throw Exception("IPC access control", "invalid name format", name);
     }
   }
 

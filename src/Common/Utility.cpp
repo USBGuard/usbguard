@@ -542,6 +542,32 @@ namespace usbguard
     std::sort(rulefile_list.begin(), rulefile_list.end());
     return rulefile_list;
   }
+
+  bool isValidName(const std::string& name)
+  {
+    const char* s = name.data();
+
+    if (('\0' == *s) ||
+      !((('a' <= *s) && ('z' >= *s)) ||
+        (('A' <= *s) && ('Z' >= *s)) ||
+        ('_' == *s))) {
+      return false;
+    }
+
+    while ('\0' != *++s) {
+      if (!((('a' <= *s) && ('z' >= *s)) ||
+          (('A' <= *s) && ('Z' >= *s)) ||
+          (('0' <= *s) && ('9' >= *s)) ||
+          ('_' == *s) ||
+          ('-' == *s) ||
+          (('$' == *s) && ('\0' == *(s + 1))))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

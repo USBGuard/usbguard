@@ -50,9 +50,9 @@ namespace usbguard
     /**
      * @brief Checks whether given name is a valid access control name.
      *
-     * Name is a valid access control name if and only if:
-     *  1. name is not longer then 32 characters.
-     *  2. name consists only from characters from set { A-Z, a-z, 0-9, _ }.
+     * Name is a valid access control name iff:
+     *  1. it is not longer then 32 characters
+     *  2. it matches regex [A-Za-z_][A-Za-z0-9_-]*[$]
      *
      * @param name Name to be verified.
      * @throw Exception If \p name is not a valid access control name.

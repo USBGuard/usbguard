@@ -316,6 +316,15 @@ namespace usbguard
     return ss.str();
   }
 
+  /**
+   * @brief Checks whether a given name is a valid group/user name
+   *
+   * User/group names must match [A-Za-z_][A-Za-z0-9_-]*[$]
+   *
+   * @param name Name to check
+   * @return True if given name is valid, false otherwise
+   */
+  bool isValidName(const std::string& name);
 
 } /* namespace usbguard */
 
