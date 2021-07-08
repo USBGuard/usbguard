@@ -70,6 +70,8 @@ namespace usbguard
       throw;
     }
 
+    registerHandler<IPC::insertRule>(&IPCServerPrivate::handleInsertRule, IPCServer::AccessControl::Section::POLICY,
+      IPCServer::AccessControl::Privilege::MODIFY);
     registerHandler<IPC::appendRule>(&IPCServerPrivate::handleAppendRule, IPCServer::AccessControl::Section::POLICY,
       IPCServer::AccessControl::Privilege::MODIFY);
     registerHandler<IPC::removeRule>(&IPCServerPrivate::handleRemoveRule, IPCServer::AccessControl::Section::POLICY,
@@ -842,6 +844,29 @@ namespace usbguard
     }
   }
 
+  void IPCServerPrivate::handleInsertRule(IPC::MessagePointer& request, IPC::MessagePointer& response)
+  {
+    /*
+     * Get request field values.
+     */
+    const IPC::insertRule* const message_in = static_cast<const IPC::insertRule*>(request.get());
+    const std::string rule = message_in->request().rule();
+    const uint32_t parent_id = message_in->request().parent_id();
+    const std::string ruleset = message_in->request().ruleset();
+    const bool permanent = message_in->request().permanent();
+    /*
+     * Execute the method.
+     */
+    const uint32_t id = _p_instance.insertRule(rule, parent_id, ruleset, permanent);
+    /*
+     * Construct the response.
+     */
+    IPC::insertRule* const message_out = message_in->New();
+    message_out->MergeFrom(*message_in);
+    message_out->mutable_response()->set_id(id);
+    response.reset(message_out);
+  }
+
   void IPCServerPrivate::handleAppendRule(IPC::MessagePointer& request, IPC::MessagePointer& response)
   {
     /*
@@ -1000,7 +1025,8 @@ namespace usbguard
     IPCServer::AccessControl access_control = IPCServer::AccessControl();
     const bool auth = qbIPCConnectionAllowed(uid, gid, &access_control);
     IPCServer::AccessControl::Section section = IPCServer::AccessControl::sectionFromString(message_in->request().section());
-    IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::privilegeFromString(message_in->request().privilege());
+    IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::privilegeFromString(
+        message_in->request().privilege());
     const bool permit = auth && access_control.hasPrivilege(section, privilege);
     IPC::checkIPCPermissions* const message_out = message_in->New();
     message_out->MergeFrom(*message_in);

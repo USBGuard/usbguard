@@ -106,6 +106,11 @@ namespace usbguard
     std::string getParameter(const std::string& name) override;
 
     /**
+     * @copydoc Interface::insertRule()
+     */
+    uint32_t insertRule(const std::string& rule_spec, uint32_t parent_id, const std::string& ruleset, bool permanent) override;
+
+    /**
      * @copydoc Interface::appendRule()
      */
     uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent) override;
@@ -163,7 +168,8 @@ namespace usbguard
      * @return True if IPC client has enough permission
      * for (section, privilege), otherwise false.
      */
-    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
+    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+      const IPCServer::AccessControl::Privilege& privilege);
 
     /**
      * @brief Defines algorithm to perform in the case of IPC connection.

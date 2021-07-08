@@ -18,6 +18,24 @@ message listRules {
 }
 
 
+message insertRuleRequest {
+  required string rule = 1;
+  required uint32 parent_id = 2;
+  required string ruleset = 3;
+  required bool permanent = 4;
+}
+
+message insertRuleResponse {
+  required uint32 id = 1;
+}
+
+message insertRule {
+  required MessageHeader header = 1;
+  required insertRuleRequest request = 2;
+  optional insertRuleResponse response = 3;
+}
+
+
 message appendRuleRequest {
   required string rule = 1;
   required uint32 parent_id = 2;

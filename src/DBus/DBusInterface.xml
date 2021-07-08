@@ -75,6 +75,30 @@
     </method>
 
     <!--
+      insertRule:
+       @rule: The rule that should be appended to the policy.
+       @parent_id: Rule id of the parent rule.
+       @ruleset: Prefix of a ruleset where the rule should be appended.
+       @temporary: A boolean to avoid adding this rule to the policy file.
+       @id: The rule id assigned to the succesfully appended rule.
+
+      Append a new rule to the current policy. Using the parent_id
+      parameter and ruleset prefix, the rule can be inserted anywhere in the
+      policy. 4294967293 (UINT32_MAX-2) is the last possible
+      ID and thus, when using this as parent_id, the rule is effectively
+      appended to the end of the ruleset. If parent_id is 0, the rule is
+      appended to the beginning of the ruleset. When the rule is successfully
+      appended, the id assigned to the new rule is returned.
+     -->
+    <method name="insertRule">
+      <arg name="rule" direction="in" type="s"/>
+      <arg name="parent_id" direction="in" type="u"/>
+      <arg name="ruleset" direction="in" type="s"/>
+      <arg name="temporary" direction="in" type="b"/>
+      <arg name="id" direction="out" type="u"/>
+    </method>
+
+    <!--
       appendRule:
        @rule: The rule that should be appended to the policy.
        @parent_id: Rule id of the parent rule.

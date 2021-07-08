@@ -113,6 +113,7 @@ case $state in
           '<rule>[rule]'
         _command_args=( \
           '(--after)--after <id>[Append the new rule after a rule with the specified id instead of appending it]' \
+          '(--ruleset)--ruleset <prefix>[Append the new rule into a rule set with specified prefix.]' \
           '(--help)--help[Show help]'
         )
         ;;

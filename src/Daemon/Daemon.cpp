@@ -730,6 +730,25 @@ namespace usbguard
     }
   }
 
+  uint32_t Daemon::insertRule(const std::string& rule_spec,
+    uint32_t parent_id, const std::string& ruleset, bool permanent)
+  {
+    USBGUARD_LOG(Trace) << "entry:"
+      << " rule_spec=" << rule_spec
+      << " parent_id=" << parent_id
+      << " ruleset=" << ruleset;
+    const Rule rule = Rule::fromString(rule_spec);
+    /* TODO: reevaluate the firewall rules for all active devices */
+    const uint32_t id = _policy.insertRule(rule, parent_id, ruleset);
+
+    if (_config.hasSettingValue("RuleFile") && permanent) {
+      _policy.save();
+    }
+
+    USBGUARD_LOG(Trace) << "return: id=" << id;
+    return id;
+  }
+
   uint32_t Daemon::appendRule(const std::string& rule_spec,
     uint32_t parent_id, bool permanent)
   {

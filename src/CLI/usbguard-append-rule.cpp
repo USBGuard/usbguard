@@ -29,11 +29,12 @@
 
 namespace usbguard
 {
-  static const char* options_short = "ha:t";
+  static const char* options_short = "ha:r:t";
 
   static const struct ::option options_long[] = {
     { "help", no_argument, nullptr, 'h' },
     { "after", required_argument, nullptr, 'a' },
+    { "ruleset", required_argument, nullptr, 'r' },
     { "temporary", no_argument, nullptr, 't' },
     { nullptr, 0, nullptr, 0 }
   };
@@ -43,17 +44,21 @@ namespace usbguard
     stream << " Usage: " << usbguard_arg0 << " append-rule [OPTIONS] <rule>" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
-    stream << "  -a, --after <id>  Append the new rule after a rule with the specified id" << std::endl;
-    stream << "                    instead of appending it at the end of the rule set." << std::endl;
-    stream << "  -t, --temporary   Make the decision temporary. The rule policy file will not" << std::endl;
-    stream << "                    be updated." << std::endl;
-    stream << "  -h, --help        Show this help." << std::endl;
+    stream << "  -a, --after <id>       Append the new rule after a rule with the specified id" << std::endl;
+    stream << "                         instead of appending it at the end of the rule set." << std::endl;
+    stream << "                         If 'id' is 0, then the rule is appended to the beginning" << std::endl;
+    stream << "                         of the rule set." << std::endl;
+    stream << "  -r, --ruleset <prefix> Append the new rule into a ruleset with specified prefix." << std::endl;
+    stream << "  -t, --temporary        Make the decision temporary. The rule policy file will not" << std::endl;
+    stream << "                         be updated." << std::endl;
+    stream << "  -h, --help             Show this help." << std::endl;
     stream << std::endl;
   }
 
   int usbguard_append_rule(int argc, char* argv[])
   {
     uint32_t parent_id = usbguard::Rule::LastID;
+    std::string ruleset;
     bool permanent = true;
     int opt = 0;
 
@@ -65,6 +70,10 @@ namespace usbguard
 
       case 'a':
         parent_id = std::stoul(optarg);
+        break;
+
+      case 'r':
+        ruleset = optarg;
         break;
 
       case 't':
@@ -89,7 +98,7 @@ namespace usbguard
 
     usbguard::IPCClient ipc(/*connected=*/true);
     const std::string rule_spec = argv[0];
-    const uint32_t id = ipc.appendRule(rule_spec, parent_id, permanent);
+    const uint32_t id = ipc.insertRule(rule_spec, parent_id, ruleset, permanent);
     std::cout << id << std::endl;
     return EXIT_SUCCESS;
   }

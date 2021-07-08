@@ -303,11 +303,14 @@ function _usbguard()
                 if _usbguard_contains "-a --after" $prev; then
                     opts=$(_usbguard_get_rules || :)
 
+                elif _usbguard_contains "-r --ruleset" $prev; then
+                    return 0
+
                 elif ! _usbguard_in_option && [[ $args -eq 2 ]]; then
                     return 0
 
                 else
-                    opts="$opts -a --after -t --temporary"
+                    opts="$opts -a --after -r --ruleset -t --temporary"
                 fi
                 ;;
 

@@ -133,6 +133,7 @@ namespace usbguard
       _handlers.emplace(type_number, MessageHandler::create<T>(*this, method, section, privilege));
     }
 
+    void handleInsertRule(IPC::MessagePointer& request, IPC::MessagePointer& response);
     void handleAppendRule(IPC::MessagePointer& request, IPC::MessagePointer& response);
     void handleRemoveRule(IPC::MessagePointer& request, IPC::MessagePointer& response);
     void handleListRules(IPC::MessagePointer& request, IPC::MessagePointer& response);
