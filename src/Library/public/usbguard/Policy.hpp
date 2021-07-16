@@ -44,6 +44,24 @@ namespace usbguard
     void setDefaultTarget(Rule::Target target);
     Rule::Target getDefaultTarget() const;
     void setDefaultAction(const std::string& action);
+
+    /**
+     * @brief Inserts \p rule into a \p ruleset after a rule with \p parent_id
+     *
+     * @param rule Rule to insert. If this rule has a default ID,
+     * it will be assigned a new one
+     * @param parent_id Specifies a rule after which the rule should be inserted.
+     * If \p parent_id is 0, then the rule is inserted at the beginning of a ruleset.
+     * If \p parent_id is not set, then the rule is inserted at the end of a ruleset
+     * @param ruleset Specifies a ruleset by it's name prefix. The rule can be
+     * inserted only into this ruleset. If \p ruleset is not set, all rulesets
+     * will be searched for \p parent_id
+     * @return ID of inserted rule
+     * @throw Exception If this method fails to find a \p ruleset or a rule
+     * with \p parent_id
+     */
+    uint32_t insertRule(const Rule& rule, uint32_t parent_id = Rule::LastID, const std::string& ruleset = "");
+
     uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID);
     uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
     std::shared_ptr<Rule> getRule(uint32_t id);
@@ -64,6 +82,25 @@ namespace usbguard
      */
     static std::string eventTypeToString(EventType event);
   private:
+
+    /**
+     * @brief Looks for the first ruleset containing a rule with \p rule_id
+     *
+     * @param rule_id Rule ID
+     * @return Ruleset that contains a rule with \p rule_id or nullptr
+     * if such ruleset doesn't exist. If \p rule_id is 0, first ruleset is
+     * returned. If \p rule_id is Rule::LastID, last ruleset is returned
+     */
+    std::shared_ptr<RuleSet> findRuleSetByRuleId(uint32_t rule_id) const;
+
+    /**
+     * @brief Looks for the first ruleset whose name is prefixed with \p prefix
+     *
+     * @param prefix Ruleset prefix to match
+     * @return Ruleset whose name is prefixed with \p prefix or nullptr if such
+     * ruleset doesn't exist
+     */
+    std::shared_ptr<RuleSet> findRuleSetByPrefix(const std::string& prefix) const;
 
     std::vector<std::shared_ptr<RuleSet>> _rulesets_ptr;
     Rule::Target _defaultTarget;

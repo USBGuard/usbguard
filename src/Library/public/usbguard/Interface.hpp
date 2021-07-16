@@ -67,6 +67,25 @@ namespace usbguard
      *************************************************************************/
 
     /**
+     * @brief Inserts \p rule into a \p ruleset after a rule with \p parent_id
+     *
+     * @param rule_spec Rule to insert. If this rule has a default ID,
+     * it will be assigned a new one
+     * @param parent_id Specifies a rule after which the rule should be inserted.
+     * If \p parent_id is 0, then the rule is inserted at the beginning of a ruleset.
+     * If \p parent_id is not set, then the rule is inserted at the end of a ruleset
+     * @param ruleset Specifies a ruleset by it's name prefix. The rule can be
+     * inserted only into this ruleset. If \p ruleset is not set, all rulesets
+     * will be searched for \p parent_id
+     * @param permanent When set, the ruleset is saved into a file.
+     * @return ID of inserted rule
+     * @throw Exception If this method fails to find a \p ruleset or a rule
+     * with \p parent_id
+     */
+    virtual uint32_t insertRule(const std::string& rule_spec,
+      uint32_t parent_id, const std::string& ruleset, bool permanent) = 0;
+
+    /**
      * @brief Append a new rule to the current policy.
      *
      * Using the \p parent_id parameter, the rule can be inserted anywhere in

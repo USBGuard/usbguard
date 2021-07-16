@@ -42,10 +42,15 @@ namespace usbguard
 
     void serialize(std::ostream& stream) const;
 
+    void setName(const std::string& name);
+    const std::string& getName() const;
+
     void setDefaultTarget(Rule::Target target);
     Rule::Target getDefaultTarget() const;
+
     uint32_t appendRule(const Rule& rule, uint32_t parent_id = Rule::LastID, bool lock = true);
     uint32_t upsertRule(const Rule& match_rule, const Rule& new_rule, bool parent_insensitive = false);
+    bool hasRule(uint32_t id) const;
     std::shared_ptr<Rule> getRule(uint32_t id);
     bool removeRule(uint32_t id);
 
@@ -68,6 +73,7 @@ namespace usbguard
     Rule::Target _default_target;
     static Atomic<uint32_t> _id_next;
     std::vector<std::shared_ptr<Rule>> _rules;
+    std::string _name;
   };
 
 } /* namespace usbguard */

@@ -57,6 +57,16 @@ namespace usbguard
     return *this;
   }
 
+  void RuleSet::setName(const std::string& name)
+  {
+    _name = name;
+  }
+
+  const std::string& RuleSet::getName() const
+  {
+    return _name;
+  }
+
   void RuleSet::setDefaultTarget(Rule::Target target)
   {
     std::unique_lock<std::mutex> op_lock(_op_mutex);
@@ -149,6 +159,19 @@ namespace usbguard
     else {
       return Rule::DefaultID;
     }
+  }
+
+  bool RuleSet::hasRule(uint32_t id) const
+  {
+    std::unique_lock<std::mutex> op_lock(_op_mutex);
+
+    for (auto const& rule : _rules) {
+      if (rule->getRuleID() == id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   std::shared_ptr<Rule> RuleSet::getRule(uint32_t id)
