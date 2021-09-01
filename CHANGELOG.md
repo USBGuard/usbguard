@@ -13,8 +13,8 @@
 - Daemon does not apply the policy when
   "change" action event appears anymore
 - IPCClientPrivate@disconnect is thread safe
-- Enforced loading of files from .d/ direcory
-  in alfabetical order
+- Enforced loading of files from .d/ directory
+  in alphabetical order
 - Improved CLI behaviour to be consistent
 - Clarified rule's label documentation
 
@@ -171,7 +171,7 @@
 - Reformatted source code to conform to the code style.
 - Made the configuration parser strict. Unknown directives and wrong syntax will
   cause an error.
-- Reformated documentation from markdown to asciidoc format.
+- Reformatted documentation from markdown to asciidoc format.
 
 ## 0.7.0 - 2017-04-12
 ### Added
@@ -200,7 +200,7 @@
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.
-- Removed UDev development files/API dependecy
+- Removed UDev development files/API dependency
 
 ### Changed
 - Reset Linux root hub bcdDevice value before updating device hash. This is

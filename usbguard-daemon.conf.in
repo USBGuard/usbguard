@@ -129,7 +129,7 @@ RestoreControllerDeviceState=false
 DeviceManagerBackend=uevent
 
 #!!! WARNING: It's good practice to set at least one of the !!!
-#!!!          two options bellow. If none of them are set,  !!!
+#!!!          two options below. If none of them are set,   !!!
 #!!!          the daemon will accept IPC connections from   !!!
 #!!!          anyone, thus allowing anyone to modify the    !!!
 #!!!          rule set and (de)authorize USB devices.       !!!

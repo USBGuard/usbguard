@@ -161,7 +161,7 @@ namespace usbguard
   std::string parentPath(const std::string& path);
 
   /**
-   * Retrun the number of path components.
+   * Return the number of path components.
    */
   std::size_t countPathComponents(const std::string& path);
 
