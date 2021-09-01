@@ -160,7 +160,7 @@
 
 ### Changed
 - Qt Applet: disabled session management
-- usbguard-daemon console logging output is enabled by default now.   Previously,
+- usbguard-daemon console logging output is enabled by default now. Previously,
   the -k option had to be passed to enable the output.
 - Replaced --enable-maintainer-mode configure option with --enable-full-test-suite
   option. When the new option is not used during the configure phase, only a basic
@@ -461,4 +461,3 @@
 
 ### Fixed
 - Resolved issues: #1 #2 #5 #6 #10 #11
-

@@ -81,7 +81,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: installing dependencies
       run: |
         sudo apt-get -qq update
@@ -100,7 +100,7 @@ jobs:
         sudo apt-get install -y ${{ matrix.config.cxx }} || true
         sudo apt-get install -y ${{ matrix.config.crypto }}
         curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netcologne.dl.sourceforge.net/project/astyle/astyle/astyle%203.1/astyle_3.1_linux.tar.gz'
-      
+
     - name: setup environment
       run: |
         pushd .
@@ -118,7 +118,7 @@ jobs:
         mkdir build && cd build
         CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
         make ${{ matrix.config.make_args }}
-      
+
     - name: check
       run: cd build && sudo make check
 

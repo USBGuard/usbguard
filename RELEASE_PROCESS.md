@@ -69,4 +69,3 @@ $ gpg --clearsign usbguard-0.x.y.tar.gz.sum
     * usbguard-0.x.y.tar.gz.asc
     * usbguard-0.x.y.tar.gz.sum
     * usbguard-0.x.y.tar.gz.sum.asc
-

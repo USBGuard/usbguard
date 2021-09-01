@@ -19,7 +19,7 @@ Keys are case insensitive but values are not.
 == OPTIONS
 *URI* 'address'::
     The USBGuard Daemon will use this address to connect to this LDAP server.
-    
+
     `URI ldap://127.0.0.1/`
 
 *ROOTDN* 'root domain name'::
@@ -41,7 +41,7 @@ Keys are case insensitive but values are not.
     This is supposed to be domain name of the USBGuard organizational unit.
     This option helps to the daemon found the right sub-tree with rules.
     If not set the daemon will use the default (ou=USBGuard,dc=example,dc=com).
-    
+
     `USBGUARDBASE ou=USBGuard,dc=example,dc=com`
 
 *RULEQUERY* 'query string'::
@@ -51,7 +51,7 @@ Keys are case insensitive but values are not.
     If the USBGuard host is asterisk it will match but this same rule must not contain negation of matched host.
 
     `RULEQUERY (&(cn=Rule*)(|(&(USBGuardHost=host)(!(USBGuardHost=!host)))(&(USBGuardHost=\*)(!(USBGuardHost=!host)))))`
-    
+
 *UPDATEINTERVAL* 'interval'::
     This is an interval that defines periodicity of update.
     The default is one hour.
