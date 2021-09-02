@@ -663,11 +663,18 @@ AC_ARG_ENABLE([systemd],
        *) AC_MSG_ERROR([bad value ${enableval} for --enable-systemd]) ;;
      esac], [systemd=no])
 
+AC_ARG_WITH([bash-completion-dir],
+	AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
+		[Enable bash auto-completion. Uses pkgconfig if no path given. @<:@default=yes@:>@]),
+	[], [with_bash_completion_dir=yes])
 
-PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
-  [bash_completion_dir="`$PKG_CONFIG --variable=completionsdir bash-completion`"
-   bash_completion=yes],
-  [bash_completion=no])
+if test "x$with_bash_completion_dir" = "xyes"; then
+	PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+		[BASH_COMPLETION_DIR=$($PKG_CONFIG --variable=completionsdir bash-completion)],
+		[BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
+else
+	BASH_COMPLETION_DIR="$with_bash_completion_dir"
+fi
 
 if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
@@ -706,19 +713,8 @@ fi
 
 AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
 
-case "$bash_completion_dir" in
-  /usr/share/*|/usr/local/share/*)
-    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr/share|/usr/local/share),${datadir},')
-    ;;
-  /usr/*|/usr/local/*)
-    bash_completion_dir=$(echo "$bash_completion_dir" | sed -r 's,^(/usr|/usr/local),${prefix},')
-    ;;
-  /*)
-    bash_completion_dir='${prefix}'"$bash_completion_dir"
-    ;;
-esac
-
-AC_SUBST([BASH_COMPLETION_DIR], $bash_completion_dir)
+AC_SUBST([BASH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_BASH_COMPLETION], [test "x$with_bash_completion_dir" != "xno"])
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])

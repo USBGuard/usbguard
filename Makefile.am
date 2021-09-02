@@ -438,7 +438,7 @@ usbguard_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	${PTHREAD_LIBS}
 
-if BASH_COMPLETION_ENABLED
+if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
 dist_bashcompletion_DATA = $(top_srcdir)/scripts/bash_completion/usbguard
 endif
