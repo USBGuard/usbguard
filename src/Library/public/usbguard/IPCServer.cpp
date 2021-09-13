@@ -172,6 +172,15 @@ namespace usbguard
     }
   }
 
+  bool IPCServer::AccessControl::isEmpty() const
+  {
+    uint8_t i = 0;
+    for (auto const& ac_entry : _access_control) {
+      i |= ac_entry.second;
+    }
+    return i == 0;
+  }
+
   void IPCServer::AccessControl::clear()
   {
     _access_control.clear();
@@ -306,6 +315,11 @@ namespace usbguard
     const std::string& reason)
   {
     d_pointer->ExceptionMessage(context, object, reason);
+  }
+
+  void IPCServer::setGlobalACL(const IPCServer::AccessControl& ac)
+  {
+    d_pointer->setGlobalACL(ac);
   }
 
   void IPCServer::addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)

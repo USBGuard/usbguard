@@ -212,6 +212,13 @@ namespace usbguard
       void setPrivilege(Section section, Privilege privilege);
 
       /**
+       * @brief Checks whether this access control contains any privileges
+       *
+       * @return True when there are no privileges, false otherwise
+       */
+      bool isEmpty() const;
+
+      /**
        * @brief Clears access control.
        *
        * In other words, removes all priviledes for all sections from
@@ -344,6 +351,14 @@ namespace usbguard
     void ExceptionMessage(const std::string& context,
       const std::string& object,
       const std::string& reason);
+
+    /**
+     * @brief Sets global access control.
+     * ie. privileges that apply to every user and group
+     *
+     * @param ac New global access control
+     */
+    void setGlobalACL(const IPCServer::AccessControl& ac);
 
     /**
      * @brief Adds user to a set of allowed users by specifying his user ID.

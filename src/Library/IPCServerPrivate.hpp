@@ -77,6 +77,7 @@ namespace usbguard
       const std::string& reason,
       uint64_t request_id = 0);
 
+    void setGlobalACL(const IPCServer::AccessControl& ac);
     void addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac);
     void addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac);
     void addAllowedUsername(const std::string& username, const IPCServer::AccessControl& ac);
@@ -112,6 +113,7 @@ namespace usbguard
     bool qbIPCConnectionAllowed(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr) const;
     bool authenticateIPCConnectionDAC(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr = nullptr) const;
 
+    bool matchGlobalACL(IPCServer::AccessControl* const ac_ptr) const;
     bool matchACLByUID(uid_t uid, IPCServer::AccessControl* const ac_ptr) const;
     bool matchACLByGID(gid_t gid, IPCServer::AccessControl* const ac_ptr) const;
     bool matchACLByName(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr) const;
@@ -156,6 +158,7 @@ namespace usbguard
     qb_ipcs_service_t* _qb_service;
     int _wakeup_fd;
 
+    IPCServer::AccessControl _global_acl;
     std::unordered_map<uid_t, IPCServer::AccessControl> _allowed_uids;
     std::unordered_map<gid_t, IPCServer::AccessControl> _allowed_gids;
     std::unordered_map<std::string, IPCServer::AccessControl> _allowed_usernames;

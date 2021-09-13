@@ -66,6 +66,7 @@ namespace usbguard
     void loadConfiguration(const std::string& path, const bool check_permissions);
     void loadRules();
     void loadIPCAccessControlFiles(const std::string& path);
+    bool loadIPCGlobalACL(const std::string& fullpath);
     bool loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath);
     void checkIPCAccessControlName(const std::string& basename);
     void parseIPCAccessControlFilename(const std::string& basename, std::string* const ptr_user, std::string* const ptr_group);
@@ -102,6 +103,7 @@ namespace usbguard
 #define USBGUARD_IPCSERVER_DEFAULT_AC \
   IPCServer::AccessControl(IPCServer::AccessControl::Section::ALL, IPCServer::AccessControl::Privilege::ALL)
 
+    void setIPCGlobalACL(const IPCServer::AccessControl& ac);
     void addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
     void addIPCAllowedUID(const std::string& uid_string, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);
     void addIPCAllowedGID(gid_t gid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);

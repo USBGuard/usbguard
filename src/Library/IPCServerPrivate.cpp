@@ -282,7 +282,8 @@ namespace usbguard
 
   bool IPCServerPrivate::hasACLEntries() const
   {
-    return (!_allowed_uids.empty() \
+    return (!_global_acl.isEmpty() \
+        || !_allowed_uids.empty() \
         || !_allowed_gids.empty() \
         || !_allowed_usernames.empty() \
         || !_allowed_groupnames.empty());
@@ -572,9 +573,26 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
     return \
+      matchGlobalACL(ac_ptr) || \
       matchACLByUID(uid, ac_ptr) || \
       matchACLByGID(gid, ac_ptr) || \
       matchACLByName(uid, gid, ac_ptr);
+  }
+
+  bool IPCServerPrivate::matchGlobalACL(IPCServer::AccessControl* const ac_ptr) const
+  {
+    USBGUARD_LOG(Trace) << " ac_ptr=" << ac_ptr;
+
+    if (_global_acl.isEmpty()) {
+      return false;
+    }
+
+    if (ac_ptr != nullptr) {
+      ac_ptr->merge(_global_acl);
+    }
+
+    USBGUARD_LOG(Trace) << "matched";
+    return true;
   }
 
   bool IPCServerPrivate::matchACLByUID(uid_t uid, IPCServer::AccessControl* const ac_ptr) const
@@ -1079,6 +1097,11 @@ namespace usbguard
     }
 
     qbIPCBroadcastMessage(&exception);
+  }
+
+  void IPCServerPrivate::setGlobalACL(const IPCServer::AccessControl& ac)
+  {
+    _global_acl = ac;
   }
 
   void IPCServerPrivate::addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)

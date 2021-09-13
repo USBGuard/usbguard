@@ -453,9 +453,31 @@ namespace usbguard
     *ptr_group = group;
   }
 
+  bool Daemon::loadIPCGlobalACL(const std::string& fullpath)
+  {
+    IPCServer::AccessControl ac;
+    
+    try {
+      std::ifstream ac_stream(fullpath);
+      ac.load(ac_stream);
+    }
+    catch (...) {
+      USBGUARD_LOG(Warning) << "Failed to load IPC access control file " << fullpath;
+      return false;
+    }
+
+    setIPCGlobalACL(ac);
+    return true;
+  }
+
   bool Daemon::loadIPCAccessControlFile(const std::string& basename, const std::string& fullpath)
   {
     USBGUARD_LOG(Info) << "Loading IPC access control file " << fullpath;
+
+    if (basename == "@all") {
+      return loadIPCGlobalACL(fullpath);
+    }
+
     std::string user;
     std::string group;
     IPCServer::AccessControl ac;
@@ -1055,6 +1077,11 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "return:"
       << " upsert_rule=" << upsert_rule->toString();
     return upsert_rule;
+  }
+
+  void Daemon::setIPCGlobalACL(const IPCServer::AccessControl& ac)
+  {
+    IPCServer::setGlobalACL(ac);
   }
 
   void Daemon::addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac)
