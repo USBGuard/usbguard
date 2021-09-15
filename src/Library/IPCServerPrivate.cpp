@@ -571,10 +571,12 @@ namespace usbguard
   bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr) const
   {
     USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
-    return \
-      matchACLByUID(uid, ac_ptr) || \
-      matchACLByGID(gid, ac_ptr) || \
-      matchACLByName(uid, gid, ac_ptr);
+
+    bool matched_uid = matchACLByUID(uid, ac_ptr);
+    bool matched_gid = matchACLByGID(gid, ac_ptr);
+    bool matched_name = matchACLByName(uid, gid, ac_ptr);
+
+    return matched_uid || matched_gid || matched_name;
   }
 
   bool IPCServerPrivate::matchACLByUID(uid_t uid, IPCServer::AccessControl* const ac_ptr) const
