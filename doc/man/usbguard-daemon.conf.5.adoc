@@ -162,6 +162,8 @@ Available sections and privileges:
 
  ** list: Get values of run-time parameters.
 
+ ** listen: Listen to property parameter changes.
+
 The following is a generally usable and reasonably safe example of an access control file.
 It allows one to modify USB device authorization state (`Devices=modify`), list USB devices (`Devices=list`), listen to USB device related events (`Devices=listen`), list USB authorization policy rules (`Policy=list`) and listen to exception events (`Exceptions=listen`):
 

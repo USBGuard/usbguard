@@ -285,6 +285,7 @@ The 'privileges' are expected to be in the form of a list separated by a colon:
 ....
 
 Consult the usbguard-daemon.conf(5) man-page for a detailed list of available privileges in each section.
+You can also use 'ALL' instead of 'privileges' to automatically assign all relevant privileges to a given section.
 
 
 === *remove-user* 'name' ['OPTIONS']
