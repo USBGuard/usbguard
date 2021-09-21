@@ -278,6 +278,17 @@ namespace usbguard
       };
 
       /**
+       * @brief Get a privilege mask for given section
+       *
+       * For example, if the section is POLICY that has privileges MODIFY
+       * and LIST, the mask would be ~(MODIFY | LIST)
+       *
+       * @param section Section for which the privilege mask should be returned
+       * @return Privilege mask for section
+       */
+      uint8_t ac_mask(Section section) const;
+
+      /**
        * @brief Access control represented by unordered map of
        * tuples (Section, 8b privileges).
        *

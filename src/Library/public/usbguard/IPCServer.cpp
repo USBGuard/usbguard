@@ -157,18 +157,25 @@ namespace usbguard
       throw USBGUARD_BUG("Cannot set privileges for NONE section");
     }
 
+    const uint8_t p = static_cast<uint8_t>(privilege);
+
     if (section == Section::ALL) {
-      for (const auto& value : {
+      for (const auto& s : {
           Section::POLICY,
           Section::PARAMETERS,
           Section::EXCEPTIONS,
           Section::DEVICES
         }) {
-        _access_control[value] |= static_cast<uint8_t>(privilege);
+        _access_control[s] |= p & ~ac_mask(s);
       }
     }
     else {
-      _access_control[section] |= static_cast<uint8_t>(privilege);
+      if (privilege != Privilege::ALL && (p & ac_mask(section))) {
+        throw std::runtime_error("Invalid privilege " +
+                privilegeToString(privilege) + " for section " +
+                sectionToString(section));
+      }
+      _access_control[section] |= p & ~ac_mask(section);
     }
   }
 
@@ -250,6 +257,28 @@ namespace usbguard
   {
     const AccessControl access_control(access_control_string);
     merge(access_control);
+  }
+
+  uint8_t IPCServer::AccessControl::ac_mask(IPCServer::AccessControl::Section section) const
+  {
+    const uint8_t MODIFY = static_cast<uint8_t>(Privilege::MODIFY);
+    const uint8_t LIST = static_cast<uint8_t>(Privilege::LIST);
+    const uint8_t LISTEN = static_cast<uint8_t>(Privilege::LISTEN);
+
+    switch (section) {
+    case Section::DEVICES:
+      return ~(MODIFY | LIST | LISTEN);
+    case Section::POLICY:
+      return ~(MODIFY | LIST);
+    case Section::EXCEPTIONS:
+      return ~(LISTEN);
+    case Section::PARAMETERS:
+      return ~(MODIFY | LIST | LISTEN);
+    case Section::ALL:
+    case Section::NONE:
+    default:
+      return 0xff;
+    }
   }
 
   IPCServer::IPCServer()
