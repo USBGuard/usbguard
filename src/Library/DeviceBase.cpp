@@ -89,7 +89,19 @@ namespace usbguard
     /*
      * Set connect type
      */
-    setConnectType(sysfs_device.readAttribute("port/connect_type", /*strip_last_null=*/true, /*optional=*/true));
+    int retry = 0;
+    std::string connect_type;
+    while (retry < 20) {
+        connect_type = sysfs_device.readAttribute("port/connect_type", /*strip_last_null=*/true, /*optional=*/true);
+        if (connect_type != "") {
+            break;
+        }
+        USBGUARD_LOG(Trace) << "connect_type is empty, will attempt again";
+        retry++;
+    }
+    USBGUARD_LOG(Info) << "***Setting connect type=" << connect_type <<" after retry"<< retry;
+    setConnectType(connect_type);
+
     /*
      * Process USB descriptor data.
      *
