@@ -54,7 +54,7 @@ Three types of target are recognized:
 === Device Specification
 Except the target, all the other fields of a rule are optional.
 A rule where only the `target` is specified will match any device.
-That allows the policy administator to write an explicit default target.
+That allows the policy administrator to write an explicit default target.
 If no rule from the policy is applicable to the device, an implicit target configured in usbguard-daemon.conf(5) will be used.
 However, if one wants to narrow the applicability of a rule to a set of devices or one device only, it's possible to do so with device attributes and rule conditions.
 

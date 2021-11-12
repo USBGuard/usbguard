@@ -13,8 +13,8 @@
 - Daemon does not apply the policy when
   "change" action event appears anymore
 - IPCClientPrivate@disconnect is thread safe
-- Enforced loading of files from .d/ direcory
-  in alfabetical order
+- Enforced loading of files from .d/ directory
+  in alphabetical order
 - Improved CLI behaviour to be consistent
 - Clarified rule's label documentation
 
@@ -160,7 +160,7 @@
 
 ### Changed
 - Qt Applet: disabled session management
-- usbguard-daemon console logging output is enabled by default now.   Previously,
+- usbguard-daemon console logging output is enabled by default now. Previously,
   the -k option had to be passed to enable the output.
 - Replaced --enable-maintainer-mode configure option with --enable-full-test-suite
   option. When the new option is not used during the configure phase, only a basic
@@ -171,7 +171,7 @@
 - Reformatted source code to conform to the code style.
 - Made the configuration parser strict. Unknown directives and wrong syntax will
   cause an error.
-- Reformated documentation from markdown to asciidoc format.
+- Reformatted documentation from markdown to asciidoc format.
 
 ## 0.7.0 - 2017-04-12
 ### Added
@@ -200,7 +200,7 @@
 
 ### Removed
 - Removed UDev based device manager backend and UDev related dependencies.
-- Removed UDev development files/API dependecy
+- Removed UDev development files/API dependency
 
 ### Changed
 - Reset Linux root hub bcdDevice value before updating device hash. This is
@@ -461,4 +461,3 @@
 
 ### Fixed
 - Resolved issues: #1 #2 #5 #6 #10 #11
-
