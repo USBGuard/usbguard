@@ -39,7 +39,7 @@
 #endif
 
 #ifndef USBGUARD_PID_FILE
-  #define USBGUARD_PID_FILE "/var/run/usbguard.pid"
+  #define USBGUARD_PID_FILE "/var/run/usbguard/usbguard.pid"
 #endif
 
 using namespace usbguard;
