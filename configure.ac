@@ -763,7 +763,7 @@ echo " libseccomp: $libseccomp_summary"
 echo "  libcap-ng: $libcap_ng_summary"
 echo "   protobuf: $protobuf_summary"
 echo "      Catch: $catch_summary"
-echo "      PEGTL: $pegtl_summary; version <= 3.2.0: $have_pegtl_lte_320"
+echo "      PEGTL: $pegtl_summary"
 echo "      GDBus: $dbus_summary"
 echo "   umockdev: $umockdev_summary"
 echo
