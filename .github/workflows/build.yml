@@ -117,7 +117,7 @@ jobs:
         ./autogen.sh
         mkdir build && cd build
         CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
-        make ${{ matrix.config.make_args }}
+        make "-j$(nproc)"
 
     - name: check
       run: cd build && sudo make check
