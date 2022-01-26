@@ -1,3 +1,9 @@
+/libusbguard.pc
+/usbguard
+/usbguard-daemon
+/usbguard-daemon.conf
+/usbguard-dbus
+/usbguard-rule-parser
 Makefile
 Makefile.in
 .deps
