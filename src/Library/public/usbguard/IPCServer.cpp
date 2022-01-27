@@ -172,9 +172,10 @@ namespace usbguard
     else {
       if (privilege != Privilege::ALL && (p & ac_mask(section))) {
         throw std::runtime_error("Invalid privilege " +
-                privilegeToString(privilege) + " for section " +
-                sectionToString(section));
+          privilegeToString(privilege) + " for section " +
+          sectionToString(section));
       }
+
       _access_control[section] |= p & ~ac_mask(section);
     }
   }
@@ -268,12 +269,16 @@ namespace usbguard
     switch (section) {
     case Section::DEVICES:
       return ~(MODIFY | LIST | LISTEN);
+
     case Section::POLICY:
       return ~(MODIFY | LIST);
+
     case Section::EXCEPTIONS:
       return ~(LISTEN);
+
     case Section::PARAMETERS:
       return ~(MODIFY | LIST | LISTEN);
+
     case Section::ALL:
     case Section::NONE:
     default:

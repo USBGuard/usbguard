@@ -114,10 +114,13 @@ namespace usbguard
 
     for (auto ruleset : _rulesets_ptr) {
       uint32_t id = ruleset->upsertRule(match_rule, new_rule, parent_insensitive);
-      if (id == Rule::DefaultID)
-	continue;
-      else
-	return id;
+
+      if (id == Rule::DefaultID) {
+        continue;
+      }
+      else {
+        return id;
+      }
     }
 
     return _rulesets_ptr.back()->appendRule(new_rule, Rule::LastID, /*lock*/true);

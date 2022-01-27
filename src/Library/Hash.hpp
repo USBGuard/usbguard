@@ -59,7 +59,7 @@ namespace usbguard
     crypto_hash_sha256_state _state;
 #endif
 #if defined(USBGUARD_USE_OPENSSL)
-    EVP_MD_CTX *_state;
+    EVP_MD_CTX* _state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_hd_t _state {nullptr};

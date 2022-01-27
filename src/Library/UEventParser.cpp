@@ -29,9 +29,9 @@
 #include <fstream>
 
 #if TAO_PEGTL_VERSION_MAJOR >= 3
-#include <tao/pegtl/contrib/trace.hpp>
+  #include <tao/pegtl/contrib/trace.hpp>
 #else
-#include <tao/pegtl/contrib/tracer.hpp>
+  #include <tao/pegtl/contrib/tracer.hpp>
 #endif
 using namespace tao;
 

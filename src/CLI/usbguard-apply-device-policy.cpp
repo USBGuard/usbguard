@@ -43,7 +43,7 @@ namespace usbguard
   {
     std::string target_string = Rule::targetToString(target);
     stream << " Usage: " << usbguard_arg0 << " " << target_string
-        << "-device [OPTIONS] (<id> | <rule> | <partial-rule>)" << std::endl;
+      << "-device [OPTIONS] (<id> | <rule> | <partial-rule>)" << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific " << target_string << std::endl;
@@ -54,7 +54,9 @@ namespace usbguard
 
   static bool isNumeric(const std::string& s)
   {
-    return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+    return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) {
+      return !std::isdigit(c);
+    }) == s.end();
   }
 
   int usbguard_apply_device_policy(int argc, char** argv, Rule::Target target)
@@ -100,13 +102,14 @@ namespace usbguard
     /*
      * Interpret arguments as a rule/partial-rule
      */
-
     std::string rule_string;
-    if (argc == 1)
-        rule_string = argv[0];
+
+    if (argc == 1) {
+      rule_string = argv[0];
+    }
     else {
-        std::vector<std::string> arguments(argv, argv + argc);
-        rule_string = joinElements(arguments.begin(), arguments.end());
+      std::vector<std::string> arguments(argv, argv + argc);
+      rule_string = joinElements(arguments.begin(), arguments.end());
     }
 
     try { /* Check whether rule target has been supplied */
@@ -124,6 +127,7 @@ namespace usbguard
     for (auto device_rule : ipc.listDevices(rule_string)) {
       if (target != device_rule.getTarget()) {
         uint32_t id = device_rule.getRuleID();
+
         try {
           ipc.applyDevicePolicy(id, target, permanent);
         }
@@ -139,6 +143,7 @@ namespace usbguard
         }
       }
     }
+
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */

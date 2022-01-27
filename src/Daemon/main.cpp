@@ -162,10 +162,12 @@ int main(int argc, char* argv[])
   /* Setup seccomp allowlist & drop capabilities */
   if (use_seccomp_allowlist) {
 #if defined(HAVE_SECCOMP)
+
     if (!setupSeccompWhitelist()) {
       USBGUARD_LOG(Error) << "Unable to setup seccomp";
       return EXIT_FAILURE;
     }
+
 #else
     USBGUARD_LOG(Error) << "USBGuard was not compiled with libseccomp support";
     return EXIT_FAILURE;

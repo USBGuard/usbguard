@@ -144,7 +144,6 @@ namespace usbguard
       << " do_wait=" << do_wait;
     USBGUARD_LOG(Trace) << "_qb_conn=" << _qb_conn
       << " _qb_fd=" << _qb_fd;
-
     std::unique_lock<std::mutex> disconnect_lock(_disconnect_mutex);
 
     if (_qb_conn != nullptr && _qb_fd >= 0) {
@@ -446,16 +445,17 @@ namespace usbguard
     return devices;
   }
 
-  bool IPCClientPrivate::checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
+  bool IPCClientPrivate::checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+    const IPCServer::AccessControl::Privilege& privilege)
   {
     IPC::checkIPCPermissions message_out;
     message_out.mutable_request()->set_uid(getuid());
     message_out.mutable_request()->set_gid(getgid());
     message_out.mutable_request()->set_section(
-        IPCServer::AccessControl::sectionToString(section)
+      IPCServer::AccessControl::sectionToString(section)
     );
     message_out.mutable_request()->set_privilege(
-        IPCServer::AccessControl::privilegeToString(privilege)
+      IPCServer::AccessControl::privilegeToString(privilege)
     );
     auto message_in = qbIPCSendRecvMessage(message_out);
     return message_in->response().permit();

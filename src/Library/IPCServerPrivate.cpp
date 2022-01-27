@@ -571,11 +571,9 @@ namespace usbguard
   bool IPCServerPrivate::authenticateIPCConnectionDAC(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr) const
   {
     USBGUARD_LOG(Trace) << "uid=" << uid << " gid=" << gid << " ac_ptr=" << ac_ptr;
-
     bool matched_uid = matchACLByUID(uid, ac_ptr);
     bool matched_gid = matchACLByGID(gid, ac_ptr);
     bool matched_name = matchACLByName(uid, gid, ac_ptr);
-
     return matched_uid || matched_gid || matched_name;
   }
 
@@ -1006,7 +1004,8 @@ namespace usbguard
     IPCServer::AccessControl access_control = IPCServer::AccessControl();
     const bool auth = qbIPCConnectionAllowed(uid, gid, &access_control);
     IPCServer::AccessControl::Section section = IPCServer::AccessControl::sectionFromString(message_in->request().section());
-    IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::privilegeFromString(message_in->request().privilege());
+    IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::privilegeFromString(
+        message_in->request().privilege());
     const bool permit = auth && access_control.hasPrivilege(section, privilege);
     IPC::checkIPCPermissions* const message_out = message_in->New();
     message_out->MergeFrom(*message_in);
