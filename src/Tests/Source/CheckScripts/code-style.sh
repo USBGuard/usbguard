@@ -7,17 +7,22 @@
 #
 set -e -o pipefail
 
-SOURCE_FILEPATH="$1"
-ASTYLE="${PROJECT_ROOT}/scripts/astyle.sh"
-ASTYLERC_PATH="${PROJECT_ROOT}/src/astylerc"
+SOURCE_FILEPATH="${1:?needs one filename as an argument}"
+ASTYLE="${PROJECT_ROOT:?not set in the environment}/scripts/astyle.sh"
 ASTYLE_VERSION_MAJOR=$(${ASTYLE} -V | sed -n 's|^Artistic Style Version \([0-9]\+\)\.[0-9]\+\(\.[0-9]\+\)\?|\1|p')
 
 if [[ "$ASTYLE_VERSION_MAJOR" -lt 3 ]]; then
   exit 77
 fi
 
-if [[ -n "$(${ASTYLE} --formatted --dry-run $(< ${ASTYLERC_PATH}) "$SOURCE_FILEPATH")" ]]; then
-   exit 1
-fi
+tempfile="$(mktemp)"
+delete_tempfile() {
+    rm -f "${tempfile}"
+}
+trap delete_tempfile EXIT
 
-exit 0
+"${ASTYLE}" < "${SOURCE_FILEPATH}" > "${tempfile}"
+
+# NOTE: We cannot use "exec" here or the trap callback above will not be run
+# NOTE: This is meant to return code 1 on non-empty diff
+diff -u --color=always "${SOURCE_FILEPATH}" "${tempfile}"
