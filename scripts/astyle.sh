@@ -20,4 +20,4 @@
 PROJECT_ROOT="$(dirname "$0")/../"
 ASTYLERC_PATH="${PROJECT_ROOT}/src/astylerc"
 
-exec astyle $(< "${ASTYLERC_PATH}") $@
+exec astyle $(< "${ASTYLERC_PATH}") "$@"
