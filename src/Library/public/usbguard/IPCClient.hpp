@@ -163,7 +163,8 @@ namespace usbguard
      * @return True if IPC client has enough permission
      * for (section, privilege), otherwise false.
      */
-    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
+    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+      const IPCServer::AccessControl::Privilege& privilege);
 
     /**
      * @brief Defines algorithm to perform in the case of IPC connection.

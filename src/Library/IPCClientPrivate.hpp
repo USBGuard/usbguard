@@ -65,7 +65,8 @@ namespace usbguard
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
     const std::vector<Rule> listDevices(const std::string& query);
 
-    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
+    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section,
+      const IPCServer::AccessControl::Privilege& privilege);
 
     void processReceiveEvent();
 
