@@ -112,4 +112,4 @@ jobs:
         make "-j$(nproc)"
 
     - name: distcheck
-      run: sudo make -C build distcheck "-j$(nproc)"
+      run: sudo make -C build distcheck "-j$(nproc)" || { cat src/Tests/test-suite.log ; false ; }
