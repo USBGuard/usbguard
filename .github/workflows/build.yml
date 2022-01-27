@@ -97,16 +97,10 @@ jobs:
         sudo apt-get install -y ${{ matrix.config.cc }}
         sudo apt-get install -y ${{ matrix.config.cxx }} || true
         sudo apt-get install -y ${{ matrix.config.crypto }}
-        curl -JLo /tmp/astyle.tgz --remote-header-name 'https://netcologne.dl.sourceforge.net/project/astyle/astyle/astyle%203.1/astyle_3.1_linux.tar.gz'
+        sudo apt-get install -y astyle
 
     - name: setup environment
       run: |
-        pushd .
-        cd /tmp
-        tar zxvf astyle.tgz
-        cd astyle/build/gcc
-        make && sudo make install
-        popd
         cd src/Tests/LDAP/ansible
         ansible-playbook -i ./hosts -u root --connection=local playbook.yml
 
