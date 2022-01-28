@@ -128,7 +128,7 @@ namespace usbguard
       char buffer[1024] = "Unknown error";
       const char* error_message = buffer;
       // See "man strerror_r" for why we need these two cases:
-#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L) && ! defined(_GNU_SOURCE)
+#ifndef HAVE_GNU_STRERROR_R
       // We have the XSI-compliant version of strerror_r with int return
       strerror_r(errno_value, buffer, sizeof buffer);
 #else

@@ -174,6 +174,29 @@ AS_IF([test "x${have_gnu_basename}" = xyes], [
   AC_DEFINE([HAVE_GNU_BASENAME], [1], [Wether the GNU version of function basename(3) is available (or just the POSIX one).])
 ], [])
 
+# GNU or XSI strerror_r(3) function?
+AC_MSG_CHECKING([for strerror_r function])
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+    #undef _POSIX_C_SOURCE
+    #define _GNU_SOURCE
+    #include <cstring>
+    int main(int argc, char ** argv) {
+        char * res = ::strerror_r(0, 0, 0);
+        return 0;
+    }
+])], [
+    have_gnu_strerror_r=yes
+    AC_MSG_RESULT([GNU])
+], [
+    have_gnu_strerror_r=no
+    AC_MSG_RESULT([XSI])
+])
+AC_LANG_POP()
+AS_IF([test "x${have_gnu_strerror_r}" = xyes], [
+  AC_DEFINE([HAVE_GNU_STRERROR_R], [1], [Wether the GNU version of function strerror_r(3) is available (or just the XSI one).])
+], [])
+
 #
 # Checks for required libraries.
 #
