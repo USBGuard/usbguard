@@ -152,6 +152,28 @@ AC_CHECK_LIB([atomic], [__atomic_add_fetch_8], [
 ], [atomic_LIBS=""])
 AC_SUBST([atomic_LIBS])
 
+# GNU (or just POSIX) basename(3) function?
+AC_MSG_CHECKING([for basename function])
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+    #define _GNU_SOURCE
+    #include <cstring>
+    int main(int argc, char ** argv) {
+        ::basename(*argv);
+        return 0;
+    }
+])], [
+    have_gnu_basename=yes
+    AC_MSG_RESULT([GNU])
+], [
+    have_gnu_basename=no
+    AC_MSG_RESULT([POSIX])
+])
+AC_LANG_POP()
+AS_IF([test "x${have_gnu_basename}" = xyes], [
+  AC_DEFINE([HAVE_GNU_BASENAME], [1], [Wether the GNU version of function basename(3) is available (or just the POSIX one).])
+], [])
+
 #
 # Checks for required libraries.
 #

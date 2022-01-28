@@ -20,7 +20,19 @@
   #include <build-config.h>
 #endif
 
-#include <stdlib.h>
+#ifdef HAVE_GNU_BASENAME
+  /* GNU version of basename(3) */
+  #ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+  #endif
+  #include <cstring>
+#else
+  /* POSIX version of basename(3) */
+  #include <libgen.h>
+#endif
+
+#include <cstdlib>  // e.g. for free(3)
+#include <cstring>  // e.g. for strdup(3)
 #include <iostream>
 #include <getopt.h>
 #include "DBusBridge.hpp"
@@ -208,13 +220,15 @@ static const struct ::option options_long[] = {
 
 static void showHelp(std::ostream& stream)
 {
-  stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS]" << std::endl;
+  char* const writeable_arg0 = ::strdup(usbguard_arg0);
+  stream << " Usage: " << ::basename(writeable_arg0) << " [OPTIONS]" << std::endl;
   stream << std::endl;
   stream << " Options:" << std::endl;
   stream << "  -s, --system   Listen on the system bus." << std::endl;
   stream << "  -S, --session  Listen on the session bus." << std::endl;
   stream << "  -h, --help     Show this help." << std::endl;
   stream << std::endl;
+  ::free(writeable_arg0);
 }
 
 int
