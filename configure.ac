@@ -105,7 +105,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 AC_ARG_ENABLE([coverage],
-     [AC_HELP_STRING([--enable-coverage], [enable instrumented compilation for code coverage testing (default=no)])],
+     [AS_HELP_STRING([--enable-coverage], [enable instrumented compilation for code coverage testing (default=no)])],
      [case "${enableval}" in
        yes) coverage=yes ;;
        no)  coverage=no ;;
@@ -118,7 +118,7 @@ if test "x$coverage" = xyes; then
 fi
 
 AC_ARG_ENABLE([werror],
-     [AC_HELP_STRING([--enable-werror], [treat compiler warnings as errors (default=no)])],
+     [AS_HELP_STRING([--enable-werror], [treat compiler warnings as errors (default=no)])],
      [case "${enableval}" in
        yes) werror=yes ;;
        no)  werror=no ;;
@@ -394,7 +394,7 @@ CPPFLAGS=$SAVE_CPPFLAGS
 #
 # GDBus
 #
-AC_ARG_WITH([dbus], AC_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
+AC_ARG_WITH([dbus], AS_HELP_STRING([--with-dbus], [Build the DBus Bridge service]), [], [with_dbus=yes])
 if test "x$with_dbus" = xyes; then
   #
   # Check for required D-Bus modules
@@ -466,7 +466,7 @@ fi
 #
 # PolicyKit
 #
-AC_ARG_WITH([polkit], AC_HELP_STRING([--with-polkit], [Install the PolicyKit configuration if D-Bus support is also enabled]), [], [with_polkit=yes])
+AC_ARG_WITH([polkit], AS_HELP_STRING([--with-polkit], [Install the PolicyKit configuration if D-Bus support is also enabled]), [], [with_polkit=yes])
 if test "x$with_polkit" = xyes; then
   #
   # Check for required PolicyKit modules
@@ -491,7 +491,7 @@ fi
 #
 # LDAP
 #
-AC_ARG_WITH([ldap], AC_HELP_STRING([--with-ldap], [Build USBGuard with ldap support]), [], [with_ldap=no])
+AC_ARG_WITH([ldap], AS_HELP_STRING([--with-ldap], [Build USBGuard with ldap support]), [], [with_ldap=no])
 if test "x$with_ldap" = xyes; then
   #
   # Check for LDAP ldap.h
@@ -648,7 +648,7 @@ AC_LANG_POP
 
 # ./configure script options
 AC_ARG_ENABLE([debug-build],
-     [AC_HELP_STRING([--enable-debug-build], [enable debugging flags (default=no)])],
+     [AS_HELP_STRING([--enable-debug-build], [enable debugging flags (default=no)])],
      [case "${enableval}" in
        yes) debug=yes ;;
        no)  debug=no ;;
@@ -656,7 +656,7 @@ AC_ARG_ENABLE([debug-build],
      esac], [debug=no])
 
 AC_ARG_ENABLE([systemd],
-     [AC_HELP_STRING([--enable-systemd], [install the systemd service unit file (default=no)])],
+     [AS_HELP_STRING([--enable-systemd], [install the systemd service unit file (default=no)])],
      [case "${enableval}" in
        yes) systemd=yes ;;
        no)  systemd=no ;;
