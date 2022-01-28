@@ -136,8 +136,7 @@ AC_PROG_CXX
 AC_PROG_CC_C99
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AM_PROG_LIBTOOL
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Check if libatomic is available, might be required for emulating
 # atomic intrinsics on some platforms.
