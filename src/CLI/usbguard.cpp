@@ -26,10 +26,16 @@
 #include <map>
 #include <iostream>
 
-#ifndef _GNU_SOURCE
-  #define _GNU_SOURCE
+#ifdef HAVE_GNU_BASENAME
+  /* GNU version of basename(3) */
+  #ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+  #endif
+  #include <cstring>
+#else
+  /* POSIX version of basename(3) */
+  #include <libgen.h>
 #endif
-#include <cstring> /* GNU version of basename(3) */
 
 #include "usbguard.hpp"
 #include "usbguard-get-parameter.hpp"

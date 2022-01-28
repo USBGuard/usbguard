@@ -23,11 +23,20 @@
 #include "usbguard/Rule.hpp"
 #include "usbguard/RuleParser.hpp"
 
-#include <iostream>
-#ifndef _GNU_SOURCE
-  #define _GNU_SOURCE
+#ifdef HAVE_GNU_BASENAME
+  /* GNU version of basename(3) */
+  #ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+  #endif
+  #include <cstring>
+#else
+  /* POSIX version of basename(3) */
+  #include <libgen.h>
 #endif
-#include <cstring>
+
+#include <cstdlib>  // for free(3)
+#include <cstring>  // for strdup(3)
+#include <iostream>
 #include <fstream>
 
 #include <getopt.h>
@@ -43,14 +52,16 @@ static const struct ::option options_long[] = {
 
 static void showHelp(std::ostream& stream, const char* usbguard_arg0)
 {
-  stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS] <rule_spec>" << std::endl;
-  stream << " Usage: " << ::basename(usbguard_arg0) << " [OPTIONS] -f <file>" << std::endl;
+  char* const writeable_arg0 = ::strdup(usbguard_arg0);
+  stream << " Usage: " << ::basename(writeable_arg0) << " [OPTIONS] <rule_spec>" << std::endl;
+  stream << " Usage: " << ::basename(writeable_arg0) << " [OPTIONS] -f <file>" << std::endl;
   stream << std::endl;
   stream << " Options:" << std::endl;
   stream << "  -f, --file       Interpret the argument as a path to a file that should be parsed." << std::endl;
   stream << "  -t, --trace      Enable parser tracing." << std::endl;
   stream << "  -h, --help       Show this help." << std::endl;
   stream << std::endl;
+  ::free(writeable_arg0);
 }
 
 int main(int argc, char** argv)
