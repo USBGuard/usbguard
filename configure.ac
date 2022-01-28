@@ -20,27 +20,27 @@ EXTERNAL_CFLAGS="$CFLAGS"
 EXTERNAL_CPPFLAGS="$CPPFLAGS"
 
 COMMON_WARNING_FLAGS=" -pedantic"
-COMMON_WARNING_FLAGS+=" -Wno-unknown-pragmas"
-COMMON_WARNING_FLAGS+=" -Wall"
-COMMON_WARNING_FLAGS+=" -Wextra"
-COMMON_WARNING_FLAGS+=" -Wformat=2"
-COMMON_WARNING_FLAGS+=" -Wredundant-decls"
-COMMON_WARNING_FLAGS+=" -Wcast-align"
-COMMON_WARNING_FLAGS+=" -Wmissing-declarations"
-COMMON_WARNING_FLAGS+=" -Wmissing-include-dirs"
-COMMON_WARNING_FLAGS+=" -Wmissing-format-attribute"
-COMMON_WARNING_FLAGS+=" -Wswitch-enum"
-COMMON_WARNING_FLAGS+=" -Wswitch-default"
-COMMON_WARNING_FLAGS+=" -Winvalid-pch"
-COMMON_WARNING_FLAGS+=" -Wformat-nonliteral"
-COMMON_WARNING_FLAGS+=" -Wno-deprecated-register"
-#COMMON_WARNING_FLAGS+=" -flto -Wodr"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wno-unknown-pragmas"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wall"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wextra"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wformat=2"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wredundant-decls"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wcast-align"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wmissing-declarations"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wmissing-include-dirs"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wmissing-format-attribute"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wswitch-enum"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wswitch-default"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Winvalid-pch"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wformat-nonliteral"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wno-deprecated-register"
+#COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -flto -Wodr"
 
 #
 # Workaround for older compilers warning about { }
 # not initializing all struct fields.
 #
-COMMON_WARNING_FLAGS+=" -Wno-missing-field-initializers"
+COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wno-missing-field-initializers"
 
 #
 # Don't warn about implicit fallthrough
@@ -49,7 +49,7 @@ COMMON_WARNING_FLAGS+=" -Wno-missing-field-initializers"
 #       newer compiler versions.
 #
 AX_CHECK_COMPILE_FLAG([-Wno-implicit-fallthrough],
-                      [COMMON_WARNING_FLAGS+=" -Wno-implicit-fallthrough"], [], [])
+                      [COMMON_WARNING_FLAGS="${COMMON_WARNING_FLAGS} -Wno-implicit-fallthrough"], [], [])
 
 #
 # Final project CXXFLAGS are set after configure checks.
