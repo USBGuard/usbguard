@@ -26,6 +26,7 @@ jobs:
       fail-fast: false
       matrix:
         linux_distro:
+        - Alpine Linux 3.15  # with musl
         - CentOS 8.2         # with GCC 8.5.0
 
     name: Build on ${{ matrix.linux_distro }} using Docker
