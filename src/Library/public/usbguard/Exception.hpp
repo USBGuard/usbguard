@@ -125,8 +125,17 @@ namespace usbguard
   private:
     static std::string reasonFromErrno(const int errno_value)
     {
-      char buffer[1024];
-      return std::string(strerror_r(errno_value, buffer, sizeof buffer));
+      char buffer[1024] = "Unknown error";
+      const char* error_message = buffer;
+      // See "man strerror_r" for why we need these two cases:
+#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L) && ! defined(_GNU_SOURCE)
+      // We have the XSI-compliant version of strerror_r with int return
+      strerror_r(errno_value, buffer, sizeof buffer);
+#else
+      // We have the GNU-specific version of strerror_r with char* return
+      error_message = strerror_r(errno_value, buffer, sizeof buffer);
+#endif
+      return std::string(error_message);
     }
   };
 
