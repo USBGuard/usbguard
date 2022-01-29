@@ -51,6 +51,10 @@ $(top_builddir)/src/build-config.h: $(top_builddir)/src/build-config.h.in
 DISTCLEANFILES=\
 	$(BUILT_SOURCES)
 
+AM_DISTCHECK_CONFIGURE_FLAGS=\
+	--with-bundled-catch \
+	--with-bundled-pegtl
+
 CLEANFILES=
 
 man_ADOC_FILES=\

@@ -117,8 +117,5 @@ jobs:
         CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
         make "-j$(nproc)"
 
-    - name: check
-      run: cd build && sudo make check
-
-    - name: dist
-      run: cd build && sudo make dist
+    - name: distcheck
+      run: sudo make -C build distcheck "-j$(nproc)"
