@@ -28,6 +28,7 @@ EXTRA_DIST =\
 	VERSION \
 	CHANGELOG.md \
 	src/astylerc \
+	src/test_filesystem.cpp \
 	scripts/usbguard-zsh-completion \
 	scripts/modeline.vim \
 	scripts/astyle.sh \
