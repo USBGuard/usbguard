@@ -6,6 +6,7 @@
 # check-path-include: *.h
 # check-path-exclude: src/Library/public/*.hpp
 # check-path-exclude: src/Tests/*
+# check-path-exclude: src/test_filesystem.cpp
 #
 SOURCE_FILEPATH="$1"
 

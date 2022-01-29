@@ -362,19 +362,43 @@ AC_SUBST([catch_CFLAGS])
 AC_SUBST([catch_LIBS])
 
 #
+# stdc++fs (for PEGTL >=3 below, e.g. with GCC 8)
+#
+STDCXX_FS_LINKTEST_FILENAME="${srcdir}"/src/test_filesystem.cpp
+STDCXX_FS_LINKTEST_SOURCE="$(cat "${STDCXX_FS_LINKTEST_FILENAME}")"
+AC_LANG_PUSH([C++])
+AC_MSG_CHECKING([whether we need to link to -lstdc++fs for PEGTL explicitly])
+AC_LINK_IFELSE([AC_LANG_SOURCE([${STDCXX_FS_LINKTEST_SOURCE}])], [
+    AC_MSG_RESULT([no])
+    stdcxxfs_LIBS=''
+], [
+    stdcxxfs_LIBS='-lstdc++fs'
+    SAVE_LIBS=${LIBS}
+    LIBS="${LIBS} ${stdcxxfs_LIBS}"
+    AC_LINK_IFELSE([AC_LANG_SOURCE([${STDCXX_FS_LINKTEST_SOURCE}])], [
+        AC_MSG_RESULT([yes])
+    ], [
+        AC_MSG_RESULT([ERROR])
+        AC_MSG_ERROR([Link test failed both with and without ${stdcxxfs_LIBS}; something is broken, please check file config.log for details.])
+    ])
+    LIBS=${SAVE_LIBS}
+])
+AC_LANG_POP()
+
+#
 # PEGTL C++ library
 #
 AC_ARG_WITH([bundled-pegtl], AS_HELP_STRING([--with-bundled-pegtl], [Build using the bundled PEGTL library]), [with_bundled_pegtl=$withval], [with_bundled_pegtl=no])
 if test "x$with_bundled_pegtl" = xyes; then
 	pegtl_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/PEGTL/include"
 	pegtl_AC_CFLAGS="-I$srcdir/src/ThirdParty/PEGTL/include"
-	pegtl_LIBS=""
+	pegtl_LIBS="${stdcxxfs_LIBS}"
 	AC_MSG_NOTICE([Using bundled PEGTL library])
 	pegtl_summary="bundled; $pegtl_CFLAGS $pegtl_LIBS"
 else
 	pegtl_CFLAGS=""
 	pegtl_AC_CFLAGS=""
-	pegtl_LIBS=""
+	pegtl_LIBS="${stdcxxfs_LIBS}"
 	pegtl_summary="system-wide; $pegtl_CFLAGS $pegtl_LIBS"
 fi
 AC_SUBST([pegtl_CFLAGS])
