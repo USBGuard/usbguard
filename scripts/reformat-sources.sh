@@ -32,5 +32,6 @@ set -ex
 
 find "${PROJECT_ROOT}/src" \
 	-type f -not -path '*ThirdParty/*' \
+	-not \( -name \*.pb.h -o -name build-config.h \) \
 	\( -name '*.cpp' -or -name '*.hpp' -or -name '*.c' -or -name '*.h' \) \
 	-exec "${ASTYLE}" --preserve-date --suffix=none --lineend=linux --formatted "{}" \;
