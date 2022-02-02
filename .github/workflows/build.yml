@@ -111,5 +111,8 @@ jobs:
         CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
         make "-j$(nproc)"
 
+    - name: check
+      run: sudo make -C build check -j1 || { find -name test-suite.log -print -exec cat {} \; ; false ; }
+
     - name: distcheck
-      run: sudo make -C build distcheck "-j$(nproc)" || { cat src/Tests/test-suite.log ; false ; }
+      run: sudo make -C build distcheck -j1 || { find -name test-suite.log -print -exec cat {} \; ; false ; }
