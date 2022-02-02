@@ -109,6 +109,8 @@ jobs:
       run: |
         ./autogen.sh
         mkdir build && cd build
+        ${{ matrix.config.cc }} --version
+        ${{ matrix.config.cxx }} --version
         CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} ../configure --enable-werror --disable-silent-rules --with-bundled-catch --with-bundled-pegtl --with-ldap --enable-full-test-suite ${{ matrix.config.configure_args }}
         make "-j$(nproc)"
 
