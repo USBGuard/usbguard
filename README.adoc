@@ -17,12 +17,6 @@ image::https://img.shields.io/github/license/USBGuard/usbguard.svg[License, link
 USBGuard is a software framework for implementing USB device authorization policies (what kind of USB devices are authorized) as well as method of use policies (how a USB device may interact with the system).
 Simply put, it is a USB device allowlisting tool.
 
-WARNING: The 0.x releases are not production ready packages.
-They serve for tech-preview and user feedback purposes only.
-Please share your feedback or request a feature in the Github issue trackers for each project:
-
- * https://github.com/USBGuard/usbguard/issues/new[Report a bug or request a feature in *usbguard*]
-
 == Documentation
 
  * User Guide (TBA)
@@ -34,6 +28,14 @@ Please share your feedback or request a feature in the Github issue trackers for
  ** <<doc/man/usbguard-dbus.8.adoc#name, usbguard-dbus(8)>>
 
 == Compilation & Installation
+
+WARNING: *Prior to starting the USBGuard daemon (or service) for the first time*
+         (but after installation)
+         we need to
+         generate a rules file for USBGuard so that the currently attached
+         USB devices (in particular mouse and keyboard) keep working
+         so that you will not **get locked out of your system**.
+         More on that below at <<before-the-first-start, Before the First Start>>.
 
 To compile the source code, you will require at least C{plus}{plus}17. +
 If you are compiling sources from a release tarball, you'll need the development files for:
@@ -48,19 +50,61 @@ Optionally, you may want to install:
  * https://github.com/seccomp/libseccomp[libseccomp] - used to implement a syscall whitelist
  * https://people.redhat.com/sgrubb/libcap-ng/[libcap-ng] - used to drop process capabilities
 
+If you are on a Debian based GNU/Linux distribution like Ubuntu 21.10,
+installation of all build dependencies would be something like this:
+
+    $ sudo apt update && \
+      sudo apt install --no-install-recommends -V \
+        asciidoc autoconf automake bash-completion build-essential catch \
+        docbook-xml docbook-xsl git ldap-utils libaudit-dev libcap-ng-dev \
+        libdbus-glib-1-dev libldap-dev libpolkit-gobject-1-dev libprotobuf-dev \
+        libqb-dev libseccomp-dev libsodium-dev libtool libxml2-utils \
+        libumockdev-dev pkg-config protobuf-compiler sudo tao-pegtl-dev xsltproc
+
 And then do:
 
-    $ ./configure --with-crypto-library=sodium # or "gcrypt", based on your preference
+    $ ./configure        # for arguments of interest see below
     $ make
+    $ make check         # if you would like to run the test suite
     $ sudo make install
 
-After the sources are successfully built, you can run the test suite by executing:
+Configure arguments that deserve explicit mentioning (quoting `./configure --help` output):
 
-    $ make check
+      --enable-systemd        install the systemd service unit file (default=no)
+
+      --with-crypto-library   Select crypto backend library. Supported values:
+                              sodium, gcrypt, openssl.
+
+      --with-bundled-catch    Build using the bundled Catch library
+
+      --with-bundled-pegtl    Build using the bundled PEGTL library
+
+      --with-ldap             Build USBGuard with ldap support
 
 If you want to compile the sources in a cloned repository, you'll have to run the `./autogen.sh` script.
 It will fetch the sources (via git submodules) of https://github.com/taocpp/PEGTL/[PEGTL] and https://github.com/philsquared/Catch[Catch].
-The script will then initialize the autotools based build system.
+The script will then initialize the autotools based build system, e.g. generate the `./configure` script.
+
+== Before the First Start
+
+*Prior to starting the USBGuard daemon (or service) for the first time*
+(but after installation)
+we need to
+generate a rules file for USBGuard so that the currently attached
+USB devices (in particular mouse and keyboard) keep working
+so that you will not **get locked out of your system**.
+
+A rules file can be generated like this:
+
+    $ sudo sh -c 'usbguard generate-policy > /etc/usbguard/rules.conf'
+
+After that, you can safely start service `usbguard`:
+
+    $ sudo systemctl start usbguard.service
+
+And you can make systemd start the service every time your boot your machine:
+
+    $ sudo systemctl enable usbguard.service
 
 == License
 
