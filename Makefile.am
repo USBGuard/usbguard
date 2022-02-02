@@ -52,6 +52,7 @@ DISTCLEANFILES=\
 	$(BUILT_SOURCES)
 
 AM_DISTCHECK_CONFIGURE_FLAGS=\
+	--enable-full-test-suite \
 	--with-bundled-catch \
 	--with-bundled-pegtl
 
