@@ -573,6 +573,9 @@ if test "x$enable_asan" = xyes; then
   AX_CHECK_COMPILE_FLAG([-fno-omit-frame-pointer],
                         [ASAN_FLAGS="$ASAN_FLAGS -fno-omit-frame-pointer"],
                         [], [])
+  AX_CHECK_COMPILE_FLAG([-static-libasan],
+                        [ASAN_FLAGS="$ASAN_FLAGS -static-libasan"],
+                        [], [])
   AC_LANG_POP
 fi
 #
