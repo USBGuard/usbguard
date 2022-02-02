@@ -28,6 +28,7 @@ jobs:
         linux_distro:
         - Alpine Linux 3.15  # with musl
         - CentOS 8.2         # with GCC 8.5.0
+        - Ubuntu 21.10       # because super popular
 
     name: Build on ${{ matrix.linux_distro }} using Docker
     runs-on: ubuntu-20.04
