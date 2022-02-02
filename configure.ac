@@ -531,7 +531,6 @@ AC_ARG_ENABLE([asan],
 
 if test "x$enable_asan" = xyes; then
   AC_LANG_PUSH([C++])
-  ASAN_FLAGS="$ASAN_FLAGS -static-libasan"
   AX_CHECK_COMPILE_FLAG([-faddress-sanitizer],
                         [ASAN_FLAGS="$ASAN_FLAGS -faddress-sanitizer"],
                         [enable_asan=no], [])
