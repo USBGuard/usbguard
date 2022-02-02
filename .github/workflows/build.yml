@@ -23,7 +23,8 @@ jobs:
             os: ubuntu-latest,
             cc: "clang",
             cxx: "clang++",
-            crypto: "libgcrypt-dev"
+            crypto: "libgcrypt-dev",
+            configure_args: "--enable-asan"
         }
         - {
             name: "Ubuntu_GCC",
