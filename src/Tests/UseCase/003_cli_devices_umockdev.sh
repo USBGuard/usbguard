@@ -46,7 +46,7 @@ function test_cli_devices()
   local id_dock="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "2y2qS3rcuMr1Ye5knWsbD8CGzPtrs+eiRR/haro7+Ng=".*$|\1|p')"
 
   if [ -z "$id_dock" ]; then
-    echo "Test error: Unable to parse device ID"
+    echo "Test error: Unable to parse device ID (test line ${LINENO})"
     exit 1
   fi
 
@@ -57,7 +57,7 @@ function test_cli_devices()
   local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
   
   if [ -z "$id_dock_child" ]; then
-    echo "Test error: Unable to parse device ID"
+    echo "Test error: Unable to parse device ID (test line ${LINENO})"
     exit 1
   fi
 
@@ -68,7 +68,7 @@ function test_cli_devices()
   local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
   
   if [ -z "$id_dock_child" ]; then
-    echo "Test error: Unable to parse device ID"
+    echo "Test error: Unable to parse device ID (test line ${LINENO})"
     exit 1
   fi
 
