@@ -24,6 +24,7 @@
 #include "DeviceManagerBase.hpp"
 #include "SysFSDevice.hpp"
 #include "Common/FDInputStream.hpp"
+#include "Common/Utility.hpp"
 
 #include "usbguard/Exception.hpp"
 #include "usbguard/Logger.hpp"
@@ -91,19 +92,37 @@ namespace usbguard
      */
     int retry = 0;
     std::string connect_type;
+    /*
+     * Host controllers are directly connected to SoC/PCI bus
+     * hence do not have port/connect_type in sysfs.
+     * Filter out host controllers to avoid unnecessary wait in the loop.
+     */
+    const auto before = std::chrono::steady_clock::now();
 
-    while (retry < 20) {
-      connect_type = sysfs_device.readAttribute("port/connect_type", /*strip_last_null=*/true, /*optional=*/true);
+    if (!hasPrefix(getPort(), "usb")) {
+      while (retry < 30) {
+        connect_type = sysfs_device.readAttribute("port/connect_type", /*strip_last_null=*/true, /*optional=*/true);
 
-      if (connect_type != "") {
-        break;
+        if (connect_type != "") {
+          break;
+        }
+
+        USBGUARD_LOG(Trace) << "connect_type is empty, will attempt again";
+        usleep(1000);
+        retry++;
       }
 
-      USBGUARD_LOG(Trace) << "connect_type is empty, will attempt again";
-      retry++;
+      const auto after = std::chrono::steady_clock::now();
+      const auto duration_nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(after - before).count();
+      USBGUARD_LOG(Info) << "***Setting connect type=" << connect_type <<" after "<< retry << " retries (took " <<
+        duration_nanoseconds << "ns)";
+
+      if (connect_type == "") {
+        USBGUARD_LOG(Warning) << "port/connect_type is empty for non host controller device " << getPort() << " after waiting for " <<
+          duration_nanoseconds << "ns";
+      }
     }
 
-    USBGUARD_LOG(Info) << "***Setting connect type=" << connect_type <<" after retry"<< retry;
     setConnectType(connect_type);
     /*
      * Process USB descriptor data.
