@@ -23,7 +23,7 @@ RUN apt-get update \
             automake \
             bash-completion \
             build-essential \
-            catch \
+            catch2 \
             docbook-xml \
             docbook-xsl \
             git \

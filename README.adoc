@@ -55,7 +55,7 @@ installation of all build dependencies would be something like this:
 
     $ sudo apt update && \
       sudo apt install --no-install-recommends -V \
-        asciidoc autoconf automake bash-completion build-essential catch \
+        asciidoc autoconf automake bash-completion build-essential catch2 \
         docbook-xml docbook-xsl git ldap-utils libaudit-dev libcap-ng-dev \
         libdbus-glib-1-dev libldap-dev libpolkit-gobject-1-dev libprotobuf-dev \
         libqb-dev libseccomp-dev libsodium-dev libtool libxml2-utils \
