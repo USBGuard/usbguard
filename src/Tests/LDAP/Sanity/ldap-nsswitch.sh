@@ -207,7 +207,7 @@ sudo -n kill $PID
 rckillb=$?
 sudo -n rm -f $PIDFILE
 
-grep_and_fail '(E) NSSwitch parsing: /etc/nsswitch.conf: No such file or directory'
+grep_and_fail '(i) Error when opening nsswitch file: /etc/nsswitch.conf: No such file or directory'
 
 if [ $rckillb -eq "1" ] # expected to fail
 then

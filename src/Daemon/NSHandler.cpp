@@ -154,7 +154,10 @@ namespace usbguard
     std::ifstream nss(_nsswitch_path);
 
     if (!nss.is_open()) {
-      throw ErrnoException("NSSwitch parsing", _nsswitch_path, errno);
+      USBGUARD_LOG(Info) << "Error when opening nsswitch file: " << _nsswitch_path << ": " << ErrnoException::reasonFromErrno(errno);
+      USBGUARD_LOG(Info) << "Using default value FILES";
+      _source = SourceType::LOCAL;
+      return;
     }
 
     _parser.parseStream(nss);
