@@ -53,6 +53,7 @@ function test_cli_devices()
 
   ${USBGUARD} block-device "$id_dock"
   ${USBGUARD} allow-device "$id_dock"
+  sleep 1
 
   local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
   
@@ -64,6 +65,7 @@ function test_cli_devices()
   ${USBGUARD} block-device "$id_dock_child"
   ${USBGUARD} block-device "$id_dock"
   ${USBGUARD} allow-device "$id_dock"
+  sleep 1
 
   local id_dock_child="$(${USBGUARD} list-devices | sed -n 's|^\([0-9]\+\):.*hash "D3deklX12Ir3kJPfUZ5AQNwHeZn1bwtPkQkw6e+8B38=".*$|\1|p')"
   
