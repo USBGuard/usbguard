@@ -122,7 +122,7 @@ namespace usbguard
       : Exception(context, object, ErrnoException::reasonFromErrno(errno_value))
     {
     }
-  private:
+
     static std::string reasonFromErrno(const int errno_value)
     {
       char buffer[1024] = "Unknown error";
