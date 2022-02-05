@@ -41,32 +41,5 @@
       <allow_active>auth_self_keep</allow_active>
     </defaults>
   </action>
-
-  <action id="org.usbguard.Devices1.allowDevice">
-    <description>Authorize a USB device via the USBGuard daemon to interact with the system</description>
-    <message>Prevents from authorizing USB devices via the USBGuard daemon</message>
-    <defaults>
-      <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
-    </defaults>
-  </action>
-
-  <action id="org.usbguard.Devices1.blockDevice">
-    <description>Deauthorize a USB device via the USBGuard daemon</description>
-    <message>Prevents from deauthorizing USB devices via the USBGuard daemon</message>
-    <defaults>
-      <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
-    </defaults>
-  </action>
-
-  <action id="org.usbguard.Devices1.rejectDevice">
-    <description>Remove a USB device via the USBGuard daemon</description>
-    <message>Prevents from removing USB devices via the USBGuard daemon</message>
-    <defaults>
-      <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
-    </defaults>
-  </action>
 </policyconfig>
 
