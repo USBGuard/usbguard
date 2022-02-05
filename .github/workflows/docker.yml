@@ -28,6 +28,7 @@ jobs:
         linux_distro:
         - Alpine Linux 3.15  # with musl
         - CentOS 8.2         # with GCC 8.5.0
+        - Debian Buster with GCC 9.2  # stock buster has GCC 8.3
         - Ubuntu 21.10       # because super popular
 
     name: Build on ${{ matrix.linux_distro }} using Docker
