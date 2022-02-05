@@ -16,4 +16,7 @@ extraction:
       - ./autogen.sh
 
     configure:
-      command: ./configure --with-bundled-pegtl
+      command: |-
+        ${CC:-cc} --version
+        ${CXX:-c++} --version
+        ./configure --with-bundled-pegtl || { cat config.log ; false ; }
