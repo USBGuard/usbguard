@@ -1,0 +1,4 @@
+/test-regression
+/test-unit
+*.log
+*.trs
