@@ -33,12 +33,39 @@
     </defaults>
   </action>
 
+  <action id="org.usbguard.Devices1.applyDevicePolicy">
+    <description>Apply a policy to a device in USBGuard</description>
+    <message>Prevents applying a policy to a device in USBGuard</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
   <action id="org.usbguard.Devices1.listDevices">
     <description>List all USB devices recognized by the USBGuard daemon</description>
     <message>Prevents listing USB devices recognized by the USBGuard daemon</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_self_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard1.getParameter">
+    <description>Get the value of a runtime parameter</description>
+    <message>Prevents getting values of runtime USBGuard parameters</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_self_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.usbguard1.setParameter">
+    <description>Set the value of a runtime parameter</description>
+    <message>Prevents setting values of runtime USBGuard parameters</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
     </defaults>
   </action>
 </policyconfig>
