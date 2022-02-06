@@ -8,7 +8,7 @@
 
   <action id="org.usbguard.Policy1.listRules">
     <description>List the rule set (policy) used by the USBGuard daemon</description>
-    <message>Prevents from listing the USBGuard policy</message>
+    <message>Prevents listing the USBGuard policy</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_self_keep</allow_active>
@@ -17,7 +17,7 @@
 
   <action id="org.usbguard.Policy1.appendRule">
     <description>Append a new rule to the policy</description>
-    <message>Prevents from appending rules to the USBGuard policy</message>
+    <message>Prevents appending rules to the USBGuard policy</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_admin</allow_active>
@@ -35,7 +35,7 @@
 
   <action id="org.usbguard.Devices1.listDevices">
     <description>List all USB devices recognized by the USBGuard daemon</description>
-    <message>Prevents from listing USB devices recognized by the USBGuard daemon</message>
+    <message>Prevents listing USB devices recognized by the USBGuard daemon</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
       <allow_active>auth_self_keep</allow_active>
