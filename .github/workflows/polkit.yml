@@ -1,0 +1,67 @@
+##
+## Copyright (c) 2022 Sebastian Pipping <sebastian@pipping.org>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+name: Check for Polkit policy parse errors
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  polkit_policies:
+
+    name: Check for Polkit policy parse errors
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install runtime dependencies
+      run:  |
+        set -x
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends --yes -V expat
+
+    - name: Check for Polkit policy parse errors
+      run:  |
+        # This will work around pkaction exiting with unjustified(?)
+        # code 1 on Ubuntu 20.04
+        check_polkit_action() { pkaction -v -a "$1" | tee /dev/stderr | fgrep -q 'implicit any' ; }
+
+        set -x
+        actions=(
+            org.usbguard.Devices1.listDevices
+            org.usbguard.Devices1.applyDevicePolicy
+            org.usbguard.Policy1.appendRule
+            org.usbguard.Policy1.listRules
+            org.usbguard.Policy1.removeRule
+            org.usbguard1.getParameter
+            org.usbguard1.setParameter
+        )
+
+        # Self-test: Assert that prior to installation, our Polkit "actions"
+        # are unknown to PolKit.
+        ! check_polkit_action "${actions[0]}"
+
+        # Install the policy so that polkin can find it
+        xmlwf      src/DBus/org.usbguard1.policy
+        sudo cp -v src/DBus/org.usbguard1.policy /usr/share/polkit-1/actions/
+
+        # Assert that after installation, all of our Polkit "actions" are known.
+        # This detects parse error regressions.
+        for action in "${actions[@]}"; do
+            check_polkit_action "${action}"
+        done
