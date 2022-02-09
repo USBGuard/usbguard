@@ -15,12 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
+// Authors: Sebastian Pipping <sebastian@pipping.org>
 //
 #ifdef HAVE_BUILD_CONFIG_H
   #include <build-config.h>
 #endif
 
 #include "DBusBridge.hpp"
+#include <polkit/polkit.h>
+
 namespace usbguard
 {
   DBusBridge::DBusBridge(GDBusConnection* const gdbus_connection,
@@ -77,6 +80,10 @@ namespace usbguard
   void DBusBridge::handleRootMethodCall(const std::string& method_name, GVariant* parameters, GDBusMethodInvocation* invocation)
   {
     if (method_name == "getParameter") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       const char* name_cstr = nullptr;
       g_variant_get(parameters, "(&s)", &name_cstr);
       std::string name(name_cstr);
@@ -86,6 +93,10 @@ namespace usbguard
     }
 
     if (method_name == "setParameter") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       const char* name_cstr = nullptr;
       const char* value_cstr = nullptr;
       g_variant_get(parameters, "(&s&s)", &name_cstr, &value_cstr);
@@ -104,6 +115,10 @@ namespace usbguard
   void DBusBridge::handlePolicyMethodCall(const std::string& method_name, GVariant* parameters, GDBusMethodInvocation* invocation)
   {
     if (method_name == "listRules") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       const char* label_cstr = nullptr;
       g_variant_get(parameters, "(&s)", &label_cstr);
       std::string label(label_cstr);
@@ -136,6 +151,10 @@ namespace usbguard
     }
 
     if (method_name == "appendRule") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       const char* rule_spec_cstr = nullptr;
       uint32_t parent_id = 0;
       gboolean temporary = false;
@@ -147,6 +166,10 @@ namespace usbguard
     }
 
     if (method_name == "removeRule") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       uint32_t rule_id = 0;
       g_variant_get(parameters, "(u)", &rule_id);
       removeRule(rule_id);
@@ -165,6 +188,10 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "dbus devices method call: " << method_name;
 
     if (method_name == "listDevices") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       const char* query_cstr = nullptr;
       g_variant_get(parameters, "(&s)", &query_cstr);
       std::string query(query_cstr);
@@ -197,6 +224,10 @@ namespace usbguard
     }
 
     if (method_name == "applyDevicePolicy") {
+      if (! isAuthorizedByPolkit(invocation)) {
+        return;
+      }
+
       uint32_t device_id = 0;
       uint32_t target_integer = 0;
       gboolean permanent = false;
@@ -366,6 +397,113 @@ namespace usbguard
       "with-connect-type",
       device_rule.getWithConnectType().c_str());
     return builder;
+  }
+
+  std::string DBusBridge::formatGError(GError* error)
+  {
+    if (error) {
+      std::stringstream formatGError;
+      formatGError << error->message << " (code " << error->code << ")";
+      return formatGError.str();
+    }
+    else {
+      return "unknown error";
+    }
+  }
+
+  bool DBusBridge::isAuthorizedByPolkit(GDBusMethodInvocation* invocation)
+  {
+    GError* error = NULL;
+    USBGUARD_LOG(Trace) << "Extracting bus name...";
+    const gchar* const /*no-free!*/ bus_name = g_dbus_method_invocation_get_sender (invocation);
+
+    if (! bus_name) {
+      USBGUARD_LOG(Trace) << "Failed to extract bus name.";
+      return false;
+    }
+
+    USBGUARD_LOG(Trace) << "Extracted bus name \"" << bus_name << "\".";
+    USBGUARD_LOG(Trace) << "Extracting interface name...";
+    const gchar* const /*no-free!*/ interfaceName = g_dbus_method_invocation_get_interface_name(invocation);
+
+    if (! interfaceName) {
+      USBGUARD_LOG(Trace) << "Failed to extract interface name.";
+      return false;
+    }
+
+    USBGUARD_LOG(Trace) << "Extracted interface name \"" << interfaceName << "\".";
+    USBGUARD_LOG(Trace) << "Extracting method name...";
+    const gchar* const /*no-free!*/ methodName = g_dbus_method_invocation_get_method_name(invocation);
+
+    if (! methodName) {
+      USBGUARD_LOG(Trace) << "Failed to extract method name.";
+      return false;
+    }
+
+    std::stringstream action_id;
+    action_id << interfaceName << "." << methodName;
+    USBGUARD_LOG(Trace) << "Extracted method name \"" << methodName << "\".";
+    USBGUARD_LOG(Trace) << "Creating a system bus Polkit subject...";
+    PolkitSubject* const subject = polkit_system_bus_name_new(bus_name);
+
+    if (! subject) {
+      USBGUARD_LOG(Trace) << "Failed to create Polkit subject.";
+      return false;
+    }
+
+    USBGUARD_LOG(Trace) << "Created.";
+    USBGUARD_LOG(Trace) << "Connecting with Polkit authority...";
+    PolkitAuthority* const authority = polkit_authority_get_sync(/*cancellable=*/ NULL, &error);
+
+    if (! authority || error) {
+      USBGUARD_LOG(Trace) << "Failed to connect to Polkit authority: " << formatGError(error) << ".";
+      g_error_free(error);
+      g_object_unref(authority);
+      g_object_unref(subject);
+      return false;
+    }
+
+    USBGUARD_LOG(Trace) << "Connected.";
+    USBGUARD_LOG(Trace) << "Customizing Polkit authentification dialog...";
+    PolkitDetails* const details = polkit_details_new();
+
+    if (! details) {
+      USBGUARD_LOG(Trace) << "Failed to customize the Polkit authentification dialog.";
+      g_object_unref(authority);
+      g_object_unref(subject);
+      return false;
+    }
+
+    polkit_details_insert (details, "polkit.message", "This USBGuard action needs authorization");
+    USBGUARD_LOG(Trace) << "Customized.";
+    USBGUARD_LOG(Trace) << "Checking authorization of action \"" << action_id.str() << "\" with Polkit ...";
+    const PolkitCheckAuthorizationFlags flags = POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION;
+    PolkitAuthorizationResult* const result = polkit_authority_check_authorization_sync
+      (authority,
+        subject,
+        action_id.str().c_str(),
+        details,
+        flags,
+        /*cancellable=*/ NULL,
+        &error);
+
+    if (! result || error) {
+      USBGUARD_LOG(Trace) << "Failed to check back with Polkit for authoriation: " << formatGError(error) << ".";
+      g_error_free(error);
+      g_object_unref(result);
+      g_object_unref(details);
+      g_object_unref(authority);
+      g_object_unref(subject);
+      return false;
+    }
+
+    gboolean isAuthorized = polkit_authorization_result_get_is_authorized(result);
+    USBGUARD_LOG(Trace) << (isAuthorized ? "Authorized" : "Not authorized") << ".";
+    g_object_unref(result);
+    g_object_unref(details);
+    g_object_unref(authority);
+    g_object_unref(subject);
+    return isAuthorized;
   }
 } /* namespace usbguard */
 
