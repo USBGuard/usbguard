@@ -20,6 +20,7 @@
   #include <build-config.h>
 #endif
 
+#include "usbguard/Exception.hpp"
 #include "usbguard/Rule.hpp"
 #include "usbguard/RuleParser.hpp"
 
@@ -104,8 +105,14 @@ int main(int argc, char** argv)
 
   try {
     if (from_file) {
-      const std::string rule_file(argv[0]);
+      const char* const rule_file_filename = argv[0];
+      const std::string rule_file(rule_file_filename);
       std::ifstream stream(rule_file);
+
+      if (! stream.is_open()) {
+        throw usbguard::ErrnoException("Rules file could not be opened", rule_file_filename, errno);
+      }
+
       size_t line = 0;
 
       while (stream.good()) {
@@ -139,6 +146,9 @@ int main(int argc, char** argv)
     std::cerr.width(4 + ex.offset());
     std::cerr << "^-- " << ex.hint() << std::endl;
     std::cerr.width(1);
+  }
+  catch (const usbguard::Exception& ex) {
+    std::cerr << "! ERROR: " << ex.message() << std::endl;
   }
   catch (const std::exception& ex) {
     std::cerr << "! EXCEPTION: " << ex.what() << std::endl;
