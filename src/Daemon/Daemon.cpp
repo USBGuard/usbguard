@@ -411,6 +411,9 @@ namespace usbguard
     catch (const RuleParserError& ex) {
       throw Exception("Rules", _nss.getSourceInfo(), ex.hint());
     }
+    catch (const Exception& ex) {
+      throw ex;
+    }
     catch (const std::exception& ex) {
       throw Exception("Rules", _nss.getSourceInfo(), ex.what());
     }
