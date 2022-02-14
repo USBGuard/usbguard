@@ -79,7 +79,7 @@ namespace usbguard
         ret = "SourceLOCAL::" + _rulesPath;
       }
       else {
-        ret = "SourceLOCAL::uknown";
+        ret = "SourceLOCAL::unknown";
       }
 
       break;

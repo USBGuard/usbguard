@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
     USBGUARD_LOG(Error) << ex.what();
   }
   catch (...) {
-    USBGUARD_LOG(Error) << "Unknown excepton caught while starting the process";
+    USBGUARD_LOG(Error) << "Unknown exception caught while starting the process";
   }
 
   return ret;
