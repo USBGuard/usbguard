@@ -120,7 +120,7 @@ then
     KILLRC="0"
 fi
 
-grep "Rules: SourceLDAP: usbguard::Exception" $TMPDIR/usbguard.log
+grep "LDAPHandler query: ldap_search_ext_s: No such object" $TMPDIR/usbguard.log
 GREP1=$?
 
 grep -i "Sanitizer" $TMPDIR/usbguard.log
