@@ -36,6 +36,7 @@ RUN echo '@edge-testing https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /
             polkit-dev \
             protobuf-dev
 ADD usbguard.tar usbguard/
+ADD catch.tar usbguard/src/ThirdParty/Catch/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
 RUN ./configure --with-bundled-catch || ! cat config.log
