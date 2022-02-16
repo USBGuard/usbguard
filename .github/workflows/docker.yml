@@ -45,6 +45,7 @@ jobs:
         git submodule update --init
         git archive -o usbguard.tar HEAD
         ( cd src/ThirdParty/PEGTL/ && git archive -o ../../../pegtl.tar HEAD )
+        ( cd src/ThirdParty/Catch/ && git archive -o ../../../catch.tar HEAD )
 
         # Build using Docker
         linux_distro="$(tr '[:upper:]' '[:lower:]' <<<"${{ matrix.linux_distro }}" | sed 's,[ .],_,g')"

@@ -26,7 +26,6 @@ RUN head -n1 /etc/os-release \
             automake \
             bash-completion \
             build-essential \
-            catch \
             docbook-xml \
             docbook-xsl \
             git \
@@ -55,8 +54,9 @@ RUN set -x \
         && \
     [[ "$(g++ -dumpversion) == 9.2.* ]]
 ADD usbguard.tar usbguard/
+ADD catch.tar usbguard/src/ThirdParty/Catch/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
-RUN ./configure --enable-systemd || ! cat config.log
+RUN ./configure --enable-systemd --with-bundled-catch || ! cat config.log
 RUN make V=1 "-j$(nproc)"
 RUN make V=1 check || { cat src/Tests/test-suite.log ; false ; }
