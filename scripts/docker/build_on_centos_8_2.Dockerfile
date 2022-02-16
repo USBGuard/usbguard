@@ -44,6 +44,7 @@ RUN sed \
             protobuf-compiler \
             protobuf-devel
 ADD usbguard.tar usbguard/
+ADD catch.tar usbguard/src/ThirdParty/Catch/
 ADD pegtl.tar usbguard/src/ThirdParty/PEGTL/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
