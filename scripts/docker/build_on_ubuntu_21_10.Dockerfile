@@ -16,7 +16,7 @@
 
 FROM ubuntu:21.10
 RUN apt-get update \
-      && \
+        && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --yes -V \
             asciidoc \
             autoconf \
