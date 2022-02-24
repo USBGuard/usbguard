@@ -88,7 +88,7 @@ LT_CURRENT=1
 # Increment if library source code changed at all.
 # Set to 0 if you increment CURRENT.
 #
-LT_REVISION=0
+LT_REVISION=1
 
 #
 # The difference between the newest and oldest interfaces

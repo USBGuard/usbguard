@@ -1,5 +1,28 @@
 # Change Log
 
+## 1.1.0 - 2022-02-24
+
+### Added
+- Started building with C++17
+- Tree-like list-devices output
+- Added CAP_AUDIT_WRITE capability to service file
+- Added support for lower OpenSSL versions prior to 1.1.0
+- Added a new signal: DevicePolicyApplied
+
+### Fixed/Changed
+- Moved PIDFile from /var/run to /run
+- Fixed linker isssues with disable-static
+- Enhanced bash-completion script
+- Make username/group checking consistent with useradd manual page definition 
+  (with addition of capital letters)
+- Fixed multiple IPC related bugs
+- Fixed race condition when accessing port/connect_type for USB devices
+- Using bundled catch v2.13.8 
+- Using bundled PEGTL v3.2.5
+- Fixed usbguard-rule-parser file opening
+- Fix unauthorized access via D-Bus [CVE-2019-25058]
+
+
 ## 1.0.0 - 2021-01-13
 
 ### Added
