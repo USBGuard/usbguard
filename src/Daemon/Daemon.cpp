@@ -446,12 +446,25 @@ namespace usbguard
   void Daemon::parseIPCAccessControlFilename(const std::string& basename, std::string* const ptr_user,
     std::string* const ptr_group)
   {
+    // There are five supported forms:
+    // - "<user>:<group>"
+    // - "<user>:"
+    // - "<user>"
+    // - ":<group>"
+    // - ":"
     const auto ug_separator = basename.find_first_of(":");
     const bool has_group = ug_separator != std::string::npos;
     const std::string user = basename.substr(0, ug_separator);
     const std::string group = has_group ? basename.substr(ug_separator + 1) : std::string();
-    checkIPCAccessControlName(user);
-    checkIPCAccessControlName(group);
+
+    if (! user.empty()) {
+      checkIPCAccessControlName(user);
+    }
+
+    if (! group.empty()) {
+      checkIPCAccessControlName(group);
+    }
+
     *ptr_user = user;
     *ptr_group = group;
   }
