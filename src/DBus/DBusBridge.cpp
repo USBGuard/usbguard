@@ -464,11 +464,11 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "Connected.";
-    USBGUARD_LOG(Trace) << "Customizing Polkit authentification dialog...";
+    USBGUARD_LOG(Trace) << "Customizing Polkit authentication dialog...";
     PolkitDetails* const details = polkit_details_new();
 
     if (! details) {
-      USBGUARD_LOG(Trace) << "Failed to customize the Polkit authentification dialog.";
+      USBGUARD_LOG(Trace) << "Failed to customize the Polkit authentication dialog.";
       g_object_unref(authority);
       g_object_unref(subject);
       return false;
