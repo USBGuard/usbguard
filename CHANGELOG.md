@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.1 - 2022-03-15
+
+### Fixed
+- Restore support for access control filenames without a group
+
 ## 1.1.0 - 2022-02-24
 
 ### Added
