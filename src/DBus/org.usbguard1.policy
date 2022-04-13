@@ -11,7 +11,7 @@
     <message>Prevents listing the USBGuard policy</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_self_keep</allow_active>
+      <allow_active>yes</allow_active>
     </defaults>
   </action>
 
@@ -47,7 +47,7 @@
     <message>Prevents listing USB devices recognized by the USBGuard daemon</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_self_keep</allow_active>
+      <allow_active>yes</allow_active>
     </defaults>
   </action>
 
@@ -56,7 +56,7 @@
     <message>Prevents getting values of runtime USBGuard parameters</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_self_keep</allow_active>
+      <allow_active>yes</allow_active>
     </defaults>
   </action>
 
