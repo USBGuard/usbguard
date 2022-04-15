@@ -467,7 +467,7 @@ if test "x$with_dbus" = xyes; then
   #
   # Check for required D-Bus modules
   #
-  PKG_CHECK_MODULES([dbus], [dbus-1 gio-2.0 polkit-gobject-1],
+  PKG_CHECK_MODULES([dbus], [dbus-1 gio-2.0 >= 2.46 polkit-gobject-1],
   [AC_DEFINE([HAVE_DBUS], [1], [Required GDBus API available])
   dbus_summary="system-wide; $dbus_CFLAGS $dbus_LIBS"],
   [AC_MSG_FAILURE([Required D-Bus modules (dbus-1, gio-2.0, polkit-gobject-1) not found!])]

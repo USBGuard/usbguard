@@ -517,7 +517,11 @@ namespace usbguard
     polkit_details_insert (details, "polkit.message", "This USBGuard action needs authorization");
     USBGUARD_LOG(Trace) << "Customized.";
     USBGUARD_LOG(Trace) << "Checking authorization of action \"" << action_id.str() << "\" with Polkit ...";
-    const PolkitCheckAuthorizationFlags flags = POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION;
+    GDBusMessage* const message = g_dbus_method_invocation_get_message (invocation);
+    const PolkitCheckAuthorizationFlags flags = (g_dbus_message_get_flags (message) &
+        G_DBUS_MESSAGE_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION)
+      ? POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION
+      : POLKIT_CHECK_AUTHORIZATION_FLAGS_NONE;
     PolkitAuthorizationResult* const result = polkit_authority_check_authorization_sync
       (authority,
         subject,
