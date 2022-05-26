@@ -89,7 +89,7 @@ namespace usbguard
       uint32_t rule_id);
 
     static std::string formatGError(GError* error);
-    static bool isAuthorizedByPolkit(GDBusMethodInvocation* invocation);
+    static bool isAuthorizedByPolkit(GDBusMethodInvocation* invocation, GDBusError* authError, const gchar** authErrorMessage);
 
     GDBusConnection* const p_gdbus_connection;
     void(*p_ipc_callback)(bool);
