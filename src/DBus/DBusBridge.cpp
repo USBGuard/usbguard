@@ -492,12 +492,11 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "Connecting with Polkit authority...";
     PolkitAuthority* const authority = polkit_authority_get_sync(/*cancellable=*/ NULL, &error);
 
-    if (! authority || error) {
+    if (! authority) {
       USBGUARD_LOG(Trace) << "Failed to connect to Polkit authority: " << formatGError(error) << ".";
       *authErrorCode = G_DBUS_ERROR_AUTH_FAILED;
       *authErrorMessage = "Failed to connect to Polkit authority";
       g_error_free(error);
-      g_object_unref(authority);
       g_object_unref(subject);
       return false;
     }
@@ -528,12 +527,11 @@ namespace usbguard
         /*cancellable=*/ NULL,
         &error);
 
-    if (! result || error) {
+    if (! result) {
       USBGUARD_LOG(Trace) << "Failed to check back with Polkit for authoriation: " << formatGError(error) << ".";
       *authErrorCode = G_DBUS_ERROR_AUTH_FAILED;
       *authErrorMessage = "Failed to check back with Polkit for authoriation.";
       g_error_free(error);
-      g_object_unref(result);
       g_object_unref(details);
       g_object_unref(authority);
       g_object_unref(subject);
