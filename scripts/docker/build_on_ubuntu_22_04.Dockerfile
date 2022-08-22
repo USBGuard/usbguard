@@ -14,7 +14,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM ubuntu:21.10
+FROM ubuntu:22.04
 RUN apt-get update \
         && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --yes -V \
