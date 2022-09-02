@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.2 - 2022-09-02
+
+### Fixed
+- Polkit: Always allow getParameter/listDevices/listRules in active sessions
+- D-Bus: Send reply on auth failure
+- Polkit: Unreference PolkitAuthorizationResult and PolkitAuthority structs if needed
+
 ## 1.1.1 - 2022-03-15
 
 ### Fixed
