@@ -29,7 +29,6 @@ EXTRA_DIST =\
 	CHANGELOG.md \
 	src/astylerc \
 	src/test_filesystem.cpp \
-	scripts/usbguard-zsh-completion \
 	scripts/modeline.vim \
 	scripts/astyle.sh \
 	scripts/reformat-sources.sh \
@@ -446,7 +445,17 @@ usbguard_LDADD=\
 
 if ENABLE_BASH_COMPLETION
 bashcompletiondir = $(BASH_COMPLETION_DIR)
-dist_bashcompletion_DATA = $(top_srcdir)/scripts/bash_completion/usbguard
+dist_bashcompletion_DATA = $(top_srcdir)/scripts/shell-completion/usbguard
+endif
+
+if ENABLE_ZSH_COMPLETION
+zshcompletiondir = $(ZSH_COMPLETION_DIR)
+dist_zshcompletion_DATA = $(top_srcdir)/scripts/shell-completion/_usbguard
+endif
+
+if ENABLE_FISH_COMPLETION
+fishcompletiondir = $(FISH_COMPLETION_DIR)
+dist_fishcompletion_DATA = $(top_srcdir)/scripts/shell-completion/usbguard.fish
 endif
 
 usbguard_rule_parser_SOURCES=\

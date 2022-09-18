@@ -746,6 +746,30 @@ else
 	BASH_COMPLETION_DIR="$with_bash_completion_dir"
 fi
 
+AC_ARG_WITH([zsh-completion-dir],
+	AS_HELP_STRING([--with-zsh-completion-dir[=PATH]],
+		[Enable zsh auto-completion. @<:@default=yes@:>@]),
+	[], [with_zsh_completion_dir=yes])
+
+if test "x$with_zsh_completion_dir" = "xyes"; then
+	ZSH_COMPLETION_DIR="$datadir/zsh/site-functions"
+else
+	ZSH_COMPLETION_DIR="$with_zsh_completion_dir"
+fi
+
+AC_ARG_WITH([fish-completion-dir],
+	AS_HELP_STRING([--with-fish-completion-dir[=PATH]],
+		[Enable fish auto-completion. Uses pkgconfig if no path given. @<:@default=yes@:>@]),
+	[], [with_fish_completion_dir=yes])
+
+if test "x$with_fish_completion_dir" = "xyes"; then
+	PKG_CHECK_MODULES([FISH], [fish >= 3.0.0],
+		[FISH_COMPLETION_DIR=$($PKG_CONFIG --variable=completionsdir fish)],
+		[FISH_COMPLETION_DIR="$datadir/fish/vendor_completions.d"])
+else
+	FISH_COMPLETION_DIR="$with_fish_completion_dir"
+fi
+
 if test "x$debug" = xyes; then
    CXXFLAGS="$CXXFLAGS $CXXFLAGS_DEBUG_ENABLED"
    CFLAGS="$CFLAGS $CFLAGS_DEBUG_ENABLED"
@@ -785,6 +809,10 @@ AC_SUBST([ANALYZE_CONFIGURE_ARGS], $ac_configure_args)
 
 AC_SUBST([BASH_COMPLETION_DIR])
 AM_CONDITIONAL([ENABLE_BASH_COMPLETION], [test "x$with_bash_completion_dir" != "xno"])
+AC_SUBST([ZSH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_ZSH_COMPLETION], [test "x$with_zsh_completion_dir" != "xno"])
+AC_SUBST([FISH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_FISH_COMPLETION], [test "x$with_fish_completion_dir" != "xno"])
 
 AM_CONDITIONAL([SYSTEMD_SUPPORT_ENABLED], [test "x$systemd" = xyes ])
 AM_CONDITIONAL([DBUS_ENABLED], [test "x$with_dbus" = xyes ])
@@ -793,6 +821,7 @@ AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
 AM_CONDITIONAL([WITH_LDAP], [test "x$with_ldap" = xyes])
 AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])
+AM_CONDITIONAL([FISH_ENABLED], [test "x$fish" != xno])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
 CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"
@@ -845,6 +874,8 @@ echo "       D-Bus Busconfig: $dbus_busconfig_dir"
 echo "    PolicyKit Policies: $polkit_policy_dir"
 echo "      systemd unit dir: $systemd_unit_dir"
 echo "   Bash completion dir: $BASH_COMPLETION_DIR"
+echo "    Zsh completion dir: $ZSH_COMPLETION_DIR"
+echo "   Fish completion dir: $FISH_COMPLETION_DIR"
 echo
 echo "## Compilation Flags"
 echo
