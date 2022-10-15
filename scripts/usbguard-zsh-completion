@@ -32,7 +32,7 @@ case $state in
       "generate-policy:Generate a rule set (policy) based on the connected USB devices."
       "watch:Watch for IPC interface events and print them to stdout."
       "read-descriptor:Read a USB descriptor from a file and print it in human-readable form."
-      "add-user:Add USBGuard IPC user/group (requires root privilges)"
+      "add-user:Add USBGuard IPC user/group (requires root privileges)"
       "remove-user:Remove USBGuard IPC user/group (requires root privileges)"
     )
     _describe -t subcommands 'usbguard subcommands' _subcommands && ret=0

@@ -98,7 +98,7 @@ namespace usbguard
     stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form." <<
       std::endl;
     stream << std::endl;
-    stream << "  add-user <name>                Add USBGuard IPC user/group (requires root privilges)" << std::endl;
+    stream << "  add-user <name>                Add USBGuard IPC user/group (requires root privileges)" << std::endl;
     stream << "  remove-user <name>             Remove USBGuard IPC user/group (requires root privileges)" << std::endl;
     stream << std::endl;
   }
