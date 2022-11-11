@@ -49,4 +49,10 @@ ADD pegtl.tar usbguard/src/ThirdParty/PEGTL/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
 RUN ./configure --with-bundled-catch --with-bundled-pegtl || ! cat config.log
+RUN make dist
+RUN tar xf usbguard-*.tar.gz
+RUN mv -v usbguard-*.*.*/ usbguard-release/
+RUN mkdir usbguard-release/build/
+WORKDIR usbguard-release/build/
+RUN ../configure --with-bundled-catch --with-bundled-pegtl || ! cat config.log
 RUN make V=1 "-j$(nproc)"

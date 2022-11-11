@@ -50,5 +50,11 @@ ADD usbguard.tar usbguard/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
 RUN ./configure --enable-systemd || ! cat config.log
+RUN make dist
+RUN tar xf usbguard-*.tar.gz
+RUN mv -v usbguard-*.*.*/ usbguard-release/
+RUN mkdir usbguard-release/build/
+WORKDIR usbguard-release/build/
+RUN ../configure --enable-systemd || ! cat config.log
 RUN make V=1 "-j$(nproc)"
 RUN make V=1 check || { cat src/Tests/test-suite.log ; false ; }
