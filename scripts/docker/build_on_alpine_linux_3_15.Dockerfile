@@ -18,6 +18,7 @@ FROM alpine:3.15
 RUN echo '@edge-testing https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
         && \
     apk add --update \
+            asciidoc \
             autoconf \
             automake \
             dbus-glib-dev \
@@ -48,4 +49,5 @@ RUN mv -v usbguard-*.*.*/ usbguard-release/
 RUN mkdir usbguard-release/build/
 WORKDIR usbguard-release/build/
 RUN ../configure --with-bundled-catch || ! cat config.log
-RUN make V=1 "-j$(nproc)"
+RUN bash -c 'set -o pipefail; make V=1 "-j$(nproc)" |& tee build.log'
+RUN ! grep -F 'include file not found' build.log

@@ -56,5 +56,6 @@ RUN mv -v usbguard-*.*.*/ usbguard-release/
 RUN mkdir usbguard-release/build/
 WORKDIR usbguard-release/build/
 RUN ../configure --enable-systemd || ! cat config.log
-RUN make V=1 "-j$(nproc)"
+RUN bash -c 'set -o pipefail; make V=1 "-j$(nproc)" |& tee build.log'
+RUN ! grep -F 'include file not found' build.log
 RUN make V=1 check || { cat src/Tests/test-suite.log ; false ; }
