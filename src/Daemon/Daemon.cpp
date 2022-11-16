@@ -39,6 +39,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/poll.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
@@ -622,6 +623,7 @@ namespace usbguard
         const int signum = sigtimedwait(&mask, &info, &timeout);
 
         if (signum == SIGUSR1 && info.si_signo == SIGUSR1 && info.si_pid == pid) {
+          waitpid(pid, nullptr, 0);
           USBGUARD_LOG(Trace) << "Finished daemonization";
           exit(EXIT_SUCCESS);
         }
