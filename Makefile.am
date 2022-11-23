@@ -71,7 +71,10 @@ man_ROFF_FILES=\
 	$(man_ADOC_FILES:.adoc=.roff)
 
 EXTRA_DIST+=\
-	$(man_ADOC_FILES)
+	$(man_ADOC_FILES) \
+	doc/man/example-allow-device.adoc \
+	doc/man/example-initial-policy.adoc \
+	doc/man/footer.adoc
 
 CLEANFILES+=\
 	$(man_ROFF_FILES) \

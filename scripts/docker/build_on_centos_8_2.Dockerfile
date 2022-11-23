@@ -27,6 +27,7 @@ RUN sed \
     dnf config-manager --set-enabled PowerTools \
         && \
     dnf install -y \
+            asciidoc \
             autoconf \
             automake \
             dbus-glib-devel \
@@ -49,4 +50,11 @@ ADD pegtl.tar usbguard/src/ThirdParty/PEGTL/
 WORKDIR usbguard
 RUN git init &>/dev/null && ./autogen.sh
 RUN ./configure --with-bundled-catch --with-bundled-pegtl || ! cat config.log
-RUN make V=1 "-j$(nproc)"
+RUN make dist
+RUN tar xf usbguard-*.tar.gz
+RUN mv -v usbguard-*.*.*/ usbguard-release/
+RUN mkdir usbguard-release/build/
+WORKDIR usbguard-release/build/
+RUN ../configure --with-bundled-catch --with-bundled-pegtl || ! cat config.log
+RUN bash -c 'set -o pipefail; make V=1 "-j$(nproc)" |& tee build.log'
+RUN ! grep -F 'include file not found' build.log
