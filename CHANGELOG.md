@@ -406,7 +406,7 @@
 ## 0.4 - 2016-02-07
 ### Changed
 - The daemon is now capable of dropping process capabilities and uses a seccomp
-  based syscall whitelist. Options to enable these features were added to the
+  based syscall allowlist. Options to enable these features were added to the
   usbguard-daemon command.
 - Devices connected at the start of the daemon are now recognized and the
   DevicePresent signal is sent for each of them.
