@@ -578,7 +578,7 @@ namespace usbguard
         break;
 
       case SIGSYS:
-        USBGUARD_LOG(Error) << "Received SIGSYS: Seccomp whitelist violation!";
+        USBGUARD_LOG(Error) << "Received SIGSYS: Seccomp allowlist violation!";
         exit_loop = false;
         break;
 

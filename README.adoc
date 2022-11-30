@@ -47,7 +47,7 @@ If you are compiling sources from a release tarball, you'll need the development
 
 Optionally, you may want to install:
 
- * https://github.com/seccomp/libseccomp[libseccomp] - used to implement a syscall whitelist
+ * https://github.com/seccomp/libseccomp[libseccomp] - used to implement a syscall allowlist
  * https://people.redhat.com/sgrubb/libcap-ng/[libcap-ng] - used to drop process capabilities
 
 If you are on a Debian based GNU/Linux distribution like Ubuntu 21.10,
