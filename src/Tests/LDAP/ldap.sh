@@ -13,12 +13,12 @@ PASS="passme"
 #ping -q -c 1 $HOST 2>&1 >/dev/null
 
 if [ "$1" = "delete" ]; then
-  ldapdelete -h $HOST -D $USER -w $PASS -r $USBGUARD_BASE
+  ldapdelete -H "ldap://${HOST}/" -D $USER -w $PASS -r $USBGUARD_BASE
   exit
 fi
 
 if [ "$1" = "setup" ]; then
-  ldapadd -v -h $HOST -D $USER -w $PASS <<EOF
+  ldapadd -v -H "ldap://${HOST}/" -D $USER -w $PASS <<EOF
 #dn: dc=example,dc=com
 #objectclass: dcObject
 #objectclass: organization
@@ -41,7 +41,7 @@ if [ "$1" = "policy" ]; then
   else
     exit
   fi
-  ldapadd -v -h $HOST -D $USER -w $PASS -f $POLICY
+  ldapadd -v -H "ldap://${HOST}/" -D $USER -w $PASS -f $POLICY
   exit
 fi
 
@@ -50,6 +50,6 @@ if [ "$1" = "search" ]; then
   if [ "$2" ]; then
     FILTER=$2
   fi
-  ldapsearch -h $HOST -D $USER -b $BASE -w $PASS $FILTER
+  ldapsearch -H "ldap://${HOST}/" -D $USER -b $BASE -w $PASS $FILTER
   exit
 fi

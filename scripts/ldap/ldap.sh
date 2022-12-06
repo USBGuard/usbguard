@@ -11,12 +11,12 @@ PASS="passme"
 ping -q -c 1 $HOST 2>&1 >/dev/null
 
 if [ "$1" = "delete" ]; then
-  ldapdelete -h $HOST -D $USER -w $PASS -r $BASE
+  ldapdelete -H "ldap://${HOST}/" -D $USER -w $PASS -r $BASE
   exit
 fi
 
 if [ "$1" = "setup" ]; then
-  ldapadd -v -h $HOST -D $USER -w $PASS -f ./setup.ldif
+  ldapadd -v -H "ldap://${HOST}/" -D $USER -w $PASS -f ./setup.ldif
   exit
 fi
 
@@ -25,7 +25,7 @@ if [ "$1" = "policy" ]; then
   if [ "$2" ]; then
     POLICY=$2
   fi
-  ldapadd -v -h $HOST -D $USER -w $PASS -f $POLICY
+  ldapadd -v -H "ldap://${HOST}/" -D $USER -w $PASS -f $POLICY
   exit
 fi
 
@@ -34,6 +34,6 @@ if [ "$1" = "search" ]; then
   if [ "$2" ]; then
     FILTER=$2
   fi
-  ldapsearch -h $HOST -D $USER -b $BASE -w $PASS $FILTER
+  ldapsearch -H "ldap://${HOST}/" -D $USER -b $BASE -w $PASS $FILTER
   exit
 fi
