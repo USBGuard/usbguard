@@ -32,7 +32,7 @@ jobs:
         - Ubuntu 22.04       # because super popular
 
     name: Build on ${{ matrix.linux_distro }} using Docker
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v2

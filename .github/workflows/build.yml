@@ -7,20 +7,20 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         config:
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libgcrypt-dev"
         }
         - {
             name: "Ubuntu_CLANG",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "clang",
             cxx: "clang++",
             crypto: "libgcrypt-dev",
@@ -28,7 +28,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libgcrypt-dev",
@@ -36,7 +36,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libgcrypt-dev",
@@ -44,7 +44,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libgcrypt-dev",
@@ -52,7 +52,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libgcrypt-dev",
@@ -60,7 +60,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libsodium-dev",
@@ -68,7 +68,7 @@ jobs:
         }
         - {
             name: "Ubuntu_GCC",
-            os: ubuntu-latest,
+            os: ubuntu-22.04,
             cc: "gcc",
             cxx: "g++",
             crypto: "libssl-dev",
