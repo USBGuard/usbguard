@@ -245,6 +245,9 @@ List of conditions:
 Partial rule is a rule without a rule target.
 Partial rules may by used by some commands of *usbguard* CLI tool.
 
+=== Comments
+In order to easily understand the meaning of each rule, comments can be used.
+Everything after the "#" character is ignored by the rule parser.
 
 == Initial policy
 Using the *usbguard* CLI tool and its *generate-policy* subcommand, you can generate an initial policy for your system instead of writing one from scratch.
