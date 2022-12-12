@@ -6,6 +6,7 @@ AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/build-config.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
+AC_CANONICAL_HOST
 
 AM_INIT_AUTOMAKE([subdir-objects foreign tar-pax])
 
@@ -103,6 +104,11 @@ LT_AGE=0
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
+
+AC_DEFINE_UNQUOTED([PLATFORM_ID], ["${host}"], [platform id for display purposes])
+# we don't mind if we don't have the lsb_release utility. But if we have, it's
+# nice to have the extra information.
+AC_DEFINE_UNQUOTED([PLATFORM_ID_LSB], ["`lsb_release -d`"], [platform id for display purposes])
 
 AC_ARG_ENABLE([coverage],
      [AS_HELP_STRING([--enable-coverage], [enable instrumented compilation for code coverage testing (default=no)])],
