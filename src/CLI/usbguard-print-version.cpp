@@ -29,33 +29,37 @@
 #include <map>
 #include <vector>
 
+
 namespace usbguard
 {
+  static std::string toHumanReadable(const int enabled)
+  {
+    return enabled ? "enabled" : "disabled";
+  }
+
   int usbguard_print_version(__attribute__((unused)) int argc, __attribute__((unused)) char* argv[])
   {
     if (argc != 1) {
       return EXIT_FAILURE;
     }
 
-    std::cout << "usbguard " << PACKAGE_VERSION << " compiled with:" << std::endl;
-    std::cout << "\t" << "Platform: \t\t\t" << PLATFORM_ID << std::endl;
-    std::cout << "\t" << "Platform (lsb_release -d)" << "\t" << PLATFORM_ID_LSB << std::endl;
+    int audit = 0, libcapng = 0, seccomp = 0, systemd = 0, umockdev = 0;
+    std::string crypto;
 #ifdef HAVE_LINUX_AUDIT
-    std::cout << "\t" << "Linux audit support:\t\t" << HAVE_LINUX_AUDIT << std::endl;
+    audit = 1;
 #endif
 #ifdef HAVE_LIBCAPNG
-    std::cout << "\t" << "Libcapng support:\t\t" << HAVE_LIBCAPNG << std::endl;
+    libcapng = 1;
 #endif
 #ifdef HAVE_SECCOMP
-    std::cout << "\t" << "Seccomp support:\t\t" << HAVE_SECCOMP << std::endl;
+    seccomp = 1;
 #endif
 #ifdef SYSTEMD_SUPPORT_ENABLED
-    std::cout << "\t" << "Systemd support:\t\t" << SYSTEMD_SUPPORT_ENABLED << std::endl;
+    systemd = 1;
 #endif
 #ifdef HAVE_UMOCKDEV
-    std::cout << "\t" << "Umockdev support:\t\t" << HAVE_UMOCKDEV << std::endl;
+    umockdev = 1;
 #endif
-    std::string crypto;
 #ifdef USBGUARD_USE_LIBGCRYPT
     crypto = "libgcrypt";
 #elif USBGUARD_USE_LIBSODIUM
@@ -65,7 +69,13 @@ namespace usbguard
 #else
     crypto = "unknown";
 #endif
-    std::cout << "\t" << "Crypto backend library:\t\t" << crypto << std::endl;
+    std::cout << "usbguard " << PACKAGE_VERSION << " compiled with:" << std::endl;
+    std::cout << "  Linux audit support:    " << toHumanReadable(audit) << std::endl;
+    std::cout << "  Libcapng support:       " << toHumanReadable(libcapng) << std::endl;
+    std::cout << "  Seccomp support:        " << toHumanReadable(seccomp) << std::endl;
+    std::cout << "  Systemd support:        " << toHumanReadable(systemd) << std::endl;
+    std::cout << "  Umockdev support:       " << toHumanReadable(umockdev) << std::endl;
+    std::cout << "  Crypto backend library: " << crypto << std::endl;
     return EXIT_SUCCESS;
   }
 } /* namespace usbguard */
