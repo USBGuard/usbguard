@@ -758,7 +758,7 @@ namespace usbguard
     /* TODO: reevaluate the firewall rules for all active devices */
     const uint32_t id = _policy.appendRule(rule, parent_id);
 
-    if (_config.hasSettingValue("RuleFile") && permanent) {
+    if ((_config.hasSettingValue("RuleFile") || _config.hasSettingValue("RuleFolder")) && permanent) {
       _policy.save();
     }
 
@@ -771,7 +771,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "id=" << id;
     _policy.removeRule(id);
 
-    if (_config.hasSettingValue("RuleFile")) {
+    if (_config.hasSettingValue("RuleFile") || _config.hasSettingValue("RuleFolder")) {
       _policy.save();
     }
   }

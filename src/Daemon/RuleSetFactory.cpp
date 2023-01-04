@@ -75,8 +75,24 @@ namespace usbguard
         }
       }
 
+      /*
+       * This means one of the following:
+       *  - Neither RuleFile nor RuleFolder are specified
+       *  - RuleFile not specified, RuleFolder is but it does not contain any files,
+       *    where we could save permanent rules
+       */
       if (ruleSet.empty()) {
-        USBGUARD_LOG(Warning) << "Neither RuleFile nor RuleFolder are set; Modification of the permanent policy won't be possible.";
+        std::string msg;
+
+        if (ns.getRulesPath().empty() && ns.getRulesDirPath().empty()) {
+          msg = "Neither RuleFile nor RuleFolder are set.";
+        }
+        else {
+          msg = "RuleFile is not set, RuleFolder is but it does not contain any rule files.";
+        }
+
+        USBGUARD_LOG(Warning) << "Modification of the permanent policy won't be possible."
+          << " Reason: " << msg;
         ruleSet = generateDefaultRuleSet();
       }
 

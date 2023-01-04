@@ -27,7 +27,12 @@ It may be overridden using the *-c* command-line option, see *usbguard-daemon*(8
     behave like any other standard Linux daemon therefore it loads rule files in
     alpha-numeric order. File names inside `RuleFolder` directory should start
     with a two-digit number prefix indicating the position, in which the rules
-    are scanned by the daemon.
+    are scanned by the daemon. Using RuleFile and RuleFolder at the same time is
+    permitted. However, modification of the permanent policy is not possible if
+    one of the following conditions are met:
+    ** Neither RuleFile nor RuleFolder are specified.
+    ** RuleFile is not specified, RuleFolder is but it does not contain any files,
+       where we could save permanent rules.
 
 *ImplicitPolicyTarget*='target'::
     How to treat USB devices that don't match any rule in the policy. Target
