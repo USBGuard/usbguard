@@ -22,7 +22,6 @@
 
 #include "Base64.hpp"
 #include <stdexcept>
-#include <cstdint>
 
 namespace usbguard
 {

@@ -23,6 +23,7 @@
 #endif
 
 #include <string>
+#include <cstdint>
 #include <cstddef>
 
 namespace usbguard
