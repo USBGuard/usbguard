@@ -433,7 +433,9 @@ usbguard_SOURCES=\
 	src/CLI/usbguard-add-user.cpp \
 	src/CLI/usbguard-add-user.hpp \
 	src/CLI/usbguard-remove-user.cpp \
-	src/CLI/usbguard-remove-user.hpp
+	src/CLI/usbguard-remove-user.hpp \
+	src/CLI/usbguard-print-version.cpp \
+	src/CLI/usbguard-print-version.hpp
 
 usbguard_CXXFLAGS=\
 	$(PTHREAD_CFLAGS)
