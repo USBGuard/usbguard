@@ -91,7 +91,7 @@ sudo -n cp "$ldap_path" /etc/usbguard/usbguard-ldap.conf
 
 COUNTER="0"
 declare -A BAD
-PIDFILE="/var/run/usbguard.pid"
+PIDFILE="/var/run/usbguard/usbguard.pid"
 
 function grep_and_fail ()
 {
