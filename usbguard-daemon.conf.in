@@ -24,7 +24,7 @@ RuleFile=%sysconfdir%/usbguard/rules.conf
 #
 # RuleFolder=/path/to/rulesfolder/
 #
-#RuleFolder=%sysconfdir%/usbguard/rules.d/
+RuleFolder=%sysconfdir%/usbguard/rules.d/
 
 
 
