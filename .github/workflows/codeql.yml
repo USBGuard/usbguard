@@ -80,9 +80,35 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
+        apt-get install --no-install-recommends --yes -V \
+            asciidoc \
+            autoconf \
+            automake \
+            bash-completion \
+            build-essential \
+            catch2 \
+            docbook-xml \
+            docbook-xsl \
+            git \
+            ldap-utils \
+            libaudit-dev \
+            libcap-ng-dev \
+            libdbus-glib-1-dev \
+            libldap-dev \
+            libpolkit-gobject-1-dev \
+            libprotobuf-dev \
+            libqb-dev \
+            libseccomp-dev \
+            libsodium-dev \
+            libtool \
+            libxml2-utils \
+            libumockdev-dev \
+            pkg-config \
+            protobuf-compiler \
+            sudo \
+            systemd \
+            tao-pegtl-dev \
+            xsltproc
         ./autogen.sh
         ./configure --enable-systemd --with-crypto-library=openssl --with-bundled-catch --with-bundled-pegtl
         make V=1
