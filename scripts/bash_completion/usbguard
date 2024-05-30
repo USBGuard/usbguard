@@ -251,7 +251,7 @@ _usbguard() {
     # If there was no positional argument provided yet, complete commands
     if [[ $args -eq 1 ]]; then
         opts="get-parameter set-parameter list-devices allow-device block-device reject-device list-rules append-rule"
-        opts="${opts} remove-rule generate-policy watch read-descriptor add-user remove-user"
+        opts="${opts} remove-rule generate-policy watch read-descriptor add-user remove-user --version"
 
     else
         opts='-h --help'
