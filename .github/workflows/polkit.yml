@@ -22,6 +22,10 @@ on:
   schedule:
     - cron: '0 4 * * 5'  # Every Friday at 4am
 
+# Drop permissions to minimum for security
+permissions:
+  contents: read
+
 jobs:
   polkit_policies:
 
