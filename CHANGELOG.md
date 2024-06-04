@@ -1,5 +1,20 @@
 # Change Log
 
+## 1.1.3 - 2024-XX-YY
+
+### Fixed
+- Addressed several cases where either RuleFile or RuleFolder was not set.
+- Resolved a race condition during fork where the parent process did not wait until everything was initialized in the child process.
+- Included missing documentation in the tarball.
+- Fixed compatibility issues with GCC 13+.
+
+### Added
+- Implemented detection of integer overflow for device IDs to ensure that each device can be uniquely identified by a single ID.
+- Enhanced the service file to disable the Linux kernel's Out-Of-Memory (OOM) killing of processes for this unit.
+- D-bus: check if the client requested interactive authentication, as some clients do not prompt for passwords.
+- Made minor adjustments to the documentation.
+- RuleFolder is enabled by default. At startup, the path to folder must exist and be accessible by the daemon.
+
 ## 1.1.2 - 2022-09-02
 
 ### Fixed
