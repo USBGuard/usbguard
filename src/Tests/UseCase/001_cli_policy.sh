@@ -43,17 +43,17 @@ function test_cli_policy()
 {
   set -e
   sleep 4
-  
+
   c=$(${USBGUARD} list-rules | wc -l)
   # TODO [ $c -eq 0 ] || return 1
 
-  ${USBGUARD} append-rule block
-  
+  ruleID=`${USBGUARD} append-rule block`
+
   c=$(${USBGUARD} list-rules | wc -l)
   # TODO [ $c -eq 1 ] || return 1
 
-  ${USBGUARD} remove-rule 1
-  
+  ${USBGUARD} remove-rule ${ruleID}
+
   c=$(${USBGUARD} list-rules | wc -l)
   # TODO [ $c -eq 0 ] || return 1
 
