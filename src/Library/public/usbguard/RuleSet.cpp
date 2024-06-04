@@ -224,10 +224,10 @@ namespace usbguard
   uint32_t RuleSet::assignID()
   {
     const auto next_id = _id_next + 1;
-    if (next_id >= Rule::LastID) [[unlikely]]
-        {
-            throw std::out_of_range("Rule ID too high");
-        }
+    if (next_id >= Rule::LastID)
+      [[unlikely]] {
+      throw std::out_of_range("Rule ID too high");
+    }
     _id_next = next_id;
     return next_id;
   }
