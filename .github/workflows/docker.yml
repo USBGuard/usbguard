@@ -19,6 +19,8 @@ name: Build on non-Ubuntu Linux using Docker
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '0 4 * * 5'  # Every Friday at 4am
 
 jobs:
   build_docker:

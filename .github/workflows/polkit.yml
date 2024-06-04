@@ -19,6 +19,8 @@ name: Check for Polkit policy parse errors
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '0 4 * * 5'  # Every Friday at 4am
 
 jobs:
   polkit_policies:
