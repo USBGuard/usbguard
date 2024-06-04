@@ -228,7 +228,7 @@ namespace usbguard
       throw std::out_of_range("Rule ID too high");
     }
     _id_next = next_id;
-    return next_id;
+    return next_id - 1;
   }
 
   void RuleSet::setWritable()
