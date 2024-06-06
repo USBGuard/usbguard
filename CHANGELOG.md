@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.1.3 - 2024-XX-YY
+## 1.1.3 - 2024-06-06
 
 ### Fixed
 - Addressed several cases where either RuleFile or RuleFolder was not set.
