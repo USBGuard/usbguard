@@ -543,7 +543,22 @@ namespace usbguard
     return rulefile_list;
   }
 
-  bool isValidName(const std::string& name)
+  static bool isValidUID(const std::string& uid)
+  {
+    if (uid.empty()) {
+      return false;
+    }
+
+    for (char c : uid) {
+      if (!std::isdigit(c)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static bool isValidName(const std::string& name)
   {
     const char* s = name.data();
 
@@ -566,6 +581,10 @@ namespace usbguard
     }
 
     return true;
+  }
+
+  bool isValidNameOrUID(const std::string& input) {
+    return isValidName(input) || isValidUID(input);
   }
 
 } /* namespace usbguard */
