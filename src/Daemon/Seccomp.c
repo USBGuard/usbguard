@@ -23,6 +23,7 @@
 #include "Seccomp.h"
 
 #if defined(HAVE_SECCOMP)
+  #include <asm/unistd.h>
   #include <seccomp.h>
   #include <errno.h>
   #include <sys/resource.h>
@@ -51,7 +52,9 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
+#ifdef __NR_fstat
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
+#endif
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lstat), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fcntl), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlink), 0);
