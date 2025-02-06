@@ -90,8 +90,8 @@ $(top_builddir)/%.roff: %.adoc
 	$(INSTALL) -m 644 $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
 endif
 
-install-data-hook: install-daemon-conf install-systemd-service install-data-dbus
-uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus
+install-data-hook: install-daemon-conf install-systemd-service install-data-dbus install-tmpfiles
+uninstall-hook: uninstall-daemon-conf uninstall-systemd-service uninstall-data-dbus uninstall-tmpfiles
 
 CLEANFILES+=\
 	$(top_builddir)/usbguard-daemon.conf
@@ -105,6 +105,15 @@ usbguard-daemon.conf: $(top_builddir)/usbguard-daemon.conf.in
 usbguard_confdir= $(sysconfdir)/usbguard
 
 distuninstallcheck_listfiles= find . -type f ! -name rules.conf -print
+
+EXTRA_DIST+=usbguard-tmpfiles.conf
+
+install-tmpfiles:
+	mkdir -p ${DESTDIR}$(prefix)/lib/tmpfiles.d/
+	$(INSTALL_DATA) -m 640 ${srcdir}/usbguard-tmpfiles.conf ${DESTDIR}$(prefix)/lib/tmpfiles.d/usbguard.conf
+
+uninstall-tmpfiles:
+	rm ${DESTDIR}$(prefix)/lib/tmpfiles.d/usbguard.conf
 
 install-daemon-conf: $(top_builddir)/usbguard-daemon.conf
 	$(MKDIR_P) $(DESTDIR)/$(usbguard_confdir)
