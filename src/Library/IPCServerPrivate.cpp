@@ -311,7 +311,7 @@ namespace usbguard
     message->SerializeToString(&payload);
     struct qb_ipc_response_header hdr;
     struct iovec iov[2];
-    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message->GetTypeName());
+    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(std::string(message->GetTypeName()));
     hdr.size = sizeof hdr + payload.size();
     hdr.error = 0;
     iov[0].iov_base = &hdr;
@@ -555,7 +555,7 @@ namespace usbguard
     std::string payload;
     message->SerializeToString(&payload);
     struct qb_ipc_response_header hdr = { };
-    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message->GetTypeName());
+    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(std::string(message->GetTypeName()));
     hdr.size = sizeof hdr + payload.size();
     hdr.error = 0;
     struct iovec iov[2];
@@ -563,7 +563,7 @@ namespace usbguard
     iov[0].iov_len = sizeof hdr;
     iov[1].iov_base = (void*)payload.data();
     iov[1].iov_len = payload.size();
-    qbIPCBroadcastData(iov, 2, messageTypeNameToAccessControlSection(message->GetTypeName()));
+    qbIPCBroadcastData(iov, 2, messageTypeNameToAccessControlSection(std::string(message->GetTypeName())));
     iov[0].iov_base = nullptr;
     iov[1].iov_base = nullptr;
   }
