@@ -16,7 +16,11 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#ifdef HAVE_CATCH2_V3
+  #include <catch_test_macros.hpp>
+#else
+  #define CATCH_CONFIG_MAIN
+  #include <catch.hpp>
+#endif
 
 /* vim: set ts=2 sw=2 et */
