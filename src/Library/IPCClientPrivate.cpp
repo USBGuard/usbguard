@@ -225,7 +225,7 @@ namespace usbguard
     std::string payload;
     message.SerializeToString(&payload);
     struct qb_ipc_request_header hdr;
-    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(message.GetTypeName());
+    hdr.id = QB_IPC_MSG_USER_START + IPC::messageTypeNameToNumber(std::string(message.GetTypeName()));
     hdr.size = sizeof hdr + payload.size();
     struct iovec iov[2];
     iov[0].iov_base = &hdr;

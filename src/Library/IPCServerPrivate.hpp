@@ -134,7 +134,7 @@ namespace usbguard
     void registerHandler(MessageHandler::HandlerType method, IPCServer::AccessControl::Section section,
       IPCServer::AccessControl::Privilege privilege)
     {
-      const uint32_t type_number = IPC::messageTypeNameToNumber(T::default_instance().GetTypeName());
+      const uint32_t type_number = IPC::messageTypeNameToNumber(std::string(T::default_instance().GetTypeName()));
       _handlers.emplace(type_number, MessageHandler::create<T>(*this, method, section, privilege));
     }
 
