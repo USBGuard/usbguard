@@ -16,7 +16,11 @@
 //
 // Authors: Daniel Kopecek <dkopecek@redhat.com>
 //
-#include <catch.hpp>
+#ifdef HAVE_CATCH2_V3
+  #include <catch_test_macros.hpp>
+#else
+  #include <catch.hpp>
+#endif
 #include <UMockdevDeviceDefinition.cpp>
 
 #include "test_UMockdevDeviceDefinition.data.hpp"

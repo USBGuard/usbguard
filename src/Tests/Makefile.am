@@ -123,6 +123,7 @@ test_unit_CXXFLAGS=\
 
 test_unit_LDADD=\
 	$(top_builddir)/libusbguard.la \
+	$(catch_LIBS) \
 	$(PTHREAD_LIBS)
 
 test_unit_LDFLAGS=\
@@ -140,5 +141,6 @@ test_regression_CXXFLAGS=\
 
 test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la \
+	$(catch_LIBS) \
 	$(PTHREAD_LIBS)
 

@@ -18,7 +18,11 @@
 //
 #include "usbguard/IPCServer.hpp"
 
-#include <catch.hpp>
+#ifdef HAVE_CATCH2_V3
+  #include <catch_test_macros.hpp>
+#else
+  #include <catch.hpp>
+#endif
 #include <sstream>
 
 using namespace usbguard;

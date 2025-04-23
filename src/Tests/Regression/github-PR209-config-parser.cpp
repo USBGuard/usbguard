@@ -18,7 +18,11 @@
 //
 
 #include "usbguard/ConfigFile.hpp"
-#include <catch.hpp>
+#ifdef HAVE_CATCH2_V3
+  #include <catch_test_macros.hpp>
+#else
+  #include <catch.hpp>
+#endif
 
 #include <sys/stat.h>
 #include <sys/types.h>
