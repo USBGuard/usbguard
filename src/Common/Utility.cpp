@@ -583,7 +583,8 @@ namespace usbguard
     return true;
   }
 
-  bool isValidNameOrUID(const std::string& input) {
+  bool isValidNameOrUID(const std::string& input)
+  {
     return isValidName(input) || isValidUID(input);
   }
 
