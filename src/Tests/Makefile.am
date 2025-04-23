@@ -74,10 +74,14 @@ TESTS_ENVIRONMENT=\
 
 
 TESTS=\
-	test-unit \
-	test-regression \
 	USB/test-descriptor-parser.sh \
 	Rules/test-rules.sh
+
+if CATCH_ENABLED
+TESTS+=\
+	test-unit \
+	test-regression
+endif
 
 if FULL_TEST_SUITE_ENABLED
 TESTS+=\
@@ -101,10 +105,15 @@ TESTS+=\
 
 endif
 
-check_PROGRAMS=\
+check_PROGRAMS=
+
+if CATCH_ENABLED
+check_PROGRAMS+=\
 	test-unit \
 	test-regression
+endif
 
+if CATCH_ENABLED
 test_unit_SOURCES=\
 	main.cpp \
 	Unit/test_Rule.cpp \
@@ -128,7 +137,9 @@ test_unit_LDADD=\
 
 test_unit_LDFLAGS=\
 	-static
+endif
 
+if CATCH_ENABLED
 test_regression_SOURCES=\
 	main.cpp \
 	Regression/test_Rule_ghi37.cpp \
@@ -143,4 +154,4 @@ test_regression_LDADD=\
 	$(top_builddir)/libusbguard.la \
 	$(catch_LIBS) \
 	$(PTHREAD_LIBS)
-
+endif
