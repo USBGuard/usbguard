@@ -386,27 +386,38 @@ fi
 #
 # Catch C++ library
 #
+AC_ARG_ENABLE([catch],
+  [AS_HELP_STRING([--enable-catch], [Enable Catch testing framework support (default=yes)])],
+  [enable_catch=$enableval], [enable_catch=yes])
+
 AC_ARG_WITH([bundled-catch], AS_HELP_STRING([--with-bundled-catch], [Build using the bundled Catch library]), [with_bundled_catch=$withval], [with_bundled_catch=no])
-if test "x$with_bundled_catch" = xyes; then
-	catch_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/Catch/single_include/catch2"
-	catch_LIBS=""
-	AC_MSG_NOTICE([Using bundled Catch library])
-	catch_summary="bundled; $catch_CFLAGS $catch_LIBS"
+
+if test "x$enable_catch" = xyes; then
+  if test "x$with_bundled_catch" = xyes; then
+    catch_CFLAGS="-I\$(top_srcdir)/src/ThirdParty/Catch/single_include/catch2"
+    catch_LIBS=""
+    AC_MSG_NOTICE([Using bundled Catch library])
+    catch_summary="bundled; $catch_CFLAGS $catch_LIBS"
+  else
+    SAVE_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="-std=c++17 $CPPFLAGS -I/usr/include/catch2"
+    AC_LANG_PUSH([C++])
+    AC_CHECK_HEADER([catch_test_macros.hpp],
+    [catch_CFLAGS="-I/usr/include/catch2 -DHAVE_CATCH2_V3"
+    catch_LIBS="-lCatch2Main -lCatch2"],
+    [AC_CHECK_HEADER([catch.hpp],
+    [catch_CFLAGS="-I/usr/include/catch2"
+    catch_LIBS=""],
+    [AC_MSG_FAILURE(Catch2 not found or not usable. Re-run with --with-bundled-catch to use the bundled library.)]
+    )])
+    AC_LANG_POP
+    CPPFLAGS=$SAVE_CPPFLAGS
+    catch_summary="system-wide; $catch_CFLAGS $catch_LIBS"
+  fi
 else
-	SAVE_CPPFLAGS=$CPPFLAGS
-	CPPFLAGS="-std=c++17 $CPPFLAGS -I/usr/include/catch2"
-	AC_LANG_PUSH([C++])
-	AC_CHECK_HEADER([catch_test_macros.hpp],
-	[catch_CFLAGS="-I/usr/include/catch2 -DHAVE_CATCH2_V3"
-	catch_LIBS="-lCatch2Main -lCatch2"],
-        [AC_CHECK_HEADER([catch.hpp],
-	[catch_CFLAGS="-I/usr/include/catch2"
-	catch_LIBS=""],
-        [AC_MSG_FAILURE(Catch2 not found or not usable. Re-run with --with-bundled-catch to use the bundled library.)]
-        )])
-	AC_LANG_POP
-	CPPFLAGS=$SAVE_CPPFLAGS
-	catch_summary="system-wide; $catch_CFLAGS $catch_LIBS"
+  catch_CFLAGS=""
+  catch_LIBS=""
+  catch_summary="disabled; not checking for Catch2"
 fi
 AC_SUBST([catch_CFLAGS])
 AC_SUBST([catch_LIBS])
@@ -798,6 +809,7 @@ AM_CONDITIONAL([POLICYKIT_ENABLED], [test "x$with_polkit" = xyes])
 AM_CONDITIONAL([FULL_TEST_SUITE_ENABLED], [test "x$full_test_suite" = xyes])
 AM_CONDITIONAL([WITH_LDAP], [test "x$with_ldap" = xyes])
 AM_CONDITIONAL([BASH_COMPLETION_ENABLED], [test "x$bash_completion" != xno])
+AM_CONDITIONAL([CATCH_ENABLED], [test "x$enable_catch" = xyes ])
 
 CXXFLAGS="$CXXFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CXXFLAGS"
 CFLAGS="$CFLAGS -fvisibility=hidden $COMMON_WARNING_FLAGS $WARNING_CFLAGS"

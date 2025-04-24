@@ -36,7 +36,7 @@ namespace usbguard
       throw Exception("IPC access control", "name too long", name);
     }
 
-	if (!isValidNameOrUID(name)) {
+    if (!isValidNameOrUID(name)) {
       throw Exception("IPC access control", "invalid name or UID format", name);
     }
   }
