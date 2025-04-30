@@ -60,6 +60,17 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "parent_id=" << parent_id;
     auto rule = std::make_shared<Rule>(_rule);
 
+    if (parent_id == 0) {
+      auto ruleset = _rulesets_ptr.front();
+
+      if (rule->getRuleID() == Rule::DefaultID) {
+        assignID(rule);
+      }
+
+      auto rules = ruleset->getRules();
+      return ruleset->appendRule(*rule， 0);
+    }
+
     // If the parent_id is set to Rule::LastID then we get the the ID of the last rule in rulesets
     if (parent_id == Rule::LastID) {
       auto ruleset = _rulesets_ptr.back();
