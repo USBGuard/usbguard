@@ -57,6 +57,7 @@ namespace usbguard
   {
   public:
     FDStreamBuf(int fd) : fd_(fd) { }
+    ~FDStreamBuf() override { close(fd_); }
 
     std::streamsize xsgetn(char* s, std::streamsize n)
     {
