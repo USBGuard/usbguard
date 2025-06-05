@@ -6,7 +6,7 @@ Documentation=man:usbguard-daemon(8)
 [Service]
 OOMScoreAdjust=-1000
 AmbientCapabilities=
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_AUDIT_WRITE
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_AUDIT_WRITE CAP_DAC_READ_SEARCH
 DevicePolicy=closed
 ExecStart=%sbindir%/usbguard-daemon -f -s -c %sysconfdir%/usbguard/usbguard-daemon.conf
 IPAddressDeny=any
