@@ -24,8 +24,8 @@
 # check-path-exclude: doc/FOSDEM-2016/*
 #
 ##################
-ASPELL=$(which aspell)
-PANDOC=$(which pandoc)
+ASPELL=$(command -v aspell)
+PANDOC=$(command -v pandoc)
 
 SOURCE_FILEPATH="$1"
 
