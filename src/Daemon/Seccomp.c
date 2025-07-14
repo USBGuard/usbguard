@@ -71,13 +71,13 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-      SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
+    SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-      SCMP_A2(SCMP_CMP_EQ, PROT_READ));
+    SCMP_A2(SCMP_CMP_EQ, PROT_READ));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-      SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
+    SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-      SCMP_A2(SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
+    SCMP_A2(SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
   /* clock */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_gettime), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_getres), 0);
@@ -99,22 +99,22 @@ bool setupSeccompWhitelist(void)
    *  getrlimit(RLIMIT_NOFILE, {rlim_cur=1024, rlim_max=4*1024}) = 0
    */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 1,
-      SCMP_A0(SCMP_CMP_EQ, RLIMIT_NOFILE));
+    SCMP_A0(SCMP_CMP_EQ, RLIMIT_NOFILE));
   /* pipes, eventfd */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pipe), 0);
   /* STRACE:
    *  eventfd2(0, 0)
    */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(eventfd2), 2,
-      SCMP_A0(SCMP_CMP_EQ, 0),
-      SCMP_A1(SCMP_CMP_EQ, 0));
+    SCMP_A0(SCMP_CMP_EQ, 0),
+    SCMP_A1(SCMP_CMP_EQ, 0));
   /* socket */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
-      SCMP_A0(SCMP_CMP_EQ, PF_LOCAL),
-      SCMP_A1(SCMP_CMP_MASKED_EQ, SOCK_STREAM, SOCK_STREAM));
+    SCMP_A0(SCMP_CMP_EQ, PF_LOCAL),
+    SCMP_A1(SCMP_CMP_MASKED_EQ, SOCK_STREAM, SOCK_STREAM));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
-      SCMP_A0(SCMP_CMP_EQ, PF_NETLINK),
-      SCMP_A2(SCMP_CMP_EQ, NETLINK_KOBJECT_UEVENT));
+    SCMP_A0(SCMP_CMP_EQ, PF_NETLINK),
+    SCMP_A2(SCMP_CMP_EQ, NETLINK_KOBJECT_UEVENT));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(bind), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(accept), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(listen), 0);
@@ -132,7 +132,7 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capset), 0);
   /* allow to drop capabilities using prctl */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(prctl), 1,
-      SCMP_A0(SCMP_CMP_EQ, PR_CAPBSET_DROP));
+    SCMP_A0(SCMP_CMP_EQ, PR_CAPBSET_DROP));
 #endif /* HAVE_LIBCAPNG */
 
   /* before main() only */
@@ -154,11 +154,13 @@ out:
   seccomp_release(ctx);
   return (ret == 0);
 }
+
 #else
 bool setupSeccompWhitelist(void)
 {
   return false;
 }
+
 #endif
 
 /* vim: set ts=2 sw=2 et */

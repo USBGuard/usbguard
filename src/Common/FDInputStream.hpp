@@ -57,10 +57,11 @@ namespace usbguard
   {
   public:
     FDStreamBuf(int fd) : fd_(fd) { }
-    ~FDStreamBuf() override {
+    ~FDStreamBuf() override
+    {
         if (fd_ >= 0) {
-            close(fd_);
-            fd_ = -1;
+          close(fd_);
+          fd_ = -1;
         }
     }
 
