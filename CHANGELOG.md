@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.1.4 - 2025-07-15
+
+### Fixed
+
+- Add tmpfiles.d file for /var/log/usbguard
+- Ignore errors from rmdir during uninstallation
+- Fix regression when specifying IPC privileges using UID
+- Fix support for loongarch
+- Adapt for protobuf 3.0 API changes
+- Add support for Catch2 v3
+- new configure option --enable/disable-catch
+- add FDStreamBuf destructor to stop fd leak
+
 ## 1.1.3 - 2024-06-06
 
 ### Fixed
