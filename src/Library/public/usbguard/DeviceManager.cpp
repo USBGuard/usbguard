@@ -171,6 +171,7 @@ namespace usbguard
   std::vector<std::shared_ptr<Device>> DeviceManager::getDeviceList(const Rule& query)
   {
     std::vector<std::shared_ptr<Device>> matching_devices;
+
     for (auto const& device : getDeviceList()) {
       if (query.appliesTo(device->getDeviceRule())) {
         switch (query.getTarget()) {
@@ -181,10 +182,12 @@ namespace usbguard
           }
 
           break;
+
         case Rule::Target::Device:
         case Rule::Target::Match:
           matching_devices.push_back(device);
           break;
+
         case Rule::Target::Reject:
         case Rule::Target::Unknown:
         case Rule::Target::Empty:

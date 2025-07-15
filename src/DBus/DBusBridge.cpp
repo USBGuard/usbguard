@@ -261,7 +261,7 @@ namespace usbguard
       gboolean permanent = false;
       g_variant_get(parameters, "(uub)", &device_id, &target_integer, &permanent);
       USBGUARD_LOG(Debug) << "DBus: applyDevicePolicy: Parsed device_id: " << device_id << " target_integer: " << target_integer <<
-                             " and permanent: " << permanent;
+        " and permanent: " << permanent;
       const Rule::Target target = Rule::targetFromInteger(target_integer);
       const uint32_t rule_id = applyDevicePolicy(device_id, target, permanent);
       g_dbus_method_invocation_return_value(invocation, g_variant_new("(u)", rule_id));
@@ -298,11 +298,11 @@ namespace usbguard
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
       DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePresenceChanged",
       g_variant_new("(uuusa{ss})",
-      id,
-      DeviceManager::eventTypeToInteger(event),
-      Rule::targetToInteger(target),
-      device_rule.c_str(),
-      gv_builder_attributes),
+        id,
+        DeviceManager::eventTypeToInteger(event),
+        Rule::targetToInteger(target),
+        device_rule.c_str(),
+        gv_builder_attributes),
       nullptr);
 
     if (gv_builder_attributes != nullptr) {
@@ -320,12 +320,12 @@ namespace usbguard
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
       DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePolicyChanged",
       g_variant_new("(uuusua{ss})",
-      id,
-      Rule::targetToInteger(target_old),
-      Rule::targetToInteger(target_new),
-      device_rule.c_str(),
-      rule_id,
-      gv_builder_attributes),
+        id,
+        Rule::targetToInteger(target_old),
+        Rule::targetToInteger(target_new),
+        device_rule.c_str(),
+        rule_id,
+        gv_builder_attributes),
       nullptr);
 
     if (gv_builder_attributes != nullptr) {
@@ -342,11 +342,11 @@ namespace usbguard
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
       DBUS_DEVICES_PATH, DBUS_DEVICES_INTERFACE, "DevicePolicyApplied",
       g_variant_new("(uusua{ss})",
-      id,
-      Rule::targetToInteger(target_new),
-      device_rule.c_str(),
-      rule_id,
-      gv_builder_attributes),
+        id,
+        Rule::targetToInteger(target_new),
+        device_rule.c_str(),
+        rule_id,
+        gv_builder_attributes),
       nullptr);
 
     if (gv_builder_attributes != nullptr) {
@@ -361,9 +361,9 @@ namespace usbguard
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
       DBUS_ROOT_PATH, DBUS_ROOT_INTERFACE, "PropertyParameterChanged",
       g_variant_new("(sss)",
-      name.c_str(),
-      value_old.c_str(),
-      value_new.c_str()),
+        name.c_str(),
+        value_old.c_str(),
+        value_new.c_str()),
       nullptr);
   }
 
@@ -374,9 +374,9 @@ namespace usbguard
     g_dbus_connection_emit_signal(p_gdbus_connection, nullptr,
       DBUS_ROOT_PATH, DBUS_ROOT_INTERFACE, "ExceptionMessage",
       g_variant_new("(sss)",
-      context.c_str(),
-      object.c_str(),
-      reason.c_str()),
+        context.c_str(),
+        object.c_str(),
+        reason.c_str()),
       nullptr);
   }
 
@@ -519,7 +519,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "Checking authorization of action \"" << action_id.str() << "\" with Polkit ...";
     GDBusMessage* const message = g_dbus_method_invocation_get_message (invocation);
     const PolkitCheckAuthorizationFlags flags = (g_dbus_message_get_flags (message) &
-      G_DBUS_MESSAGE_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION)
+        G_DBUS_MESSAGE_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION)
       ? POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION
       : POLKIT_CHECK_AUTHORIZATION_FLAGS_NONE;
     PolkitAuthorizationResult* const result = polkit_authority_check_authorization_sync

@@ -62,27 +62,22 @@ TEST_CASE("Regression: GitHub PR #209", "[regression]")
     const std::string path = createFile({ "# keyA=foo", "keyA=bar", "# unknown=foo" });
     REQUIRE_NOTHROW(config.open(path));
   }
-
   SECTION("empty line is not a syntax error") {
     const std::string path = createFile({ "# comment", "", "# comment", "", "", "fooB=bar" });
     REQUIRE_NOTHROW(config.open(path));
   }
-
   SECTION("unknown key=value should trigger an error") {
     const std::string path = createFile({ "unknown=foo", "keyA=bar" });
     REQUIRE_THROWS(config.open(path));
   }
-
   SECTION("known key=value should not trigger an error") {
     const std::string path = createFile({ "keyA=foo", "keyB=bla", "fooB=bar", "barF=asdf" });
     REQUIRE_NOTHROW(config.open(path));
   }
-
   SECTION("syntax error should trigger an error") {
     const std::string path = createFile({ "keyA=foo", "adfsdlfkj", "keyB=b" });
     REQUIRE_THROWS(config.open(path));
   }
-
   SECTION("trim value") {
     const std::string path = createFile({ "keyA= foo", "keyB=bar" });
     REQUIRE_NOTHROW(config.open(path));

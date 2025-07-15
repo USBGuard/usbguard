@@ -75,7 +75,6 @@ namespace usbguard
               }
             }
           }
-
           uevent.setAttribute(key, value);
         }
         catch (const pegtl::parse_error& ex) {
