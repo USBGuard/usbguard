@@ -32,4 +32,5 @@ namespace usbguard
     void write(const AuditEvent& event);
   };
 }
+
 /* vim: set ts=2 sw=2 et */

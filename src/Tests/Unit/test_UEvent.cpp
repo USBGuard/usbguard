@@ -35,6 +35,7 @@ TEST_CASE("Default constructed UEvent", "[UEvent]")
     REQUIRE_FALSE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.clear());
   }
+
   SECTION("set/get attribute") {
     REQUIRE_NOTHROW(uevent.setAttribute("KEY1", "value1"));
     REQUIRE(uevent.getAttribute("KEY1") == "value1");
@@ -42,6 +43,7 @@ TEST_CASE("Default constructed UEvent", "[UEvent]")
     REQUIRE_FALSE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.clear());
   }
+
   SECTION("string serialization") {
     REQUIRE_THROWS(uevent.getHeaderLine());
     REQUIRE_THROWS(uevent.toString());
@@ -59,11 +61,13 @@ TEST_CASE("UEvent with required attributes", "[UEvent]")
     REQUIRE(uevent.getAttribute("KEY1") == std::string());
     REQUIRE_FALSE(uevent.hasAttribute("KEY1"));
   }
+
   SECTION("set/get attribute") {
     REQUIRE_NOTHROW(uevent.setAttribute("KEY1", "value1"));
     REQUIRE(uevent.getAttribute("KEY1") == "value1");
     REQUIRE(uevent.hasAttribute("KEY1"));
   }
+
   SECTION("string serialization") {
     REQUIRE(uevent.hasRequiredAttributes());
     REQUIRE_NOTHROW(uevent.getHeaderLine());

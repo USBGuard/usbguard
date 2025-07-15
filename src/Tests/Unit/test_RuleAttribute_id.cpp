@@ -46,6 +46,7 @@ TEST_CASE("Parse rule with an id attribute", "[Parse]")
     REQUIRE(rule.getDeviceID().getVendorID() == "7896");
     REQUIRE(rule.getDeviceID().getProductID() == "*");
   }
+
   SECTION("new syntax") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id 1234:1234"));
     REQUIRE(rule.getDeviceID().getVendorID() == "1234");
@@ -63,6 +64,7 @@ TEST_CASE("Parse rule with an id attribute", "[Parse]")
     REQUIRE(rule.getDeviceID().getVendorID() == "7896");
     REQUIRE(rule.getDeviceID().getProductID() == "*");
   }
+
   SECTION("set syntax") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id one-of { 1234:1234 }"));
     REQUIRE(rule.getDeviceID().getVendorID() == "1234");
@@ -106,12 +108,14 @@ TEST_CASE("Match id attribute", "[Match]")
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id 1d6a:0002"));
     REQUIRE(!rule.appliesTo(device_rule));
   }
+
   SECTION("vendor only") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id 1d6b:*"));
     REQUIRE(rule.appliesTo(device_rule));
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id 1d6a:*"));
     REQUIRE(!rule.appliesTo(device_rule));
   }
+
   SECTION("any") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id *:*"));
     REQUIRE(rule.appliesTo(device_rule));

@@ -148,6 +148,7 @@ namespace usbguard
       }) {
       hash.update(field);
     }
+
     _hash = std::move(hash);
   }
 

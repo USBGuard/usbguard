@@ -38,4 +38,5 @@ namespace usbguard
     int _audit_fd{-1};
   };
 }
+
 /* vim: set ts=2 sw=2 et */

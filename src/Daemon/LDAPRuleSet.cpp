@@ -74,6 +74,7 @@ namespace usbguard
     std::sort(v.begin(), v.end(), [](std::pair<long, std::string> a, std::pair<long, std::string> b) {
       return a.first < b.first;
     });
+
     size_t rule_number = 1;
 
     for (auto _rule: v) {
@@ -84,9 +85,9 @@ namespace usbguard
       rule_number++;
       USBGUARD_LOG(Info);
     }
-
     _last_update = std::time(nullptr);
   }
+
   void LDAPRuleSet::save() {}
 
   void LDAPRuleSet::update()

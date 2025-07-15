@@ -54,10 +54,15 @@ namespace usbguard
      */
 
     struct str_path_prefix : TAO_PEGTL_STRING("P:") {};
+
     struct str_property_prefix : TAO_PEGTL_STRING("E:") {};
+
     struct str_ascii_attr_prefix : TAO_PEGTL_STRING("A:") {};
+
     struct str_binary_attr_prefix : TAO_PEGTL_STRING("H:") {};
+
     struct str_link_prefix : TAO_PEGTL_STRING("L:") {};
+
     struct str_name_prefix : TAO_PEGTL_STRING("N:") {};
 
     struct line_rest
@@ -260,7 +265,7 @@ namespace usbguard
   }
 
   std::vector<std::unique_ptr<UMockdevDeviceDefinition>> UMockdevDeviceDefinition::parseFromFile(const std::string& filepath,
-      bool sort_by_hierarchy)
+    bool sort_by_hierarchy)
   {
     const std::string umockdev_name = filenameFromPath(filepath, /*include_extension=*/true);
     std::vector<std::unique_ptr<UMockdevDeviceDefinition>> definitions;
@@ -275,7 +280,6 @@ namespace usbguard
       USBGUARD_LOG(Error) << "UMockdevDeviceDefinition: " << filepath << ": parsing failed at line <LINE>";
       throw;
     }
-
     const auto lambdaSysfsPathHierarchyCompare = [](const std::unique_ptr<UMockdevDeviceDefinition>& a,
     const std::unique_ptr<UMockdevDeviceDefinition>& b) {
       const std::string full_a = a->getSysfsPath();
@@ -315,7 +319,6 @@ namespace usbguard
       USBGUARD_LOG(Debug) << "Sorting definitions";
       std::sort(definitions.begin(), definitions.end(), lambdaSysfsPathHierarchyCompare);
     }
-
     return definitions;
   }
 
@@ -327,7 +330,7 @@ namespace usbguard
    *               the data only from memory and handle the source name from the specialized methods.
    */
   std::vector<std::unique_ptr<UMockdevDeviceDefinition>> UMockdevDeviceDefinition::parseFromString(
-      const std::string& definitions_string, bool sort_by_hierarchy)
+    const std::string& definitions_string, bool sort_by_hierarchy)
   {
     const std::string umockdev_name = "<string>";
     std::vector<std::unique_ptr<UMockdevDeviceDefinition>> definitions;
@@ -344,18 +347,17 @@ namespace usbguard
       USBGUARD_LOG(Error) << "UMockdevDeviceDefinition: " << "<string>" << ": parsing failed at line <LINE>";
       throw;
     }
-
     const auto lambdaSysfsPathHierarchyCompare = [](const std::unique_ptr<UMockdevDeviceDefinition>& a,
     const std::unique_ptr<UMockdevDeviceDefinition>& b) {
       return (a->getSysfsPath().size() < b->getSysfsPath().size() ||
-          b->getSysfsPath() <= b->getSysfsPath());
+        b->getSysfsPath() <= b->getSysfsPath());
     };
 
     if (sort_by_hierarchy) {
       std::sort(definitions.begin(), definitions.end(), lambdaSysfsPathHierarchyCompare);
     }
-
     return definitions;
   }
 }
+
 /* vim: set ts=2 sw=2 et */

@@ -60,7 +60,6 @@ namespace usbguard
   {
     NSHandler& ns = NSHandler::getRef();
     std::vector<std::shared_ptr<RuleSet>> ruleSet;
-
     switch (type) {
     case NSHandler::SourceType::LOCAL:
       if (!ns.getRulesPath().empty()) {

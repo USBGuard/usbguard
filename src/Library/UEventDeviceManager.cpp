@@ -91,6 +91,7 @@ namespace usbguard
         USBGUARD_SYSCALL_THROW("Linux device manager",
           write(_wakeup_fd, &one, sizeof one) != sizeof one);
       }
+
       _thread.wait();
     }
   }
@@ -225,6 +226,7 @@ namespace usbguard
       struct cmsghdr header;
       uint8_t ucred[CMSG_SPACE(sizeof(struct ucred))];
     } cmsg_un;
+
     cmsg_un.header.cmsg_len = CMSG_LEN(sizeof(struct ucred));
     cmsg_un.header.cmsg_level = SOL_SOCKET;
     cmsg_un.header.cmsg_type = SCM_CREDENTIALS;
@@ -402,10 +404,11 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace);
     return loadFiles(SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
-        UEventDeviceManager::ueventEnumerateFilterDevice,
+      UEventDeviceManager::ueventEnumerateFilterDevice,
     [this](const std::string& devpath, const std::string& buspath) {
       return ueventEnumerateTriggerDevice(devpath, buspath);
     },
+
     UEventDeviceManager::ueventEnumerateComparePath);
   }
 
@@ -465,6 +468,7 @@ namespace usbguard
     }
   }
 } /* namespace usbguard */
+
 #endif /* HAVE_UDEV */
 
 /* vim: set ts=2 sw=2 et */

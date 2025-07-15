@@ -100,7 +100,6 @@ namespace usbguard
   {
     std::unique_lock<std::mutex> device_map_lock(_device_map_mutex);
     std::vector<std::shared_ptr<Device>> devices;
-
     for (auto& map_entry : _device_map) {
       devices.push_back(map_entry.second);
     }

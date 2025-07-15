@@ -29,7 +29,7 @@
 #include <cstdlib>
 
 #ifndef USBGUARD_DAEMON_CONF_PATH
-  # warning "Using hard-coded USBGUARD_DAEMON_CONF_PATH value"
+  #warning "Using hard-coded USBGUARD_DAEMON_CONF_PATH value"
   #define USBGUARD_DAEMON_CONF_PATH "/etc/usbguard/usbguard-daemon.conf"
 #endif
 

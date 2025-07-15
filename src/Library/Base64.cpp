@@ -138,6 +138,7 @@ namespace usbguard
     out[2] = BASE64_PADDING_CHAR;
     out[3] = BASE64_PADDING_CHAR;
   }
+
 #undef  B
 
   static void __check_b64_input(const char* in, const size_t count)
@@ -194,6 +195,7 @@ namespace usbguard
     __check_b64_input(in, 2);
     out[0] = (decode_map[B(0)] << 2) | ((decode_map[B(1)] >> 4) & 0x03);
   }
+
 #undef B
 
   std::string base64Encode (const uint8_t* const data, const size_t size)

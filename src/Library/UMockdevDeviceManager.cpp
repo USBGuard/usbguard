@@ -91,6 +91,7 @@ namespace usbguard
       USBGUARD_SYSCALL_THROW("Linux device manager",
         write(_wakeup_fd, &one, sizeof one) != sizeof one);
     }
+
     _thread.wait();
   }
 
@@ -195,8 +196,7 @@ namespace usbguard
     const auto lambdaUMockdevAddFromFile = [this](const std::string& fullpath, const std::string& loadpath) -> int {
       (void)fullpath;
 
-      for (const auto& device_path : umockdevLoadFromFile(loadpath))
-      {
+      for (const auto& device_path : umockdevLoadFromFile(loadpath)) {
         umockdevAdd(_sysfs_path_map.at(device_path));
       }
 
@@ -205,7 +205,7 @@ namespace usbguard
     loadFiles(_umockdev_deviceroot, lambdaUMockdevFilterEntry, lambdaUMockdevAddFromFile);
     USBGUARD_SYSCALL_THROW("UMockdevDeviceManager", (_inotify_fd = inotify_init1(IN_NONBLOCK)) < 0);
     USBGUARD_SYSCALL_THROW("UMockdevDeviceManager", (inotify_add_watch(_inotify_fd, _umockdev_deviceroot.c_str(),
-          IN_CREATE|IN_DELETE)) < 0);
+      IN_CREATE|IN_DELETE)) < 0);
   }
 
   void UMockdevDeviceManager::umockdevAdd(const std::shared_ptr<UMockdevDeviceDefinition>& definition)
@@ -292,7 +292,6 @@ namespace usbguard
       USBGUARD_LOG(Warning) << "UMockdevDeviceManager: failed to parse " << definitions_path;
       throw;
     }
-
     for (auto&& definition : definitions) {
       if (_sysfs_path_map.count(definition->getSysfsPath()) > 0) {
         USBGUARD_LOG(Warning) << "UMockdevDeviceManager: " << definition->getSysfsPath() << ": device already defined, skipping.";
@@ -305,7 +304,7 @@ namespace usbguard
       if (sharedptr_definition->getDeviceType() == "usb_device") {
         if (_sysfs_path_map.count(parentPath(sharedptr_definition->getSysfsPath())) < 1) {
           USBGUARD_LOG(Warning) << "UMockdevDeviceManager: " << sharedptr_definition->getSysfsPath() <<
-            ": parent device not defined, skipping.";
+                                   ": parent device not defined, skipping.";
           continue;
         }
 
@@ -319,7 +318,6 @@ namespace usbguard
       _umockdev_file_map.emplace(sharedptr_definition->getUMockdevName(), weakptr_definition);
       device_paths.push_back(sharedptr_definition->getSysfsPath());
     }
-
     return device_paths;
   }
 
@@ -373,6 +371,7 @@ namespace usbguard
 
       return base_a < base_b;
     };
+
     std::sort(device_paths.begin(), device_paths.end(), lambdaSysfsPathHierarchyCompare);
     return device_paths;
   }
@@ -503,6 +502,7 @@ namespace usbguard
       struct cmsghdr header;
       uint8_t ucred[CMSG_SPACE(sizeof(struct ucred))];
     } cmsg_un;
+
     cmsg_un.header.cmsg_len = CMSG_LEN(sizeof(struct ucred));
     cmsg_un.header.cmsg_level = SOL_SOCKET;
     cmsg_un.header.cmsg_type = SCM_CREDENTIALS;
@@ -605,6 +605,7 @@ namespace usbguard
           unsigned int filter_tag_bloom_hi;
           unsigned int filter_tag_bloom_lo;
         } * const header = reinterpret_cast<const struct libudev_netlink_header*>(&buffer[0]);
+
         const std::string attributes_buffer = buffer.substr(header->properties_off, header->properties_len);
         USBGUARD_LOG(Debug) << "data:" << attributes_buffer;
         const UEvent uevent = UEvent::fromString(attributes_buffer, /*attributes_only=*/true, /*trace=*/false);
@@ -726,11 +727,12 @@ namespace usbguard
     const auto lambdaEnumerateTriggerAndWaitForDevice = [this](const std::string& devpath, const std::string& buspath) {
       return ueventEnumerateTriggerAndWaitForDevice(devpath, buspath);
     };
+
     return loadFiles(SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
-        UMockdevDeviceManager::ueventEnumerateFilterDevice,
-        lambdaEnumerateTriggerAndWaitForDevice,
-        UMockdevDeviceManager::ueventEnumerateComparePath,
-        /*rootdir_required=*/false);
+      UMockdevDeviceManager::ueventEnumerateFilterDevice,
+      lambdaEnumerateTriggerAndWaitForDevice,
+      UMockdevDeviceManager::ueventEnumerateComparePath,
+      /*rootdir_required=*/false);
   }
 
   int UMockdevDeviceManager::ueventEnumerateTriggerAndWaitForDevice(const std::string& devpath, const std::string& buspath)
@@ -785,6 +787,7 @@ namespace usbguard
         })) {
           throw Exception("UMockdevDeviceManager", sysfs_absolute_path, "enumeration timeout");
         }
+
         return 1;
       }
       else {
@@ -802,6 +805,7 @@ namespace usbguard
   }
 
 } /* namespace usbguard */
+
 #endif /* HAVE_UMOCKDEV */
 
 /* vim: set ts=2 sw=2 et */

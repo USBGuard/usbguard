@@ -280,8 +280,8 @@ namespace usbguard
   Rule::operator bool() const
   {
     return !(getTarget() == Target::Unknown ||
-        getTarget() == Target::Invalid ||
-        getTarget() == Target::Empty);
+      getTarget() == Target::Invalid ||
+      getTarget() == Target::Empty);
   }
 
   std::string Rule::toString(bool invalid, bool hide_serial) const

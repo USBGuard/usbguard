@@ -139,6 +139,7 @@ namespace usbguard
     {
       _ostream.flush();
     }
+
   private:
     std::ostream& _ostream;
   };
@@ -229,6 +230,7 @@ namespace usbguard
     {
       _stream.close();
     }
+
   private:
     std::string _filepath;
     std::ofstream _stream;
@@ -269,6 +271,7 @@ namespace usbguard
     {
       _stream.close();
     }
+
   private:
     std::string _filepath;
     std::ofstream _stream;

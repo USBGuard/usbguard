@@ -342,21 +342,18 @@ namespace usbguard
        */
       while ((entry_ptr = readdir(dirobj)) != nullptr) {
         const std::string filename(entry_ptr->d_name);
-
         if (filename == "." || filename == "..") {
           continue;
         }
 
         std::string fullpath = directory + "/" + filename;
         std::string loadpath = filter(fullpath, entry_ptr);
-
         if (!loadpath.empty()) {
           loadpaths.emplace_back(std::make_pair(std::move(loadpath), std::move(fullpath)));
         }
       }
 
       std::sort(loadpaths.begin(), loadpaths.end(), sorter);
-
       for (const auto& loadpath : loadpaths) {
         USBGUARD_LOG(Trace) << "L: " << loadpath.first << " : " << loadpath.second;
       }
@@ -365,6 +362,7 @@ namespace usbguard
         retval += loader(loadpath.first, loadpath.second);
       }
     }
+
     catch (...) {
       closedir(dirobj);
       throw;
@@ -379,6 +377,7 @@ namespace usbguard
     if (value.compare(0, prefix.size(), prefix) == 0) {
       return value.substr(prefix.size());
     }
+
     else {
       return value;
     }
@@ -564,18 +563,18 @@ namespace usbguard
 
     if (('\0' == *s) ||
       !((('a' <= *s) && ('z' >= *s)) ||
-        (('A' <= *s) && ('Z' >= *s)) ||
-        ('_' == *s))) {
+      (('A' <= *s) && ('Z' >= *s)) ||
+      ('_' == *s))) {
       return false;
     }
 
     while ('\0' != *++s) {
       if (!((('a' <= *s) && ('z' >= *s)) ||
-          (('A' <= *s) && ('Z' >= *s)) ||
-          (('0' <= *s) && ('9' >= *s)) ||
-          ('_' == *s) ||
-          ('-' == *s) ||
-          (('$' == *s) && ('\0' == *(s + 1))))) {
+        (('A' <= *s) && ('Z' >= *s)) ||
+        (('0' <= *s) && ('9' >= *s)) ||
+        ('_' == *s) ||
+        ('-' == *s) ||
+        (('$' == *s) && ('\0' == *(s + 1))))) {
         return false;
       }
     }

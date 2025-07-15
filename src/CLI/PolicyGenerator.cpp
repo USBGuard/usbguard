@@ -77,8 +77,7 @@ namespace usbguard
     }
   }
 
-  const std::vector<std::shared_ptr<RuleSet>> PolicyGenerator::refRuleSet() const
-  {
+  const std::vector<std::shared_ptr<RuleSet>> PolicyGenerator::refRuleSet() const {
     return _ruleset;
   }
 

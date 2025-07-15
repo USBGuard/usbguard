@@ -208,7 +208,6 @@ namespace usbguard
     for (auto const& rule : _rules) {
       rules.push_back(rule);
     }
-
 #else
     std::copy(_rules.begin(), _rules.end(), std::back_inserter(rules));
 #endif

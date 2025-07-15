@@ -111,6 +111,7 @@ namespace usbguard
 
     return _ldap;
   }
+
 #endif
 
   NSHandler& NSHandler::getRef()
@@ -152,7 +153,6 @@ namespace usbguard
   {
     USBGUARD_LOG(Info) << "Loading nsswitch from " << _nsswitch_path;
     std::ifstream nss(_nsswitch_path);
-
     if (!nss.is_open()) {
       USBGUARD_LOG(Info) << "Error when opening nsswitch file: " << _nsswitch_path << ": " << ErrnoException::reasonFromErrno(errno);
       USBGUARD_LOG(Info) << "Using default value FILES";
@@ -164,22 +164,20 @@ namespace usbguard
     _parsedOptions = _parser.getMap();
     nss.close();
     USBGUARD_LOG(Debug) << "Map contains:";
-
     for (auto x: _parsedOptions) {
       USBGUARD_LOG(Debug) << "--> " << x.first << " -> " << x.second << " <--";
     }
 
     std::locale loc;
-
     for (unsigned i = 0 ; i < _parsedOptions["USBGUARD"].length() ; i++) {
       _parsedOptions["USBGUARD"][i] = std::toupper(_parsedOptions["USBGUARD"][i], loc);
     }
 
     USBGUARD_LOG(Info) << "Fetched value is -> " << _parsedOptions["USBGUARD"] << " <-";
-
     if (_parsedOptions["USBGUARD"] == "FILES") {
       _source = SourceType::LOCAL;
     }
+
     else if (_parsedOptions["USBGUARD"] == "LDAP") {
 #ifdef HAVE_LDAP
       _source = SourceType::LDAP;
@@ -189,6 +187,7 @@ namespace usbguard
       _source = SourceType::LOCAL;
 #endif
     }
+
     else {
       USBGUARD_LOG(Info) << "Value is not valid or not set, using default FILES";
       _source = SourceType::LOCAL;

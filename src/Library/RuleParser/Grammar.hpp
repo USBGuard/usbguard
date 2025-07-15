@@ -35,27 +35,45 @@ namespace usbguard
      * Rule language keywords
      */
     struct str_allow : TAO_PEGTL_STRING("allow") {};
+
     struct str_block : TAO_PEGTL_STRING("block") {};
+
     struct str_reject : TAO_PEGTL_STRING("reject") {};
+
     struct str_match : TAO_PEGTL_STRING("match") {};
+
     struct str_device : TAO_PEGTL_STRING("device") {};
 
     struct str_name : TAO_PEGTL_STRING("name") {};
+
     struct str_hash : TAO_PEGTL_STRING("hash") {};
+
     struct str_parent_hash : TAO_PEGTL_STRING("parent-hash") {};
+
     struct str_via_port : TAO_PEGTL_STRING("via-port") {};
+
     struct str_with_interface : TAO_PEGTL_STRING("with-interface") {};
+
     struct str_with_connect_type : TAO_PEGTL_STRING("with-connect-type") {};
+
     struct str_serial : TAO_PEGTL_STRING("serial") {};
+
     struct str_if : TAO_PEGTL_STRING("if") {};
+
     struct str_id : TAO_PEGTL_STRING("id") {};
+
     struct str_label : TAO_PEGTL_STRING("label") {};
 
     struct str_all_of : TAO_PEGTL_STRING("all-of") {};
+
     struct str_one_of : TAO_PEGTL_STRING("one-of") {};
+
     struct str_none_of : TAO_PEGTL_STRING("none-of") {};
+
     struct str_equals : TAO_PEGTL_STRING("equals") {};
+
     struct str_equals_ordered : TAO_PEGTL_STRING("equals-ordered") {};
+
     struct str_match_all: TAO_PEGTL_STRING("match-all") {};
 
     /*

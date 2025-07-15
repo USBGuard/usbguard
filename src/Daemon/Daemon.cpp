@@ -110,12 +110,13 @@ namespace usbguard
   {
     sigset_t signal_set;
     sigfillset(&signal_set);
-
     for (int del_signum : {
         SIGSEGV, SIGABRT, SIGKILL, SIGILL
       }) {
+
       sigdelset(&signal_set, del_signum);
     }
+
     USBGUARD_SYSCALL_THROW("Daemon initialization",
       (errno = pthread_sigmask(SIG_BLOCK, &signal_set, nullptr)) != 0);
     _device_manager_backend = "uevent";
@@ -140,14 +141,13 @@ namespace usbguard
     // from all enabled permissions we subtract the permissions we want to check
     // after this operation variable permission_bad contains the complement of
     // permissions we want to check.
-    mode_t permission_bad { ( S_IRWXU | S_IRWXG | S_IRWXO ) - permissions };
-
+    mode_t permission_bad { (S_IRWXU | S_IRWXG | S_IRWXO ) - permissions };
     if (!stat(path.c_str(), &file_stat)) {
       if (S_ISREG(file_stat.st_mode)) {
         // this comparison inspect if file has the wanted permissions and if
         // the file does not contain the unwanted permissions.
-        if (  !( file_stat.st_mode & permissions ) ||
-          ( file_stat.st_mode & permission_bad)
+        if (!(file_stat.st_mode & permissions ) ||
+          (file_stat.st_mode & permission_bad)
         ) {
           std::ostringstream strm ;
           strm.width(4) ;
@@ -156,20 +156,22 @@ namespace usbguard
           USBGUARD_LOG(Error) << "Permissions for " << path << " should be " <<  strm.str() ;
           throw Exception("Check permissions", path, "Policy may be readable");
         }
+
         else {
           USBGUARD_LOG(Info) << "File has correct permissions.";
         }
       }
+
       else {
         USBGUARD_LOG(Error) << "ERROR: File is not a regular file.";
         throw Exception("Check permissions", path, "Path is not a file");
       }
     }
+
     else {
       USBGUARD_LOG(Error) << "ERROR: obtaining file permissions! Errno: " << errno;
       throw ErrnoException("Check permissions", path, errno);
     }
-
     return 0;
   }
 
@@ -177,7 +179,6 @@ namespace usbguard
     const mode_t permissions)
   {
     auto configFiles = getConfigsFromDir(path);
-
     for (auto configFile : configFiles) {
       auto config_path = configFile;
       checkFilePermissions(config_path, permissions);
@@ -187,7 +188,6 @@ namespace usbguard
   void Daemon::loadConfiguration(const std::string& path, const bool check_permissions)
   {
     USBGUARD_LOG(Info) << "Loading configuration from " << path;
-
     if (check_permissions) {
       checkFilePermissions(path, (S_IRUSR | S_IWUSR));
     }
@@ -199,7 +199,6 @@ namespace usbguard
     /* RuleFile */
     if (_config.hasSettingValue("RuleFile")) {
       const std::string& rulefile_path = _config.getSettingValue("RuleFile");
-
       if (check_permissions) {
         checkFilePermissions(rulefile_path, (S_IRUSR | S_IWUSR));
       }
@@ -217,7 +216,6 @@ namespace usbguard
       }
 
       ruledir_path = normalizePath(ruledir_path);
-
       if (check_permissions) {
         checkFolderPermissions(ruledir_path, (S_IRUSR | S_IWUSR));
       }
@@ -299,7 +297,6 @@ namespace usbguard
     if (_config.hasSettingValue("DeviceManagerBackend")) {
       _device_manager_backend = _config.getSettingValue("DeviceManagerBackend");
     }
-
     _dm = DeviceManager::create(*this, _device_manager_backend);
 
     /* RestoreControllerDeviceState */
@@ -395,7 +392,6 @@ namespace usbguard
         throw Exception("Configuration", "HidePII", "Invalid value");
       }
     }
-
     USBGUARD_LOG(Info) << "Configuration loaded successfully.";
   }
 
@@ -433,6 +429,7 @@ namespace usbguard
       (void)dir_entry;
       return filenameFromPath(path, /*include_extension=*/true);
     }
+
     ,
     [this](const std::string& basename, const std::string& fullpath) {
       return loadIPCAccessControlFile(basename, fullpath);
@@ -616,6 +613,7 @@ namespace usbguard
       struct timespec timeout {
         timeout_val, 0
       };
+
       const time_t start = time(nullptr);
       siginfo_t info;
 
@@ -865,7 +863,7 @@ namespace usbguard
     const Rule::Target target_old = device->getTarget();
     std::shared_ptr<Device> device_post = \
       _dm->applyDevicePolicy(device->getID(),
-        matched_rule->getTarget());
+      matched_rule->getTarget());
     const bool target_changed = target_old != device_post->getTarget();
     std::shared_ptr<const Rule> device_rule = \
       device_post->getDeviceRule(/*with_port=*/true,

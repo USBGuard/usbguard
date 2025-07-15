@@ -87,6 +87,7 @@ namespace usbguard
     std::mutex _enumeration_mutex;
   };
 } /* namespace usbguard */
+
 #endif /* HAVE_UMOCKDEV */
 
 /* vim: set ts=2 sw=2 et */

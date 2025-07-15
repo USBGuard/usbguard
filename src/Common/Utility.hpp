@@ -243,6 +243,7 @@ namespace usbguard
     {
       _ref = _val;
     }
+
   private:
     Tvar& _ref;
     Tval _val;

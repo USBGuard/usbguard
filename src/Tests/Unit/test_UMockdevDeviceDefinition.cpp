@@ -38,6 +38,7 @@ TEST_CASE("Default constructed UMockdevDeviceDefinition", "[UMockdev]")
     REQUIRE_FALSE(d.hasDevfsNode());
     REQUIRE_FALSE(d);
   }
+
   SECTION("set/get/has") {
     REQUIRE(d.getUMockdevName() == std::string());
     REQUIRE_NOTHROW(d.setUMockdevName("foo.umockdev"));
@@ -55,6 +56,7 @@ TEST_CASE("Default constructed UMockdevDeviceDefinition", "[UMockdev]")
     REQUIRE(d.getUMockdevDefinition() == "P:/devices/usb/usb1\nN:/bus/usb/001/001=348023948039809\n");
     REQUIRE(d);
   }
+
   SECTION("parsing") {
     const std::string s(reinterpret_cast<const char*>(definitions_string), definitions_string_len);
     std::vector<std::unique_ptr<UMockdevDeviceDefinition>> definitions;
@@ -65,4 +67,5 @@ TEST_CASE("Default constructed UMockdevDeviceDefinition", "[UMockdev]")
     REQUIRE(definitions[1]->getSysfsPath() == "/devices/platform/dummy_hcd.0");
   }
 }
+
 /* vim: set ts=2 sw=2 et */

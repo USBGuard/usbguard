@@ -244,6 +244,7 @@ namespace usbguard
         access_control_string.append("\n");
       }
     }
+
     stream << access_control_string;
   }
 

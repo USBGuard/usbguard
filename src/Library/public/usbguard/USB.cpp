@@ -191,8 +191,8 @@ namespace usbguard
     }
 
     if (!(_mask == (MatchAll) ||
-        _mask == (MatchClass|MatchSubClass) ||
-        _mask == (MatchClass))) {
+      _mask == (MatchClass|MatchSubClass) ||
+      _mask == (MatchClass))) {
       throw std::runtime_error("Invalid type_string");
     }
   }
@@ -530,11 +530,11 @@ namespace usbguard
     return _dstate_map.count(bDescriptorType) > 0;
   }
 
-  const std::vector<std::pair<uint8_t, size_t>> USBDescriptorParser::getDescriptorCounts() const
-  {
+  const std::vector<std::pair<uint8_t, size_t>> USBDescriptorParser::getDescriptorCounts() const {
     std::vector<std::pair<uint8_t, size_t>> counts;
 
-    for (auto const& kv : _count_map) {
+    for (auto const& kv : _count_map)
+    {
       counts.push_back(std::make_pair(kv.first, kv.second));
     }
 

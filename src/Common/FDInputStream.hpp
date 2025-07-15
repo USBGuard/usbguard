@@ -52,17 +52,20 @@ namespace usbguard
   private:
     std::unique_ptr<__gnu_cxx::stdio_filebuf<char>> _filebuf_ptr;
   };
+
 #else
-  class FDStreamBuf : public std::streambuf
-  {
+  class FDStreamBuf :
+    public std::streambuf {
   public:
     FDStreamBuf(int fd) : fd_(fd) { }
+
     ~FDStreamBuf() override
     {
-        if (fd_ >= 0) {
-          close(fd_);
-          fd_ = -1;
-        }
+      if (fd_ >= 0)
+      {
+        close(fd_);
+        fd_ = -1;
+      }
     }
 
     std::streamsize xsgetn(char* s, std::streamsize n)
@@ -92,6 +95,7 @@ namespace usbguard
 
       return c;
     }
+
   private:
     int fd_;
   };
@@ -114,6 +118,7 @@ namespace usbguard
   private:
     std::unique_ptr<FDStreamBuf> _filebuf_ptr;
   };
+
 #endif /* !HAVE_EXT_STDIO_FILEBUF_H */
 } /* namespace usbguard */
 

@@ -57,6 +57,7 @@ namespace usbguard
     std::vector<UEvent> _backlog;
   };
 } /* namespace usbguard */
+
 #endif /* HAVE_UEVENT */
 
 /* vim: set ts=2 sw=2 et */

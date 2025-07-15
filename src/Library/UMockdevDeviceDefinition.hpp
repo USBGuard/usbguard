@@ -53,9 +53,9 @@ namespace usbguard
     operator bool () const;
 
     static std::vector<std::unique_ptr<UMockdevDeviceDefinition>> parseFromFile(const std::string& filepath,
-        bool sort_by_hierarchy = false);
+      bool sort_by_hierarchy = false);
     static std::vector<std::unique_ptr<UMockdevDeviceDefinition>> parseFromString(const std::string& definitions,
-        bool sort_by_hierarchy = false);
+      bool sort_by_hierarchy = false);
 
   private:
     std::string _name;
@@ -65,4 +65,5 @@ namespace usbguard
     std::string _definition;
   };
 } /* namespace usbguard */
+
 /* vim: set ts=2 sw=2 et */

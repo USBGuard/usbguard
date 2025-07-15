@@ -44,14 +44,12 @@ namespace usbguard
   void Policy::setDefaultTarget(Rule::Target target)
   {
     _defaultTarget = target;
-
     for (auto ruleset : _rulesets_ptr) {
       ruleset->setDefaultTarget(target);
     }
   }
 
-  Rule::Target Policy::getDefaultTarget() const
-  {
+  Rule::Target Policy::getDefaultTarget() const {
     return _defaultTarget;
   }
 
@@ -71,7 +69,6 @@ namespace usbguard
       auto rules = ruleset->getRules();
       return ruleset->appendRule(*rule);
     }
-
     for (auto ruleset : _rulesets_ptr) {
       try {
         // Find if rule with parent_id is in the ruleset
@@ -89,7 +86,6 @@ namespace usbguard
         continue;
       }
     }
-
     throw Exception("Policy append", "rule", "Invalid parent ID");
   }
 
@@ -182,7 +178,6 @@ namespace usbguard
       // copy them to buffer which will be returned
       std::copy(_rules.begin(), _rules.end(), std::back_inserter(rules));
     }
-
     // return rules
     return rules;
   }

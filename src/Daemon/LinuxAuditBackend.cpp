@@ -127,6 +127,7 @@ static char* audit_encode_nv_string(const char* name, const char* value, unsigne
 
   return str;
 }
+
 #endif /* HAVE_DECL_AUDIT_ENCODE_NV_STRING */
 #endif /* HAVE_LINUX_AUDIT */
 
@@ -198,6 +199,7 @@ namespace usbguard
 
     throw std::runtime_error("LinuxAuditBackend: unexpected type= key value");
   }
+
 #endif
 
   LinuxAuditBackend::LinuxAuditBackend()
@@ -322,4 +324,5 @@ namespace usbguard
 #endif
   }
 }
+
 /* vim: set ts=2 sw=2 et */
