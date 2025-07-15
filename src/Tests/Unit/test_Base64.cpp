@@ -33,7 +33,6 @@ TEST_CASE("Base64", "[Utility]")
     REQUIRE_THROWS(encoded = base64Encode(decoded));
     REQUIRE_THROWS(decoded = base64Decode(encoded));
   }
-
   SECTION("encoded/decoded size estimation") {
     REQUIRE(base64EncodedSize(1) == 4);
     REQUIRE(base64EncodedSize(2) == 4);
@@ -46,7 +45,6 @@ TEST_CASE("Base64", "[Utility]")
     REQUIRE(base64DecodedSize(12) == 9);
     REQUIRE(base64DecodedSize(16) == 12);
   }
-
   SECTION("encoding and decoding") {
     std::vector<std::pair<std::string, std::string>> test_pairs = {
       { "a", "YQ==" },
@@ -79,12 +77,12 @@ TEST_CASE("Base64", "[Utility]")
       { std::string("\x00", 1), "AA==" },
       { std::string("\xff", 1), "/w==" },
     };
+
     for (auto test_pair : test_pairs) {
       REQUIRE(test_pair.second == base64Encode(test_pair.first));
       REQUIRE(test_pair.first == base64Decode(test_pair.second));
     }
   }
-
   SECTION("decoding invalid inputs") {
     std::vector<std::string> test_inputs = {
       { "Y=Q=" },

@@ -79,6 +79,7 @@ namespace usbguard
   {
     const auto& rule = node.first;
     const auto& children = node.second;
+
     if (rule) {
       std::cout << rule.getRuleID() << ": "
         << Rule::targetToString(rule.getTarget()) << " "
@@ -107,6 +108,7 @@ namespace usbguard
   {
     std::cout << "." << std::endl;
     std::vector<std::pair<Rule, std::vector<std::string>>> roots;
+
     for (const auto& it : tree) {
       if (!it.second.first) {
         roots.push_back(it.second);
@@ -115,12 +117,12 @@ namespace usbguard
 
     for (const auto& root : roots) {
       auto children = root.second;
+
       for (const auto& child : children) {
         if (root == roots.back() && child == children.back()) {
           std::cout << "└── ";
           printNode(tree, tree.at(child), "    ");
         }
-
         else {
           std::cout << "├── ";
           printNode(tree, tree.at(child), "│   ");
@@ -164,6 +166,7 @@ namespace usbguard
         hash_it->second.first = rule;
       }
     }
+
     printTree(tree);
   }
 

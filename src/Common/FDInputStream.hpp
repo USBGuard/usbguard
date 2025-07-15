@@ -55,14 +55,14 @@ namespace usbguard
 
 #else
   class FDStreamBuf :
-    public std::streambuf {
+    public std::streambuf
+  {
   public:
     FDStreamBuf(int fd) : fd_(fd) { }
 
     ~FDStreamBuf() override
     {
-      if (fd_ >= 0)
-      {
+      if (fd_ >= 0) {
         close(fd_);
         fd_ = -1;
       }

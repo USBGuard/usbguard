@@ -45,7 +45,6 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow name \"<non printable>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setName(non_printable_string);
@@ -58,7 +57,6 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow hash \"<non printable>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setHash(non_printable_string);
@@ -71,7 +69,6 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow via-port \"<non printable>\"") {
     const std::vector<std::string> one_non_printable_string = { non_printable_string };
     rule.setTarget(Rule::Target::Allow);
@@ -85,7 +82,6 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow via-port { \"<non printable>\" \"<non printable>\" }") {
     const std::vector<std::string> two_non_printable_strings = \
     { non_printable_string, non_printable_string };
@@ -102,7 +98,6 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow with-connect-type \"<non printable>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setWithConnectType(non_printable_string);
@@ -139,7 +134,6 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow name \"<double quote and backslash>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setName(dqb_string);
@@ -152,7 +146,6 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow hash \"<double quote and backslash>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setHash(dqb_string);
@@ -165,7 +158,6 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow via-port \"<double quote and backslash>\"") {
     const std::vector<std::string> one_dqb_string = { dqb_string };
     rule.setTarget(Rule::Target::Allow);
@@ -179,7 +171,6 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow via-port { \"<double quote and backslash>\" \"<double quote and backslash>\" }") {
     const std::vector<std::string> two_dqb_strings = { dqb_string, dqb_string };
     rule.setTarget(Rule::Target::Allow);
@@ -193,7 +184,6 @@ TEST_CASE("Double quote and backslash characters in a rule string", "[RuleParser
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
-
   SECTION("to/from string: allow with-connect-type \"<double quote and backslash>\"") {
     rule.setTarget(Rule::Target::Allow);
     rule.setWithConnectType(dqb_string);

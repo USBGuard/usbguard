@@ -87,7 +87,7 @@ namespace usbguard
     passwd.bv_val = strdup(_parsedOptions["ROOTPW"].c_str());
     passwd.bv_len = _parsedOptions["ROOTPW"].length();
     rc = ldap_sasl_bind_s(_ldap_ptr.get(), _parsedOptions["ROOTDN"].c_str(), LDAP_SASL_SIMPLE,
-      &passwd, nullptr, nullptr, nullptr);
+        &passwd, nullptr, nullptr, nullptr);
     free(passwd.bv_val);
 
     if (rc != LDAP_SUCCESS) {
@@ -116,8 +116,8 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Trying to fetch LDAP data, query: " << filter;
     LDAPMessage* res = nullptr;
     int rc = ldap_search_ext_s(_ldap_ptr.get(), _parsedOptions["USBGUARDBASE"].c_str(),
-      LDAP_SCOPE_SUBTREE, filter.c_str(), nullptr, false,
-      nullptr, nullptr, nullptr, 0, &res);
+        LDAP_SCOPE_SUBTREE, filter.c_str(), nullptr, false,
+        nullptr, nullptr, nullptr, 0, &res);
 
     if (rc != LDAP_SUCCESS) {
       ldap_msgfree(res);
@@ -147,6 +147,7 @@ namespace usbguard
     USBGUARD_LOG(Info);
     struct berval** entry = nullptr;
     char* dn = nullptr;
+
     for (LDAPMessage* e = ldap_first_entry(_ldap_ptr.get(), message.get() ); e != nullptr;
       e = ldap_next_entry(_ldap_ptr.get(), e ) ) {
       std::pair<long, std::string> rule;

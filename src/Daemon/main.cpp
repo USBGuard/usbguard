@@ -147,9 +147,9 @@ int main(int argc, char* argv[])
   /* Initialize logging */
   try {
     USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
-      LogStream::Level::Trace
-      :
-      LogStream::Level::Warning));
+        LogStream::Level::Trace
+        :
+        LogStream::Level::Warning));
     USBGUARD_LOGGER.setOutputConsole(log_console);
     USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
     USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);

@@ -115,7 +115,6 @@ namespace usbguard
         return false;
       }
     }
-
     return true;
   }
 } /* namespace usbguard */
