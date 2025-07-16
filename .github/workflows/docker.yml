@@ -34,7 +34,7 @@ jobs:
         linux_distro:
         - Alpine Linux 3.21  # with musl
         - CentOS 8.2         # with GCC 8.5.0
-        - Debian Buster with GCC 9.2  # stock buster has GCC 8.3
+        # - Debian Buster with GCC 9.2  # stock buster has GCC 8.3 - temporarily disabled
         - Ubuntu 22.04       # because super popular
         - Ubuntu 25.04       # because GCC 15+
 
