@@ -82,7 +82,7 @@ function execute()
   local valgrind=""
 
   if [ -n "$USBGUARD_TESTS_VALGRIND" ]; then
-    valgrind="$(which valgrind)"
+    valgrind="$(command -v valgrind)"
   fi
 
   if [ "$USBGUARD_TESTS_VALGRIND" = "off" ]; then

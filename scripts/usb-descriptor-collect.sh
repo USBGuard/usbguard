@@ -19,15 +19,15 @@
 #
 set -e -o pipefail
 
-SED=$(which sed)
-FIND=$(which find)
-LSUSB=$(which lsusb)
-SHA1SUM=$(which sha1sum)
-TAR=$(which tar)
-MKTEMP=$(which mktemp)
-CP=$(which cp)
-WC=$(which wc)
-RM=$(which rm)
+SED=$(command -v sed)
+FIND=$(command -v find)
+LSUSB=$(command -v lsusb)
+SHA1SUM=$(command -v sha1sum)
+TAR=$(command -v tar)
+MKTEMP=$(command -v mktemp)
+CP=$(command -v cp)
+WC=$(command -v wc)
+RM=$(command -v rm)
 
 TEMPDIR=$($MKTEMP -d --tmpdir usb-descriptor-collect.XXXXXX || (echo "Failed to create temporary directory"; exit 1))
 ROOTDIR="$TEMPDIR/usb-descriptor-data"
