@@ -232,13 +232,14 @@ namespace usbguard
       : seq<target,
         opt<plus<ascii::blank>, device_id>,
         opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>,
-        opt<comment>> {};
+        opt<comment>,
+        star<ascii::blank>> {};
 
     /*
      * Grammar entry point
      */
     struct rule_grammar
-      : until<eof, must<sor<comment, rule>>> {};
+      : seq<star<ascii::blank>, opt<sor<comment, rule>>, must<eof>> {};
   } /* namespace RuleParser */
 } /* namespace usbguard */
 

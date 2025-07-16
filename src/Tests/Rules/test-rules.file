@@ -9,3 +9,6 @@ reject with-interface one-of { e5:*:* 2A:*:* AC:c7:* 4B:*:* f2:*:* }  if equals-
 
 reject with-interface one-of { e6:*:* } # comment about this rule
  # reject with-interface one-of { e6:*:* }
+
+# Ignore whitespace around rule
+ reject with-interface one-of { e6:*:* } 
