@@ -87,7 +87,7 @@ BUILT_SOURCES+=\
 $(top_builddir)/%.roff: %.adoc
 	$(MKDIR_P) $$(dirname $@)
 	$(A2X) -v -f manpage $^ -D $(top_builddir)/$$(dirname $@)
-	$(INSTALL) -m 644 $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
+	$(INSTALL_DATA) $(top_builddir)/$(@:.roff=) $(top_builddir)/$@
 endif
 
 install-data-hook: install-daemon-conf install-systemd-service install-data-dbus install-tmpfiles
@@ -110,7 +110,7 @@ EXTRA_DIST+=usbguard-tmpfiles.conf
 
 install-tmpfiles:
 	mkdir -p ${DESTDIR}$(prefix)/lib/tmpfiles.d/
-	$(INSTALL_DATA) -m 640 ${srcdir}/usbguard-tmpfiles.conf ${DESTDIR}$(prefix)/lib/tmpfiles.d/usbguard.conf
+	$(INSTALL_DATA) ${srcdir}/usbguard-tmpfiles.conf ${DESTDIR}$(prefix)/lib/tmpfiles.d/usbguard.conf
 
 uninstall-tmpfiles:
 	rm ${DESTDIR}$(prefix)/lib/tmpfiles.d/usbguard.conf
@@ -142,7 +142,7 @@ usbguard.service: $(top_srcdir)/usbguard.service.in
 
 install-systemd-service: $(top_builddir)/usbguard.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL) -m 644 $(top_builddir)/usbguard.service \
+	$(INSTALL_DATA) $(top_builddir)/usbguard.service \
 	 $(DESTDIR)$(SYSTEMD_UNIT_DIR)/usbguard.service
 
 uninstall-systemd-service:
