@@ -45,8 +45,11 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include <pthread.h>
+
 namespace usbguard
 {
+  static pthread_mutex_t G_backlog_mutex = PTHREAD_MUTEX_INITIALIZER;
 
   UEventDeviceManager::UEventDeviceManager(DeviceManagerHooks& hooks)
     : DeviceManagerBase(hooks),
@@ -332,7 +335,9 @@ namespace usbguard
     const std::string sysfs_devpath = uevent.getAttribute("DEVPATH");
 
     if (_enumeration) {
+      pthread_mutex_lock(&G_backlog_mutex);
       _backlog.emplace_back(std::move(uevent));
+      pthread_mutex_unlock(&G_backlog_mutex);
     }
     else {
       ueventProcessAction(action, sysfs_devpath);
@@ -453,10 +458,16 @@ namespace usbguard
 
   void UEventDeviceManager::processBacklog()
   {
-    USBGUARD_LOG(Debug) << "Processing backlog: _backlog.size() = " << _backlog.size();
+    std::vector<UEvent> backlog_copy;
+    {
+      pthread_mutex_lock(&G_backlog_mutex);
+      backlog_copy = std::move(_backlog);
+      pthread_mutex_unlock(&G_backlog_mutex);
+    }
+    USBGUARD_LOG(Debug) << "Processing backlog: backlog_copy.size() = " << backlog_copy.size();
 
     try {
-      for (auto& it : _backlog) {
+      for (auto& it : backlog_copy) {
         ueventProcessUEvent(std::move(it));
       }
     }

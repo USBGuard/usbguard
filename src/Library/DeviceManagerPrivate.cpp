@@ -122,6 +122,11 @@ namespace usbguard
     }
   }
 
+  std::mutex& DeviceManagerPrivate::refDeviceMapMutex()
+  {
+    return _device_map_mutex;
+  }
+
   void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)

@@ -95,6 +95,7 @@ namespace usbguard
 
   uint32_t DeviceManagerBase::getIDFromSysfsPath(const std::string& sysfs_path) const
   {
+    std::lock_guard<std::mutex> lock(const_cast<DeviceManagerBase*>(this)->refDeviceMapMutex());
     uint32_t id = 0;
 
     if (knownSysfsPath(sysfs_path, &id)) {
@@ -356,6 +357,7 @@ namespace usbguard
 
   bool DeviceManagerBase::isPresentSysfsPath(const std::string& sysfs_path) const
   {
+    std::lock_guard<std::mutex> lock(const_cast<DeviceManagerBase*>(this)->refDeviceMapMutex());
     uint32_t id = 0;
 
     if (knownSysfsPath(sysfs_path, &id)) {
@@ -367,6 +369,7 @@ namespace usbguard
 
   bool DeviceManagerBase::knownSysfsPath(const std::string& sysfs_path, uint32_t* id_ptr) const
   {
+    std::lock_guard<std::mutex> lock(const_cast<DeviceManagerBase*>(this)->refDeviceMapMutex());
     USBGUARD_LOG(Trace) << "Known? sysfs_path=" << sysfs_path << " size=" << sysfs_path.size() << " id_ptr=" << (void*)id_ptr;
     auto it = _sysfs_path_to_id_map.find(sysfs_path);
     uint32_t known_id = 0;
@@ -388,12 +391,14 @@ namespace usbguard
 
   void DeviceManagerBase::learnSysfsPath(const std::string& sysfs_path, uint32_t id)
   {
+    std::lock_guard<std::mutex> lock(refDeviceMapMutex());
     USBGUARD_LOG(Trace) << "Learn sysfs_path=" << sysfs_path << " size=" << sysfs_path.size() << " id=" << id;
     _sysfs_path_to_id_map[sysfs_path] = id;
   }
 
   void DeviceManagerBase::forgetSysfsPath(const std::string& sysfs_path)
   {
+    std::lock_guard<std::mutex> lock(refDeviceMapMutex());
     USBGUARD_LOG(Trace) << "Forget sysfs_path=" << sysfs_path;
     _sysfs_path_to_id_map.erase(sysfs_path);
   }
