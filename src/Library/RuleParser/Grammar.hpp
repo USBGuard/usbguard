@@ -76,12 +76,14 @@ namespace usbguard
 
     struct str_match_all: TAO_PEGTL_STRING("match-all") {};
 
+    struct str_key: TAO_PEGTL_STRING("key") {};
+
     /*
      * Generic rule attribute
      */
     struct multiset_operator
       : sor<str_all_of, str_one_of, str_none_of, str_equals_ordered, str_equals, str_match_all> {};
-
+    
     template<class attribute_value_rule>
     struct attribute_value_multiset
       : seq<opt<multiset_operator, plus<ascii::blank>>,
@@ -91,7 +93,7 @@ namespace usbguard
 
     template<class attribute_identifier, class attribute_value_rule>
     struct rule_attribute
-      : seq<attribute_identifier, plus<ascii::blank>,
+      : seq<attribute_identifier, plus<ascii::blank>, 
         sor<attribute_value_multiset<attribute_value_rule>,
         attribute_value_rule>> {};
 
@@ -226,12 +228,24 @@ namespace usbguard
         star<seq<not_at<eof>, any>>>> {};
 
     /*
+     * Rule key
+     */
+    struct key_logic
+      : action<key_actions, string_value> {};
+
+    struct key
+      : seq<str_key,
+        plus<ascii::blank>,
+        key_logic> {};
+
+    /*
      * Rule
      */
     struct rule
       : seq<target,
         opt<plus<ascii::blank>, device_id>,
         opt<plus<ascii::blank>, list<rule_attributes, plus<ascii::blank>>>,
+        opt<plus<ascii::blank>, key>,
         opt<comment>,
         star<ascii::blank>> {};
 

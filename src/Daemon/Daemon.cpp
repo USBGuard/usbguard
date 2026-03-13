@@ -861,7 +861,11 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get()
       << " matched_rule_ptr=" << matched_rule.get();
-    auto audit_event = _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget());
+
+    auto audit_event = (matched_rule->isKey()) 
+      ? _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget(), matched_rule->getKey())
+      : _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget());
+
     const Rule::Target target_old = device->getTarget();
     std::shared_ptr<Device> device_post = \
       _dm->applyDevicePolicy(device->getID(),

@@ -373,6 +373,38 @@ namespace usbguard
      */
     AuditEvent policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
+   /**
+     * @brief Constructs new \link AuditEvent AuditEvent\endlink for given
+     * policy \link Policy::EventType event\endlink.
+     *
+     * Sets audit event keys:
+     *   - type\=Policy\.Device\.Update
+     *   - target\.old\=\<old rule target\>
+     *   - target\.new\=\<new rule target\>
+     *   - device\.system_name\=<device system name\>
+     *   - device\.rule\=\<device rule\>
+     *   - matched\.rule\.key\=\<rule key\>
+     *
+     * Audit policy changes:
+     *   - rule append
+     *   - rule remove
+     *   - rule update
+     *   - policy parameter change
+     *
+     * Audit data:
+     *   - who: uid + pid
+     *   - when: time
+     *   - what: append, remove, update
+     *   - update: old, new
+     *
+     * @param device Device where the rule target has changed.
+     * @param old_target Old rule target.
+     * @param new_target New rule target.
+     * @param matched_rule_key Key of the new rule.
+     * @return \link AuditEvent Audit event\endlink.
+     */
+    AuditEvent policyEvent(std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target, std::string matched_rule_key);
+
     /**
      * @brief Constructs new \link AuditEvent AuditEvent\endlink for given
      * device \link DeviceManager::EventType event\endlink.
@@ -543,6 +575,40 @@ namespace usbguard
      */
     AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
       Rule::Target new_target);
+
+    /**
+     * @brief Constructs new \link AuditEvent AuditEvent\endlink for given
+     * policy \link Policy::EventType event\endlink.
+     *
+     * Sets audit event keys:
+     *   - type\=Policy\.Device\.Update
+     *   - target\.old\=\<old rule target\>
+     *   - target\.new\=\<new rule target\>
+     *   - device\.system_name\=\<device system name\>
+     *   - device\.rule\=\<device rule\>
+     *   - matched\.rule\.key\=\<rule key\>
+     *
+     * Audit policy changes:
+     *   - rule append
+     *   - rule remove
+     *   - rule update
+     *   - policy parameter change
+     *
+     * Audit data:
+     *   - who: uid + pid
+     *   - when: time
+     *   - what: append, remove, update
+     *   - update: old, new
+     *
+     * @param identity Audit identity.
+     * @param device Device where the rule target has changed.
+     * @param old_target Old rule target.
+     * @param new_target New rule target.
+     * @param matched_rule_key New rule key.
+     * @return \link AuditEvent Audit event\endlink.
+     */
+    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
+      Rule::Target new_target, std::string matched_rule_key);
 
     /**
      * @brief Constructs new \link AuditEvent AuditEvent\endlink for given

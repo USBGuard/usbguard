@@ -820,6 +820,29 @@ namespace usbguard
     const std::string& getSerial() const;
 
     /**
+     * @brief Sets key attribute.
+     *
+     * @param value Key to set.
+     * @see \link Attribute::set() set()\endlink
+     */
+    void setKey(const std::string& value);
+
+    /**
+     * @brief Returns key.
+     *
+     * @return Rule key.
+     * @see \link Attribute::get() get()\endlink
+     */
+    const std::string& getKey() const;
+
+    /**
+     * @brief Returns true if the Rule has a key.
+     *
+     * @return Rule key status.
+     */
+    bool isKey() const;
+
+    /**
      * @brief Returns imutable serial number attribute.
      *
      * @return Imutable serial number attribute.
@@ -1113,7 +1136,7 @@ namespace usbguard
      * identifiable information) will not be included in the string.
      * @return String representation of this rule.
      */
-    std::string toString(bool invalid = false, bool hide_serial = false) const;
+    std::string toString(bool invalid = false, bool hide_serial = false, bool hide_key = true) const;
 
     /**
      * @brief Updates meta-data last applied and last evaluated counters.

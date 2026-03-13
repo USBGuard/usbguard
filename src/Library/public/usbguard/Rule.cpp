@@ -106,6 +106,21 @@ namespace usbguard
     return d_pointer->getSerial();
   }
 
+  void Rule::setKey(const std::string& value)
+  {
+    d_pointer->setKey(value);
+  }
+
+  const std::string& Rule::getKey() const
+  {
+    return d_pointer->getKey();
+  }
+
+  bool Rule::isKey() const
+  {
+    return d_pointer->isKey();
+  }
+
   const Rule::Attribute<std::string>& Rule::attributeSerial() const
   {
     return d_pointer->attributeSerial();
@@ -284,9 +299,9 @@ namespace usbguard
         getTarget() == Target::Empty);
   }
 
-  std::string Rule::toString(bool invalid, bool hide_serial) const
+  std::string Rule::toString(bool invalid, bool hide_serial, bool hide_key) const
   {
-    return d_pointer->toString(invalid, hide_serial);
+    return d_pointer->toString(invalid, hide_serial, hide_key);
   }
 
   void Rule::updateMetaDataCounters(bool applied, bool evaluated)
