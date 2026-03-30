@@ -135,6 +135,10 @@ namespace usbguard
 
     bool _device_rules_with_port;
     bool _restore_controller_device_state;
+    bool _rule_source;
+
+    static inline const std::string RULE_TYPE_LOOKUP = "lookup";
+    static inline const std::string RULE_TYPE_IMPLICIT = "implicit";
 
     AuditIdentity _audit_identity;
     Audit _audit;

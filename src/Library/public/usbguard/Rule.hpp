@@ -840,7 +840,7 @@ namespace usbguard
      *
      * @return Rule key status.
      */
-    bool isKey() const;
+    bool hasKey() const;
 
     /**
      * @brief Returns imutable serial number attribute.
@@ -1136,7 +1136,7 @@ namespace usbguard
      * identifiable information) will not be included in the string.
      * @return String representation of this rule.
      */
-    std::string toString(bool invalid = false, bool hide_serial = false, bool hide_key = true) const;
+    std::string toString(bool invalid = false, bool hide_serial = false) const;
 
     /**
      * @brief Updates meta-data last applied and last evaluated counters.

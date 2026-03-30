@@ -213,3 +213,12 @@ AuditFilePath=%localstatedir%/log/usbguard/usbguard-audit.log
 # hashes of descriptors (which include the serial number) from audit entries.
 #
 HidePII=false
+
+#
+# When logging policy events, enable differentiation between implicit policy 
+# events and defined rules.
+#
+# * true  - show rule source in logs
+# * false - hide rule source in logs
+#
+RuleSourceLogging=false

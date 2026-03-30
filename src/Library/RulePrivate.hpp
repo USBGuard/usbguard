@@ -113,7 +113,7 @@ namespace usbguard
 
     void setKey(const std::string& value);
     const std::string& getKey() const;
-    bool isKey() const;
+    bool hasKey() const;
 
     /*
      * Set/get for a single value isn't useful for the
@@ -127,7 +127,7 @@ namespace usbguard
     const Rule::Attribute<RuleCondition>& attributeConditions() const;
     Rule::Attribute<RuleCondition>& attributeConditions();
 
-    std::string toString(bool invalid = false, bool hide_pii = false, bool hide_key = true) const;
+    std::string toString(bool invalid = false, bool hide_pii = false) const;
 
     MetaData& metadata();
     const MetaData& metadata() const;

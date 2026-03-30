@@ -71,7 +71,8 @@ namespace usbguard
     "IPCAccessControlFiles",
     "AuditFilePath",
     "AuditBackend",
-    "HidePII"
+    "HidePII",
+    "RuleSourceLogging"
   };
 
   static const std::vector<std::pair<std::string, Daemon::DevicePolicyMethod>> device_policy_method_strings = {
@@ -125,6 +126,7 @@ namespace usbguard
     _inserted_device_policy_method = DevicePolicyMethod::ApplyPolicy;
     _device_rules_with_port = false;
     _restore_controller_device_state = false;
+    _rule_source = false;
     pid_fd = -1;
   }
 
@@ -393,6 +395,22 @@ namespace usbguard
       }
       else if (value != "false") {
         throw Exception("Configuration", "HidePII", "Invalid value");
+      }
+    }
+
+    /* RuleSourceLogging */
+    if (_config.hasSettingValue("RuleSourceLogging")) {
+      const std::string value = _config.getSettingValue("RuleSourceLogging");
+      USBGUARD_LOG(Debug) << "Setting RuleSourceLogging to " << value;
+
+      if (value == "true") {
+        _rule_source = true;
+      }
+      else if (value == "false") {
+        _rule_source = false;
+      }
+      else {
+        throw Exception("Configuration", "RuleSourceLogging", "Invalid value");
       }
     }
 
@@ -862,9 +880,26 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "device_ptr=" << device.get()
       << " matched_rule_ptr=" << matched_rule.get();
 
-    auto audit_event = (matched_rule->isKey()) 
-      ? _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget(), matched_rule->getKey())
-      : _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget());
+    auto audit_event = [&]() {
+      if (_rule_source){
+        if (matched_rule->getRuleID() == Rule::ImplicitID) {
+          return _audit.policyEventSource(device, device->getTarget(), matched_rule->getTarget(), RULE_TYPE_IMPLICIT);
+        }
+        
+        if (matched_rule->hasKey()){
+          return _audit.policyEventSourceKey(device, device->getTarget(), matched_rule->getTarget(), RULE_TYPE_LOOKUP, matched_rule->getKey());
+        }
+        
+        return _audit.policyEventSource(device, device->getTarget(), matched_rule->getTarget(), RULE_TYPE_LOOKUP); 
+      }
+      
+      if (matched_rule->hasKey()){
+        return _audit.policyEventKey(device, device->getTarget(), matched_rule->getTarget(), matched_rule->getKey());
+      }
+
+      return _audit.policyEvent(device, device->getTarget(), matched_rule->getTarget());  
+
+    }();
 
     const Rule::Target target_old = device->getTarget();
     std::shared_ptr<Device> device_post = \

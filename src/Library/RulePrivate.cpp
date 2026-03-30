@@ -275,7 +275,7 @@ namespace usbguard
     return _key.get();
   }
 
-  bool RulePrivate::isKey() const
+  bool RulePrivate::hasKey() const
   {
     return !_key.empty();
   }
@@ -442,7 +442,7 @@ namespace usbguard
     return;
   }
 
-  std::string RulePrivate::toString(bool invalid, bool hide_pii, bool hide_key) const
+  std::string RulePrivate::toString(bool invalid, bool hide_pii) const
   {
     std::string rule_string;
 
@@ -476,10 +476,6 @@ namespace usbguard
     toString_appendNonEmptyAttribute(rule_string, _conditions);
     toString_appendNonEmptyAttribute(rule_string, _with_connect_type);
     toString_appendNonEmptyAttribute(rule_string, _label);
-
-    if (!hide_key) {
-      toString_appendNonEmptyAttribute(rule_string, _key);
-    }
     
     return rule_string;
   }
