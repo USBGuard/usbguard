@@ -14,7 +14,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM gcc:9.2
+FROM gcc:9.5-bullseye
 SHELL ["/bin/bash", "-c"]
 RUN head -n1 /etc/os-release \
         && \
@@ -50,9 +50,9 @@ RUN head -n1 /etc/os-release \
             xsltproc
 RUN set -x \
         && \
-    [[ "$(gcc -dumpversion) == 9.2.* ]] \
+    [[ "$(gcc -dumpversion) == 9.5.* ]] \
         && \
-    [[ "$(g++ -dumpversion) == 9.2.* ]]
+    [[ "$(g++ -dumpversion) == 9.5.* ]]
 ADD usbguard.tar usbguard/
 ADD catch.tar usbguard/src/ThirdParty/Catch/
 WORKDIR usbguard
