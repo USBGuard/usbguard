@@ -111,6 +111,10 @@ namespace usbguard
     const Rule::Attribute<std::string>& attributeViaPort() const;
     Rule::Attribute<std::string>& attributeViaPort();
 
+    void setKey(const std::string& value);
+    const std::string& getKey() const;
+    bool hasKey() const;
+
     /*
      * Set/get for a single value isn't useful for the
      * with-interface attribute as it usualy contains
@@ -146,6 +150,7 @@ namespace usbguard
     Rule::Attribute<USBInterfaceType> _with_interface;
     Rule::Attribute<RuleCondition> _conditions;
     Rule::Attribute<std::string> _label;
+    Rule::Attribute<std::string> _key;
     uint64_t _conditions_state;
   };
 }

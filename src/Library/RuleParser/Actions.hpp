@@ -523,6 +523,24 @@ namespace usbguard
         }
       }
     };
+
+    template<typename Rule>
+    struct key_actions : tao::pegtl::nothing<Rule> {};
+
+    template<>
+    struct key_actions<string_value> {
+      template<typename Input>
+      static void apply(const Input& in, Rule& rule)
+      {
+        try {
+          rule.setKey(stringValueFromRule(in.string()));
+        }
+        catch (const std::exception& ex) {
+          throw tao::pegtl::parse_error(ex.what(), in);
+        }
+      }
+    };
+
   } /* namespace RuleParser */
 } /* namespace usbguard */
 

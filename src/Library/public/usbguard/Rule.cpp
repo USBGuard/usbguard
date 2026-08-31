@@ -106,6 +106,21 @@ namespace usbguard
     return d_pointer->getSerial();
   }
 
+  void Rule::setKey(const std::string& value)
+  {
+    d_pointer->setKey(value);
+  }
+
+  const std::string& Rule::getKey() const
+  {
+    return d_pointer->getKey();
+  }
+
+  bool Rule::hasKey() const
+  {
+    return d_pointer->hasKey();
+  }
+
   const Rule::Attribute<std::string>& Rule::attributeSerial() const
   {
     return d_pointer->attributeSerial();
