@@ -42,8 +42,8 @@ export policy_path="${USBGUARD_TESTLIB_TMPDIR}/policy.conf"
 function test_cli_policy()
 {
   set -e
-  sleep 4
-  
+  wait_for_daemon || exit 1
+
   c=$(${USBGUARD} list-rules | wc -l)
   # TODO [ $c -eq 0 ] || return 1
 

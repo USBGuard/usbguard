@@ -27,6 +27,43 @@ COMMAND_STATE=()
 COMMAND_SETUP=()
 COMMAND_OFILE=()
 
+# Poll until the daemon's IPC is reachable or the timeout expires.
+# Replaces bare `sleep N` guards that race on slow systems and waste
+# time on fast ones.
+function wait_for_daemon()
+{
+  local timeout=${1:-15}
+  local elapsed=0
+
+  while [ $elapsed -lt $timeout ]; do
+    if ${USBGUARD} list-devices > /dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+    elapsed=$((elapsed + 1))
+  done
+
+  echo "ERROR: Timed out waiting for usbguard-daemon to become ready (${timeout}s)" >&2
+  return 1
+}
+
+# Poll until a PID file appears or the timeout expires.
+function wait_for_pidfile()
+{
+  local pidfile="$1"
+  local timeout=${2:-15}
+  local elapsed=0
+
+  while [ $elapsed -lt $timeout ]; do
+    [ -f "$pidfile" ] && return 0
+    sleep 1
+    elapsed=$((elapsed + 1))
+  done
+
+  echo "ERROR: Timed out waiting for PID file ${pidfile} (${timeout}s)" >&2
+  return 1
+}
+
 function schedule()
 {
   local command="$1"

@@ -41,7 +41,7 @@ export policy_path="${USBGUARD_TESTLIB_TMPDIR}/policy.conf"
 function test_cli_devices()
 {
   set -e
-  sleep 4
+  wait_for_daemon || exit 1
 
   ${USBGUARD} list-devices
   ${USBGUARD} list-devices -a

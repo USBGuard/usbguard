@@ -31,7 +31,7 @@ export logfile="${USBGUARD_TESTLIB_TMPDIR}/daemon.log"
 
 function test_cli_daemonize()
 {
-  sleep 5
+  wait_for_pidfile "$pidfile_path" || exit 1
 
   if [ ! -f "$pidfile_path" ]; then
     echo "Test error: PID file for usbguard not present"
