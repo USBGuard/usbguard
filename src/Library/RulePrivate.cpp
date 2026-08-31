@@ -476,7 +476,7 @@ namespace usbguard
     toString_appendNonEmptyAttribute(rule_string, _conditions);
     toString_appendNonEmptyAttribute(rule_string, _with_connect_type);
     toString_appendNonEmptyAttribute(rule_string, _label);
-    
+
     return rule_string;
   }
 

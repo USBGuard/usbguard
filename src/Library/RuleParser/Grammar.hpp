@@ -83,7 +83,7 @@ namespace usbguard
      */
     struct multiset_operator
       : sor<str_all_of, str_one_of, str_none_of, str_equals_ordered, str_equals, str_match_all> {};
-    
+
     template<class attribute_value_rule>
     struct attribute_value_multiset
       : seq<opt<multiset_operator, plus<ascii::blank>>,

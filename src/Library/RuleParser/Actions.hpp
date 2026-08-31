@@ -91,7 +91,7 @@ namespace usbguard
         }
       }
     };
-    
+
     static const std::string stringValueFromRule(const std::string& value)
     {
       const std::string string_raw(value.substr(1, value.size() - 2));
