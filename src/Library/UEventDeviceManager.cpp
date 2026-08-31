@@ -402,7 +402,7 @@ namespace usbguard
   {
     USBGUARD_LOG(Trace);
     return loadFiles(SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
-        UEventDeviceManager::ueventEnumerateFilterDevice,
+      UEventDeviceManager::ueventEnumerateFilterDevice,
     [this](const std::string& devpath, const std::string& buspath) {
       return ueventEnumerateTriggerDevice(devpath, buspath);
     },

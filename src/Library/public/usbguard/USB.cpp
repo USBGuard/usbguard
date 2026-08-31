@@ -191,8 +191,8 @@ namespace usbguard
     }
 
     if (!(_mask == (MatchAll) ||
-        _mask == (MatchClass|MatchSubClass) ||
-        _mask == (MatchClass))) {
+      _mask == (MatchClass|MatchSubClass) ||
+      _mask == (MatchClass))) {
       throw std::runtime_error("Invalid type_string");
     }
   }

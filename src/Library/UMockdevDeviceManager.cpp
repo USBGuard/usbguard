@@ -205,7 +205,7 @@ namespace usbguard
     loadFiles(_umockdev_deviceroot, lambdaUMockdevFilterEntry, lambdaUMockdevAddFromFile);
     USBGUARD_SYSCALL_THROW("UMockdevDeviceManager", (_inotify_fd = inotify_init1(IN_NONBLOCK)) < 0);
     USBGUARD_SYSCALL_THROW("UMockdevDeviceManager", (inotify_add_watch(_inotify_fd, _umockdev_deviceroot.c_str(),
-          IN_CREATE|IN_DELETE)) < 0);
+      IN_CREATE|IN_DELETE)) < 0);
   }
 
   void UMockdevDeviceManager::umockdevAdd(const std::shared_ptr<UMockdevDeviceDefinition>& definition)
@@ -305,7 +305,7 @@ namespace usbguard
       if (sharedptr_definition->getDeviceType() == "usb_device") {
         if (_sysfs_path_map.count(parentPath(sharedptr_definition->getSysfsPath())) < 1) {
           USBGUARD_LOG(Warning) << "UMockdevDeviceManager: " << sharedptr_definition->getSysfsPath() <<
-            ": parent device not defined, skipping.";
+                                   ": parent device not defined, skipping.";
           continue;
         }
 
@@ -727,10 +727,10 @@ namespace usbguard
       return ueventEnumerateTriggerAndWaitForDevice(devpath, buspath);
     };
     return loadFiles(SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
-        UMockdevDeviceManager::ueventEnumerateFilterDevice,
-        lambdaEnumerateTriggerAndWaitForDevice,
-        UMockdevDeviceManager::ueventEnumerateComparePath,
-        /*rootdir_required=*/false);
+      UMockdevDeviceManager::ueventEnumerateFilterDevice,
+      lambdaEnumerateTriggerAndWaitForDevice,
+      UMockdevDeviceManager::ueventEnumerateComparePath,
+      /*rootdir_required=*/false);
   }
 
   int UMockdevDeviceManager::ueventEnumerateTriggerAndWaitForDevice(const std::string& devpath, const std::string& buspath)

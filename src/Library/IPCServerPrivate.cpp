@@ -283,9 +283,9 @@ namespace usbguard
   bool IPCServerPrivate::hasACLEntries() const
   {
     return (!_allowed_uids.empty() \
-        || !_allowed_gids.empty() \
-        || !_allowed_usernames.empty() \
-        || !_allowed_groupnames.empty());
+      || !_allowed_gids.empty() \
+      || !_allowed_usernames.empty() \
+      || !_allowed_groupnames.empty());
   }
 
   bool IPCServerPrivate::qbIPCConnectionAllowed(uid_t uid, gid_t gid, IPCServer::AccessControl* const ac_ptr) const
@@ -339,7 +339,7 @@ namespace usbguard
 
       if (rc < 0) {
         USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(
-            qb_conn) << " errno=" << -rc;
+          qb_conn) << " errno=" << -rc;
         /* FALLTHROUGH */
       }
       else if ((size_t)rc != total_size) {
@@ -499,7 +499,7 @@ namespace usbguard
 
           if (rc < 0) {
             USBGUARD_LOG(Error) << "An error ocured while sending IPC message to pid=" << qbIPCConnectionClientPID(
-                qb_conn) << " errno=" << -rc;
+              qb_conn) << " errno=" << -rc;
           }
           else if ((size_t)rc != total_size) {
             USBGUARD_LOG(Error) << "Unable to sent complete IPC message to pid=" << qbIPCConnectionClientPID(qb_conn)

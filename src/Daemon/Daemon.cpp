@@ -865,7 +865,7 @@ namespace usbguard
     const Rule::Target target_old = device->getTarget();
     std::shared_ptr<Device> device_post = \
       _dm->applyDevicePolicy(device->getID(),
-        matched_rule->getTarget());
+      matched_rule->getTarget());
     const bool target_changed = target_old != device_post->getTarget();
     std::shared_ptr<const Rule> device_rule = \
       device_post->getDeviceRule(/*with_port=*/true,

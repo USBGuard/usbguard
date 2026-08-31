@@ -453,10 +453,10 @@ namespace usbguard
     message_out.mutable_request()->set_gid(getgid());
     message_out.mutable_request()->set_section(
       IPCServer::AccessControl::sectionToString(section)
-    );
+      );
     message_out.mutable_request()->set_privilege(
       IPCServer::AccessControl::privilegeToString(privilege)
-    );
+      );
     auto message_in = qbIPCSendRecvMessage(message_out);
     return message_in->response().permit();
   }

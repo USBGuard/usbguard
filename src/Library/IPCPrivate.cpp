@@ -87,9 +87,9 @@ namespace usbguard
     const IPC::Exception* const exception_message = \
       reinterpret_cast<const IPC::Exception*>(message.get());
     return IPCException(exception_message->context(),
-        exception_message->object(),
-        exception_message->reason(),
-        exception_message->request_id());
+      exception_message->object(),
+      exception_message->reason(),
+      exception_message->request_id());
   }
 
   bool IPC::isExceptionMessage(const MessagePointer& message)

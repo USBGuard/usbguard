@@ -63,8 +63,8 @@ TEST_CASE("UEvent parsing", "[UEventParser]")
   const size_t uevent_strlen = sizeof uevent_string;
   UEvent uevent;
   REQUIRE_NOTHROW(uevent = UEvent::fromString(std::string(uevent_string, uevent_strlen),
-        /*attributes_only=*/false,
-        /*trace=*/true));
+    /*attributes_only=*/false,
+    /*trace=*/true));
   REQUIRE(uevent.hasRequiredAttributes());
   REQUIRE(uevent.getAttribute("ACTION") == "add");
   REQUIRE(uevent.getAttribute("DEVPATH") == "/devices/platform/dummy_hcd.0/usb1");
