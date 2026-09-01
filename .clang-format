@@ -10,7 +10,7 @@ BraceWrapping:
   AfterEnum:              false
   AfterFunction:          true
   AfterNamespace:         true
-  AfterStruct:            true
+  AfterStruct:            false
   AfterUnion:             true
   AfterExternBlock:       true
   BeforeCatch:            false
@@ -30,7 +30,13 @@ PointerAlignment:         Left
 ReferenceAlignment:       Left
 ColumnLimit:              128
 IndentCaseLabels:         false
-SpaceBeforeParens:        ControlStatements
+
+# Space before ( in if/for/while etc but NOT in test macros like SECTION()
+SpaceBeforeParens:        Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterIfMacros:          false
+
 InsertBraces:             true
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine:        false
@@ -47,4 +53,7 @@ ConstructorInitializerIndentWidth:   2
 PackConstructorInitializers:         Never
 Cpp11BracedListStyle:     false
 SpacesInContainerLiterals: true
+BreakStringLiterals:      false
+SpaceBeforeCpp11BracedList: true
 BinPackArguments:         false
+IfMacros:                 [SECTION]

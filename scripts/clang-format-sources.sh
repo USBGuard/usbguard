@@ -84,7 +84,7 @@ case "${MODE}" in
     for f in "${FILES[@]}"; do
       "${CLANG_FORMAT}" "${f}" > "${tmpfile}"
       if ! diff -q "${f}" "${tmpfile}" > /dev/null 2>&1; then
-        diff -u --color=always "${f}" "${tmpfile}"
+        diff -u --color=always "${f}" "${tmpfile}" || true
         needs_fix=1
       fi
     done
