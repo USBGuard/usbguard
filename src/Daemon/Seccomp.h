@@ -24,10 +24,11 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-bool setupSeccompWhitelist(void);
+  bool setupSeccompWhitelist(void);
 
 #ifdef __cplusplus
 }

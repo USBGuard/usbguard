@@ -154,28 +154,25 @@ namespace usbguard
   int DeviceManagerBase::ueventOpen()
   {
     int socket_fd = -1;
-    USBGUARD_SYSCALL_THROW("UEvent device manager",
-      (socket_fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT)) < 0);
+    USBGUARD_SYSCALL_THROW("UEvent device manager", (socket_fd = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT)) < 0);
 
     try {
       const int optval = 1;
-      USBGUARD_SYSCALL_THROW("UEvent device manager",
-        setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
+      USBGUARD_SYSCALL_THROW(
+        "UEvent device manager", setsockopt(socket_fd, SOL_SOCKET, SO_PASSCRED, &optval, sizeof optval) != 0);
       /*
        * Set a 1MiB receive buffer on the netlink socket to avoid ENOBUFS error
        * in recvmsg.
        */
       const size_t rcvbuf_max = 1024 * 1024;
-      USBGUARD_SYSCALL_THROW("UEvent device manager",
-        setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_max, sizeof rcvbuf_max) != 0);
+      USBGUARD_SYSCALL_THROW(
+        "UEvent device manager", setsockopt(socket_fd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_max, sizeof rcvbuf_max) != 0);
       struct sockaddr_nl sa = {};
       sa.nl_family = AF_NETLINK;
       sa.nl_pid = getpid();
       sa.nl_groups = -1;
-      USBGUARD_SYSCALL_THROW("UEvent device manager",
-        bind(socket_fd, reinterpret_cast<const sockaddr*>(&sa), sizeof sa) != 0);
-    }
-    catch (...) {
+      USBGUARD_SYSCALL_THROW("UEvent device manager", bind(socket_fd, reinterpret_cast<const sockaddr*>(&sa), sizeof sa) != 0);
+    } catch (...) {
       (void)close(socket_fd);
       throw;
     }
@@ -248,8 +245,7 @@ namespace usbguard
     USBGUARD_LOG(Trace) << "id=" << id;
 
     try {
-      std::shared_ptr<DeviceBase> device = \
-        std::static_pointer_cast<DeviceBase>(DeviceManager::getDevice(id));
+      std::shared_ptr<DeviceBase> device = std::static_pointer_cast<DeviceBase>(DeviceManager::getDevice(id));
       device->sysfsDevice().reload();
       /*
        * TODO: Check attribute state
@@ -257,16 +253,13 @@ namespace usbguard
        */
       DeviceEvent(DeviceManager::EventType::Present, device);
       return;
-    }
-    catch (const Exception& ex) {
+    } catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "Present device exception: " << ex.message();
       DeviceException(ex.message());
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
       USBGUARD_LOG(Error) << "Present device exception: " << ex.what();
       DeviceException(ex.what());
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Error) << "BUG: Unknown device exception.";
       DeviceException("BUG: Unknown device exception.");
     }
@@ -288,8 +281,8 @@ namespace usbguard
       DeviceManager::AuthorizedDefaultType auth_default = getAuthorizedDefault();
 
       if (device->isController() && !_enumeration_only_mode) {
-        USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to " <<
-          DeviceManager::authorizedDefaultTypeToString(auth_default);
+        USBGUARD_LOG(Debug) << "Setting default blocked state for controller device to "
+                            << DeviceManager::authorizedDefaultTypeToString(auth_default);
         setDeviceAuthorizedDefault(&device->sysfsDevice(), auth_default);
       }
 
@@ -307,16 +300,13 @@ namespace usbguard
       }
 
       return;
-    }
-    catch (const Exception& ex) {
+    } catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "Device insert exception: " << ex.message();
       DeviceException(ex.message());
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
       USBGUARD_LOG(Error) << "Device insert exception: " << ex.what();
       DeviceException(ex.what());
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Error) << "BUG: Unknown device insert exception.";
       DeviceException("BUG: Unknown device insert exception.");
     }
@@ -346,8 +336,7 @@ namespace usbguard
     try {
       std::shared_ptr<Device> device = removeDevice(sysfs_devpath);
       DeviceEvent(DeviceManager::EventType::Remove, device);
-    }
-    catch (...) {
+    } catch (...) {
       /* Ignore for now */
       USBGUARD_LOG(Debug) << "Removal of an unknown device ignored.";
       return;
@@ -381,8 +370,8 @@ namespace usbguard
       *id_ptr = known_id;
     }
 
-    USBGUARD_LOG(Trace) << "Known? sysfs_path=" << sysfs_path << " id_ptr=" << (void*)id_ptr << " known=" << known << " known_id="
-      << known_id;
+    USBGUARD_LOG(Trace) << "Known? sysfs_path=" << sysfs_path << " id_ptr=" << (void*)id_ptr << " known=" << known
+                        << " known_id=" << known_id;
     return known;
   }
 

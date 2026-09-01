@@ -30,29 +30,29 @@
 #include <stdexcept>
 
 #if defined(HAVE_LINUX_AUDIT)
-#include <libaudit.h>
+  #include <libaudit.h>
 
-#ifndef AUDIT_USER_DEVICE
-  #define AUDIT_USER_DEVICE 1137 /* User space hotplug device changes */
-#endif
+  #ifndef AUDIT_USER_DEVICE
+    #define AUDIT_USER_DEVICE 1137 /* User space hotplug device changes */
+  #endif
 
-#if !defined(HAVE_DECL_AUDIT_ENCODE_NV_STRING)
-#ifndef _GNU_SOURCE
-  #define _GNU_SOURCE 1
-#endif
+  #if !defined(HAVE_DECL_AUDIT_ENCODE_NV_STRING)
+    #ifndef _GNU_SOURCE
+      #define _GNU_SOURCE 1
+    #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
 /*
  * Audit message encoding functions based on:
  *  https://github.com/linux-audit/audit-userspace/blob/f7cd4d6/lib/audit_logging.c#L125
  */
 
 /*
-* This function checks a string to see if it needs encoding.
-* It returns true if needed and false if not.
-*/
+ * This function checks a string to see if it needs encoding.
+ * It returns true if needed and false if not.
+ */
 static bool audit_value_needs_encoding(const char* str, unsigned int size)
 {
   if (str == NULL) {
@@ -70,8 +70,8 @@ static bool audit_value_needs_encoding(const char* str, unsigned int size)
 }
 
 /*
-* This function does encoding of "untrusted" names just like the kernel
-*/
+ * This function does encoding of "untrusted" names just like the kernel
+ */
 static char* audit_encode_value(char* final, const char* buf, unsigned int size)
 {
   char* ptr = final;
@@ -87,8 +87,8 @@ static char* audit_encode_value(char* final, const char* buf, unsigned int size)
   }
 
   for (unsigned int i = 0; i < size; i++) {
-    *ptr++ = hex[(buf[i] & 0xF0)>>4]; /* Upper nibble */
-    *ptr++ = hex[buf[i] & 0x0F];      /* Lower nibble */
+    *ptr++ = hex[(buf[i] & 0xF0) >> 4]; /* Upper nibble */
+    *ptr++ = hex[buf[i] & 0x0F];        /* Lower nibble */
   }
 
   *ptr = 0;
@@ -104,7 +104,7 @@ static char* audit_encode_nv_string(const char* name, const char* value, unsigne
   }
 
   if (value && audit_value_needs_encoding(value, vlen)) {
-    char* tmp = reinterpret_cast<char*>(::malloc(2*vlen + 1));
+    char* tmp = reinterpret_cast<char*>(::malloc(2 * vlen + 1));
 
     if (tmp) {
       audit_encode_value(tmp, value, vlen);
@@ -128,8 +128,8 @@ static char* audit_encode_nv_string(const char* name, const char* value, unsigne
   return str;
 }
 
-#endif /* HAVE_DECL_AUDIT_ENCODE_NV_STRING */
-#endif /* HAVE_LINUX_AUDIT */
+  #endif /* HAVE_DECL_AUDIT_ENCODE_NV_STRING */
+#endif   /* HAVE_LINUX_AUDIT */
 
 namespace usbguard
 {
@@ -316,13 +316,18 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Debug) << "Writing Linux Audit message: " << message;
-    audit_log_user_message(_audit_fd, AUDIT_USER_DEVICE, message.c_str(),
-      /*hostname=*/nullptr, /*addr=*/nullptr, /*tty=*/nullptr, result);
+    audit_log_user_message(_audit_fd,
+      AUDIT_USER_DEVICE,
+      message.c_str(),
+      /*hostname=*/nullptr,
+      /*addr=*/nullptr,
+      /*tty=*/nullptr,
+      result);
 #else
     (void)event;
     throw std::runtime_error("LinuxAuditBackend::write: not supported");
 #endif
   }
-}
+} // namespace usbguard
 
 /* vim: set ts=2 sw=2 et */

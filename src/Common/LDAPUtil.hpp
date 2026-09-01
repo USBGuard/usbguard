@@ -50,8 +50,8 @@ namespace usbguard
     static std::vector<std::string> _rule_keys;
 
     static std::string toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values, bool invalid);
-    static void serializeLDIF(const std::vector<std::shared_ptr<RuleSet>> rulesets, std::ostream& stream,
-      std::map<std::string, std::string>& values);
+    static void serializeLDIF(
+      const std::vector<std::shared_ptr<RuleSet>> rulesets, std::ostream& stream, std::map<std::string, std::string>& values);
   };
 } /* namespace usbguard */
 

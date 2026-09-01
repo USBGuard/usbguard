@@ -36,7 +36,6 @@ namespace usbguard
   class DLL_PUBLIC ConfigFile
   {
   public:
-
     /**
      * @brief Constructs ConfigFile object.
      *

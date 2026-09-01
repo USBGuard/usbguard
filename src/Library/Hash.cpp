@@ -39,19 +39,19 @@ namespace usbguard
     crypto_hash_sha256_init(&_state);
 #endif
 #if defined(USBGUARD_USE_OPENSSL)
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+  #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 
     if ((_state = EVP_MD_CTX_new()) == nullptr) {
       throw std::runtime_error("Dynamic memory allocation of message digest context failed.");
     }
 
-#else
+  #else
 
     if ((_state = EVP_MD_CTX_create()) == nullptr) {
       throw std::runtime_error("Dynamic memory allocation of message digest context failed.");
     }
 
-#endif
+  #endif
 
     if (!EVP_DigestInit_ex(_state, EVP_sha256(), nullptr)) {
       throw std::runtime_error("Context initialization of message digest context failed.");
@@ -115,11 +115,11 @@ namespace usbguard
   Hash::~Hash()
   {
 #if defined(USBGUARD_USE_OPENSSL)
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+  #if OPENSSL_VERSION_NUMBER >= 0x10100000L
     EVP_MD_CTX_free(_state);
-#else
+  #else
     EVP_MD_CTX_destroy(_state);
-#endif
+  #endif
 #endif
     release();
   }

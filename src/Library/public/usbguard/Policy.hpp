@@ -30,11 +30,7 @@ namespace usbguard
   class DLL_PUBLIC Policy
   {
   public:
-    enum class EventType {
-      Insert = 1,
-      Update = 2,
-      Remove = 3
-    };
+    enum class EventType { Insert = 1, Update = 2, Remove = 3 };
 
     Policy();
 
@@ -63,8 +59,8 @@ namespace usbguard
      * @throw USBGUARD_BUG If given EventType is unknown.
      */
     static std::string eventTypeToString(EventType event);
-  private:
 
+  private:
     std::vector<std::shared_ptr<RuleSet>> _rulesets_ptr;
     Rule::Target _defaultTarget;
   };

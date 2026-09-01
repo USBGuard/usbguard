@@ -45,6 +45,6 @@ namespace usbguard
 
     USBGUARD_LOG(Audit) << message;
   }
-}
+} // namespace usbguard
 
 /* vim: set ts=2 sw=2 et */

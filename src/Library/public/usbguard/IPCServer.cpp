@@ -113,8 +113,8 @@ namespace usbguard
     load(ss);
   }
 
-  IPCServer::AccessControl::AccessControl(IPCServer::AccessControl::Section section,
-    IPCServer::AccessControl::Privilege privilege)
+  IPCServer::AccessControl::AccessControl(
+    IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
   {
     setPrivilege(section, privilege);
   }
@@ -130,8 +130,8 @@ namespace usbguard
     return *this;
   }
 
-  bool IPCServer::AccessControl::hasPrivilege(IPCServer::AccessControl::Section section,
-    IPCServer::AccessControl::Privilege privilege) const
+  bool IPCServer::AccessControl::hasPrivilege(
+    IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege) const
   {
     if (privilege == Privilege::NONE) {
       return true;
@@ -150,8 +150,8 @@ namespace usbguard
     return (it->second & static_cast<uint8_t>(privilege)) == static_cast<uint8_t>(privilege);
   }
 
-  void IPCServer::AccessControl::setPrivilege(IPCServer::AccessControl::Section section,
-    IPCServer::AccessControl::Privilege privilege)
+  void IPCServer::AccessControl::setPrivilege(
+    IPCServer::AccessControl::Section section, IPCServer::AccessControl::Privilege privilege)
   {
     if (section == Section::NONE) {
       throw USBGUARD_BUG("Cannot set privileges for NONE section");
@@ -160,20 +160,14 @@ namespace usbguard
     const uint8_t p = static_cast<uint8_t>(privilege);
 
     if (section == Section::ALL) {
-      for (const auto& s : {
-          Section::POLICY,
-          Section::PARAMETERS,
-          Section::EXCEPTIONS,
-          Section::DEVICES
-        }) {
+      for (const auto& s : { Section::POLICY, Section::PARAMETERS, Section::EXCEPTIONS, Section::DEVICES }) {
         _access_control[s] |= p & ~ac_mask(s);
       }
     }
     else {
       if (privilege != Privilege::ALL && (p & ac_mask(section))) {
-        throw std::runtime_error("Invalid privilege " +
-          privilegeToString(privilege) + " for section " +
-          sectionToString(section));
+        throw std::runtime_error(
+          "Invalid privilege " + privilegeToString(privilege) + " for section " + sectionToString(section));
       }
 
       _access_control[section] |= p & ~ac_mask(section);
@@ -215,21 +209,12 @@ namespace usbguard
   {
     std::string access_control_string;
 
-    for (auto const& section : {
-        Section::DEVICES,
-        Section::POLICY,
-        Section::PARAMETERS,
-        Section::EXCEPTIONS
-      }) {
+    for (auto const& section : { Section::DEVICES, Section::POLICY, Section::PARAMETERS, Section::EXCEPTIONS }) {
       bool section_is_empty = true;
       std::string section_string = sectionToString(section);
       section_string.append("=");
 
-      for (auto const& privilege : {
-          Privilege::LIST,
-          Privilege::MODIFY,
-          Privilege::LISTEN
-        }) {
+      for (auto const& privilege : { Privilege::LIST, Privilege::MODIFY, Privilege::LISTEN }) {
         if (hasPrivilege(section, privilege)) {
           const std::string privilege_string = privilegeToString(privilege);
           section_string.append(privilege_string);
@@ -303,41 +288,29 @@ namespace usbguard
     d_pointer->stop();
   }
 
-  void IPCServer::DevicePresenceChanged(uint32_t id,
-    DeviceManager::EventType event,
-    Rule::Target target,
-    const std::string& device_rule)
+  void IPCServer::DevicePresenceChanged(
+    uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule)
   {
     d_pointer->DevicePresenceChanged(id, event, target, device_rule);
   }
 
-  void IPCServer::DevicePolicyChanged(uint32_t id,
-    Rule::Target target_old,
-    Rule::Target target_new,
-    const std::string& device_rule,
-    uint32_t rule_id)
+  void IPCServer::DevicePolicyChanged(
+    uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id)
   {
     d_pointer->DevicePolicyChanged(id, target_old, target_new, device_rule, rule_id);
   }
 
-  void IPCServer::DevicePolicyApplied(uint32_t id,
-    Rule::Target target_new,
-    const std::string& device_rule,
-    uint32_t rule_id)
+  void IPCServer::DevicePolicyApplied(uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id)
   {
     d_pointer->DevicePolicyApplied(id, target_new, device_rule, rule_id);
   }
 
-  void IPCServer::PropertyParameterChanged(const std::string& name,
-    const std::string& value_old,
-    const std::string& value_new)
+  void IPCServer::PropertyParameterChanged(const std::string& name, const std::string& value_old, const std::string& value_new)
   {
     d_pointer->PropertyParameterChanged(name, value_old, value_new);
   }
 
-  void IPCServer::ExceptionMessage(const std::string& context,
-    const std::string& object,
-    const std::string& reason)
+  void IPCServer::ExceptionMessage(const std::string& context, const std::string& object, const std::string& reason)
   {
     d_pointer->ExceptionMessage(context, object, reason);
   }

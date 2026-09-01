@@ -52,6 +52,7 @@ namespace usbguard
     size_t update(const void* ptr, size_t size);
     size_t update(std::istream& stream);
     std::string getBase64();
+
   private:
     void release();
 
@@ -62,7 +63,7 @@ namespace usbguard
     EVP_MD_CTX* _state;
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
-    gcry_md_hd_t _state {nullptr};
+    gcry_md_hd_t _state { nullptr };
 #endif
   };
 } /* namespace usbguard */

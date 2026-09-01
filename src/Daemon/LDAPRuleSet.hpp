@@ -23,16 +23,16 @@
 
 #ifdef HAVE_LDAP
 
-#include "usbguard/Typedefs.hpp"
-#include "usbguard/Rule.hpp"
-#include "usbguard/RuleSet.hpp"
+  #include "usbguard/Typedefs.hpp"
+  #include "usbguard/Rule.hpp"
+  #include "usbguard/RuleSet.hpp"
 
-#include "LDAPHandler.hpp"
+  #include "LDAPHandler.hpp"
 
-#include "Common/Thread.hpp"
+  #include "Common/Thread.hpp"
 
-#include <ctime>
-#include <future>
+  #include <ctime>
+  #include <future>
 
 namespace usbguard
 {

@@ -34,16 +34,14 @@ namespace usbguard
 {
   static const char* options_short = "hugp:d:e:P:";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
     { "user", no_argument, nullptr, 'u' },
     { "group", no_argument, nullptr, 'g' },
     { "policy", required_argument, nullptr, 'p' },
     { "devices", required_argument, nullptr, 'd' },
     { "exceptions", required_argument, nullptr, 'e' },
     { "parameters", required_argument, nullptr, 'P' },
-    { nullptr, 0, nullptr, 0 }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -60,8 +58,8 @@ namespace usbguard
     stream << std::endl;
   }
 
-  static void createIPCAccessControlFile(const std::string& path, const std::string& name, bool is_group,
-    const IPCServer::AccessControl& access_control)
+  static void createIPCAccessControlFile(
+    const std::string& path, const std::string& name, bool is_group, const IPCServer::AccessControl& access_control)
   {
     IPCServer::checkAccessControlName(name);
     const std::string basename = getIPCAccessControlFileBasename(name, is_group);

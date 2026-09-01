@@ -107,8 +107,7 @@ namespace usbguard
     return true;
   }
 
-  template<>
-  bool Predicates::isSubsetOf(const USBDeviceID& source, const USBDeviceID& target)
+  template <> bool Predicates::isSubsetOf(const USBDeviceID& source, const USBDeviceID& target)
   {
     USBGUARD_LOG(Trace) << "source=" << source.toString() << " target=" << target.toString();
     const bool result = source.isSubsetOf(target);
@@ -116,8 +115,7 @@ namespace usbguard
     return result;
   }
 
-  template<>
-  bool Predicates::isSupersetOf(const USBDeviceID& source, const USBDeviceID& target)
+  template <> bool Predicates::isSupersetOf(const USBDeviceID& source, const USBDeviceID& target)
   {
     USBGUARD_LOG(Trace) << "source=" << source.toString() << " target=" << target.toString();
     const bool result = target.isSubsetOf(source);
@@ -190,19 +188,14 @@ namespace usbguard
       }
     }
 
-    if (!(_mask == (MatchAll) ||
-      _mask == (MatchClass|MatchSubClass) ||
-      _mask == (MatchClass))) {
+    if (!(_mask == (MatchAll) || _mask == (MatchClass | MatchSubClass) || _mask == (MatchClass))) {
       throw std::runtime_error("Invalid type_string");
     }
   }
 
   bool USBInterfaceType::operator==(const USBInterfaceType& rhs) const
   {
-    return (_bClass == rhs._bClass &&
-        _bSubClass == rhs._bSubClass &&
-        _bProtocol == rhs._bProtocol &&
-        _mask == rhs._mask);
+    return (_bClass == rhs._bClass && _bSubClass == rhs._bSubClass && _bProtocol == rhs._bProtocol && _mask == rhs._mask);
   }
 
   bool USBInterfaceType::appliesTo(const USBInterfaceType& rhs) const
@@ -228,14 +221,12 @@ namespace usbguard
     return true;
   }
 
-  template<>
-  bool Predicates::isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target)
+  template <> bool Predicates::isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target)
   {
     return source.appliesTo(target);
   }
 
-  template<>
-  bool Predicates::isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target)
+  template <> bool Predicates::isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target)
   {
     return source.appliesTo(target);
   }
@@ -292,8 +283,8 @@ namespace usbguard
     device_out->bcdDevice = busEndianToHost(device_raw->bcdDevice);
   }
 
-  void USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out)
+  void USBParseConfigurationDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     (void)parser;
     const USBConfigurationDescriptor* configuration_raw = reinterpret_cast<const USBConfigurationDescriptor*>(descriptor_raw);
@@ -304,8 +295,8 @@ namespace usbguard
     configuration_out->wTotalLength = busEndianToHost(configuration_raw->wTotalLength);
   }
 
-  void USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out)
+  void USBParseInterfaceDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     (void)parser;
     const USBInterfaceDescriptor* interface_raw = reinterpret_cast<const USBInterfaceDescriptor*>(descriptor_raw);
@@ -314,7 +305,8 @@ namespace usbguard
     *interface_out = *interface_raw;
   }
 
-  void USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
+  void USBParseEndpointDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     (void)parser;
     const USBEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBEndpointDescriptor*>(descriptor_raw);
@@ -323,8 +315,8 @@ namespace usbguard
     endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
   }
 
-  void USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out)
+  void USBParseAudioEndpointDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     (void)parser;
     const USBAudioEndpointDescriptor* endpoint_raw = reinterpret_cast<const USBAudioEndpointDescriptor*>(descriptor_raw);
@@ -333,14 +325,15 @@ namespace usbguard
     endpoint_out->wMaxPacketSize = busEndianToHost(endpoint_raw->wMaxPacketSize);
   }
 
-  void USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
+  void USBParseUnknownDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     (void)parser;
     *descriptor_out = *descriptor_raw;
   }
 
-  void USBDescriptorParserHooks::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out)
+  void USBDescriptorParserHooks::parseUSBDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     USBGUARD_LOG(Trace);
     const auto type = static_cast<USBDescriptorType>(descriptor_raw->bHeader.bDescriptorType);
@@ -366,7 +359,8 @@ namespace usbguard
         return;
 
       default:
-        throw Exception("USB descriptor parser", "configuration descriptor", "unexpected descriptor size: " + std::to_string(size));
+        throw Exception(
+          "USB descriptor parser", "configuration descriptor", "unexpected descriptor size: " + std::to_string(size));
       }
 
       break;

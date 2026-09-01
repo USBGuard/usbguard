@@ -40,7 +40,6 @@ namespace usbguard
   class DLL_PUBLIC Interface
   {
   public:
-
     /*************************************************************************
      ******************************* PARAMETERS ******************************
      *************************************************************************/
@@ -79,8 +78,7 @@ namespace usbguard
      * the policy file.
      * @return The rule ID assigned to the successfully appended rule.
      */
-    virtual uint32_t appendRule(const std::string& rule_spec,
-      uint32_t parent_id, bool permanent) = 0;
+    virtual uint32_t appendRule(const std::string& rule_spec, uint32_t parent_id, bool permanent) = 0;
 
     /**
      * @brief Remove a rule from the current policy.
@@ -116,9 +114,7 @@ namespace usbguard
      * @return If \p permanent was set to true, the method will return an ID of
      * the rule that was modified or created because of this request.
      */
-    virtual uint32_t applyDevicePolicy(uint32_t id,
-      Rule::Target target,
-      bool permanent) = 0;
+    virtual uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent) = 0;
 
     /**
      * @brief List devices that match the specified query.
@@ -159,10 +155,8 @@ namespace usbguard
      * @param target The current authorization target of the device.
      * @param device_rule Device specific rule.
      */
-    virtual void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule) = 0;
+    virtual void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule) = 0;
 
     /**
      * @brief Notify about a change of a USB device authorization target.
@@ -183,11 +177,8 @@ namespace usbguard
      * @param rule_id Rule ID of the matched rule.
      * Otherwise a reserved rule ID value is used.
      */
-    virtual void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) = 0;
+    virtual void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) = 0;
 
     /**
      * @brief Notify about the acceptance or rejection of a device.
@@ -210,10 +201,8 @@ namespace usbguard
      * @param rule_id Rule ID of the matched rule.
      * Otherwise a reserved rule ID value is used.
      */
-    virtual void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) = 0;
+    virtual void DevicePolicyApplied(
+      uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) = 0;
 
     /**
      * @brief Notify about a change of a property parameter.
@@ -222,9 +211,8 @@ namespace usbguard
      * @param value_old Previous policy value.
      * @param value_new Current policy value.
      */
-    virtual void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new) = 0;
+    virtual void PropertyParameterChanged(
+      const std::string& name, const std::string& value_old, const std::string& value_new) = 0;
 
     /**
      * @brief Notify about an exception.
@@ -234,9 +222,7 @@ namespace usbguard
      * the exception.
      * @param reason Reason explaining why the exception was generated.
      */
-    virtual void ExceptionMessage(const std::string& context,
-      const std::string& object,
-      const std::string& reason) = 0;
+    virtual void ExceptionMessage(const std::string& context, const std::string& object, const std::string& reason) = 0;
   };
 } /* namespace usbguard */
 

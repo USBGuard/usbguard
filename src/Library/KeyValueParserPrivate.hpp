@@ -39,7 +39,7 @@ namespace usbguard
   class KeyValueParserPrivate
   {
     std::vector<std::string> _keys;
-    std::string _separator {""};
+    std::string _separator { "" };
     std::map<std::string, std::string> _output_map;
 
     KeyValueParser& _p_instance;
@@ -51,7 +51,8 @@ namespace usbguard
     bool checkKeyValidity(const std::string& key);
 
   public:
-    KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive, bool validate_keys);
+    KeyValueParserPrivate(
+      KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive, bool validate_keys);
     KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v, const std::string& sep,
       bool case_sensitive, bool validate_keys);
     std::pair<std::string, std::string> parseLine(std::string& str);

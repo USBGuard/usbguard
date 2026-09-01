@@ -60,8 +60,7 @@ namespace usbguard
       }
 
       return rule;
-    }
-    catch (const tao::pegtl::parse_error& ex) {
+    } catch (const tao::pegtl::parse_error& ex) {
       RuleParserError error(rule_spec);
       error.setHint(ex.what());
 #if TAO_PEGTL_VERSION_MAJOR >= 3
@@ -75,8 +74,7 @@ namespace usbguard
       }
 
       throw error;
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
       throw;
     }
   }

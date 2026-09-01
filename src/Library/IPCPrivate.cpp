@@ -33,8 +33,7 @@
 
 namespace usbguard
 {
-  static const std::vector<std::pair<uint32_t, std::string>> type_numbers = {
-    { 0x01, "usbguard.IPC.listDevices" },
+  static const std::vector<std::pair<uint32_t, std::string>> type_numbers = { { 0x01, "usbguard.IPC.listDevices" },
     { 0x02, "usbguard.IPC.applyDevicePolicy" },
     { 0x03, "usbguard.IPC.DevicePresenceChangedSignal" },
     { 0x04, "usbguard.IPC.DevicePolicyChangedSignal" },
@@ -46,8 +45,7 @@ namespace usbguard
     { 0x0a, "usbguard.IPC.Exception" },
     { 0x0b, "usbguard.IPC.getParameter" },
     { 0x0c, "usbguard.IPC.setParameter" },
-    { 0x0d, "usbguard.IPC.checkIPCPermissions" }
-  };
+    { 0x0d, "usbguard.IPC.checkIPCPermissions" } };
 
   uint32_t IPC::messageTypeNameToNumber(const std::string& name)
   {
@@ -84,12 +82,9 @@ namespace usbguard
 
   IPCException IPC::IPCExceptionFromMessage(const MessagePointer& message)
   {
-    const IPC::Exception* const exception_message = \
-      reinterpret_cast<const IPC::Exception*>(message.get());
-    return IPCException(exception_message->context(),
-      exception_message->object(),
-      exception_message->reason(),
-      exception_message->request_id());
+    const IPC::Exception* const exception_message = reinterpret_cast<const IPC::Exception*>(message.get());
+    return IPCException(
+      exception_message->context(), exception_message->object(), exception_message->reason(), exception_message->request_id());
   }
 
   bool IPC::isExceptionMessage(const MessagePointer& message)

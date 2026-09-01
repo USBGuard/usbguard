@@ -58,8 +58,8 @@ namespace usbguard
 {
   const char* usbguard_arg0 = nullptr;
 
-  static const std::map<const std::string, int(*)(int, char**)> cmd_handler_map = {
-    { "get-parameter", &usbguard_get_parameter },
+  static const std::map<const std::string, int (*)(int, char**)> cmd_handler_map = { { "get-parameter",
+                                                                                       &usbguard_get_parameter },
     { "set-parameter", &usbguard_set_parameter },
     { "list-devices", &usbguard_list_devices },
     { "allow-device", &usbguard_allow_device },
@@ -73,13 +73,11 @@ namespace usbguard
     { "read-descriptor", &usbguard_read_descriptor },
     { "add-user", &usbguard_add_user },
     { "remove-user", &usbguard_remove_user },
-    { "--version", &usbguard_print_version }
-  };
+    { "--version", &usbguard_print_version } };
 
   static void showTopLevelHelp(std::ostream& stream = std::cout)
   {
-    stream << " Usage: " << usbguard_arg0
-      << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
+    stream << " Usage: " << usbguard_arg0 << " [OPTIONS] <command> [COMMAND OPTIONS] ..." << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "" << std::endl;
@@ -97,8 +95,8 @@ namespace usbguard
     stream << std::endl;
     stream << "  generate-policy                Generate a rule set (policy) based on the connected USB devices." << std::endl;
     stream << "  watch                          Watch for IPC interface events and print them to stdout." << std::endl;
-    stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form." <<
-      std::endl;
+    stream << "  read-descriptor                Read a USB descriptor from a file and print it in human-readable form."
+           << std::endl;
     stream << std::endl;
     stream << "  add-user <name>                Add USBGuard IPC user/group (requires root privileges)" << std::endl;
     stream << "  remove-user <name>             Remove USBGuard IPC user/group (requires root privileges)" << std::endl;
@@ -132,18 +130,13 @@ int main(int argc, char* argv[])
 {
   try {
     return usbguard::usbguard_cli(argc, argv);
-  }
-  catch (const usbguard::IPCException& ex) {
-    std::cerr << "IPC ERROR: request id=" << ex.messageID()
-      << ": "  << ex.message() << std::endl;
-  }
-  catch (const usbguard::Exception& ex) {
+  } catch (const usbguard::IPCException& ex) {
+    std::cerr << "IPC ERROR: request id=" << ex.messageID() << ": " << ex.message() << std::endl;
+  } catch (const usbguard::Exception& ex) {
     std::cerr << "ERROR: " << ex.message() << std::endl;
-  }
-  catch (const std::exception& ex) {
+  } catch (const std::exception& ex) {
     std::cerr << "EXCEPTION: " << ex.what() << std::endl;
-  }
-  catch (...) {
+  } catch (...) {
     std::cerr << "BUG: Unknown exception" << std::endl;
   }
 

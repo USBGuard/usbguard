@@ -41,7 +41,7 @@ namespace usbguard
 
   const MemoryRuleSet& MemoryRuleSet::operator=(const MemoryRuleSet& rhs)
   {
-    RuleSet::operator = (rhs);
+    RuleSet::operator=(rhs);
     return *this;
   }
 

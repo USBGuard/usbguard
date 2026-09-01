@@ -33,7 +33,7 @@
 namespace usbguard
 {
 
-  Atomic<uint32_t> RuleSet::_id_next {0};
+  Atomic<uint32_t> RuleSet::_id_next { 0 };
 
   RuleSet::RuleSet(Interface* const interface_ptr)
     : _interface_ptr(interface_ptr)
@@ -111,7 +111,7 @@ namespace usbguard
         const Rule& existing_rule = **it;
 
         if (existing_rule.getRuleID() == parent_id) {
-          _rules.insert(it+1, rule_ptr);
+          _rules.insert(it + 1, rule_ptr);
           parent_found = true;
           break;
         }
@@ -189,7 +189,7 @@ namespace usbguard
     USBGUARD_LOG(Trace);
 
     for (auto& rule_ptr : _rules) {
-      if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/true)) {
+      if (rule_ptr->internal()->appliesToWithConditions(*device_rule, /*with_update*/ true)) {
         return rule_ptr;
       }
     }

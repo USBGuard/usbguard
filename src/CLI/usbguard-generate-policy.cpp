@@ -36,8 +36,7 @@ namespace usbguard
 {
   static const char* options_short = "hpPd:t:HXLb:o:n:";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
     { "with-ports", no_argument, nullptr, 'p' },
     { "no-ports-sn", no_argument, nullptr, 'P' },
     { "devpath", required_argument, nullptr, 'd' },
@@ -48,8 +47,7 @@ namespace usbguard
     { "usbguardbase", required_argument, nullptr, 'b' },
     { "objectclass", required_argument, nullptr, 'o' },
     { "name-prefix", required_argument, nullptr, 'n' },
-    { nullptr, 0, nullptr, 0 }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -152,8 +150,7 @@ namespace usbguard
     generator.setPortSpecificRules(port_specific);
     generator.setPortSpecificNoSerialRules(port_specific_noserial);
     generator.setDevpath(devpath);
-    generator.setExplicitCatchAllRule(with_catchall,
-      Rule::targetFromString(catchall_target));
+    generator.setExplicitCatchAllRule(with_catchall, Rule::targetFromString(catchall_target));
     generator.generate();
     auto rulesets = generator.refRuleSet();
     char array[HOST_NAME_MAX];
@@ -165,8 +162,8 @@ namespace usbguard
     }
     else {
       /*TODO maybe some option for setting hostname explicitly
-      * without hostname LDAP query will not work!
-      */
+       * without hostname LDAP query will not work!
+       */
       std::cerr << "Cannot get hostname" << std::endl;
     }
 
@@ -177,10 +174,7 @@ namespace usbguard
     }
     else if (ldif && with_base) {
       std::map<std::string, std::string> values = {
-        {"HOSTNAME", hostname},
-        {"NAME_PREFIX", name_prefix},
-        {"USBGUARD_BASE", base},
-        {"OBJCLASS", objclass}
+        { "HOSTNAME", hostname }, { "NAME_PREFIX", name_prefix }, { "USBGUARD_BASE", base }, { "OBJCLASS", objclass }
       };
       LDAPUtil::serializeLDIF(rulesets, std::cout, values);
     }

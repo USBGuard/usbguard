@@ -34,16 +34,14 @@ namespace usbguard
   static const char* options_short = "hp";
 
   static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
-    { "permanent", no_argument, nullptr, 'p' },
-    { nullptr, 0, nullptr, 0 }
+    { "help", no_argument, nullptr, 'h' }, { "permanent", no_argument, nullptr, 'p' }, { nullptr, 0, nullptr, 0 }
   };
 
   static void showHelp(std::ostream& stream, Rule::Target target)
   {
     std::string target_string = Rule::targetToString(target);
-    stream << " Usage: " << usbguard_arg0 << " " << target_string
-      << "-device [OPTIONS] (<id> | <rule> | <partial-rule>)" << std::endl;
+    stream << " Usage: " << usbguard_arg0 << " " << target_string << "-device [OPTIONS] (<id> | <rule> | <partial-rule>)"
+           << std::endl;
     stream << std::endl;
     stream << " Options:" << std::endl;
     stream << "  -p, --permanent  Make the decision permanent. A device specific " << target_string << std::endl;
@@ -54,9 +52,7 @@ namespace usbguard
 
   static bool isNumeric(const std::string& s)
   {
-    return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) {
-      return !std::isdigit(c);
-    }) == s.end();
+    return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
   }
 
   int usbguard_apply_device_policy(int argc, char** argv, Rule::Target target)
@@ -115,8 +111,7 @@ namespace usbguard
     try { /* Check whether rule target has been supplied */
       std::string rule_target = rule_string.substr(0, rule_string.find(" "));
       Rule::targetFromString(rule_target);
-    }
-    catch (const std::runtime_error& ex) {
+    } catch (const std::runtime_error& ex) {
       /*
        * The rule contains no target => partial rule
        * Supply a default match target
@@ -130,8 +125,7 @@ namespace usbguard
 
         try {
           ipc.applyDevicePolicy(id, target, permanent);
-        }
-        catch (const usbguard::Exception& ex) {
+        } catch (const usbguard::Exception& ex) {
           /*
            * When a parent device is blocked/rejected, all its child
            * devices are removed from the device map. If we try to apply

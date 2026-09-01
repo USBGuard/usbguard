@@ -35,10 +35,7 @@ namespace usbguard
 {
   static const char* options_short = "h";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
-    { nullptr, 0, nullptr, 0 }
-  };
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' }, { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -147,20 +144,21 @@ namespace usbguard
     return EXIT_SUCCESS;
   }
 
-#define PRINTF_LEVEL(level) for (int l = level; l > 0; --l) printf("\t")
+#define PRINTF_LEVEL(level)                                                                                                    \
+  for (int l = level; l > 0; --l)                                                                                              \
+  printf("\t")
 
-#define PRINTF_HEADER(sp, label, level) \
-  do { \
-    PRINTF_LEVEL(level); \
-    printf("%s: type=%02" PRIx8 " length=%" PRIu8 "\n", label, \
-      (sp)->bHeader.bDescriptorType, (sp)->bHeader.bLength); \
-  } while(0)
+#define PRINTF_HEADER(sp, label, level)                                                                                        \
+  do {                                                                                                                         \
+    PRINTF_LEVEL(level);                                                                                                       \
+    printf("%s: type=%02" PRIx8 " length=%" PRIu8 "\n", label, (sp)->bHeader.bDescriptorType, (sp)->bHeader.bLength);          \
+  } while (0)
 
-#define PRINTF_MEMBER(sp, m, fmt, level) \
-  do { \
-    PRINTF_LEVEL(level); \
-    printf("%20s: " fmt "\n", #m, sp->m); \
-  } while(0)
+#define PRINTF_MEMBER(sp, m, fmt, level)                                                                                       \
+  do {                                                                                                                         \
+    PRINTF_LEVEL(level);                                                                                                       \
+    printf("%20s: " fmt "\n", #m, sp->m);                                                                                      \
+  } while (0)
 
   void printDeviceDescriptor(const USBDescriptor* descriptor_base)
   {

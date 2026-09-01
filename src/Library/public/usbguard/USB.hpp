@@ -91,7 +91,7 @@ namespace usbguard
 
   struct DLL_PUBLIC USBDescriptor {
     struct USBDescriptorHeader bHeader;
-    uint8_t bDescriptorData[256-sizeof(USBDescriptorHeader)];
+    uint8_t bDescriptorData[256 - sizeof(USBDescriptorHeader)];
   } __attribute__((packed));
 
   struct DLL_PUBLIC USBDeviceDescriptor {
@@ -269,7 +269,7 @@ namespace usbguard
     bool isSubsetOf(const USBDeviceID& rhs) const;
 
   private:
-    std::string _vendor_id; /**< Vendor ID */
+    std::string _vendor_id;  /**< Vendor ID */
     std::string _product_id; /**< Product ID */
   };
 
@@ -285,8 +285,7 @@ namespace usbguard
      * @param target Second USB device ID.
      * @return True if source ID is subset of target ID, false otherwise.
      */
-    template<>
-    bool isSubsetOf(const USBDeviceID& source, const USBDeviceID& target);
+    template <> bool isSubsetOf(const USBDeviceID& source, const USBDeviceID& target);
 
     /**
      * @brief Checks if source ID is superset of target ID.
@@ -297,9 +296,8 @@ namespace usbguard
      * @param target Second USB device ID.
      * @return True if source ID is subset of target ID, false otherwise.
      */
-    template<>
-    bool isSupersetOf(const USBDeviceID& source, const USBDeviceID& target);
-  }
+    template <> bool isSupersetOf(const USBDeviceID& source, const USBDeviceID& target);
+  } // namespace Predicates DLL_PUBLIC
 
   /**
    * @brief Represents USB interface.
@@ -312,10 +310,10 @@ namespace usbguard
   class DLL_PUBLIC USBInterfaceType
   {
   public:
-    static const uint8_t MatchClass = 1<<0;
-    static const uint8_t MatchSubClass = 1<<1;
-    static const uint8_t MatchProtocol = 1<<2;
-    static const uint8_t MatchAll = MatchClass|MatchSubClass|MatchProtocol;
+    static const uint8_t MatchClass = 1 << 0;
+    static const uint8_t MatchSubClass = 1 << 1;
+    static const uint8_t MatchProtocol = 1 << 2;
+    static const uint8_t MatchAll = MatchClass | MatchSubClass | MatchProtocol;
 
     /**
      * @brief Constructs new interface by setting everything to zero.
@@ -407,12 +405,12 @@ namespace usbguard
     static const std::string typeString(uint8_t bClass, uint8_t bSubClass, uint8_t bProtocol, uint8_t mask = MatchAll);
 
   private:
-    uint8_t _bClass; /**< Interface class. */
+    uint8_t _bClass;    /**< Interface class. */
     uint8_t _bSubClass; /**< Interface subclass */
     uint8_t _bProtocol; /**< Interface protocol */
-    uint8_t _mask; /**< least significant bit masks interface class,
-                        2nd least significant bit masks interface subclass and
-                        3rd least significant bit masks interface protocol. */
+    uint8_t _mask;      /**< least significant bit masks interface class,
+                             2nd least significant bit masks interface subclass and
+                             3rd least significant bit masks interface protocol. */
   };
 
   namespace Predicates DLL_PUBLIC
@@ -426,18 +424,17 @@ namespace usbguard
      * @return True if non-masked parts of interface source match
      * targer interface.
      */
-    template<>
-    bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
-    template<>
-    bool isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target);
-  }
+    template <> bool isSubsetOf(const USBInterfaceType& source, const USBInterfaceType& target);
+    template <> bool isSupersetOf(const USBInterfaceType& source, const USBInterfaceType& target);
+  } // namespace Predicates DLL_PUBLIC
 
   class USBDescriptorParser;
 
   class DLL_PUBLIC USBDescriptorParserHooks
   {
   public:
-    virtual void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_in, USBDescriptor* descriptor_out);
+    virtual void parseUSBDescriptor(
+      USBDescriptorParser* parser, const USBDescriptor* descriptor_in, USBDescriptor* descriptor_out);
     virtual void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor);
   };
 
@@ -511,18 +508,18 @@ namespace usbguard
     std::unordered_map<uint8_t, size_t> _count_map;
   };
 
-  void DLL_PUBLIC USBParseDeviceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
-  void DLL_PUBLIC USBParseConfigurationDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
-  void DLL_PUBLIC USBParseInterfaceDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
-  void DLL_PUBLIC USBParseEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
-  void DLL_PUBLIC USBParseAudioEndpointDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
-  void DLL_PUBLIC USBParseUnknownDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseDeviceDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseConfigurationDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseInterfaceDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseEndpointDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseAudioEndpointDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
+  void DLL_PUBLIC USBParseUnknownDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out);
 
 } /* namespace usbguard */
 

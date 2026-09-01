@@ -39,13 +39,12 @@ namespace usbguard
   class DLL_PUBLIC NSHandler
   {
   public:
-
     enum class SourceType {
       LOCAL,
 #ifdef HAVE_LDAP
       LDAP,
 #endif
-      //SSSD
+      // SSSD
     };
 
     NSHandler();

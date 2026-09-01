@@ -39,14 +39,10 @@ namespace usbguard
 {
   namespace UEventParser
   {
-    template<typename Rule>
-    struct actions
-      : pegtl::nothing<Rule> {};
+    template <typename Rule> struct actions : pegtl::nothing<Rule> {};
 
-    template<>
-    struct actions<attribute> {
-      template<typename Input>
-      static void apply(const Input& in, UEvent& uevent)
+    template <> struct actions<attribute> {
+      template <typename Input> static void apply(const Input& in, UEvent& uevent)
       {
         try {
           const auto p = in.string().find_first_of('=');
@@ -58,9 +54,7 @@ namespace usbguard
           const std::string key = in.string().substr(0, p);
           const std::string value = trim(in.string().substr(p + 1, std::string::npos), std::string("\n\0", 2));
 
-          for (const std::string header_key : {
-              "ACTION", "DEVPATH"
-            }) {
+          for (const std::string header_key : { "ACTION", "DEVPATH" }) {
             if (key == header_key) {
               /*
                * Sanity check the value only if the value is already assigned,
@@ -76,29 +70,23 @@ namespace usbguard
             }
           }
           uevent.setAttribute(key, value);
-        }
-        catch (const pegtl::parse_error& ex) {
+        } catch (const pegtl::parse_error& ex) {
           throw;
-        }
-        catch (const std::exception& ex) {
+        } catch (const std::exception& ex) {
           throw pegtl::parse_error(ex.what(), in);
         }
       }
     };
 
-    template<>
-    struct actions<action> {
-      template<typename Input>
-      static void apply(const Input& in, UEvent& uevent)
+    template <> struct actions<action> {
+      template <typename Input> static void apply(const Input& in, UEvent& uevent)
       {
         uevent.setAttribute("ACTION", in.string());
       }
     };
 
-    template<>
-    struct actions<devpath> {
-      template<typename Input>
-      static void apply(const Input& in, UEvent& uevent)
+    template <> struct actions<devpath> {
+      template <typename Input> static void apply(const Input& in, UEvent& uevent)
       {
         uevent.setAttribute("DEVPATH", in.string());
       }
@@ -124,8 +112,7 @@ namespace usbguard
     }
   }
 
-  template<class G>
-  void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool trace)
+  template <class G> void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool trace)
   {
     try {
       tao::pegtl::string_input<> in(uevent_string, std::string());
@@ -140,8 +127,7 @@ namespace usbguard
         tao::pegtl::parse<G, UEventParser::actions, tao::pegtl::tracer>(in, uevent);
 #endif
       }
-    }
-    catch (...) {
+    } catch (...) {
       throw;
     }
   }

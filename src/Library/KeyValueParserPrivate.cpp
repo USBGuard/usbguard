@@ -35,19 +35,25 @@
 namespace usbguard
 {
   /**
-  * NOTE:
-  * vector v should have strings UPPERCASE when case insensitive mode was enabled
-  */
+   * NOTE:
+   * vector v should have strings UPPERCASE when case insensitive mode was enabled
+   */
   KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
-    const std::string& sep, bool case_sensitive, bool validate_keys):
-    _keys(v), _separator(sep), _p_instance(p_instance), _case_sensitive(case_sensitive), _validate_keys(validate_keys)
+    const std::string& sep, bool case_sensitive, bool validate_keys)
+    : _keys(v),
+      _separator(sep),
+      _p_instance(p_instance),
+      _case_sensitive(case_sensitive),
+      _validate_keys(validate_keys)
   {
     (void)_p_instance;
   }
 
-  KeyValueParserPrivate::KeyValueParserPrivate(KeyValueParser& p_instance, const std::vector<std::string>& v,
-    bool case_sensitive, bool validate_keys):
-    KeyValueParserPrivate(p_instance, v, "=", case_sensitive, validate_keys) {}
+  KeyValueParserPrivate::KeyValueParserPrivate(
+    KeyValueParser& p_instance, const std::vector<std::string>& v, bool case_sensitive, bool validate_keys)
+    : KeyValueParserPrivate(p_instance, v, "=", case_sensitive, validate_keys)
+  {
+  }
 
   void KeyValueParserPrivate::viewConfig()
   {
@@ -55,7 +61,7 @@ namespace usbguard
     USBGUARD_LOG(Info) << "keys:";
 
     for (auto item : this->_keys) {
-      USBGUARD_LOG(Info) << "--->"<< item;
+      USBGUARD_LOG(Info) << "--->" << item;
     }
   }
 
@@ -75,7 +81,7 @@ namespace usbguard
       val = trim(val);
 
       if (!this->_case_sensitive) {
-        for (size_t i = 0 ; i < key.length() ; i++) {
+        for (size_t i = 0; i < key.length(); i++) {
           key[i] = std::toupper(key[i], this->_loc);
         }
       }
@@ -96,7 +102,7 @@ namespace usbguard
     std::map<std::string, std::string>::iterator it;
     std::string line;
 
-    while ( getline (stream, line) ) {
+    while (getline(stream, line)) {
       if ((line.size() < 1) || (line[0] == '#')) {
         continue;
       }
@@ -117,7 +123,7 @@ namespace usbguard
 
   bool KeyValueParserPrivate::checkKeyValidity(const std::string& key)
   {
-    for (auto a: this->_keys) {
+    for (auto a : this->_keys) {
       if (!key.compare(a)) {
         return false;
       }

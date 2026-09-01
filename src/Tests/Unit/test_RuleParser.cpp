@@ -83,16 +83,17 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);
   }
   SECTION("to/from string: allow via-port { \"<non printable>\" \"<non printable>\" }") {
-    const std::vector<std::string> two_non_printable_strings = \
-    { non_printable_string, non_printable_string };
+    const std::vector<std::string> two_non_printable_strings = { non_printable_string, non_printable_string };
     rule.setTarget(Rule::Target::Allow);
     rule.attributeViaPort().set(two_non_printable_strings, Rule::SetOperator::OneOf);
     REQUIRE_NOTHROW(rule_string = rule.toString());
-    REQUIRE(rule_string ==
+    REQUIRE(
+      rule_string ==
       "allow via-port one-of { \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\" \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\" }");
     REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
     REQUIRE_NOTHROW(rule_string = rule_from.toString());
-    REQUIRE(rule_string ==
+    REQUIRE(
+      rule_string ==
       "allow via-port one-of { \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\" \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\" }");
     REQUIRE(rule.appliesTo(rule_from));
     REQUIRE(rule_from.appliesTo(rule));
@@ -102,14 +103,10 @@ TEST_CASE("Non-printable characters in a rule string", "[RuleParser]")
     rule.setTarget(Rule::Target::Allow);
     rule.setWithConnectType(non_printable_string);
     REQUIRE_NOTHROW(rule_string = rule.toString());
-    REQUIRE(
-      rule_string ==
-      "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+    REQUIRE(rule_string == "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
     REQUIRE_NOTHROW(rule_from = Rule::fromString(rule_string));
     REQUIRE_NOTHROW(rule_string = rule_from.toString());
-    REQUIRE(
-      rule_string ==
-      "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
+    REQUIRE(rule_string == "allow with-connect-type \"\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\xaa\\xbb\\xff\"");
     REQUIRE(rule.appliesTo(rule_from));
     REQUIRE(rule_from.appliesTo(rule));
     REQUIRE(rule_from.getTarget() == Rule::Target::Allow);

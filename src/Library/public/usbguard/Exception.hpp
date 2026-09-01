@@ -39,9 +39,7 @@ namespace usbguard
   class DLL_PUBLIC Exception : public std::exception
   {
   public:
-    Exception(const std::string& context,
-      const std::string& object,
-      const std::string& reason_val)
+    Exception(const std::string& context, const std::string& object, const std::string& reason_val)
       : _context(context),
         _object(object),
         _reason(reason_val)
@@ -95,8 +93,7 @@ namespace usbguard
     {
       try {
         return _context + ": " + (!_object.empty() ? _object + ": " : "") + _reason;
-      }
-      catch (...) {
+      } catch (...) {
         return "usbguard::Exception: exception^2";
       }
     }
@@ -112,8 +109,7 @@ namespace usbguard
     std::string _reason;
   };
 
-#define USBGUARD_BUG(m) \
-  ::usbguard::Exception(__PRETTY_FUNCTION__, "BUG", m)
+#define USBGUARD_BUG(m) ::usbguard::Exception(__PRETTY_FUNCTION__, "BUG", m)
 
   class ErrnoException : public Exception
   {
@@ -139,12 +135,12 @@ namespace usbguard
     }
   };
 
-#define USBGUARD_SYSCALL_THROW(context, syscall_bool_expression) \
-  do { \
-    if (syscall_bool_expression) { \
-      throw usbguard::ErrnoException(context, #syscall_bool_expression, errno); \
-    } \
-  } while(0)
+#define USBGUARD_SYSCALL_THROW(context, syscall_bool_expression)                                                               \
+  do {                                                                                                                         \
+    if (syscall_bool_expression) {                                                                                             \
+      throw usbguard::ErrnoException(context, #syscall_bool_expression, errno);                                                \
+    }                                                                                                                          \
+  } while (0)
 
   class IPCException : public Exception
   {
@@ -154,17 +150,13 @@ namespace usbguard
     {
     }
 
-    IPCException(const Exception& exception,
-      uint64_t message_id = 0)
+    IPCException(const Exception& exception, uint64_t message_id = 0)
       : Exception(exception),
         _message_id(message_id)
     {
     }
 
-    IPCException(const std::string& context,
-      const std::string& object,
-      const std::string& reason,
-      uint64_t message_id = 0)
+    IPCException(const std::string& context, const std::string& object, const std::string& reason, uint64_t message_id = 0)
       : Exception(context, object, reason),
         _message_id(message_id)
     {
@@ -192,7 +184,7 @@ namespace usbguard
     }
 
   private:
-    uint64_t _message_id{0};
+    uint64_t _message_id { 0 };
   };
 } /* namespace usbguard */
 

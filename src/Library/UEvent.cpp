@@ -79,8 +79,7 @@ namespace usbguard
 
   std::string UEvent::getHeaderLine() const
   {
-    if (!hasAttribute("ACTION") ||
-      !hasAttribute("DEVPATH")) {
+    if (!hasAttribute("ACTION") || !hasAttribute("DEVPATH")) {
       throw std::runtime_error("uevent: missing required header line values");
     }
 
@@ -108,9 +107,7 @@ namespace usbguard
 
   bool UEvent::hasRequiredAttributes() const
   {
-    for (const std::string name : {
-        "ACTION", "DEVPATH", "SUBSYSTEM"
-      }) {
+    for (const std::string name : { "ACTION", "DEVPATH", "SUBSYSTEM" }) {
       if (!hasAttribute(name)) {
         return false;
       }

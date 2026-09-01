@@ -46,7 +46,6 @@ namespace usbguard
   class DLL_PUBLIC IPCServer : public Interface
   {
   public:
-
     /**
      * @brief Checks whether given name is a valid access control name.
      *
@@ -86,7 +85,6 @@ namespace usbguard
     class AccessControl
     {
     public:
-
       /**
        * @brief Possible sections for which privileges can be specified.
        */
@@ -259,12 +257,10 @@ namespace usbguard
       void merge(const std::string& access_control_string);
 
     private:
-
       /**
        * @brief Hash value for \link Section section\endlink.
        */
       struct SectionHash {
-
         /**
          * @brief Computes hash value for \link Section section\endlink.
          *
@@ -320,41 +316,29 @@ namespace usbguard
     /**
      * @copydoc Interface::DevicePresenceChanged()
      */
-    void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule);
+    void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule);
 
     /**
      * @copydoc Interface::DevicePolicyChanged()
      */
-    void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id);
+    void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id);
 
     /**
      * @copydoc Interface::DevicePolicyApplied()
      */
-    void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id);
+    void DevicePolicyApplied(uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id);
 
     /**
      * @copydoc Interface::PropertyParameterChanged()
      */
-    void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new);
+    void PropertyParameterChanged(const std::string& name, const std::string& value_old, const std::string& value_new);
 
     /**
      * @copydoc Interface::ExceptionMessage()
      */
-    void ExceptionMessage(const std::string& context,
-      const std::string& object,
-      const std::string& reason);
+    void ExceptionMessage(const std::string& context, const std::string& object, const std::string& reason);
 
     /**
      * @brief Adds user to a set of allowed users by specifying his user ID.

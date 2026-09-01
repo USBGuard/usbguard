@@ -54,9 +54,7 @@ namespace usbguard
     std::cout << "[IPC] Connected" << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "IPC.Connected" }
-      };
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "IPC.Connected" } };
       runExecutable(env);
     }
   }
@@ -72,18 +70,14 @@ namespace usbguard
     std::cout << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "IPC.Disconnected" },
-        { "USBGUARD_MESSAGE", exception_initiated ? exception.message() : "" }
-      };
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "IPC.Disconnected" },
+        { "USBGUARD_MESSAGE", exception_initiated ? exception.message() : "" } };
       runExecutable(env);
     }
   }
 
-  void IPCSignalWatcher::DevicePresenceChanged(uint32_t id,
-    DeviceManager::EventType event,
-    Rule::Target target,
-    const std::string& device_rule)
+  void IPCSignalWatcher::DevicePresenceChanged(
+    uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule)
   {
     std::cout << "[device] PresenceChanged: id=" << id << std::endl;
     std::cout << " event=" << DeviceManager::eventTypeToString(event) << std::endl;
@@ -91,22 +85,17 @@ namespace usbguard
     std::cout << " device_rule=" << device_rule << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "Device.PresenceChanged" },
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "Device.PresenceChanged" },
         { "USBGUARD_DEVICE_ID", std::to_string(id) },
         { "USBGUARD_DEVICE_EVENT", DeviceManager::eventTypeToString(event) },
         { "USBGUARD_DEVICE_TARGET", Rule::targetToString(target) },
-        { "USBGUARD_DEVICE_RULE", device_rule }
-      };
+        { "USBGUARD_DEVICE_RULE", device_rule } };
       runExecutable(env);
     }
   }
 
-  void IPCSignalWatcher::DevicePolicyChanged(uint32_t id,
-    Rule::Target target_old,
-    Rule::Target target_new,
-    const std::string& device_rule,
-    uint32_t rule_id)
+  void IPCSignalWatcher::DevicePolicyChanged(
+    uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id)
   {
     std::cout << "[device] PolicyChanged: id=" << id << std::endl;
     std::cout << " target_old=" << Rule::targetToString(target_old) << std::endl;
@@ -115,22 +104,18 @@ namespace usbguard
     std::cout << " rule_id=" << rule_id << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "Device.PolicyChanged" },
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "Device.PolicyChanged" },
         { "USBGUARD_DEVICE_ID", std::to_string(id) },
         { "USBGUARD_DEVICE_TARGET_OLD", Rule::targetToString(target_old) },
         { "USBGUARD_DEVICE_TARGET_NEW", Rule::targetToString(target_new) },
         { "USBGUARD_DEVICE_RULE", device_rule },
-        { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) }
-      };
+        { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) } };
       runExecutable(env);
     }
   }
 
-  void IPCSignalWatcher::DevicePolicyApplied(uint32_t id,
-    Rule::Target target_new,
-    const std::string& device_rule,
-    uint32_t rule_id)
+  void IPCSignalWatcher::DevicePolicyApplied(
+    uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id)
   {
     std::cout << "[device] PolicyApplied: id=" << id << std::endl;
     std::cout << " target_new=" << Rule::targetToString(target_new) << std::endl;
@@ -138,32 +123,27 @@ namespace usbguard
     std::cout << " rule_id=" << rule_id << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "Device.PolicyApplied" },
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "Device.PolicyApplied" },
         { "USBGUARD_DEVICE_ID", std::to_string(id) },
         { "USBGUARD_DEVICE_TARGET_NEW", Rule::targetToString(target_new) },
         { "USBGUARD_DEVICE_RULE", device_rule },
-        { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) }
-      };
+        { "USBGUARD_DEVICE_RULE_ID", std::to_string(rule_id) } };
       runExecutable(env);
     }
   }
 
-  void IPCSignalWatcher::PropertyParameterChanged(const std::string& name,
-    const std::string& value_old,
-    const std::string& value_new)
+  void IPCSignalWatcher::PropertyParameterChanged(
+    const std::string& name, const std::string& value_old, const std::string& value_new)
   {
     std::cout << "[property] ParameterChanged: name=" << name << std::endl;
     std::cout << " value_old=" << value_old << std::endl;
     std::cout << " value_new=" << value_new << std::endl;
 
     if (hasOpenExecutable()) {
-      const std::map<std::string, std::string> env = {
-        { "USBGUARD_IPC_SIGNAL", "Property.ParameterChanged" },
+      const std::map<std::string, std::string> env = { { "USBGUARD_IPC_SIGNAL", "Property.ParameterChanged" },
         { "USBGUARD_PROPERTY_NAME", name },
         { "USBGUARD_PROPERTY_VALUE_OLD", value_old },
-        { "USBGUARD_PROPERTY_VALUE_NEW", value_new }
-      };
+        { "USBGUARD_PROPERTY_VALUE_NEW", value_new } };
       runExecutable(env);
     }
   }
@@ -176,14 +156,14 @@ namespace usbguard
       throw ErrnoException("openExecutable", path, errno);
     }
 
-    struct ::stat st = { };
+    struct ::stat st = {};
 
     if (::fstat(fd, &st) != 0) {
       ::close(fd);
       throw ErrnoException("openExecutable", path, errno);
     }
 
-    if (!S_ISREG(st.st_mode) || !(st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH))) {
+    if (!S_ISREG(st.st_mode) || !(st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))) {
       ::close(fd);
       throw Exception("openExecutable", path, "not an executable file");
     }
@@ -225,7 +205,7 @@ namespace usbguard
       const ::pid_t pid_waited = ::waitpid(pid_fork1, &fork1_status, 0);
 
       if (pid_waited == -1) {
-        std::cerr << "ERROR: runExecutable: "  << strerror(errno) << std::endl;
+        std::cerr << "ERROR: runExecutable: " << strerror(errno) << std::endl;
       }
       else if (WIFEXITED(fork1_status)) {
         const int fork1_errno = WEXITSTATUS(fork1_status);
@@ -279,7 +259,7 @@ namespace usbguard
       }
     }
 
-    char** envp = new char* [environ_size + environment.size() + 1];
+    char** envp = new char*[environ_size + environment.size() + 1];
     size_t i = 0;
 
     for (; i < environ_size; ++i) {
@@ -304,11 +284,11 @@ namespace usbguard
       char** envp_current = envp;
 
       while (envp_current[0] != nullptr) {
-        delete [] envp_current[0];
+        delete[] envp_current[0];
         ++envp_current;
       }
 
-      delete [] envp;
+      delete[] envp;
     }
   }
 
@@ -319,7 +299,7 @@ namespace usbguard
     }
 
     const auto c_str_len = ::strlen(c_str);
-    char* c_str_copy = new char [c_str_len + 1];
+    char* c_str_copy = new char[c_str_len + 1];
     /*
      * new throws std::bad_alloc on failure, no need
      * to check the pointer.

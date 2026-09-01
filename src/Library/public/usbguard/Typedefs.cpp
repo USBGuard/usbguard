@@ -24,8 +24,7 @@
 
 namespace usbguard
 {
-  template<>
-  bool matches(const std::string& a, const std::string& b)
+  template <> bool matches(const std::string& a, const std::string& b)
   {
     return a == b;
   }

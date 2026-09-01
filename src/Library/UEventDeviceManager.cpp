@@ -21,29 +21,29 @@
 #endif
 
 #if defined(HAVE_UEVENT)
-#include "UEventDeviceManager.hpp"
-#include "UEventParser.hpp"
-#include "SysFSDevice.hpp"
-#include "Base64.hpp"
-#include "Common/FDInputStream.hpp"
-#include "Common/Utility.hpp"
+  #include "UEventDeviceManager.hpp"
+  #include "UEventParser.hpp"
+  #include "SysFSDevice.hpp"
+  #include "Base64.hpp"
+  #include "Common/FDInputStream.hpp"
+  #include "Common/Utility.hpp"
 
-#include "usbguard/Logger.hpp"
-#include "usbguard/Exception.hpp"
+  #include "usbguard/Logger.hpp"
+  #include "usbguard/Exception.hpp"
 
-#include <stdexcept>
-#include <fstream>
-#include <chrono>
+  #include <stdexcept>
+  #include <fstream>
+  #include <chrono>
 
-#include <unistd.h>
-#include <sys/eventfd.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <linux/netlink.h>
-#include <limits.h>
-#include <stdlib.h>
+  #include <unistd.h>
+  #include <sys/eventfd.h>
+  #include <sys/select.h>
+  #include <sys/socket.h>
+  #include <sys/types.h>
+  #include <sys/un.h>
+  #include <linux/netlink.h>
+  #include <limits.h>
+  #include <stdlib.h>
 
 namespace usbguard
 {
@@ -75,8 +75,7 @@ namespace usbguard
   {
     // Lazy initialization is used for the sockets to allow scanning a devpath
     // without needed to open the socket or start the thread.
-    USBGUARD_SYSCALL_THROW("UEvent device manager",
-      (_wakeup_fd = eventfd(0, 0)) < 0);
+    USBGUARD_SYSCALL_THROW("UEvent device manager", (_wakeup_fd = eventfd(0, 0)) < 0);
     _uevent_fd = ueventOpen();
     _thread.start();
   }
@@ -88,8 +87,7 @@ namespace usbguard
       _thread.stop(/*do_wait=*/false);
       { /* Wakeup the device manager thread */
         const uint64_t one = 1;
-        USBGUARD_SYSCALL_THROW("Linux device manager",
-          write(_wakeup_fd, &one, sizeof one) != sizeof one);
+        USBGUARD_SYSCALL_THROW("Linux device manager", write(_wakeup_fd, &one, sizeof one) != sizeof one);
       }
       _thread.wait();
     }
@@ -98,8 +96,7 @@ namespace usbguard
   void UEventDeviceManager::scan()
   {
     USBGUARD_LOG(Trace);
-    Restorer<std::atomic<bool>, bool> \
-    restorer(_enumeration, /*transient=*/true, /*restored=*/false);
+    Restorer<std::atomic<bool>, bool> restorer(_enumeration, /*transient=*/true, /*restored=*/false);
     auto const enumeration_count = ueventEnumerateDevices();
     USBGUARD_LOG(Debug) << "enumeration_count=" << enumeration_count;
 
@@ -122,10 +119,8 @@ namespace usbguard
   {
     std::vector<std::string> components;
     tokenizeString(devpath, components, "/", /*trim_empty=*/true);
-    auto base = std::find_if(components.begin(), components.end(),
-    [](const std::string& component) -> bool {
-      return hasPrefix(component, "usb");
-    });
+    auto base = std::find_if(
+      components.begin(), components.end(), [](const std::string& component) -> bool { return hasPrefix(component, "usb"); });
     std::string path = "";
 
     for (auto itr = components.begin(); itr < components.end(); ++itr) {
@@ -139,8 +134,8 @@ namespace usbguard
     ueventProcessAction("add", path);
   }
 
-  bool UEventDeviceManager::ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
-    const std::pair<std::string, std::string>& b)
+  bool UEventDeviceManager::ueventEnumerateComparePath(
+    const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b)
   {
     const std::string base_a = filenameFromPath(a.second, /*include_extension=*/true);
     const std::string base_b = filenameFromPath(b.second, /*include_extension=*/true);
@@ -206,8 +201,7 @@ namespace usbguard
           _thread.stop();
         }
       } /* Thread main loop */
-    }
-    catch (const Exception& ex) {
+    } catch (const Exception& ex) {
       USBGUARD_LOG(Error) << "UEventDeviceManager thread: " << ex.message();
     }
 
@@ -220,15 +214,16 @@ namespace usbguard
     struct iovec iov[1];
     iov[0].iov_base = (void*)&buffer[0];
     iov[0].iov_len = buffer.capacity();
-    struct sockaddr_nl peer_sockaddr = { };
-    union {
+    struct sockaddr_nl peer_sockaddr = {};
+    union
+    {
       struct cmsghdr header;
       uint8_t ucred[CMSG_SPACE(sizeof(struct ucred))];
     } cmsg_un;
     cmsg_un.header.cmsg_len = CMSG_LEN(sizeof(struct ucred));
     cmsg_un.header.cmsg_level = SOL_SOCKET;
     cmsg_un.header.cmsg_type = SCM_CREDENTIALS;
-    struct msghdr msg_header = { };
+    struct msghdr msg_header = {};
     msg_header.msg_control = cmsg_un.ucred;
     msg_header.msg_controllen = sizeof cmsg_un.ucred;
     msg_header.msg_iov = iov;
@@ -242,20 +237,20 @@ namespace usbguard
 
       if (saved_errno == EAGAIN || saved_errno == EWOULDBLOCK) {
         USBGUARD_LOG(Warning) << "ueventProcessRead: "
-          << "reading from uevent source would block thread execution";
+                              << "reading from uevent source would block thread execution";
         return;
       }
       else if (saved_errno == ENOBUFS) {
         USBGUARD_LOG(Error) << "ueventProcessRead: "
-          << "failed to read pending uevent (returning): "
-          << "rc=" << rc << " errno=" << saved_errno;
+                            << "failed to read pending uevent (returning): "
+                            << "rc=" << rc << " errno=" << saved_errno;
         usleep(1000);
         return;
       }
       else {
         USBGUARD_LOG(Error) << "ueventProcessRead: "
-          << "failed to read pending uevent: "
-          << "rc=" << rc << " errno=" << saved_errno;
+                            << "failed to read pending uevent: "
+                            << "rc=" << rc << " errno=" << saved_errno;
         throw ErrnoException("UEvent device manager", "recvmsg", saved_errno);
       }
     }
@@ -266,32 +261,28 @@ namespace usbguard
     if (cmsg_header == nullptr) {
       /* ignore */
       USBGUARD_LOG(Warning) << "ueventProcessRead: "
-        << "received uevent without required control message: ignoring.";
+                            << "received uevent without required control message: ignoring.";
       return;
     }
 
-    if (cmsg_header->cmsg_len != CMSG_LEN(sizeof(struct ucred))
-      || cmsg_header->cmsg_level != SOL_SOCKET
-      || cmsg_header->cmsg_type != SCM_CREDENTIALS) {
+    if (cmsg_header->cmsg_len != CMSG_LEN(sizeof(struct ucred)) || cmsg_header->cmsg_level != SOL_SOCKET ||
+        cmsg_header->cmsg_type != SCM_CREDENTIALS) {
       /* unexpected control message -- ignore */
       USBGUARD_LOG(Warning) << "ueventProcessRead: "
-        << "received uevent with an invalid control message: ignoring.";
+                            << "received uevent with an invalid control message: ignoring.";
       return;
     }
 
-    const struct ucred* const cmsg_ucred = \
-        reinterpret_cast<const struct ucred*>(CMSG_DATA(cmsg_header));
+    const struct ucred* const cmsg_ucred = reinterpret_cast<const struct ucred*>(CMSG_DATA(cmsg_header));
 
     if (cmsg_ucred == nullptr) {
       /* missing ucred -- ignore */
       USBGUARD_LOG(Warning) << "ueventProcessRead: "
-        << "received uevent without required SCM_CREDENTIALS data: ignoring.";
+                            << "received uevent without required SCM_CREDENTIALS data: ignoring.";
       return;
     }
 
-    if (cmsg_ucred->pid != 0 ||
-      cmsg_ucred->uid != 0 ||
-      cmsg_ucred->gid != 0) {
+    if (cmsg_ucred->pid != 0 || cmsg_ucred->uid != 0 || cmsg_ucred->gid != 0) {
       /* unknown origin -- ignore */
       USBGUARD_LOG(Debug) << "received uevent of unknown origin: ignoring.";
       return;
@@ -303,8 +294,7 @@ namespace usbguard
     try {
       UEvent uevent = UEvent::fromString(buffer, /*attributes_only=*/false, /*trace=*/false);
       ueventProcessUEvent(std::move(uevent));
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Warning) << "ueventProcessRead: received invalid uevent data";
       USBGUARD_LOG(Debug) << "ueventProcessRead: uevent_data=" << base64Encode(buffer);
     }
@@ -323,9 +313,7 @@ namespace usbguard
      */
     if (subsystem != "usb") {
       USBGUARD_LOG(Debug) << "Ignoring non-USB device:"
-        << " subsystem=" << subsystem
-        << " devtype=" << devtype
-        << " action=" << action;
+                          << " subsystem=" << subsystem << " devtype=" << devtype << " action=" << action;
       return;
     }
 
@@ -365,15 +353,15 @@ namespace usbguard
           }
           else {
             if (!sysfs_device.hasAttribute("descriptors")) {
-              USBGUARD_LOG(Debug) << sysfs_devpath << ": UEvent doesn't refer to a device with a descriptors file. Ignoring event.";
+              USBGUARD_LOG(Debug) << sysfs_devpath
+                                  << ": UEvent doesn't refer to a device with a descriptors file. Ignoring event.";
               return;
             }
           }
 
           processDeviceInsertion(sysfs_device, /*signal_present=*/known_path);
-          USBGUARD_LOG(Debug) << "Enumeration notify: sysfs_devpath=" << sysfs_devpath
-            << " _enumeration=" << _enumeration
-            << " known_path=" << known_path;
+          USBGUARD_LOG(Debug) << "Enumeration notify: sysfs_devpath=" << sysfs_devpath << " _enumeration=" << _enumeration
+                              << " known_path=" << known_path;
         }
       }
       else if (action == "remove") {
@@ -383,16 +371,12 @@ namespace usbguard
         USBGUARD_LOG(Debug) << action << "=" << sysfs_devpath;
       }
       else {
-        USBGUARD_LOG(Warning) << "Ignoring unknown UEvent action: sysfs_devpath=" << sysfs_devpath
-          << " action=" << action;
+        USBGUARD_LOG(Warning) << "Ignoring unknown UEvent action: sysfs_devpath=" << sysfs_devpath << " action=" << action;
       }
-    }
-    catch (const Exception& ex) {
-      USBGUARD_LOG(Warning) << "USB Device Exception: "
-        << ex.message();
+    } catch (const Exception& ex) {
+      USBGUARD_LOG(Warning) << "USB Device Exception: " << ex.message();
       DeviceException(ex.message());
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Warning) << "USB Device Exception: unknown exception";
       DeviceException("unknown exception");
     }
@@ -401,12 +385,11 @@ namespace usbguard
   int UEventDeviceManager::ueventEnumerateDevices()
   {
     USBGUARD_LOG(Trace);
-    return loadFiles(SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
+    return loadFiles(
+      SysFSDevice::getSysfsRoot() + "/bus/usb/devices",
       UEventDeviceManager::ueventEnumerateFilterDevice,
-    [this](const std::string& devpath, const std::string& buspath) {
-      return ueventEnumerateTriggerDevice(devpath, buspath);
-    },
-    UEventDeviceManager::ueventEnumerateComparePath);
+      [this](const std::string& devpath, const std::string& buspath) { return ueventEnumerateTriggerDevice(devpath, buspath); },
+      UEventDeviceManager::ueventEnumerateComparePath);
   }
 
   int UEventDeviceManager::ueventEnumerateTriggerDevice(const std::string& devpath, const std::string& buspath)
@@ -440,11 +423,9 @@ namespace usbguard
       else {
         USBGUARD_LOG(Debug) << "DEVTYPE != usb_device. Skipping.";
       }
-    }
-    catch (const Exception& ex) {
+    } catch (const Exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.message();
-    }
-    catch (const std::exception& ex) {
+    } catch (const std::exception& ex) {
       USBGUARD_LOG(Warning) << "device enumeration exception: " << buspath << ": " << ex.what();
     }
 
@@ -459,8 +440,7 @@ namespace usbguard
       for (auto& it : _backlog) {
         ueventProcessUEvent(std::move(it));
       }
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Warning) << "ueventProcessBacklog: error processing uevent data";
     }
   }

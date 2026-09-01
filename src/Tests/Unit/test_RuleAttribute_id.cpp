@@ -95,8 +95,8 @@ TEST_CASE("Parse rule with an id attribute", "[Parse]")
 
 TEST_CASE("Match id attribute", "[Match]")
 {
-  Rule device_rule = \
-    Rule::fromString("device id 1d6b:0002 serial \"dummy_hcd.0\" name \"Dummy host controller\" hash \"FSgk48/lKiTJWdqOqkHLuMQr155m+ux+ozIb17HHcKs=\" parent-hash \"zUhq0ExS41FTVEO5sce8eOOyMrPsfwQEeVz0kH6IAhc=\" via-port \"usb1\" with-interface 09:00:00");
+  Rule device_rule = Rule::fromString(
+    "device id 1d6b:0002 serial \"dummy_hcd.0\" name \"Dummy host controller\" hash \"FSgk48/lKiTJWdqOqkHLuMQr155m+ux+ozIb17HHcKs=\" parent-hash \"zUhq0ExS41FTVEO5sce8eOOyMrPsfwQEeVz0kH6IAhc=\" via-port \"usb1\" with-interface 09:00:00");
   Rule rule;
   SECTION("vendor and product") {
     REQUIRE_NOTHROW(rule = Rule::fromString("allow id 1d6b:0002"));

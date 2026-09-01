@@ -59,7 +59,7 @@ namespace usbguard
       _stream.open(path, std::ios::in);
     }
     else {
-      _stream.open(path, std::ios::in|std::ios::out);
+      _stream.open(path, std::ios::in | std::ios::out);
     }
 
     if (!_stream.is_open()) {
@@ -135,7 +135,8 @@ namespace usbguard
   {
     std::string config_line;
     size_t config_line_number = 0;
-    KeyValueParser kvparser(_known_names, "=",
+    KeyValueParser kvparser(_known_names,
+      "=",
       /*case_sensitive=*/true,
       /*validate_keys=*/!_known_names.empty());
 

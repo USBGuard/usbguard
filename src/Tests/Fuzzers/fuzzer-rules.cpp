@@ -39,10 +39,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
   std::string rule_spec(data, data + size);
 
   try {
-    auto rule = parseRuleFromString(rule_spec, "fuzzer_input", 0,
-        false /*trace*/);
-  }
-  catch (const RuleParserError& ex) {
+    auto rule = parseRuleFromString(rule_spec, "fuzzer_input", 0, false /*trace*/);
+  } catch (const RuleParserError& ex) {
     // An invalid rule is ok.
   }
 

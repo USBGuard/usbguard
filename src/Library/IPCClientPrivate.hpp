@@ -65,8 +65,8 @@ namespace usbguard
     uint32_t applyDevicePolicy(uint32_t id, Rule::Target target, bool permanent);
     const std::vector<Rule> listDevices(const std::string& query);
 
-    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section,
-      const IPCServer::AccessControl::Privilege& privilege);
+    bool checkIPCPermissions(
+      const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
 
     void processReceiveEvent();
 
@@ -81,15 +81,13 @@ namespace usbguard
 
     static uint64_t generateMessageID(void);
 
-    template<class T>
-    void registerHandler(MessageHandler::HandlerType method)
+    template <class T> void registerHandler(MessageHandler::HandlerType method)
     {
       const uint32_t type_number = IPC::messageTypeNameToNumber(std::string(T::default_instance().GetTypeName()));
       _handlers.emplace(type_number, MessageHandler::create<T>(*this, method));
     }
 
-    template<typename ProtobufType>
-    std::unique_ptr<ProtobufType> qbIPCSendRecvMessage(ProtobufType& message_out)
+    template <typename ProtobufType> std::unique_ptr<ProtobufType> qbIPCSendRecvMessage(ProtobufType& message_out)
     {
       IPC::MessagePointer message_in = qbIPCSendRecvMessage(reinterpret_cast<IPC::MessageType&>(message_out));
 

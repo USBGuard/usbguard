@@ -39,7 +39,7 @@
 bool setupSeccompWhitelist(void)
 {
   /* TODO: Use SCMP_ACT_TRAP. Switch to EACCES for 1.x releases */
-  scmp_filter_ctx ctx = seccomp_init(/*SCMP_ACT_ERRNO(EACCES)*/SCMP_ACT_TRAP);
+  scmp_filter_ctx ctx = seccomp_init(/*SCMP_ACT_ERRNO(EACCES)*/ SCMP_ACT_TRAP);
 
   if (!ctx) {
     return false;
@@ -52,9 +52,9 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(openat), 0);
-#ifdef __NR_fstat
+  #ifdef __NR_fstat
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
-#endif
+  #endif
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lstat), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fcntl), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlink), 0);
@@ -70,14 +70,10 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-    SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-    SCMP_A2(SCMP_CMP_EQ, PROT_READ));
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-    SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1,
-    SCMP_A2(SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1, SCMP_A2(SCMP_CMP_EQ, PROT_NONE));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1, SCMP_A2(SCMP_CMP_EQ, PROT_READ));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1, SCMP_A2(SCMP_CMP_EQ, PROT_WRITE));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 1, SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_WRITE));
   /* clock */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_gettime), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clock_getres), 0);
@@ -98,23 +94,22 @@ bool setupSeccompWhitelist(void)
   /* STRACE:
    *  getrlimit(RLIMIT_NOFILE, {rlim_cur=1024, rlim_max=4*1024}) = 0
    */
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 1,
-    SCMP_A0(SCMP_CMP_EQ, RLIMIT_NOFILE));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 1, SCMP_A0(SCMP_CMP_EQ, RLIMIT_NOFILE));
   /* pipes, eventfd */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pipe), 0);
   /* STRACE:
    *  eventfd2(0, 0)
    */
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(eventfd2), 2,
-    SCMP_A0(SCMP_CMP_EQ, 0),
-    SCMP_A1(SCMP_CMP_EQ, 0));
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(eventfd2), 2, SCMP_A0(SCMP_CMP_EQ, 0), SCMP_A1(SCMP_CMP_EQ, 0));
   /* socket */
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
+  ret |= seccomp_rule_add(ctx,
+    SCMP_ACT_ALLOW,
+    SCMP_SYS(socket),
+    1,
     SCMP_A0(SCMP_CMP_EQ, PF_LOCAL),
     SCMP_A1(SCMP_CMP_MASKED_EQ, SOCK_STREAM, SOCK_STREAM));
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1,
-    SCMP_A0(SCMP_CMP_EQ, PF_NETLINK),
-    SCMP_A2(SCMP_CMP_EQ, NETLINK_KOBJECT_UEVENT));
+  ret |= seccomp_rule_add(
+    ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 1, SCMP_A0(SCMP_CMP_EQ, PF_NETLINK), SCMP_A2(SCMP_CMP_EQ, NETLINK_KOBJECT_UEVENT));
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(bind), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(accept), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(listen), 0);
@@ -126,20 +121,19 @@ bool setupSeccompWhitelist(void)
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(select), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(connect), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockname), 0);
-#if defined(HAVE_LIBCAPNG)
+  #if defined(HAVE_LIBCAPNG)
   /* capabilities */
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capget), 0);
   ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capset), 0);
   /* allow to drop capabilities using prctl */
-  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(prctl), 1,
-    SCMP_A0(SCMP_CMP_EQ, PR_CAPBSET_DROP));
-#endif /* HAVE_LIBCAPNG */
+  ret |= seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(prctl), 1, SCMP_A0(SCMP_CMP_EQ, PR_CAPBSET_DROP));
+  #endif /* HAVE_LIBCAPNG */
 
   /* before main() only */
-  //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(statfs), 0);
-  //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(arch_prctl), 0);
-  //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0);
-  //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0);
+  // seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(statfs), 0);
+  // seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(arch_prctl), 0);
+  // seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0);
+  // seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0);
 
   if (ret != 0) {
     goto out;

@@ -29,11 +29,10 @@
 
 namespace usbguard
 {
-  template<class C>
-  class Thread
+  template <class C> class Thread
   {
   public:
-    Thread(C* method_class_ptr, void(C::*method)())
+    Thread(C* method_class_ptr, void (C::*method)())
     {
       _method_class_ptr = method_class_ptr;
       _method = method;
@@ -85,8 +84,7 @@ namespace usbguard
       if (_thread.joinable()) {
         try {
           _thread.join();
-        }
-        catch (const std::system_error& ex) {
+        } catch (const std::system_error& ex) {
           USBGUARD_LOG(Error) << ex.what();
           throw;
         }
@@ -107,7 +105,7 @@ namespace usbguard
 
   private:
     C* _method_class_ptr;
-    void(C::*_method)();
+    void (C::*_method)();
     std::thread _thread;
     std::atomic_bool _stop_request;
   };

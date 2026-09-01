@@ -44,24 +44,23 @@ namespace usbguard
   class DLL_PUBLIC DeviceManager
   {
   public:
-
     /**
      * @brief Type of event that took place on the device.
      */
     enum class EventType {
       Present = 0, /**< USB device has been already present. */
-      Insert = 1, /**< USB device has been inserted. */
-      Update = 2, /**< Some writable attribute has been changed externally. */
-      Remove = 3, /**< USB device has been ejected. */
+      Insert = 1,  /**< USB device has been inserted. */
+      Update = 2,  /**< Some writable attribute has been changed externally. */
+      Remove = 3,  /**< USB device has been ejected. */
     };
 
     /**
      * @brief Defines which devices are authorized by default.
      */
     enum class AuthorizedDefaultType {
-      Keep = -128, /**< Do not change the authorization state. */
-      None = 0, /**< Every new device starts out deauthorized. */
-      All = 1, /**< Every new device starts out authorized. */
+      Keep = -128,  /**< Do not change the authorization state. */
+      None = 0,     /**< Every new device starts out deauthorized. */
+      All = 1,      /**< Every new device starts out authorized. */
       Internal = 2, /**< Internal devices start out authorized,
                       external devices start out deauthorized
                       (this requires the ACPI tables to properly

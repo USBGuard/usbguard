@@ -51,6 +51,7 @@ namespace usbguard
 
     static void setSysfsRoot(const std::string& sysfs_root);
     static const std::string& getSysfsRoot();
+
   private:
     void reloadUEvent();
 

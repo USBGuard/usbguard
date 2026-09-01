@@ -38,7 +38,7 @@ namespace usbguard
   std::string getDaemonConfigPath()
   {
     USBGUARD_LOG(Trace);
-    const char* const  envval = getenv("USBGUARD_DAEMON_CONF");
+    const char* const envval = getenv("USBGUARD_DAEMON_CONF");
 
     if (envval != nullptr) {
       USBGUARD_LOG(Debug) << "Returning environment variable path: " << envval;

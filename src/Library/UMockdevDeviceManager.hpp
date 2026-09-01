@@ -22,12 +22,12 @@
 #endif
 
 #if defined(HAVE_UMOCKDEV)
-#include "Common/Thread.hpp"
-#include "DeviceManagerBase.hpp"
-#include "UMockdevDeviceDefinition.hpp"
+  #include "Common/Thread.hpp"
+  #include "DeviceManagerBase.hpp"
+  #include "UMockdevDeviceDefinition.hpp"
 
-#include <condition_variable>
-#include <umockdev.h>
+  #include <condition_variable>
+  #include <umockdev.h>
 
 namespace usbguard
 {
@@ -54,8 +54,8 @@ namespace usbguard
       }
     };
 
-    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
-      const std::pair<std::string, std::string>& b);
+    static bool ueventEnumerateComparePath(
+      const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b);
 
     void umockdevInit();
     void umockdevAdd(const std::shared_ptr<UMockdevDeviceDefinition>& definition);
@@ -76,9 +76,9 @@ namespace usbguard
     int ueventEnumerateTriggerAndWaitForDevice(const std::string& devpath, const std::string& buspath);
 
     Thread<UMockdevDeviceManager> _thread;
-    std::unique_ptr<UMockdevTestbed, GObjectDeleter> _testbed{nullptr};
+    std::unique_ptr<UMockdevTestbed, GObjectDeleter> _testbed { nullptr };
     std::string _umockdev_deviceroot;
-    int _inotify_fd{-1};
+    int _inotify_fd { -1 };
 
     std::map<std::string, std::shared_ptr<UMockdevDeviceDefinition>> _sysfs_path_map;
     std::multimap<std::string, std::weak_ptr<UMockdevDeviceDefinition>> _umockdev_file_map;

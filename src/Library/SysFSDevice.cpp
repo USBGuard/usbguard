@@ -58,8 +58,7 @@ namespace usbguard
       _sysfs_name(filenameFromPath(_sysfs_path, /*include_extension=*/true)),
       _sysfs_dirfd(-1)
   {
-    USBGUARD_LOG(Trace) << "sysfs_path=" << sysfs_path
-      << " without_parent=" << without_parent;
+    USBGUARD_LOG(Trace) << "sysfs_path=" << sysfs_path << " without_parent=" << without_parent;
 
     if (!without_parent) {
       _sysfs_parent_path = parentPath(sysfs_path);
@@ -71,13 +70,12 @@ namespace usbguard
       USBGUARD_LOG(Debug) << "parent_path=" << _sysfs_parent_path;
     }
 
-    USBGUARD_SYSCALL_THROW("SysFSDevice",
-      (_sysfs_dirfd = open((G_sysfs_root + _sysfs_path).c_str(), O_PATH|O_DIRECTORY)) < 0);
+    USBGUARD_SYSCALL_THROW(
+      "SysFSDevice", (_sysfs_dirfd = open((G_sysfs_root + _sysfs_path).c_str(), O_PATH | O_DIRECTORY)) < 0);
 
     try {
       reloadUEvent();
-    }
-    catch (...) {
+    } catch (...) {
       close(_sysfs_dirfd);
       throw;
     }
@@ -174,8 +172,7 @@ namespace usbguard
 
     std::string buffer(4096, 0);
     ssize_t rc = -1;
-    USBGUARD_SYSCALL_THROW("SysFSDevice",
-      (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
+    USBGUARD_SYSCALL_THROW("SysFSDevice", (rc = read(fd, &buffer[0], buffer.capacity())) < 0);
 
     if (rc <= 0) {
       return std::string();
@@ -229,8 +226,7 @@ namespace usbguard
     }
 
     ssize_t rc = -1;
-    USBGUARD_SYSCALL_THROW("SysFSDevice",
-      (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
+    USBGUARD_SYSCALL_THROW("SysFSDevice", (rc = write(fd, &value[0], value.size())) != (ssize_t)value.size());
   }
 
   void SysFSDevice::reload()

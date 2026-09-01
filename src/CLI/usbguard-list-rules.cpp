@@ -31,12 +31,10 @@ namespace usbguard
 {
   static const char* options_short = "hdl:";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
-    { "show-devices", no_argument, nullptr, 'd'},
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
+    { "show-devices", no_argument, nullptr, 'd' },
     { "label", required_argument, nullptr, 'l' },
-    { nullptr, 0, nullptr, 0 }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -85,7 +83,7 @@ namespace usbguard
 
       if (show_devices) {
         for (auto device_rule : ipc.listDevices(rule.toString())) {
-          std::cout << "\t"<< device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
+          std::cout << "\t" << device_rule.getRuleID() << ": " << device_rule.toString() << std::endl;
         }
       }
     }

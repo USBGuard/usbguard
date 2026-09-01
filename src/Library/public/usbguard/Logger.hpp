@@ -37,13 +37,12 @@ namespace usbguard
   class DLL_PUBLIC LogStream : public std::ostringstream
   {
   public:
-
     /**
      * @brief Contains information about the source.
      */
     struct Source {
-      std::string file; /**< File name. */
-      int line; /**< Line number. */
+      std::string file;     /**< File name. */
+      int line;             /**< Line number. */
       std::string function; /**< Name of the function. */
     };
 
@@ -62,14 +61,7 @@ namespace usbguard
     /**
      * @brief Log levels.
      */
-    enum class Level : int {
-      Audit = -2,
-      Error = -1,
-      Warning = 0,
-      Info = 1,
-      Debug = 2,
-      Trace = 3
-    };
+    enum class Level : int { Audit = -2, Error = -1, Warning = 0, Info = 1, Debug = 2, Trace = 3 };
 
     /**
      * @brief Returns string representation of given \link Level level\endlink.
@@ -117,7 +109,6 @@ namespace usbguard
   class DLL_PUBLIC LogSink
   {
   public:
-
     /**
      * @brief Constructs logger output sink with given name.
      *
@@ -156,7 +147,6 @@ namespace usbguard
   class DLL_PUBLIC Logger
   {
   public:
-
     /**
      * @brief Constructs logger with enabled log level set to warning.
      */
@@ -266,7 +256,6 @@ namespace usbguard
     static const std::string timestamp();
 
   private:
-
     /**
      * @brief Adds given sink into logger output sinks without using a lock.
      *
@@ -306,9 +295,9 @@ namespace usbguard
 
 #define USBGUARD_FUNCTION __func__
 
-#define USBGUARD_LOG(level) \
-  if (USBGUARD_LOGGER.isEnabled(usbguard::LogStream::Level::level)) \
-    USBGUARD_LOGGER(USBGUARD_SOURCE_FILE, __LINE__, USBGUARD_FUNCTION, usbguard::LogStream::Level::level)
+#define USBGUARD_LOG(level)                                                                                                    \
+  if (USBGUARD_LOGGER.isEnabled(usbguard::LogStream::Level::level))                                                            \
+  USBGUARD_LOGGER(USBGUARD_SOURCE_FILE, __LINE__, USBGUARD_FUNCTION, usbguard::LogStream::Level::level)
 
 } /* namespace usbguard */
 

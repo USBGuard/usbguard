@@ -35,8 +35,7 @@ namespace usbguard
      * @return True if the source set is a subset of the
      * target set, false otherwise.
      */
-    template<typename T>
-    bool isSubsetOf(const T& source, const T& target)
+    template <typename T> bool isSubsetOf(const T& source, const T& target)
     {
       USBGUARD_LOG(Trace) << "generic isSubsetOf";
       return source == target;
@@ -53,15 +52,14 @@ namespace usbguard
      * @return True if the source set is a superset of the
      * target set, false otherwise.
      */
-    template<typename T>
-    bool isSupersetOf(const T& source, const T& target)
+    template <typename T> bool isSupersetOf(const T& source, const T& target)
     {
       USBGUARD_LOG(Error) << "Not implemented";
-      (void) source;
-      (void) target;
+      (void)source;
+      (void)target;
       return true;
     }
-  }
+  } // namespace Predicates DLL_PUBLIC
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -26,10 +26,9 @@
 namespace usbguard
 {
   static const char BASE64_PADDING_CHAR = '=';
-  static const char encode_map[64+1] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
+  static const char encode_map[64 + 1] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                         "abcdefghijklmnopqrstuvwxyz"
+                                         "0123456789+/";
 
   static const char decode_map[80] = {
     /* + */ 62,
@@ -114,7 +113,7 @@ namespace usbguard
     /* z */ 51
   };
 
-#define B(n) (*(in+(n)))
+#define B(n) (*(in + (n)))
   static void __b64_enc3(const uint8_t in[3], char out[4])
   {
     out[0] = encode_map[(B(0) & 0xfc) >> 2];
@@ -123,7 +122,7 @@ namespace usbguard
     out[3] = encode_map[(B(2) & 0x3f)];
   }
 
-  static void __b64_enc2 (const uint8_t in[2], char out[4])
+  static void __b64_enc2(const uint8_t in[2], char out[4])
   {
     out[0] = encode_map[(B(0) & 0xfc) >> 2];
     out[1] = encode_map[(B(0) & 0x03) << 4 | (B(1) & 0xf0) >> 4];
@@ -131,7 +130,7 @@ namespace usbguard
     out[3] = BASE64_PADDING_CHAR;
   }
 
-  static void __b64_enc1 (const uint8_t in, char out[4])
+  static void __b64_enc1(const uint8_t in, char out[4])
   {
     out[0] = encode_map[(in & 0xfc) >> 2];
     out[1] = encode_map[(in & 0x03) << 4];
@@ -139,7 +138,7 @@ namespace usbguard
     out[3] = BASE64_PADDING_CHAR;
   }
 
-#undef  B
+#undef B
 
   static void __check_b64_input(const char* in, const size_t count)
   {
@@ -174,23 +173,23 @@ namespace usbguard
     }
   }
 
-#define B(n) ((*(in+(n)) - '+') % (sizeof decode_map / sizeof(decode_map[0])))
-  static void __b64_dec4 (const char in[4], uint8_t out[3])
+#define B(n) ((*(in + (n)) - '+') % (sizeof decode_map / sizeof(decode_map[0])))
+  static void __b64_dec4(const char in[4], uint8_t out[3])
   {
     __check_b64_input(in, 4);
-    out[0] =   decode_map[B(0)]         << 2  | ((decode_map[B(1)] & 0x30) >> 4);
+    out[0] = decode_map[B(0)] << 2 | ((decode_map[B(1)] & 0x30) >> 4);
     out[1] = ((decode_map[B(1)] & 0x0f) << 4) | ((decode_map[B(2)] & 0x3c) >> 2);
-    out[2] = ((decode_map[B(2)] & 0x03) << 6) |   decode_map[B(3)];
+    out[2] = ((decode_map[B(2)] & 0x03) << 6) | decode_map[B(3)];
   }
 
-  static void __b64_dec3 (const char in[3], uint8_t out[2])
+  static void __b64_dec3(const char in[3], uint8_t out[2])
   {
     __check_b64_input(in, 3);
-    out[0] =   decode_map[B(0)]         << 2  | ((decode_map[B(1)] & 0x30) >> 4);
+    out[0] = decode_map[B(0)] << 2 | ((decode_map[B(1)] & 0x30) >> 4);
     out[1] = ((decode_map[B(1)] & 0x0f) << 4) | ((decode_map[B(2)] & 0x3c) >> 2);
   }
 
-  static void __b64_dec2 (const char in[2], uint8_t out[1])
+  static void __b64_dec2(const char in[2], uint8_t out[1])
   {
     __check_b64_input(in, 2);
     out[0] = (decode_map[B(0)] << 2) | ((decode_map[B(1)] >> 4) & 0x03);
@@ -198,7 +197,7 @@ namespace usbguard
 
 #undef B
 
-  std::string base64Encode (const uint8_t* const data, const size_t size)
+  std::string base64Encode(const uint8_t* const data, const size_t size)
   {
     if (size == 0 || data == nullptr) {
       throw std::runtime_error("base64encode: invalid input");
@@ -212,16 +211,16 @@ namespace usbguard
     size_t i = 0;
 
     for (; i < enc3_count; ++i) {
-      __b64_enc3 (data + (i * 3), buffer + (i * 4));
+      __b64_enc3(data + (i * 3), buffer + (i * 4));
     }
 
     switch (remainder) {
     case 2:
-      __b64_enc2 (data + (i * 3), buffer + (i * 4));
+      __b64_enc2(data + (i * 3), buffer + (i * 4));
       break;
 
     case 1:
-      __b64_enc1 (*(data + (i * 3)), buffer + (i * 4));
+      __b64_enc1(*(data + (i * 3)), buffer + (i * 4));
       break;
 
     case 0:
@@ -260,17 +259,17 @@ namespace usbguard
     size_t i = 0;
 
     for (; i < dec4_count; ++i) {
-      __b64_dec4 (data + (i * 4), buffer + (i * 3));
+      __b64_dec4(data + (i * 4), buffer + (i * 3));
     }
 
     switch (padding) {
     case 2:
-      __b64_dec2 (data + (i * 4), buffer + (i * 3));
+      __b64_dec2(data + (i * 4), buffer + (i * 3));
       result.resize(3 * i + 1);
       break;
 
     case 1:
-      __b64_dec3 (data + (i * 4), buffer + (i * 3));
+      __b64_dec3(data + (i * 4), buffer + (i * 3));
       result.resize(3 * i + 2);
       break;
 

@@ -34,7 +34,7 @@ namespace usbguard
     std::string unescapeString(const std::string& value);
     std::string quoteEscapeString(const std::string& value);
 
-  }
+  } // namespace Utility
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

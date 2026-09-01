@@ -47,10 +47,10 @@ namespace usbguard
      *  E:key=value: udev property
      *  A:key=value: ASCII sysfs attribute, with backslash-style escaping of \ (\\) and newlines (\n)
      *  H:key=value: binary sysfs attribute, with the value being written as continuous hex string (e. g. 0081FE0A..)
-     *  N:devname[=contents]: device node name (without the /dev/ prefix); if contents is given (encoded in a continuous hex string),
-     *                        it creates a /dev/devname in the mock environment with the given contents, otherwise the created dev file
-     *                        will be a pty; see umockdev_testbed_get_dev_fd for details.
-     *  S:linkname: device node symlink (without the /dev/ prefix); ignored right now.
+     *  N:devname[=contents]: device node name (without the /dev/ prefix); if contents is given (encoded in a continuous hex
+     * string), it creates a /dev/devname in the mock environment with the given contents, otherwise the created dev file will
+     * be a pty; see umockdev_testbed_get_dev_fd for details. S:linkname: device node symlink (without the /dev/ prefix);
+     * ignored right now.
      */
 
     struct str_path_prefix : TAO_PEGTL_STRING("P:") {};
@@ -65,61 +65,42 @@ namespace usbguard
 
     struct str_name_prefix : TAO_PEGTL_STRING("N:") {};
 
-    struct line_rest
-      : star<not_at<ascii::eol>, not_at<eof>, ascii::any> {};
+    struct line_rest : star<not_at<ascii::eol>, not_at<eof>, ascii::any> {};
 
-    struct devfs_node_value
-      : line_rest {};
+    struct devfs_node_value : line_rest {};
 
-    struct devfs_node_line
-      : seq<str_name_prefix, devfs_node_value> {};
+    struct devfs_node_line : seq<str_name_prefix, devfs_node_value> {};
 
-    struct ascii_attr_value
-      : line_rest {};
+    struct ascii_attr_value : line_rest {};
 
-    struct ascii_attr_line
-      : seq<str_ascii_attr_prefix, ascii_attr_value> {};
+    struct ascii_attr_line : seq<str_ascii_attr_prefix, ascii_attr_value> {};
 
-    struct property_value
-      : line_rest {};
+    struct property_value : line_rest {};
 
-    struct property_line
-      : seq<str_property_prefix, property_value> {};
+    struct property_line : seq<str_property_prefix, property_value> {};
 
-    struct unprocessed_line
-      : seq<sor<str_binary_attr_prefix, str_link_prefix>, line_rest> {};
+    struct unprocessed_line : seq<sor<str_binary_attr_prefix, str_link_prefix>, line_rest> {};
 
-    struct definition_rest
-      : list<sor<devfs_node_line, property_line, ascii_attr_line, unprocessed_line>, ascii::eol> {};
+    struct definition_rest : list<sor<devfs_node_line, property_line, ascii_attr_line, unprocessed_line>, ascii::eol> {};
 
-    struct sysfs_path_value
-      : line_rest {};
+    struct sysfs_path_value : line_rest {};
 
-    struct sysfs_path_line_begin
-      : str_path_prefix {};
+    struct sysfs_path_line_begin : str_path_prefix {};
 
-    struct sysfs_path_line
-      : seq<sysfs_path_line_begin, sysfs_path_value> {};
+    struct sysfs_path_line : seq<sysfs_path_line_begin, sysfs_path_value> {};
 
-    struct empty_line
-      : until<ascii::eol, ascii::blank> {};
+    struct empty_line : until<ascii::eol, ascii::blank> {};
 
-    struct definition
-      : seq<sysfs_path_line, ascii::eol, definition_rest> {};
+    struct definition : seq<sysfs_path_line, ascii::eol, definition_rest> {};
 
-    struct grammar
-      : until<eof, must<sor<definition, empty_line>>> {};
+    struct grammar : until<eof, must<sor<definition, empty_line>>> {};
 
-    template<typename Rule>
-    struct actions
-      : tao::pegtl::nothing<Rule> {};
+    template <typename Rule> struct actions : tao::pegtl::nothing<Rule> {};
 
     using Definitions = std::vector<std::unique_ptr<UMockdevDeviceDefinition>>;
 
-    template<>
-    struct actions<sysfs_path_line_begin> {
-      template<typename Input>
-      static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
+    template <> struct actions<sysfs_path_line_begin> {
+      template <typename Input> static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
       {
         std::unique_ptr<UMockdevDeviceDefinition> definition(new UMockdevDeviceDefinition());
         (void)in;
@@ -128,10 +109,8 @@ namespace usbguard
       }
     };
 
-    template<>
-    struct actions<sysfs_path_value> {
-      template<typename Input>
-      static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
+    template <> struct actions<sysfs_path_value> {
+      template <typename Input> static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
       {
         (void)umockdev_name;
         std::unique_ptr<UMockdevDeviceDefinition>& definition = definitions.back();
@@ -139,10 +118,8 @@ namespace usbguard
       }
     };
 
-    template<>
-    struct actions<devfs_node_value> {
-      template<typename Input>
-      static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
+    template <> struct actions<devfs_node_value> {
+      template <typename Input> static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
       {
         (void)umockdev_name;
         std::unique_ptr<UMockdevDeviceDefinition>& definition = definitions.back();
@@ -166,10 +143,8 @@ namespace usbguard
     };
 #endif
 
-    template<>
-    struct actions<property_value> {
-      template<typename Input>
-      static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
+    template <> struct actions<property_value> {
+      template <typename Input> static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
       {
         (void)umockdev_name;
         const std::string in_trimmed = trim(in.string());
@@ -187,17 +162,15 @@ namespace usbguard
       }
     };
 
-    template<>
-    struct actions<definition> {
-      template<typename Input>
-      static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
+    template <> struct actions<definition> {
+      template <typename Input> static void apply(const Input& in, Definitions& definitions, const std::string& umockdev_name)
       {
         (void)umockdev_name;
         std::unique_ptr<UMockdevDeviceDefinition>& definition = definitions.back();
         definition->setUMockdevDefinition(trim(in.string()));
       }
     };
-  }
+  } // namespace UMockdevParser
 
   UMockdevDeviceDefinition::UMockdevDeviceDefinition()
   {
@@ -259,13 +232,13 @@ namespace usbguard
     _definition = definition;
   }
 
-  UMockdevDeviceDefinition::operator bool () const
+  UMockdevDeviceDefinition::operator bool() const
   {
     return !_definition.empty();
   }
 
-  std::vector<std::unique_ptr<UMockdevDeviceDefinition>> UMockdevDeviceDefinition::parseFromFile(const std::string& filepath,
-    bool sort_by_hierarchy)
+  std::vector<std::unique_ptr<UMockdevDeviceDefinition>> UMockdevDeviceDefinition::parseFromFile(
+    const std::string& filepath, bool sort_by_hierarchy)
   {
     const std::string umockdev_name = filenameFromPath(filepath, /*include_extension=*/true);
     std::vector<std::unique_ptr<UMockdevDeviceDefinition>> definitions;
@@ -275,14 +248,13 @@ namespace usbguard
       tao::pegtl::file_input<> input(filepath);
       tao::pegtl::parse<UMockdevParser::grammar, UMockdevParser::actions>(input, definitions, umockdev_name);
       USBGUARD_LOG(Debug) << "Parsed " << definitions.size() << " definition(s)";
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Error) << "UMockdevDeviceDefinition: " << filepath << ": parsing failed at line <LINE>";
       throw;
     }
 
     const auto lambdaSysfsPathHierarchyCompare = [](const std::unique_ptr<UMockdevDeviceDefinition>& a,
-    const std::unique_ptr<UMockdevDeviceDefinition>& b) {
+                                                   const std::unique_ptr<UMockdevDeviceDefinition>& b) {
       const std::string full_a = a->getSysfsPath();
       const std::string full_b = b->getSysfsPath();
       const std::size_t component_count_a = countPathComponents(full_a);
@@ -342,18 +314,17 @@ namespace usbguard
 #if TAO_PEGTL_VERSION_MAJOR >= 3
       tao::pegtl::complete_trace<UMockdevParser::grammar, UMockdevParser::actions>(input, definitions, umockdev_name);
 #else
-      tao::pegtl::parse<UMockdevParser::grammar, UMockdevParser::actions, tao::pegtl::tracer>(input, definitions, umockdev_name);
+      tao::pegtl::parse<UMockdevParser::grammar, UMockdevParser::actions, tao::pegtl::tracer>(
+        input, definitions, umockdev_name);
 #endif
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Error) << "UMockdevDeviceDefinition: " << "<string>" << ": parsing failed at line <LINE>";
       throw;
     }
 
     const auto lambdaSysfsPathHierarchyCompare = [](const std::unique_ptr<UMockdevDeviceDefinition>& a,
-    const std::unique_ptr<UMockdevDeviceDefinition>& b) {
-      return (a->getSysfsPath().size() < b->getSysfsPath().size() ||
-        b->getSysfsPath() <= b->getSysfsPath());
+                                                   const std::unique_ptr<UMockdevDeviceDefinition>& b) {
+      return (a->getSysfsPath().size() < b->getSysfsPath().size() || b->getSysfsPath() <= b->getSysfsPath());
     };
 
     if (sort_by_hierarchy) {
@@ -362,6 +333,6 @@ namespace usbguard
 
     return definitions;
   }
-}
+} // namespace usbguard
 
 /* vim: set ts=2 sw=2 et */

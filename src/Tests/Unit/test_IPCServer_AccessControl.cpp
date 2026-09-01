@@ -31,46 +31,34 @@ TEST_CASE("IPCServer::AccessControl", "[Unit]")
 {
   SECTION("default constructed") {
     IPCServer::AccessControl ac;
-    REQUIRE_THROWS(ac.hasPrivilege(IPCServer::AccessControl::Section::ALL,
-      IPCServer::AccessControl::Privilege::LIST));
+    REQUIRE_THROWS(ac.hasPrivilege(IPCServer::AccessControl::Section::ALL, IPCServer::AccessControl::Privilege::LIST));
 
-    for (const auto& section : {
-        IPCServer::AccessControl::Section::DEVICES,
-        IPCServer::AccessControl::Section::POLICY,
-        IPCServer::AccessControl::Section::PARAMETERS,
-        IPCServer::AccessControl::Section::EXCEPTIONS
-      }) {
-      for (const auto& privilege : {
-          IPCServer::AccessControl::Privilege::MODIFY,
-          IPCServer::AccessControl::Privilege::LIST,
-          IPCServer::AccessControl::Privilege::LISTEN
-        }) {
+    for (const auto& section : { IPCServer::AccessControl::Section::DEVICES,
+           IPCServer::AccessControl::Section::POLICY,
+           IPCServer::AccessControl::Section::PARAMETERS,
+           IPCServer::AccessControl::Section::EXCEPTIONS }) {
+      for (const auto& privilege : { IPCServer::AccessControl::Privilege::MODIFY,
+             IPCServer::AccessControl::Privilege::LIST,
+             IPCServer::AccessControl::Privilege::LISTEN }) {
         REQUIRE(!ac.hasPrivilege(section, privilege));
       }
     }
   }
   SECTION("constructed") {
-    IPCServer::AccessControl ac(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::LIST);
-    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::LIST));
+    IPCServer::AccessControl ac(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LIST);
+    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LIST));
 
-    for (const auto& section : {
-        IPCServer::AccessControl::Section::POLICY,
-        IPCServer::AccessControl::Section::PARAMETERS,
-        IPCServer::AccessControl::Section::EXCEPTIONS
-      }) {
-      for (const auto& privilege : {
-          IPCServer::AccessControl::Privilege::MODIFY,
-          IPCServer::AccessControl::Privilege::LIST,
-          IPCServer::AccessControl::Privilege::LISTEN
-        }) {
+    for (const auto& section : { IPCServer::AccessControl::Section::POLICY,
+           IPCServer::AccessControl::Section::PARAMETERS,
+           IPCServer::AccessControl::Section::EXCEPTIONS }) {
+      for (const auto& privilege : { IPCServer::AccessControl::Privilege::MODIFY,
+             IPCServer::AccessControl::Privilege::LIST,
+             IPCServer::AccessControl::Privilege::LISTEN }) {
         REQUIRE(!ac.hasPrivilege(section, privilege));
       }
     }
     REQUIRE_NOTHROW(ac.clear());
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::LIST));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LIST));
   }
   SECTION("parsed") {
     std::stringstream ss;
@@ -78,24 +66,15 @@ TEST_CASE("IPCServer::AccessControl", "[Unit]")
     ss << "Policy=list modify\n";
     IPCServer::AccessControl ac;
     REQUIRE_NOTHROW(ac.load(ss));
-    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::LIST));
-    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::LISTEN));
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES,
-      IPCServer::AccessControl::Privilege::MODIFY));
-    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY,
-      IPCServer::AccessControl::Privilege::LIST));
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY,
-      IPCServer::AccessControl::Privilege::LISTEN));
-    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY,
-      IPCServer::AccessControl::Privilege::MODIFY));
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS,
-      IPCServer::AccessControl::Privilege::LIST));
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS,
-      IPCServer::AccessControl::Privilege::LISTEN));
-    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS,
-      IPCServer::AccessControl::Privilege::MODIFY));
+    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LIST));
+    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::LISTEN));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::DEVICES, IPCServer::AccessControl::Privilege::MODIFY));
+    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::LIST));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::LISTEN));
+    REQUIRE(ac.hasPrivilege(IPCServer::AccessControl::Section::POLICY, IPCServer::AccessControl::Privilege::MODIFY));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS, IPCServer::AccessControl::Privilege::LIST));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS, IPCServer::AccessControl::Privilege::LISTEN));
+    REQUIRE(!ac.hasPrivilege(IPCServer::AccessControl::Section::PARAMETERS, IPCServer::AccessControl::Privilege::MODIFY));
   }
   SECTION("parse error") {
     std::stringstream ss;

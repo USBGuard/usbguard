@@ -34,7 +34,6 @@ namespace usbguard
   class RuleParserError : public std::exception
   {
   public:
-
     /**
      * @brief Constructs RuleParserError.
      *
@@ -44,8 +43,8 @@ namespace usbguard
      * @param error_line Line in the file where the error occured.
      * @param error_offset Offset where the error occured.
      */
-    RuleParserError(const std::string& rule_spec, const std::string& hint = "",
-      const std::string& file = "", size_t error_line = 0, unsigned int error_offset = 0)
+    RuleParserError(const std::string& rule_spec, const std::string& hint = "", const std::string& file = "",
+      size_t error_line = 0, unsigned int error_offset = 0)
       : _rule_spec(rule_spec),
         _hint(hint),
         _offset(error_offset),
@@ -189,8 +188,8 @@ namespace usbguard
    * @return \link Rule Rule\endlink object.
    * @throw RuleParseError If there is an error in the rule_spec.
    */
-  DLL_PUBLIC Rule parseRuleFromString(const std::string& rule_spec, const std::string& file = std::string(), size_t line = 0,
-    bool trace = false);
+  DLL_PUBLIC Rule parseRuleFromString(
+    const std::string& rule_spec, const std::string& file = std::string(), size_t line = 0, bool trace = false);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -84,8 +84,7 @@ TEST_CASE("Base64", "[Utility]")
     }
   }
   SECTION("decoding invalid inputs") {
-    std::vector<std::string> test_inputs = {
-      { "Y=Q=" },
+    std::vector<std::string> test_inputs = { { "Y=Q=" },
       { "Y~g=" },
       { ".Yw=" },
       { "Y:E=" },
@@ -126,8 +125,7 @@ TEST_CASE("Base64", "[Utility]")
       { "aa" },
       { "aaa" },
       { "bbbbb" },
-      { "bbbbbb" }
-    };
+      { "bbbbbb" } };
 
     for (auto test_input : test_inputs) {
       INFO("Testing input: " + test_input);

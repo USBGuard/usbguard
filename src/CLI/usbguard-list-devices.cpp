@@ -33,13 +33,11 @@ namespace usbguard
 {
   static const char* options_short = "habt";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
     { "allowed", no_argument, nullptr, 'a' },
     { "blocked", no_argument, nullptr, 'b' },
     { "tree", no_argument, nullptr, 't' },
-    { nullptr, 0, nullptr, 0 }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -72,18 +70,14 @@ namespace usbguard
    * @param node Node of a tree
    * @param prefix Helper string used for prefixing the output
    */
-  static void printNode(
-    const std::map<std::string, std::pair<Rule, std::vector<std::string>>>& tree,
-    const std::pair<Rule, std::vector<std::string>>& node,
-    const std::string& prefix)
+  static void printNode(const std::map<std::string, std::pair<Rule, std::vector<std::string>>>& tree,
+    const std::pair<Rule, std::vector<std::string>>& node, const std::string& prefix)
   {
     const auto& rule = node.first;
     const auto& children = node.second;
 
     if (rule) {
-      std::cout << rule.getRuleID() << ": "
-        << Rule::targetToString(rule.getTarget()) << " "
-        << rule.getName() << std::endl;
+      std::cout << rule.getRuleID() << ": " << Rule::targetToString(rule.getTarget()) << " " << rule.getName() << std::endl;
     }
 
     if (children.empty()) {
@@ -153,14 +147,14 @@ namespace usbguard
       auto p_hash_it = tree.find(p_hash);
 
       if (p_hash_it == tree.end()) {
-        tree.insert({p_hash, {{}, {hash}}});
+        tree.insert({ p_hash, { {}, { hash } } });
       }
       else {
         p_hash_it->second.second.push_back(hash);
       }
 
       if (hash_it == tree.end()) {
-        tree.insert({hash, {rule, {}}});
+        tree.insert({ hash, { rule, {} } });
       }
       else {
         hash_it->second.first = rule;

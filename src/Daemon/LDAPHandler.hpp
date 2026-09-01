@@ -24,12 +24,12 @@
 
 #ifdef HAVE_LDAP
 
-#include <map>
-#include <ctime>
-#include <ldap.h>
+  #include <map>
+  #include <ctime>
+  #include <ldap.h>
 
-#include "usbguard/KeyValueParser.hpp"
-#include "usbguard/Rule.hpp"
+  #include "usbguard/KeyValueParser.hpp"
+  #include "usbguard/Rule.hpp"
 
 namespace usbguard
 {
@@ -73,7 +73,7 @@ namespace usbguard
 
     std::time_t _updateInterval;
   };
-}
+} // namespace usbguard
 
 #endif
 

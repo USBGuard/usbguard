@@ -84,8 +84,7 @@ namespace usbguard
         }
 
         return ruleset->appendRule(*rule, parent_id);
-      }
-      catch (const std::exception& e) {
+      } catch (const std::exception& e) {
         continue;
       }
     }
@@ -123,7 +122,7 @@ namespace usbguard
       }
     }
 
-    return _rulesets_ptr.back()->appendRule(new_rule, Rule::LastID, /*lock*/true);
+    return _rulesets_ptr.back()->appendRule(new_rule, Rule::LastID, /*lock*/ true);
   }
 
   std::shared_ptr<Rule> Policy::getRule(uint32_t id)
@@ -131,8 +130,7 @@ namespace usbguard
     for (auto ruleset_item : _rulesets_ptr) {
       try {
         return ruleset_item->getRule(id);
-      }
-      catch (const std::exception& e) {
+      } catch (const std::exception& e) {
         continue;
       }
     }
@@ -145,8 +143,7 @@ namespace usbguard
     for (auto ruleset_item : _rulesets_ptr) {
       try {
         return ruleset_item->removeRule(id);
-      }
-      catch (const std::exception& e) {
+      } catch (const std::exception& e) {
         continue;
       }
     }

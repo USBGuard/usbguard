@@ -179,11 +179,11 @@ namespace usbguard
   private:
     const std::string _identifier; /**< Identifier/name of this
                                      rule condition. */
-    const std::string _parameter; /**< Parameter of rule condition.
-                                    Might be empty if this rule condition
-                                    does not have any parameter. */
-    const bool _negated; /**< Defines whether this rule condition
-                           is negated or not. */
+    const std::string _parameter;  /**< Parameter of rule condition.
+                                     Might be empty if this rule condition
+                                     does not have any parameter. */
+    const bool _negated;           /**< Defines whether this rule condition
+                                     is negated or not. */
   };
 
   /**
@@ -261,6 +261,7 @@ namespace usbguard
      * @return String representation of underlying rule condition.
      */
     std::string toRuleString() const;
+
   private:
     std::unique_ptr<RuleConditionBase> _condition; /**< Specific rule condition
                                                      object. */

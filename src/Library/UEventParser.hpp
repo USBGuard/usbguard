@@ -33,37 +33,29 @@ namespace usbguard
   {
     using namespace tao::pegtl;
 
-    struct value
-      : seq<not_one<'\0', '\n'>, star<not_one<'\0', '\n'>>> {};
+    struct value : seq<not_one<'\0', '\n'>, star<not_one<'\0', '\n'>>> {};
 
-    struct key
-      : seq<ranges<'A', 'Z'>, star<ranges<'A', 'Z', '0', '9'>>> {};
+    struct key : seq<ranges<'A', 'Z'>, star<ranges<'A', 'Z', '0', '9'>>> {};
 
-    struct attribute
-      : seq<key, one<'='>, value> {};
+    struct attribute : seq<key, one<'='>, value> {};
 
-    struct attributes
-      : list<attribute, one<'\0', '\n'>> {};
+    struct attributes : list<attribute, one<'\0', '\n'>> {};
 
-    struct action
-      : seq<ranges<'a', 'z'>, star<ranges<'a', 'z'>>> {};
+    struct action : seq<ranges<'a', 'z'>, star<ranges<'a', 'z'>>> {};
 
-    struct devpath
-      : seq<ascii::print, star<ascii::print>> {};
+    struct devpath : seq<ascii::print, star<ascii::print>> {};
 
-    struct header
-      : seq<action, one<'@'>, devpath, one<'\0'>> {};
+    struct header : seq<action, one<'@'>, devpath, one<'\0'>> {};
 
-    struct uevent
-      : seq<header, attributes> {};
+    struct uevent : seq<header, attributes> {};
 
-    struct grammar
-      : until<eof, uevent> {};
+    struct grammar : until<eof, uevent> {};
 
   } /* namespace UEventParser */
 
   void parseUEventFromFile(const std::string& uevent_path, UEvent& uevent, bool attributes_only = false, bool trace = false);
-  void parseUEventFromString(const std::string& uevent_string, UEvent& uevent, bool attributes_only = false, bool trace = false);
+  void parseUEventFromString(
+    const std::string& uevent_string, UEvent& uevent, bool attributes_only = false, bool trace = false);
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

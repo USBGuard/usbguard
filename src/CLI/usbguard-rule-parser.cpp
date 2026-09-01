@@ -35,8 +35,8 @@
   #include <libgen.h>
 #endif
 
-#include <cstdlib>  // for free(3)
-#include <cstring>  // for strdup(3)
+#include <cstdlib> // for free(3)
+#include <cstring> // for strdup(3)
 #include <iostream>
 #include <fstream>
 
@@ -44,12 +44,10 @@
 
 static const char* options_short = "hft";
 
-static const struct ::option options_long[] = {
-  { "help", no_argument, nullptr, 'h' },
+static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
   { "file", no_argument, nullptr, 'f' },
   { "trace", no_argument, nullptr, 't' },
-  { nullptr, 0, nullptr, 0 }
-};
+  { nullptr, 0, nullptr, 0 } };
 
 static void showHelp(std::ostream& stream, const char* usbguard_arg0)
 {
@@ -109,7 +107,7 @@ int main(int argc, char** argv)
       const std::string rule_file(rule_file_filename);
       std::ifstream stream(rule_file);
 
-      if (! stream.is_open()) {
+      if (!stream.is_open()) {
         throw usbguard::ErrnoException("Rules file could not be opened", rule_file_filename, errno);
       }
 
@@ -138,22 +136,18 @@ int main(int argc, char** argv)
       std::cout << "OUTPUT: " << rule.toString() << std::endl;
       return EXIT_SUCCESS;
     }
-  }
-  catch (const usbguard::RuleParserError& ex) {
+  } catch (const usbguard::RuleParserError& ex) {
     std::cerr << "! ERROR: " << ex.what() << std::endl;
     std::cerr << "!!  " << rule_spec << std::endl;
     std::cerr << "!!  ";
     std::cerr.width(4 + ex.offset());
     std::cerr << "^-- " << ex.hint() << std::endl;
     std::cerr.width(1);
-  }
-  catch (const usbguard::Exception& ex) {
+  } catch (const usbguard::Exception& ex) {
     std::cerr << "! ERROR: " << ex.message() << std::endl;
-  }
-  catch (const std::exception& ex) {
+  } catch (const std::exception& ex) {
     std::cerr << "! EXCEPTION: " << ex.what() << std::endl;
-  }
-  catch (...) {
+  } catch (...) {
     std::cerr << "! EXCEPTION: Unknown" << std::endl;
   }
 

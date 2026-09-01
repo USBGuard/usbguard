@@ -35,7 +35,7 @@
 
 #if defined(HAVE_LIBCAPNG)
   #include <cap-ng.h>
-  static void setupCapabilities(void);
+static void setupCapabilities(void);
 #endif
 
 #ifndef USBGUARD_PID_FILE
@@ -146,15 +146,11 @@ int main(int argc, char* argv[])
 
   /* Initialize logging */
   try {
-    USBGUARD_LOGGER.setEnabled(true, (debug_mode ?
-      LogStream::Level::Trace
-      :
-      LogStream::Level::Warning));
+    USBGUARD_LOGGER.setEnabled(true, (debug_mode ? LogStream::Level::Trace : LogStream::Level::Warning));
     USBGUARD_LOGGER.setOutputConsole(log_console);
     USBGUARD_LOGGER.setOutputSyslog(log_syslog, "usbguard-daemon");
     USBGUARD_LOGGER.setOutputFile(log_file, log_file_path);
-  }
-  catch (const Exception& ex) {
+  } catch (const Exception& ex) {
     USBGUARD_LOG(Error) << "Unable to initialize logging: " << ex.message();
     return EXIT_FAILURE;
   }
@@ -204,14 +200,11 @@ int main(int argc, char* argv[])
 
     daemon.run();
     ret = EXIT_SUCCESS;
-  }
-  catch (const usbguard::Exception& ex) {
+  } catch (const usbguard::Exception& ex) {
     USBGUARD_LOG(Error) << ex.message();
-  }
-  catch (const std::exception& ex) {
+  } catch (const std::exception& ex) {
     USBGUARD_LOG(Error) << ex.what();
-  }
-  catch (...) {
+  } catch (...) {
     USBGUARD_LOG(Error) << "Unknown exception caught while starting the process";
   }
 
@@ -222,8 +215,7 @@ int main(int argc, char* argv[])
 static void setupCapabilities(void)
 {
   capng_clear(CAPNG_SELECT_BOTH);
-  capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE|CAPNG_PERMITTED),
-    CAP_CHOWN, CAP_FOWNER, -1);
+  capng_updatev(CAPNG_ADD, (capng_type_t)(CAPNG_EFFECTIVE | CAPNG_PERMITTED), CAP_CHOWN, CAP_FOWNER, -1);
   capng_apply(CAPNG_SELECT_BOTH);
   return;
 }

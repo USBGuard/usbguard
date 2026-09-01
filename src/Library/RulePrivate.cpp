@@ -73,18 +73,15 @@ namespace usbguard
      * a set defined by this rule.
      */
     USBGUARD_LOG(Trace) << "entry:"
-      << " rhs=" << rhs.toString()
-      << " parent_insensitive=" << parent_insensitive;
+                        << " rhs=" << rhs.toString() << " parent_insensitive=" << parent_insensitive;
     bool applies = false;
 
-    if (!_device_id.appliesTo(rhs.internal()->_device_id) ||
-      !_serial.appliesTo(rhs.internal()->_serial) ||
-      !_with_connect_type.appliesTo(rhs.internal()->_with_connect_type) ||
-      !_name.appliesTo(rhs.internal()->_name) ||
-      !_hash.appliesTo(rhs.internal()->_hash) ||
-      !(parent_insensitive || _parent_hash.appliesTo(rhs.internal()->_parent_hash)) ||
-      !(parent_insensitive || _via_port.appliesTo(rhs.internal()->_via_port)) ||
-      !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
+    if (!_device_id.appliesTo(rhs.internal()->_device_id) || !_serial.appliesTo(rhs.internal()->_serial) ||
+        !_with_connect_type.appliesTo(rhs.internal()->_with_connect_type) || !_name.appliesTo(rhs.internal()->_name) ||
+        !_hash.appliesTo(rhs.internal()->_hash) ||
+        !(parent_insensitive || _parent_hash.appliesTo(rhs.internal()->_parent_hash)) ||
+        !(parent_insensitive || _via_port.appliesTo(rhs.internal()->_via_port)) ||
+        !_with_interface.appliesTo(rhs.internal()->_with_interface)) {
       applies = false;
     }
     else {
@@ -92,15 +89,14 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "return:"
-      << " applies=" << applies;
+                        << " applies=" << applies;
     return applies;
   }
 
   bool RulePrivate::appliesToWithConditions(const Rule& rhs, bool with_update)
   {
     USBGUARD_LOG(Trace) << "entry:"
-      << " rhs=" << rhs.toString()
-      << " with_updates=" << with_update;
+                        << " rhs=" << rhs.toString() << " with_updates=" << with_update;
     bool applies = false;
 
     if (appliesTo(rhs)) {
@@ -111,16 +107,14 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "return:"
-      << " applies=" << applies;
+                        << " applies=" << applies;
     return applies;
   }
 
   bool RulePrivate::meetsConditions(const Rule& rhs, bool with_update)
   {
     USBGUARD_LOG(Trace) << "entry:"
-      << " conditions=" << _conditions.count()
-      << " rhs=" << rhs.toString()
-      << " with_update=" << with_update;
+                        << " conditions=" << _conditions.count() << " rhs=" << rhs.toString() << " with_update=" << with_update;
 
     if (with_update) {
       (void)updateConditionsState(rhs);
@@ -142,8 +136,7 @@ namespace usbguard
     case Rule::SetOperator::Equals:
     case Rule::SetOperator::EqualsOrdered:
     case Rule::SetOperator::MatchAll:
-      meets_conditions = \
-        (conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1));
+      meets_conditions = (conditionsState() == ((((uint64_t)1) << _conditions.count()) - 1));
       break;
 
     case Rule::SetOperator::Match:
@@ -152,7 +145,7 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "return:"
-      << " meets_conditions=" << meets_conditions;
+                        << " meets_conditions=" << meets_conditions;
     return meets_conditions;
   }
 
@@ -186,8 +179,7 @@ namespace usbguard
       ++i;
     }
 
-    USBGUARD_LOG(Debug) << "current=" << conditionsState()
-      << " updated=" << updated_state;
+    USBGUARD_LOG(Debug) << "current=" << conditionsState() << " updated=" << updated_state;
     bool retval = false;
 
     if (updated_state != conditionsState()) {
@@ -199,7 +191,7 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "return:"
-      << " retval=" << retval;
+                        << " retval=" << retval;
     return retval;
   }
 
@@ -413,7 +405,7 @@ namespace usbguard
     return _conditions;
   }
 
-  template<class ValueType>
+  template <class ValueType>
   static void toString_appendNonEmptyAttribute(std::string& rule_string, const Rule::Attribute<ValueType>& attribute)
   {
     if (attribute.empty()) {
@@ -431,8 +423,7 @@ namespace usbguard
 
     try {
       rule_string.append(Rule::targetToString(_target));
-    }
-    catch (...) {
+    } catch (...) {
       if (invalid) {
         rule_string.append("<invalid>");
       }

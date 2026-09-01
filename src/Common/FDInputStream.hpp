@@ -54,11 +54,13 @@ namespace usbguard
   };
 
 #else
-  class FDStreamBuf :
-    public std::streambuf
+  class FDStreamBuf : public std::streambuf
   {
   public:
-    FDStreamBuf(int fd) : fd_(fd) { }
+    FDStreamBuf(int fd)
+      : fd_(fd)
+    {
+    }
 
     ~FDStreamBuf() override
     {
@@ -74,8 +76,7 @@ namespace usbguard
 
       do {
         ret = read(fd_, s, n);
-      }
-      while (ret == -1 && (errno == EAGAIN || errno ==EINTR));
+      } while (ret == -1 && (errno == EAGAIN || errno == EINTR));
 
       if (ret < 0) {
         return EOF;
@@ -103,14 +104,16 @@ namespace usbguard
   class FDInputStream : public std::istream
   {
   public:
-    FDInputStream(int fd) : std::istream(nullptr),
-      _filebuf_ptr(new FDStreamBuf(fd))
+    FDInputStream(int fd)
+      : std::istream(nullptr),
+        _filebuf_ptr(new FDStreamBuf(fd))
     {
       std::ios::rdbuf(_filebuf_ptr.get());
     }
 
-    FDInputStream(FDInputStream&& stream) : std::istream(nullptr),
-      _filebuf_ptr(std::move(stream._filebuf_ptr))
+    FDInputStream(FDInputStream&& stream)
+      : std::istream(nullptr),
+        _filebuf_ptr(std::move(stream._filebuf_ptr))
     {
       std::ios::rdbuf(_filebuf_ptr.get());
     }

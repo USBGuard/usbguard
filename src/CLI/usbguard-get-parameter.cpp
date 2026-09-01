@@ -31,10 +31,7 @@ namespace usbguard
 {
   static const char* options_short = "h";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
-    { nullptr, 0, nullptr, 0 }
-  };
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' }, { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -46,8 +43,8 @@ namespace usbguard
     stream << " Parameters:" << std::endl;
     stream << "  ImplicitPolicyTarget    - How to treat devices that don't match any rule" << std::endl;
     stream << "                            Values: allow, block, reject" << std::endl;
-    stream << "  InsertedDevicePolicy    - How to treat USB devices that are already connected after the daemon starts" <<
-      std::endl;
+    stream << "  InsertedDevicePolicy    - How to treat USB devices that are already connected after the daemon starts"
+           << std::endl;
     stream << "                            Values: block, reject, apply-policy" << std::endl;
     stream << std::endl;
   }

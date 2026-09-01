@@ -96,7 +96,7 @@ namespace usbguard
 
           case 'x': {
             /* hexadecimal representation of a byte \xHH */
-            if (std::distance(string_escaped.end(), it) >=2) {
+            if (std::distance(string_escaped.end(), it) >= 2) {
               throw std::runtime_error("Invalid escape sequence");
             }
 
@@ -110,8 +110,7 @@ namespace usbguard
             result.push_back((char)stringToNumber<uint8_t>(hexbyte, 16));
             ++it;
             ++it;
-          }
-          break;
+          } break;
 
           default:
             throw std::runtime_error("Unknown escape sequence");
@@ -144,7 +143,7 @@ namespace usbguard
       result.push_back('"');
       return result;
     }
-  }
+  } // namespace Utility
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

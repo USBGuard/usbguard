@@ -160,7 +160,7 @@ namespace usbguard
       : LogSink("syslog"),
         _ident(ident)
     {
-      openlog(_ident.c_str(), LOG_NDELAY|LOG_PID|LOG_CONS, LOG_DAEMON);
+      openlog(_ident.c_str(), LOG_NDELAY | LOG_PID | LOG_CONS, LOG_DAEMON);
     }
 
     ~SyslogSink()
@@ -220,8 +220,7 @@ namespace usbguard
       try {
         _stream.exceptions(std::fstream::failbit);
         _stream.open(filepath, append ? std::fstream::app : std::fstream::trunc);
-      }
-      catch (...) {
+      } catch (...) {
         throw Exception("FileSink", filepath, "failed to open");
       }
     }
@@ -248,8 +247,7 @@ namespace usbguard
       try {
         _stream.exceptions(std::fstream::failbit);
         _stream.open(filepath, std::fstream::app);
-      }
-      catch (...) {
+      } catch (...) {
         umask(saved_umask);
         throw Exception("AuditFileSink", filepath, "failed to open");
       }
@@ -392,9 +390,7 @@ namespace usbguard
 
   LogStream Logger::operator()(const std::string& file, const int line, const std::string& function, LogStream::Level level)
   {
-    const LogStream::Source source = {
-      filenameFromPath(file, /*include_extension=*/true), line, function
-    };
+    const LogStream::Source source = { filenameFromPath(file, /*include_extension=*/true), line, function };
     return LogStream(*this, source, level);
   }
 
@@ -407,8 +403,7 @@ namespace usbguard
 
       try {
         sink->write(source, level, message);
-      }
-      catch (const std::exception& ex) {
+      } catch (const std::exception& ex) {
         std::cerr << "Warning: sink->write failed for " << sink->name() << " sink: " << ex.what() << std::endl;
       }
     }
@@ -431,9 +426,8 @@ namespace usbguard
      * Sat Nov 20 17:46:39 UTC 2286.
      */
     char buffer[16];
-    const int length = snprintf(buffer, sizeof buffer, "%.10" PRIu64 ".%03" PRIu64,
-        (uint64_t)tv_now.tv_sec,
-        (uint64_t)(tv_now.tv_usec / 1000));
+    const int length =
+      snprintf(buffer, sizeof buffer, "%.10" PRIu64 ".%03" PRIu64, (uint64_t)tv_now.tv_sec, (uint64_t)(tv_now.tv_usec / 1000));
 
     if (length < 1 || static_cast<size_t>(length) > (sizeof buffer - 1)) {
       throw std::runtime_error("Failed to convert timestamp to string");

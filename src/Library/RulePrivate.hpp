@@ -42,8 +42,8 @@ namespace usbguard
       MetaData(const MetaData& rhs) = default;
       MetaData& operator=(const MetaData& rhs) = default;
 
-      uint64_t counter_evaluated{0};
-      uint64_t counter_applied{0};
+      uint64_t counter_evaluated { 0 };
+      uint64_t counter_applied { 0 };
       std::chrono::steady_clock::time_point tp_created;
       std::chrono::steady_clock::time_point tp_last_evaluated;
       std::chrono::steady_clock::time_point tp_last_applied;
@@ -148,6 +148,6 @@ namespace usbguard
     Rule::Attribute<std::string> _label;
     uint64_t _conditions_state;
   };
-}
+} // namespace usbguard
 
 /* vim: set ts=2 sw=2 et */

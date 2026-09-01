@@ -35,25 +35,16 @@ namespace usbguard
     void IPCConnected() override;
     void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
-    void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule) override;
+    void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule) override;
 
-    void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override;
+    void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override;
 
-    void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override;
+    void DevicePolicyApplied(uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override;
 
-    void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new) override;
+    void PropertyParameterChanged(const std::string& name, const std::string& value_old, const std::string& value_new) override;
+
   private:
     void openExecutable(const std::string& path);
     void closeExecutable();
@@ -65,7 +56,7 @@ namespace usbguard
     static char* cstrCopy(const char* c_str);
 
     std::string _exec_path;
-    int _exec_path_fd {-1};
+    int _exec_path_fd { -1 };
   };
 } /* namespace usbguard */
 

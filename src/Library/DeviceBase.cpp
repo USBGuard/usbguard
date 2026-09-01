@@ -114,12 +114,12 @@ namespace usbguard
 
       const auto after = std::chrono::steady_clock::now();
       const auto duration_nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(after - before).count();
-      USBGUARD_LOG(Info) << "***Setting connect type=" << connect_type <<" after "<< retry << " retries (took " <<
-        duration_nanoseconds << "ns)";
+      USBGUARD_LOG(Info) << "***Setting connect type=" << connect_type << " after " << retry << " retries (took "
+                         << duration_nanoseconds << "ns)";
 
       if (connect_type == "") {
-        USBGUARD_LOG(Warning) << "port/connect_type is empty for non host controller device " << getPort() << " after waiting for " <<
-          duration_nanoseconds << "ns";
+        USBGUARD_LOG(Warning) << "port/connect_type is empty for non host controller device " << getPort()
+                              << " after waiting for " << duration_nanoseconds << "ns";
       }
     }
 
@@ -141,7 +141,8 @@ namespace usbguard
     USBDescriptorParser parser(*this);
 
     if (parser.parse(descriptor_stream) < sizeof(USBDeviceDescriptor)) {
-      throw Exception("DeviceBase", sysfs_device.getPath(),
+      throw Exception("DeviceBase",
+        sysfs_device.getPath(),
         "USB descriptor parser processed less data than the size of a USB device descriptor");
     }
 
@@ -177,8 +178,8 @@ namespace usbguard
     return getSysPath();
   }
 
-  void DeviceBase::parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-    USBDescriptor* descriptor_out)
+  void DeviceBase::parseUSBDescriptor(
+    USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out)
   {
     USBGUARD_LOG(Trace);
     USBDescriptorParserHooks::parseUSBDescriptor(parser, descriptor_raw, descriptor_out);
@@ -216,8 +217,7 @@ namespace usbguard
     case USBDescriptorType::Unknown:
     case USBDescriptorType::String:
     default:
-      USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type
-        << " size=" << descriptor->bHeader.bLength;
+      USBGUARD_LOG(Debug) << "Ignoring descriptor: type=" << (int)type << " size=" << descriptor->bHeader.bLength;
     }
   }
 
@@ -229,8 +229,7 @@ namespace usbguard
       return false;
     }
 
-    const USBDeviceDescriptor* const device_descriptor = \
-      reinterpret_cast<const USBDeviceDescriptor*>(descriptor);
+    const USBDeviceDescriptor* const device_descriptor = reinterpret_cast<const USBDeviceDescriptor*>(descriptor);
 
     if (device_descriptor->idVendor == 0x1d6b /* Linux Foundation */) {
       switch (device_descriptor->idProduct) {

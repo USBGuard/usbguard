@@ -52,30 +52,18 @@ namespace usbguard
     void start();
     void stop();
 
-    void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule);
+    void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule);
 
-    void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id);
+    void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id);
 
-    void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id);
+    void DevicePolicyApplied(uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id);
 
-    void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new);
+    void PropertyParameterChanged(const std::string& name, const std::string& value_old, const std::string& value_new);
 
-    void ExceptionMessage(const std::string& context,
-      const std::string& object,
-      const std::string& reason,
-      uint64_t request_id = 0);
+    void ExceptionMessage(
+      const std::string& context, const std::string& object, const std::string& reason, uint64_t request_id = 0);
 
     void addAllowedUID(uid_t uid, const IPCServer::AccessControl& ac);
     void addAllowedGID(gid_t gid, const IPCServer::AccessControl& ac);
@@ -127,10 +115,10 @@ namespace usbguard
     void qbIPCBroadcastMessage(const IPC::MessagePointer& message);
     void qbIPCBroadcastMessage(const IPC::MessageType* message);
 
-    IPC::MessagePointer handleIPCPayload(const uint32_t payload_type, const std::string& payload,
-      const IPCServer::AccessControl* const access_control);
+    IPC::MessagePointer handleIPCPayload(
+      const uint32_t payload_type, const std::string& payload, const IPCServer::AccessControl* const access_control);
 
-    template<class T>
+    template <class T>
     void registerHandler(MessageHandler::HandlerType method, IPCServer::AccessControl::Section section,
       IPCServer::AccessControl::Privilege privilege)
     {

@@ -37,8 +37,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
   try {
     UEvent uevent = UEvent::fromString(std::string(data, data + size));
-  }
-  catch (const tao::pegtl::parse_error& ex) {
+  } catch (const tao::pegtl::parse_error& ex) {
     // Parser errors are ok.
   }
 

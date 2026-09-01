@@ -41,7 +41,6 @@ namespace usbguard
   class DLL_PUBLIC Device
   {
   public:
-
     /**
      * @brief Constructs new device object and sets its \link DeviceManager
      * device manager\endlink.

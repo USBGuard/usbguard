@@ -30,20 +30,17 @@ namespace usbguard
    * @param b Second value.
    * @return True if \p a mathes \p b, false otherwise.
    */
-  template<typename T>
-  bool matches(const T& a, const T& b)
+  template <typename T> bool matches(const T& a, const T& b)
   {
     return a == b;
   }
 
-  template<>
-  bool matches(const std::string& a, const std::string& b);
+  template <> bool matches(const std::string& a, const std::string& b);
 
   /*
    * Atomic
    */
-  template<typename integral_type>
-  using Atomic = std::atomic<integral_type>;
+  template <typename integral_type> using Atomic = std::atomic<integral_type>;
 
   /*
    * Symbol visibility
@@ -51,13 +48,13 @@ namespace usbguard
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef BUILDING_DLL
     #ifdef __GNUC__
-      #define DLL_PUBLIC __attribute__ ((dllexport))
+      #define DLL_PUBLIC __attribute__((dllexport))
     #else
       #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also support this syntax.
     #endif
   #else
     #ifdef __GNUC__
-      #define DLL_PUBLIC __attribute__ ((dllimport))
+      #define DLL_PUBLIC __attribute__((dllimport))
     #else
       #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also support this syntax.
     #endif
@@ -65,8 +62,8 @@ namespace usbguard
   #define DLL_LOCAL
 #else
   #if __GNUC__ >= 4
-    #define DLL_PUBLIC __attribute__ ((visibility ("default")))
-    #define DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+    #define DLL_PUBLIC __attribute__((visibility("default")))
+    #define DLL_LOCAL __attribute__((visibility("hidden")))
   #else
     #define DLL_PUBLIC
     #define DLL_LOCAL

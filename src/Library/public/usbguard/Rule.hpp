@@ -42,8 +42,7 @@ namespace usbguard
    * @param value Value to convert.
    * @return Rule string.
    */
-  template<typename T>
-  std::string toRuleString(T* const value)
+  template <typename T> std::string toRuleString(T* const value)
   {
     return value->toRuleString();
   }
@@ -54,8 +53,7 @@ namespace usbguard
    * @param value Value to convert.
    * @return Rule string.
    */
-  template<typename T>
-  std::string toRuleString(const T& value)
+  template <typename T> std::string toRuleString(const T& value)
   {
     return value.toRuleString();
   }
@@ -66,8 +64,7 @@ namespace usbguard
    * @param value String to convert.
    * @return Rule string.
    */
-  template<>
-  std::string DLL_PUBLIC toRuleString(const std::string& value);
+  template <> std::string DLL_PUBLIC toRuleString(const std::string& value);
 
   class RulePrivate;
 
@@ -85,20 +82,20 @@ namespace usbguard
      * use or not.
      */
     enum class Target {
-      Allow = 0, /**< Devices matching this rule will be authorized. In other
-                   words, the device and its interface will be allowed to
-                   communicate with the system. */
-      Block = 1, /**< Devices matching this rule will not be authorized. */
-      Reject = 2, /**< Devices matching this rule will not be authorized and
-                    will be detached. */
-      Match = 3, /**< Special target which can be used to trigger actions.
-                   The rule wont affect the final decision. */
+      Allow = 0,   /**< Devices matching this rule will be authorized. In other
+                     words, the device and its interface will be allowed to
+                     communicate with the system. */
+      Block = 1,   /**< Devices matching this rule will not be authorized. */
+      Reject = 2,  /**< Devices matching this rule will not be authorized and
+                     will be detached. */
+      Match = 3,   /**< Special target which can be used to trigger actions.
+                     The rule wont affect the final decision. */
       Unknown = 4, /**< Unknown target. Used for default constructed rules. */
-      Device = 5, /**< Special target which can only be used for a rule that
-                    represents a single device. */
-      Empty = 6, /**< Special target to represent the case the parser reaches
-                   a comment only line. */
-      Invalid = 7 /**< Represents invalid target. */
+      Device = 5,  /**< Special target which can only be used for a rule that
+                     represents a single device. */
+      Empty = 6,   /**< Special target to represent the case the parser reaches
+                     a comment only line. */
+      Invalid = 7  /**< Represents invalid target. */
     };
 
     /**
@@ -142,21 +139,21 @@ namespace usbguard
      * @brief Defines set operators that can be used in the rules.
      */
     enum class SetOperator {
-      AllOf, /**< The device attribute set must contain all of the specified
-               values for the rule to match. */
-      OneOf, /**< The device attribute set must contain at least one of the
-               specified values for the rule to match. */
-      NoneOf, /**< The device attribute set must not contain any of the
-                specified values for the rule to match. */
-      Equals, /**< The device attribute set must contain exactly the same set
-                of values for the rule to match. */
+      AllOf,         /**< The device attribute set must contain all of the specified
+                       values for the rule to match. */
+      OneOf,         /**< The device attribute set must contain at least one of the
+                       specified values for the rule to match. */
+      NoneOf,        /**< The device attribute set must not contain any of the
+                       specified values for the rule to match. */
+      Equals,        /**< The device attribute set must contain exactly the same set
+                       of values for the rule to match. */
       EqualsOrdered, /**< The device attribute set must contain exactly
                        the same set of values in the same order for the rule
                        to match. */
-      Match, /**< Special operator: matches anything, cannot be used directly
-              in a rule. */
-      MatchAll /**< The device attribute set must be a subset of the specified
-                 values for the rule to match. */
+      Match,         /**< Special operator: matches anything, cannot be used directly
+                      in a rule. */
+      MatchAll       /**< The device attribute set must be a subset of the specified
+                       values for the rule to match. */
     };
 
     /**
@@ -208,8 +205,7 @@ namespace usbguard
      * Attribute can be either single valued or multi-valued in which case set
      * operator may be used to allow finer definition of the rule.
      */
-    template<class ValueType>
-    class Attribute
+    template <class ValueType> class Attribute
     {
     public:
       /**
@@ -420,8 +416,7 @@ namespace usbguard
       bool appliesTo(const Attribute<ValueType>& target) const
       {
         USBGUARD_LOG(Trace) << "entry:"
-          << " source=" << this->toRuleString()
-          << " target=" << target.toRuleString();
+                            << " source=" << this->toRuleString() << " target=" << target.toRuleString();
         bool applies = false;
 
         /* Nothing applies to anything */
@@ -467,7 +462,7 @@ namespace usbguard
         }
 
         USBGUARD_LOG(Trace) << "return:"
-          << " applies=" << applies;
+                            << " applies=" << applies;
         return applies;
       }
 
@@ -707,10 +702,10 @@ namespace usbguard
         return match == target_set.size();
       }
 
-      std::string _name; /**< Name of the rule attribute. */
-      SetOperator _set_operator; /**< Set operator can be used for
-                                   a multi-valued attribute for finer
-                                   rule definition. */
+      std::string _name;              /**< Name of the rule attribute. */
+      SetOperator _set_operator;      /**< Set operator can be used for
+                                        a multi-valued attribute for finer
+                                        rule definition. */
       std::vector<ValueType> _values; /**< Values of the attribute. */
     };
 

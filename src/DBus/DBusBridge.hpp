@@ -28,53 +28,40 @@
 #include <gio/gio.h>
 #pragma clang diagnostic pop
 
-#define DBUS_SERVICE_NAME      "org.usbguard1"
-#define DBUS_ROOT_INTERFACE    "org.usbguard1"
-#define DBUS_ROOT_PATH         "/org/usbguard1"
-#define DBUS_POLICY_INTERFACE  "org.usbguard.Policy1"
-#define DBUS_POLICY_PATH       "/org/usbguard1/Policy"
+#define DBUS_SERVICE_NAME "org.usbguard1"
+#define DBUS_ROOT_INTERFACE "org.usbguard1"
+#define DBUS_ROOT_PATH "/org/usbguard1"
+#define DBUS_POLICY_INTERFACE "org.usbguard.Policy1"
+#define DBUS_POLICY_PATH "/org/usbguard1/Policy"
 #define DBUS_DEVICES_INTERFACE "org.usbguard.Devices1"
-#define DBUS_DEVICES_PATH      "/org/usbguard1/Devices"
+#define DBUS_DEVICES_PATH "/org/usbguard1/Devices"
 
 namespace usbguard
 {
   class DBusBridge : public IPCClient
   {
   public:
-    DBusBridge(GDBusConnection* const gdbus_connection,
-      void(*ipc_callback)(bool) = nullptr);
+    DBusBridge(GDBusConnection* const gdbus_connection, void (*ipc_callback)(bool) = nullptr);
     ~DBusBridge();
 
-    void handleMethodCall(const std::string interface, const std::string method_name,
-      GVariant* parameters, GDBusMethodInvocation* invocation);
+    void handleMethodCall(
+      const std::string interface, const std::string method_name, GVariant* parameters, GDBusMethodInvocation* invocation);
 
   private:
     void IPCConnected() override;
     void IPCDisconnected(bool exception_initiated, const IPCException& exception) override;
 
-    void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule) override;
+    void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule) override;
 
-    void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override;
+    void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override;
 
-    void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override;
+    void DevicePolicyApplied(uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override;
 
-    void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new) override;
+    void PropertyParameterChanged(const std::string& name, const std::string& value_old, const std::string& value_new) override;
 
-    void ExceptionMessage(const std::string& context,
-      const std::string& object,
-      const std::string& reason) override;
+    void ExceptionMessage(const std::string& context, const std::string& object, const std::string& reason) override;
 
     static GVariantBuilder* deviceRuleToAttributes(const std::string& device_spec);
 
@@ -82,17 +69,14 @@ namespace usbguard
     void handlePolicyMethodCall(const std::string& method_name, GVariant* parameters, GDBusMethodInvocation* invocation);
     void handleDevicesMethodCall(const std::string& method_name, GVariant* parameters, GDBusMethodInvocation* invocation);
 
-    void emitDevicePolicyDecision(const char* policy_signal,
-      uint32_t id,
-      const std::map<std::string, std::string>& attributes,
-      bool rule_match,
-      uint32_t rule_id);
+    void emitDevicePolicyDecision(const char* policy_signal, uint32_t id, const std::map<std::string, std::string>& attributes,
+      bool rule_match, uint32_t rule_id);
 
     static std::string formatGError(GError* error);
     static bool isAuthorizedByPolkit(GDBusMethodInvocation* invocation, GDBusError* authError, const gchar** authErrorMessage);
 
     GDBusConnection* const p_gdbus_connection;
-    void(*p_ipc_callback)(bool);
+    void (*p_ipc_callback)(bool);
   };
 } /* namespace usbguard */
 

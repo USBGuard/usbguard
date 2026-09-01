@@ -92,8 +92,8 @@ namespace usbguard
     throw std::runtime_error("Invalid authorized default type integer value");
   }
 
-  DeviceManager::AuthorizedDefaultType DeviceManager::authorizedDefaultTypeFromString(const std::string&
-    authorized_default_string)
+  DeviceManager::AuthorizedDefaultType DeviceManager::authorizedDefaultTypeFromString(
+    const std::string& authorized_default_string)
   {
     for (auto authorized_default_type_string : authorized_default_type_strings) {
       if (authorized_default_type_string.first == authorized_default_string) {
@@ -233,7 +233,7 @@ std::shared_ptr<usbguard::DeviceManager> usbguard::DeviceManager::create(DeviceM
 
 #if defined(HAVE_UEVENT)
 
-  if (backend == "uevent" || /* transition udev => uevent */backend == "udev") {
+  if (backend == "uevent" || /* transition udev => uevent */ backend == "udev") {
     return std::make_shared<usbguard::UEventDeviceManager>(hooks);
   }
 

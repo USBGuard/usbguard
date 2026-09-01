@@ -24,37 +24,31 @@
 
 #ifdef HAVE_LDAP
 
-#include <iostream>
-#include <string.h>
+  #include <iostream>
+  #include <string.h>
 
-#include "usbguard/Exception.hpp"
-#include "usbguard/Logger.hpp"
-#include "usbguard/KeyValueParser.hpp"
+  #include "usbguard/Exception.hpp"
+  #include "usbguard/Logger.hpp"
+  #include "usbguard/KeyValueParser.hpp"
 
-#include "Common/LDAPUtil.hpp"
-#include "Common/Utility.hpp"
-#include "LDAPHandler.hpp"
+  #include "Common/LDAPUtil.hpp"
+  #include "Common/Utility.hpp"
+  #include "LDAPHandler.hpp"
 
-#include <ldap.h>
-#include <unistd.h>
+  #include <ldap.h>
+  #include <unistd.h>
 
 namespace usbguard
 {
 
   std::vector<std::string> LDAPHandler::_configValues = {
-    "URI",
-    "ROOTDN",
-    "BASE",
-    "ROOTPW",
-    "USBGUARDBASE",
-    "RULEQUERY",
-    "UPDATEINTERVAL"
+    "URI", "ROOTDN", "BASE", "ROOTPW", "USBGUARDBASE", "RULEQUERY", "UPDATEINTERVAL"
   };
 
   LDAPHandler::LDAPHandler()
-    : _parser(LDAPHandler::_configValues, " ", /*case_sensitive?*/false, /*validate_keys?*/true),
+    : _parser(LDAPHandler::_configValues, " ", /*case_sensitive?*/ false, /*validate_keys?*/ true),
       _ldap_file("/etc/usbguard/usbguard-ldap.conf"),
-      _updateInterval(1 * 60 * 60 * 1000)           /* default update interval is 1h*/
+      _updateInterval(1 * 60 * 60 * 1000) /* default update interval is 1h*/
   {
     USBGUARD_LOG(Info) << "LDAPHandler Loading...";
     char array[HOST_NAME_MAX];
@@ -65,8 +59,8 @@ namespace usbguard
     }
     else {
       /*TODO maybe some option for setting hostname explicitly
-      * without hostname LDAP query will not work!
-      */
+       * without hostname LDAP query will not work!
+       */
       USBGUARD_LOG(Debug) << "Cannot get hostname";
     }
 
@@ -86,8 +80,8 @@ namespace usbguard
     struct berval passwd;
     passwd.bv_val = strdup(_parsedOptions["ROOTPW"].c_str());
     passwd.bv_len = _parsedOptions["ROOTPW"].length();
-    rc = ldap_sasl_bind_s(_ldap_ptr.get(), _parsedOptions["ROOTDN"].c_str(), LDAP_SASL_SIMPLE,
-      &passwd, nullptr, nullptr, nullptr);
+    rc =
+      ldap_sasl_bind_s(_ldap_ptr.get(), _parsedOptions["ROOTDN"].c_str(), LDAP_SASL_SIMPLE, &passwd, nullptr, nullptr, nullptr);
     free(passwd.bv_val);
 
     if (rc != LDAP_SUCCESS) {
@@ -115,9 +109,17 @@ namespace usbguard
   {
     USBGUARD_LOG(Debug) << "Trying to fetch LDAP data, query: " << filter;
     LDAPMessage* res = nullptr;
-    int rc = ldap_search_ext_s(_ldap_ptr.get(), _parsedOptions["USBGUARDBASE"].c_str(),
-      LDAP_SCOPE_SUBTREE, filter.c_str(), nullptr, false,
-      nullptr, nullptr, nullptr, 0, &res);
+    int rc = ldap_search_ext_s(_ldap_ptr.get(),
+      _parsedOptions["USBGUARDBASE"].c_str(),
+      LDAP_SCOPE_SUBTREE,
+      filter.c_str(),
+      nullptr,
+      false,
+      nullptr,
+      nullptr,
+      nullptr,
+      0,
+      &res);
 
     if (rc != LDAP_SUCCESS) {
       ldap_msgfree(res);
@@ -128,11 +130,10 @@ namespace usbguard
     USBGUARD_LOG(Debug) << "Fetched LDAP DNs: ";
     char* dn = nullptr;
 
-    for ( LDAPMessage* e = ldap_first_entry( _ldap_ptr.get(), ptr.get() ); e != nullptr;
-      e = ldap_next_entry( _ldap_ptr.get(), e ) ) {
-      if ((dn = ldap_get_dn( _ldap_ptr.get(), e )) != NULL ) {
+    for (LDAPMessage* e = ldap_first_entry(_ldap_ptr.get(), ptr.get()); e != nullptr; e = ldap_next_entry(_ldap_ptr.get(), e)) {
+      if ((dn = ldap_get_dn(_ldap_ptr.get(), e)) != NULL) {
         USBGUARD_LOG(Debug) << "dn: " << dn;
-        ldap_memfree( dn );
+        ldap_memfree(dn);
       }
     }
 
@@ -148,17 +149,17 @@ namespace usbguard
     struct berval** entry = nullptr;
     char* dn = nullptr;
 
-    for (LDAPMessage* e = ldap_first_entry(_ldap_ptr.get(), message.get() ); e != nullptr;
-      e = ldap_next_entry(_ldap_ptr.get(), e ) ) {
+    for (LDAPMessage* e = ldap_first_entry(_ldap_ptr.get(), message.get()); e != nullptr;
+         e = ldap_next_entry(_ldap_ptr.get(), e)) {
       std::pair<long, std::string> rule;
 
-      if ((dn = ldap_get_dn( _ldap_ptr.get(), e)) != nullptr ) {
+      if ((dn = ldap_get_dn(_ldap_ptr.get(), e)) != nullptr) {
         USBGUARD_LOG(Info) << "dn: " << dn;
         ldap_memfree(dn);
       }
 
-      for (size_t i = 0 ; i < LDAPUtil::_ldap_keys.size() ; i++) {
-        if ((entry = ldap_get_values_len( _ldap_ptr.get(), e, LDAPUtil::_ldap_keys[i].c_str() )) != nullptr ) {
+      for (size_t i = 0; i < LDAPUtil::_ldap_keys.size(); i++) {
+        if ((entry = ldap_get_values_len(_ldap_ptr.get(), e, LDAPUtil::_ldap_keys[i].c_str())) != nullptr) {
           if ((*entry)[0].bv_val == nullptr) {
             continue;
           }
@@ -226,7 +227,7 @@ namespace usbguard
     ldap_file.close();
     USBGUARD_LOG(Debug) << "Map contains:";
 
-    for (auto x: _parsedOptions) {
+    for (auto x : _parsedOptions) {
       USBGUARD_LOG(Debug) << "--> " << x.first << "->" << x.second << " <--";
     }
 
@@ -237,9 +238,9 @@ namespace usbguard
   {
     USBGUARD_LOG(Debug) << "Validating LDAP conf";
     // required
-    std::vector<std::string> v = {"URI", "BASE", "ROOTDN", "ROOTPW"};
+    std::vector<std::string> v = { "URI", "BASE", "ROOTDN", "ROOTPW" };
 
-    for (auto s: v) {
+    for (auto s : v) {
       if (_parsedOptions[s] == "") {
         USBGUARD_LOG(Debug) << "Option " << s << " is missing!";
         throw Exception("LDAP conf validation", "validateConf", "Too few options");
@@ -249,20 +250,32 @@ namespace usbguard
     if (_parsedOptions["USBGUARDBASE"] == "") {
       _parsedOptions["USBGUARDBASE"] = "ou=USBGuard," + _parsedOptions["BASE"];
       USBGUARD_LOG(Debug) << "Option " << "USBGUARDBASE" << " is missing!";
-      USBGUARD_LOG(Debug) <<  _parsedOptions["USBGUARDBASE"];
+      USBGUARD_LOG(Debug) << _parsedOptions["USBGUARDBASE"];
       USBGUARD_LOG(Debug) << "Using defult: " << _parsedOptions["USBGUARDBASE"];
     }
 
     if (_parsedOptions["RULEQUERY"] == "") {
-      _parsedOptions["RULEQUERY"] = "(&" "(cn=Rule*)"  /*TODO add option for setting cn prefix*/
-        /*                              */"(|" "(&" "(USBGuardHost=" + _hostname + ")"
-        /*                                        */"(!" "(USBGuardHost=!" + _hostname + "))"
-        /*                                   */")"
-        /*                                   */"(&" "(USBGuardHost=\\*)"
-        /*                                        */"(!" "(USBGuardHost=!" + _hostname + "))"
-        /*                                   */")"
-        /*                              */")"
-        /*                        */")";
+      _parsedOptions["RULEQUERY"] = "(&"
+                                    "(cn=Rule*)" /*TODO add option for setting cn prefix*/
+                                    /*                              */ "(|"
+                                    "(&"
+                                    "(USBGuardHost=" +
+                                    _hostname +
+                                    ")"
+                                    /*                                        */ "(!"
+                                    "(USBGuardHost=!" +
+                                    _hostname +
+                                    "))"
+                                    /*                                   */ ")"
+                                    /*                                   */ "(&"
+                                    "(USBGuardHost=\\*)"
+                                    /*                                        */ "(!"
+                                    "(USBGuardHost=!" +
+                                    _hostname +
+                                    "))"
+                                    /*                                   */ ")"
+                                    /*                              */ ")"
+                                    /*                        */ ")";
       USBGUARD_LOG(Debug) << "Option " << "RULEQUERY" << " is missing!";
       USBGUARD_LOG(Debug) << "Using default: " << _parsedOptions["RULEQUERY"];
     }
@@ -278,11 +291,11 @@ namespace usbguard
 
     USBGUARD_LOG(Debug) << "Map after validation:";
 
-    for (auto x: _parsedOptions) {
+    for (auto x : _parsedOptions) {
       USBGUARD_LOG(Debug) << "--> " << x.first << " -> " << x.second << " <--";
     }
   }
-}
+} // namespace usbguard
 
 #endif
 

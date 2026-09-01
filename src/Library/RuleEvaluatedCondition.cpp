@@ -53,8 +53,7 @@ namespace usbguard
         return true;
       }
       else {
-        const auto last_evaluated_duration = std::chrono::steady_clock::now() \
-          - rule.internal()->metadata().tp_last_evaluated;
+        const auto last_evaluated_duration = std::chrono::steady_clock::now() - rule.internal()->metadata().tp_last_evaluated;
 
         if (last_evaluated_duration <= _elapsed_time) {
           return true;
@@ -72,7 +71,7 @@ namespace usbguard
 
   uint64_t RuleEvaluatedCondition::stringToSeconds(const std::string& string)
   {
-    struct ::tm tm = { };
+    struct ::tm tm = {};
 
     if (string.empty() || string == "") {
       return 0;
@@ -86,7 +85,7 @@ namespace usbguard
       }
     }
 
-    return tm.tm_sec + 60*tm.tm_min + 60*60*tm.tm_hour;
+    return tm.tm_sec + 60 * tm.tm_min + 60 * 60 * tm.tm_hour;
   }
 } /* namespace usbguard */
 

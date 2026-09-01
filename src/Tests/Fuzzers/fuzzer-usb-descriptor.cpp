@@ -39,7 +39,7 @@ namespace
       (void)descriptor;
     }
   };
-}  // namespace
+} // namespace
 
 // Silence warning
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
@@ -52,11 +52,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 
   try {
     parser.parse(data_stream);
-  }
-  catch (const std::runtime_error& ex) {
+  } catch (const std::runtime_error& ex) {
     // Parser errors are ok.
-  }
-  catch (const usbguard::Exception& ex) {
+  } catch (const usbguard::Exception& ex) {
     // Parser errors are ok.
   }
 

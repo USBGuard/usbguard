@@ -77,9 +77,8 @@ namespace usbguard
   std::shared_ptr<Rule> DevicePrivate::getDeviceRule(const bool with_port, const bool with_parent_hash, const bool match_rule)
   {
     USBGUARD_LOG(Trace) << "entry: "
-      << " with_port=" << with_port
-      << " with_parent_hash=" << with_parent_hash
-      << " match_rule=" << match_rule;
+                        << " with_port=" << with_port << " with_parent_hash=" << with_parent_hash
+                        << " match_rule=" << match_rule;
     std::shared_ptr<Rule> device_rule = std::make_shared<Rule>();
     std::unique_lock<std::mutex> device_lock(refDeviceMutex());
     device_rule->setRuleID(_id);
@@ -119,7 +118,7 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "return:"
-      << " device_rule=" << device_rule->toString();
+                        << " device_rule=" << device_rule->toString();
     return device_rule;
   }
 
@@ -143,9 +142,7 @@ namespace usbguard
     /*
      * Hash name, device id and serial number fields.
      */
-    for (const std::string& field : {
-        _name, vendor_id, product_id, _serial_number
-      }) {
+    for (const std::string& field : { _name, vendor_id, product_id, _serial_number }) {
       hash.update(field);
     }
     _hash = std::move(hash);

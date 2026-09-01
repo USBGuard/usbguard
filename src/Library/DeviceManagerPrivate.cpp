@@ -115,8 +115,7 @@ namespace usbguard
 
     try {
       return _device_map.at(id);
-    }
-    catch (...) {
+    } catch (...) {
       USBGUARD_LOG(Debug) << "Lookup error: " << id;
       throw Exception("Device lookup", "device id", "id doesn't exist");
     }
@@ -124,8 +123,7 @@ namespace usbguard
 
   void DeviceManagerPrivate::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
-    USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event)
-      << "device_ptr=" << device.get();
+    USBGUARD_LOG(Trace) << "event=" << DeviceManager::eventTypeToString(event) << "device_ptr=" << device.get();
     _hooks.dmHookDeviceEvent(event, device);
   }
 

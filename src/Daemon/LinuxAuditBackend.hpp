@@ -35,8 +35,8 @@ namespace usbguard
     void write(const AuditEvent& event);
 
   private:
-    int _audit_fd{-1};
+    int _audit_fd { -1 };
   };
-}
+} // namespace usbguard
 
 /* vim: set ts=2 sw=2 et */

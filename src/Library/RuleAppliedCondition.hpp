@@ -37,8 +37,10 @@ namespace usbguard
     RuleAppliedCondition(const RuleAppliedCondition& rhs);
     bool update(const Rule& rule);
     RuleConditionBase* clone() const;
+
   protected:
     static uint64_t stringToSeconds(const std::string& string);
+
   private:
     std::chrono::steady_clock::duration _elapsed_time;
   };

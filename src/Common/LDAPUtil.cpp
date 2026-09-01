@@ -27,8 +27,7 @@
 
 namespace usbguard
 {
-  std::vector<std::string> LDAPUtil::_ldap_keys = {
-    "USBGuardRuleTarget",
+  std::vector<std::string> LDAPUtil::_ldap_keys = { "USBGuardRuleTarget",
     "USBGuardHost",
     "USBGuardRuleOrder",
     "USBID",
@@ -39,13 +38,11 @@ namespace usbguard
     "USBParentHash",
     "USBViaPort",
     "USBWithInterface",
-    "USBGuardRuleCondition"
-  };
+    "USBGuardRuleCondition" };
 
-  std::vector<std::string> LDAPUtil::_rule_keys = {
-    "RuleTarget", /* just for indexing */
-    "USBGuardHost", /* just for indexing */
-    "USBGuardOrder", /* just for indexing */
+  std::vector<std::string> LDAPUtil::_rule_keys = { "RuleTarget", /* just for indexing */
+    "USBGuardHost",                                               /* just for indexing */
+    "USBGuardOrder",                                              /* just for indexing */
     "id",
     "serial",
     "with-connect-type",
@@ -54,10 +51,9 @@ namespace usbguard
     "parent-hash",
     "via-port",
     "with-interface",
-    "if"
-  };
+    "if" };
 
-  template<class ValueType>
+  template <class ValueType>
   static void toLDIF_appendNonEmptyAttribute(std::string& rule_string, const Rule::Attribute<ValueType>& attribute)
   {
     if (attribute.empty()) {
@@ -89,12 +85,11 @@ namespace usbguard
     return;
   }
 
-  std::string LDAPUtil::toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values,
-    bool invalid)
+  std::string LDAPUtil::toLDIF(const std::shared_ptr<const Rule> rule, std::map<std::string, std::string>& values, bool invalid)
   {
     std::string rule_string;
     std::string name = values["NAME_PREFIX"] + std::to_string(rule->getRuleID());
-    rule_string  = "dn: cn=" + name + "," + values["USBGUARD_BASE"] + "\n";
+    rule_string = "dn: cn=" + name + "," + values["USBGUARD_BASE"] + "\n";
     rule_string += "objectClass: " + values["OBJCLASS"] + "\n";
     rule_string += "objectClass: top\n";
     rule_string += "cn: " + name + "\n";
@@ -102,8 +97,7 @@ namespace usbguard
 
     try {
       rule_string.append(Rule::targetToString(rule->getTarget()));
-    }
-    catch (...) {
+    } catch (...) {
       if (invalid) {
         rule_string.append("<invalid>");
       }
@@ -125,8 +119,8 @@ namespace usbguard
     return rule_string;
   }
 
-  void LDAPUtil::serializeLDIF(const std::vector<std::shared_ptr<RuleSet>> rulesets, std::ostream& stream,
-    std::map<std::string, std::string>& values)
+  void LDAPUtil::serializeLDIF(
+    const std::vector<std::shared_ptr<RuleSet>> rulesets, std::ostream& stream, std::map<std::string, std::string>& values)
   {
     for (auto ruleset : rulesets) {
       for (auto const& rule : ruleset->getRules()) {

@@ -169,8 +169,8 @@ namespace usbguard
     return getImplementation(identifier, parameter, negated);
   }
 
-  RuleConditionBase* RuleConditionBase::getImplementation(const std::string& identifier, const std::string& parameter,
-    bool negated)
+  RuleConditionBase* RuleConditionBase::getImplementation(
+    const std::string& identifier, const std::string& parameter, bool negated)
   {
     if (identifier == "allowed-matches") {
       return new AllowedMatchesCondition(parameter, negated);

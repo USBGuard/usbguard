@@ -92,7 +92,7 @@ namespace usbguard
         }
 
         USBGUARD_LOG(Warning) << "Modification of the permanent policy won't be possible."
-          << " Reason: " << msg;
+                              << " Reason: " << msg;
         ruleSet = generateDefaultRuleSet();
       }
 

@@ -49,9 +49,9 @@ namespace usbguard
   NSHandler* NSHandler::_self = nullptr;
 
   NSHandler::NSHandler()
-    : _parser( {"usbguard"}, ":", /*case_sensitive?*/false, /*validate_keys?*/false),
-  _nsswitch_path("/etc/nsswitch.conf"),
-  _rulesPath("")
+    : _parser({ "usbguard" }, ":", /*case_sensitive?*/ false, /*validate_keys?*/ false),
+      _nsswitch_path("/etc/nsswitch.conf"),
+      _rulesPath("")
   {
     USBGUARD_LOG(Info) << "NSHandler Loading...";
     _source = SourceType::LOCAL;
@@ -90,9 +90,9 @@ namespace usbguard
       break;
 #endif
 
-    // case NSHandler::SourceType::SSSD:
-    //   ret = "SourceSSSD";
-    //   break;
+      // case NSHandler::SourceType::SSSD:
+      //   ret = "SourceSSSD";
+      //   break;
 
     default:
       ret = "SourceUnknown";
@@ -155,7 +155,8 @@ namespace usbguard
     std::ifstream nss(_nsswitch_path);
 
     if (!nss.is_open()) {
-      USBGUARD_LOG(Info) << "Error when opening nsswitch file: " << _nsswitch_path << ": " << ErrnoException::reasonFromErrno(errno);
+      USBGUARD_LOG(Info) << "Error when opening nsswitch file: " << _nsswitch_path << ": "
+                         << ErrnoException::reasonFromErrno(errno);
       USBGUARD_LOG(Info) << "Using default value FILES";
       _source = SourceType::LOCAL;
       return;
@@ -166,13 +167,13 @@ namespace usbguard
     nss.close();
     USBGUARD_LOG(Debug) << "Map contains:";
 
-    for (auto x: _parsedOptions) {
+    for (auto x : _parsedOptions) {
       USBGUARD_LOG(Debug) << "--> " << x.first << " -> " << x.second << " <--";
     }
 
     std::locale loc;
 
-    for (unsigned i = 0 ; i < _parsedOptions["USBGUARD"].length() ; i++) {
+    for (unsigned i = 0; i < _parsedOptions["USBGUARD"].length(); i++) {
       _parsedOptions["USBGUARD"][i] = std::toupper(_parsedOptions["USBGUARD"][i], loc);
     }
 

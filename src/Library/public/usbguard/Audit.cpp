@@ -156,7 +156,8 @@ namespace usbguard
   }
 
   Audit::Audit(const AuditIdentity& identity)
-    : _identity(identity), _hide_pii(false)
+    : _identity(identity),
+      _hide_pii(false)
   {
   }
 
@@ -229,8 +230,8 @@ namespace usbguard
     return event;
   }
 
-  AuditEvent Audit::policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
-    Rule::Target new_target)
+  AuditEvent Audit::policyEvent(
+    const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target)
   {
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Policy.Device.") + Policy::eventTypeToString(Policy::EventType::Update));
@@ -241,8 +242,8 @@ namespace usbguard
     return event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> device,
-    DeviceManager::EventType event_type)
+  AuditEvent Audit::deviceEvent(
+    const AuditIdentity& identity, std::shared_ptr<Device> device, DeviceManager::EventType event_type)
   {
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(event_type));
@@ -251,8 +252,8 @@ namespace usbguard
     return event;
   }
 
-  AuditEvent Audit::deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device,
-    std::shared_ptr<Device> old_device)
+  AuditEvent Audit::deviceEvent(
+    const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device)
   {
     AuditEvent event(identity, _backend);
     event.setKey("type", std::string("Device.") + DeviceManager::eventTypeToString(DeviceManager::EventType::Update));

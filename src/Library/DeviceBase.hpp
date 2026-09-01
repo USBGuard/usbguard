@@ -41,8 +41,8 @@ namespace usbguard
     std::string getSystemName() const override;
 
   private:
-    void parseUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor_raw,
-      USBDescriptor* descriptor_out) override;
+    void parseUSBDescriptor(
+      USBDescriptorParser* parser, const USBDescriptor* descriptor_raw, USBDescriptor* descriptor_out) override;
     void loadUSBDescriptor(USBDescriptorParser* parser, const USBDescriptor* descriptor) override;
     bool isLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);
     void updateHashLinuxRootHubDeviceDescriptor(const USBDescriptor* descriptor);

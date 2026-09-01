@@ -51,12 +51,7 @@ static std::string createFile(const std::vector<std::string> lines)
 
 TEST_CASE("Regression: GitHub PR #209", "[regression]")
 {
-  std::vector<std::string> known_keys = {
-    "keyA",
-    "keyB",
-    "fooB",
-    "barF"
-  };
+  std::vector<std::string> known_keys = { "keyA", "keyB", "fooB", "barF" };
   ConfigFile config(known_keys);
   SECTION("key=value inside a comment should be ignored") {
     const std::string path = createFile({ "# keyA=foo", "keyA=bar", "# unknown=foo" });

@@ -48,7 +48,7 @@ namespace usbguard
 
   const FileRuleSet& FileRuleSet::operator=(const FileRuleSet& rhs)
   {
-    RuleSet::operator = (rhs);
+    RuleSet::operator=(rhs);
     return *this;
   }
 
@@ -98,8 +98,7 @@ namespace usbguard
       if (rule) {
         appendRule(rule, Rule::LastID, /*lock=*/false);
       }
-    }
-    while (stream.good());
+    } while (stream.good());
   }
 
   void FileRuleSet::save(const std::string& path) const

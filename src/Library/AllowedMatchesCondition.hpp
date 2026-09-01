@@ -38,6 +38,7 @@ namespace usbguard
     void init(Interface* const interface_ptr);
     bool update(const Rule& rule);
     RuleConditionBase* clone() const;
+
   private:
     Rule _device_match_rule;
     Interface* _interface_ptr;

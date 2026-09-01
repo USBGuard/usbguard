@@ -54,8 +54,8 @@ namespace usbguard
 
   int runCommand(const char* path, const char* arg1, int timeout_secs = 10);
   int runCommand(const char* path, const char* arg1, const char* arg2, int timeout_secs = 10);
-  int runCommand(const std::string& path, const std::vector<std::string>& args = std::vector<std::string>(),
-    int timeout_secs = 10);
+  int runCommand(
+    const std::string& path, const std::vector<std::string>& args = std::vector<std::string>(), int timeout_secs = 10);
 
   /**
    * Tokenize a std::string compatible type using delimiters specified in a string.
@@ -65,7 +65,7 @@ namespace usbguard
    * token in a vector. If trim_empty is set to true, empty tokens won't be included
    * in the vector.
    */
-  template<typename StringType>
+  template <typename StringType>
   void tokenizeString(const StringType& str, std::vector<StringType>& tokens,
     const typename std::vector<StringType>::value_type delimiters, const bool trim_empty = false)
   {
@@ -97,9 +97,9 @@ namespace usbguard
    * Convert a number of type T to its string
    * representation.
    */
-  template<typename T>
-  std::string numberToString(const T number, const std::string& prefix = std::string(), const int base = 10, const int align = -1,
-    const char align_char = ' ')
+  template <typename T>
+  std::string numberToString(const T number, const std::string& prefix = std::string(), const int base = 10,
+    const int align = -1, const char align_char = ' ')
   {
     std::ostringstream ss;
     ss << std::setbase(base);
@@ -120,16 +120,15 @@ namespace usbguard
     return result;
   }
 
-  template<>
-  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align,
-    const char align_char);
+  template <>
+  std::string numberToString(
+    const uint8_t number, const std::string& prefix, const int base, const int align, const char align_char);
 
   /**
    * Convert a string representation of a number
    * to a number of type T.
    */
-  template<typename T>
-  T stringToNumber(const std::string& s, const int base = 10)
+  template <typename T> T stringToNumber(const std::string& s, const int base = 10)
   {
     std::istringstream ss(s);
     T num;
@@ -137,8 +136,7 @@ namespace usbguard
     return num;
   }
 
-  template<>
-  uint8_t stringToNumber(const std::string& s, const int base);
+  template <> uint8_t stringToNumber(const std::string& s, const int base);
 
   bool isNumericString(const std::string& s);
 
@@ -185,14 +183,14 @@ namespace usbguard
    * matching a regular expression. The function does not recursively descent into
    * subdirectories.
    */
-  int loadFiles(const std::string& directory,
-    std::function<std::string(const std::string&, const struct dirent*)> filter,
+  int loadFiles(
+    const std::string& directory, std::function<std::string(const std::string&, const struct dirent*)> filter,
     std::function<int(const std::string&, const std::string&)> loader,
-    std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter = \
-  [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool {
-    return a.first < b.first;
-  },
-  bool directory_required = true);
+    std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter =
+      [](const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b) -> bool {
+      return a.first < b.first;
+    },
+    bool directory_required = true);
 
   /**
    * Remove prefix from string.
@@ -228,8 +226,7 @@ namespace usbguard
   /*
    * Restorer class
    */
-  template<typename Tvar, typename Tval>
-  class Restorer
+  template <typename Tvar, typename Tval> class Restorer
   {
   public:
     Restorer(Tvar& var, Tval transient, Tval restored)
@@ -256,8 +253,7 @@ namespace usbguard
     }
   };
 
-  template<typename T, typename... Params>
-  std::unique_ptr<T> make_unique(Params&& ... params)
+  template <typename T, typename... Params> std::unique_ptr<T> make_unique(Params&&... params)
   {
     return std::unique_ptr<T>(new T(std::forward<Params>(params)...));
   }
@@ -269,7 +265,9 @@ namespace usbguard
   {
   public:
     ScopedFD(int fd)
-      : _fd(fd) {}
+      : _fd(fd)
+    {
+    }
 
     ScopedFD(const ScopedFD&) = delete;
 
@@ -297,12 +295,11 @@ namespace usbguard
     }
 
   private:
-    int _fd{-1};
+    int _fd { -1 };
   };
 
 
-  template<typename T>
-  std::string joinElements(T begin, T end, const std::string& separator = " ")
+  template <typename T> std::string joinElements(T begin, T end, const std::string& separator = " ")
   {
     std::ostringstream ss;
 

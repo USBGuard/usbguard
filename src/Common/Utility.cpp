@@ -95,10 +95,10 @@ namespace usbguard
     args_cstr[0] = const_cast<char*>(path.c_str());
 
     for (i = 0; i < args.size(); ++i) {
-      args_cstr[1+i] = const_cast<char*>(args[i].c_str());
+      args_cstr[1 + i] = const_cast<char*>(args[i].c_str());
     }
 
-    args_cstr[1+i] = nullptr;
+    args_cstr[1 + i] = nullptr;
     // TODO: Reset environment?
     (void)::execv(path.c_str(), args_cstr);
   }
@@ -169,7 +169,7 @@ namespace usbguard
     if (timedout) {
       // Try to be nice first
       ::kill(child_pid, SIGTERM);
-      ::usleep(1000*500);
+      ::usleep(1000 * 500);
 
       // Send SIGKILL if the process is still running
       if (::waitpid(child_pid, &status, WNOHANG) != child_pid) {
@@ -209,8 +209,7 @@ namespace usbguard
     // find first not '/' (from end)
     // find first '/' (from end)
     // find first not '/' (from end)
-    auto reverse_start_pos = \
-      parent_path.find_last_not_of(directory_separator);
+    auto reverse_start_pos = parent_path.find_last_not_of(directory_separator);
 
     /*
      * Whole path consists only of '/'.
@@ -219,8 +218,7 @@ namespace usbguard
       return std::string();
     }
 
-    reverse_start_pos = \
-      parent_path.find_last_of(directory_separator, reverse_start_pos);
+    reverse_start_pos = parent_path.find_last_of(directory_separator, reverse_start_pos);
 
     /*
      * No directory separator in the rest of the path.
@@ -229,8 +227,7 @@ namespace usbguard
       return std::string();
     }
 
-    reverse_start_pos = \
-      parent_path.find_last_not_of(directory_separator, reverse_start_pos);
+    reverse_start_pos = parent_path.find_last_not_of(directory_separator, reverse_start_pos);
 
     /*
      *
@@ -285,16 +282,15 @@ namespace usbguard
    * explicit specialization handles the uint8_t case by recasting it to
    * an unsigned int.
    */
-  template<>
-  std::string numberToString(const uint8_t number, const std::string& prefix, const int base, const int align,
-    const char align_char)
+  template <>
+  std::string numberToString(
+    const uint8_t number, const std::string& prefix, const int base, const int align, const char align_char)
   {
     const uint16_t n = static_cast<uint16_t>(number);
     return numberToString(n, prefix, base, align, align_char);
   }
 
-  template<>
-  uint8_t stringToNumber(const std::string& s, const int base)
+  template <> uint8_t stringToNumber(const std::string& s, const int base)
   {
     const unsigned int num = stringToNumber<unsigned int>(s, base);
     return (uint8_t)num;
@@ -311,8 +307,7 @@ namespace usbguard
     return true;
   }
 
-  int loadFiles(const std::string& directory,
-    std::function<std::string(const std::string&, const struct dirent*)> filter,
+  int loadFiles(const std::string& directory, std::function<std::string(const std::string&, const struct dirent*)> filter,
     std::function<int(const std::string&, const std::string&)> loader,
     std::function<bool(const std::pair<std::string, std::string>&, const std::pair<std::string, std::string>&)> sorter,
     bool directory_required)
@@ -364,8 +359,7 @@ namespace usbguard
       for (const auto& loadpath : loadpaths) {
         retval += loader(loadpath.first, loadpath.second);
       }
-    }
-    catch (...) {
+    } catch (...) {
       closedir(dirobj);
       throw;
     }
@@ -407,12 +401,11 @@ namespace usbguard
 
   std::string symlinkPath(const std::string& linkpath, struct stat* st_user)
   {
-    struct stat st = { };
+    struct stat st = {};
     struct stat* st_ptr = nullptr;
 
     if (st_user == nullptr) {
-      USBGUARD_SYSCALL_THROW("symlinkPath",
-        lstat(linkpath.c_str(), &st) != 0);
+      USBGUARD_SYSCALL_THROW("symlinkPath", lstat(linkpath.c_str(), &st) != 0);
       st_ptr = &st;
     }
     else {
@@ -439,8 +432,7 @@ namespace usbguard
     const ssize_t link_size = readlink(linkpath.c_str(), &buffer[0], buffer.capacity());
 
     if (link_size <= 0 || link_size > st_ptr->st_size) {
-      USBGUARD_LOG(Debug) << "link_size=" << link_size
-        << " st_size=" << st_ptr->st_size;
+      USBGUARD_LOG(Debug) << "link_size=" << link_size << " st_size=" << st_ptr->st_size;
       throw Exception("symlinkPath", linkpath, "symlink value size changed before read");
     }
 
@@ -507,7 +499,7 @@ namespace usbguard
     for (auto it = components.cbegin(); it != components.cend(); ++it) {
       normalized_path.append(*it);
 
-      if ((it+1) != components.cend()) {
+      if ((it + 1) != components.cend()) {
         normalized_path.append("/");
       }
     }
@@ -531,7 +523,7 @@ namespace usbguard
       file_name = path + '/' + dp->d_name;
 
       if (stat(file_name.c_str(), &path_stat) == 0) {
-        if (S_ISREG(path_stat.st_mode)) { // check if entry is a file
+        if (S_ISREG(path_stat.st_mode)) {     // check if entry is a file
           rulefile_list.push_back(file_name); // add it to output
         }
       }
@@ -562,20 +554,13 @@ namespace usbguard
   {
     const char* s = name.data();
 
-    if (('\0' == *s) ||
-      !((('a' <= *s) && ('z' >= *s)) ||
-      (('A' <= *s) && ('Z' >= *s)) ||
-      ('_' == *s))) {
+    if (('\0' == *s) || !((('a' <= *s) && ('z' >= *s)) || (('A' <= *s) && ('Z' >= *s)) || ('_' == *s))) {
       return false;
     }
 
     while ('\0' != *++s) {
-      if (!((('a' <= *s) && ('z' >= *s)) ||
-        (('A' <= *s) && ('Z' >= *s)) ||
-        (('0' <= *s) && ('9' >= *s)) ||
-        ('_' == *s) ||
-        ('-' == *s) ||
-        (('$' == *s) && ('\0' == *(s + 1))))) {
+      if (!((('a' <= *s) && ('z' >= *s)) || (('A' <= *s) && ('Z' >= *s)) || (('0' <= *s) && ('9' >= *s)) || ('_' == *s) ||
+            ('-' == *s) || (('$' == *s) && ('\0' == *(s + 1))))) {
         return false;
       }
     }

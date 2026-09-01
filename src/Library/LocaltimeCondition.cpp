@@ -74,9 +74,7 @@ namespace usbguard
     (void)rule;
     const auto tp_now = std::chrono::system_clock::now();
     const auto daytime = std::chrono::system_clock::to_time_t(tp_now) % 86400;
-    USBGUARD_LOG(Trace) << "daytime=" << daytime
-      << " daytime_begin=" << _daytime_begin
-      << " daytime_end=" << _daytime_end;
+    USBGUARD_LOG(Trace) << "daytime=" << daytime << " daytime_begin=" << _daytime_begin << " daytime_end=" << _daytime_end;
     return (daytime >= _daytime_begin && daytime <= _daytime_end);
   }
 
@@ -113,7 +111,7 @@ namespace usbguard
   std::time_t LocaltimeCondition::stringToDaytime(const std::string& string)
   {
     USBGUARD_LOG(Trace) << "string=" << string;
-    struct ::tm tm = { };
+    struct ::tm tm = {};
 
     if (::strptime(string.c_str(), "%H:%M:%s", &tm) == nullptr) {
       if (::strptime(string.c_str(), "%H:%M", &tm) == nullptr) {
@@ -122,7 +120,7 @@ namespace usbguard
     }
 
     USBGUARD_LOG(Trace) << "tm=" << tmToString(&tm);
-    return tm.tm_sec + 60*tm.tm_min + 60*60*tm.tm_hour;
+    return tm.tm_sec + 60 * tm.tm_min + 60 * 60 * tm.tm_hour;
   }
 } /* namespace usbguard */
 

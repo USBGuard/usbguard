@@ -33,12 +33,10 @@ namespace usbguard
 {
   static const char* options_short = "hug";
 
-  static const struct ::option options_long[] = {
-    { "help", no_argument, nullptr, 'h' },
+  static const struct ::option options_long[] = { { "help", no_argument, nullptr, 'h' },
     { "user", no_argument, nullptr, 'u' },
     { "group", no_argument, nullptr, 'g' },
-    { nullptr, 0, nullptr, 0  }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {

@@ -46,11 +46,10 @@ namespace usbguard
     uint64_t getMessageHeaderID(const MessageType& message);
     void setMessageHeaderID(MessageType& message, uint64_t id);
 
-    template<class C>
-    class MessageHandler
+    template <class C> class MessageHandler
     {
     public:
-      using HandlerType = void(C::*)(MessagePointer&, MessagePointer&);
+      using HandlerType = void (C::*)(MessagePointer&, MessagePointer&);
 
       MessageHandler(C& c, HandlerType method, const MessageType& factory,
         IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE,
@@ -94,7 +93,7 @@ namespace usbguard
         (_instance.*_method)(message, response);
       }
 
-      template<class ProtobufType>
+      template <class ProtobufType>
       static MessageHandler create(C& c, HandlerType method,
         IPCServer::AccessControl::Section section = IPCServer::AccessControl::Section::NONE,
         IPCServer::AccessControl::Privilege privilege = IPCServer::AccessControl::Privilege::NONE)
@@ -119,7 +118,7 @@ namespace usbguard
       IPCServer::AccessControl::Section _section;
       IPCServer::AccessControl::Privilege _privilege;
     };
-  }
+  } // namespace IPC
 } /* namespace usbguard */
 
 /* vim: set ts=2 sw=2 et */

@@ -47,13 +47,7 @@ namespace usbguard
   class Daemon : public IPCServer, public DeviceManagerHooks
   {
   public:
-    enum DevicePolicyMethod {
-      Allow,
-      Block,
-      Reject,
-      Keep,
-      ApplyPolicy
-    };
+    enum DevicePolicyMethod { Allow, Block, Reject, Keep, ApplyPolicy };
 
     static DevicePolicyMethod devicePolicyMethodFromString(const std::string& policy_string);
     static const std::string devicePolicyMethodToString(DevicePolicyMethod policy);
@@ -99,7 +93,7 @@ namespace usbguard
     uint32_t dmHookAssignID() override;
     void dmHookDeviceException(const std::string& message) override;
 
-#define USBGUARD_IPCSERVER_DEFAULT_AC \
+#define USBGUARD_IPCSERVER_DEFAULT_AC                                                                                          \
   IPCServer::AccessControl(IPCServer::AccessControl::Section::ALL, IPCServer::AccessControl::Privilege::ALL)
 
     void addIPCAllowedUID(uid_t uid, const IPCServer::AccessControl& ac = USBGUARD_IPCSERVER_DEFAULT_AC);

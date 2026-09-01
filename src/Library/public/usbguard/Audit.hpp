@@ -103,6 +103,7 @@ namespace usbguard
      * audit event.
      */
     AuditEvent(const AuditIdentity& identity, std::shared_ptr<AuditBackend>& backend);
+
   public:
     using Keys = std::unordered_map<std::string, std::string>;
 
@@ -178,13 +179,13 @@ namespace usbguard
      */
     void setKey(const std::string& key, const std::string& value);
 
-    bool _commited; /**< True if this audit event has been commited,
-                      false otherwise. */
-    AuditIdentity _identity; /**< \link AuditIdentity AuditIdentity \endlink. */
+    bool _commited;                         /**< True if this audit event has been commited,
+                                              false otherwise. */
+    AuditIdentity _identity;                /**< \link AuditIdentity AuditIdentity \endlink. */
     std::shared_ptr<AuditBackend> _backend; /**< Audit backend that will be
                                               used to commit this audit event. */
-    Keys _keys; /**< Map of key=value pairs describing what happened/changed
-                  that should be audited. */
+    Keys _keys;                             /**< Map of key=value pairs describing what happened/changed
+                                              that should be audited. */
 
     friend class Audit;
   };
@@ -541,8 +542,8 @@ namespace usbguard
      * @param new_target New rule target.
      * @return \link AuditEvent Audit event\endlink.
      */
-    AuditEvent policyEvent(const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target,
-      Rule::Target new_target);
+    AuditEvent policyEvent(
+      const AuditIdentity& identity, std::shared_ptr<Device> device, Rule::Target old_target, Rule::Target new_target);
 
     /**
      * @brief Constructs new \link AuditEvent AuditEvent\endlink for given
@@ -597,18 +598,19 @@ namespace usbguard
      * @param old_device Old device.
      * @return \link AuditEvent Audit event\endlink.
      */
-    AuditEvent deviceEvent(const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
+    AuditEvent deviceEvent(
+      const AuditIdentity& identity, std::shared_ptr<Device> new_device, std::shared_ptr<Device> old_device);
 
   private:
-    AuditIdentity _identity; /**< \link AuditIdentity AuditIdentity \endlink. */
+    AuditIdentity _identity;                /**< \link AuditIdentity AuditIdentity \endlink. */
     std::shared_ptr<AuditBackend> _backend; /**< \link AuditBackend
                                               AuditBackend\endlink that will
                                               be used to commit generated
                                               audit events. */
-    bool _hide_pii; /**< Decides whether personally identifiable information
-                      (PII) such as device serial numbers and hashes of
-                      the descriptors (which include the serial number)
-                      will be excluded from audit entries. */
+    bool _hide_pii;                         /**< Decides whether personally identifiable information
+                                              (PII) such as device serial numbers and hashes of
+                                              the descriptors (which include the serial number)
+                                              will be excluded from audit entries. */
   };
 } /* namespace usbguard */
 

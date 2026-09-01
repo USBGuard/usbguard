@@ -31,7 +31,6 @@ namespace usbguard
   class DLL_PUBLIC RuleSet
   {
   public:
-
     RuleSet(Interface* const interface_ptr);
     RuleSet(const RuleSet& rhs);
     const RuleSet& operator=(const RuleSet& rhs);
@@ -62,9 +61,9 @@ namespace usbguard
   protected:
     mutable std::mutex _op_mutex; /* mutex for operations on the rule set */
 
-    bool _writable{false};
+    bool _writable { false };
 
-    Interface* _interface_ptr{nullptr};
+    Interface* _interface_ptr { nullptr };
     Rule::Target _default_target;
     static Atomic<uint32_t> _id_next;
     std::vector<std::shared_ptr<Rule>> _rules;

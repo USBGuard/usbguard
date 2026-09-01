@@ -42,7 +42,6 @@ namespace usbguard
   class DLL_PUBLIC RuleSetFactory
   {
   public:
-
     static void setInterface(Interface* ptr);
 
     static std::vector<std::shared_ptr<RuleSet>> generateDefaultRuleSet();
@@ -50,7 +49,6 @@ namespace usbguard
 
   private:
     static Interface* interface_ptr;
-
   };
 
 } /* namespace usbguard */

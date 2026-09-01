@@ -27,8 +27,7 @@
 
 namespace usbguard
 {
-  template<>
-  std::string toRuleString(const std::string& value)
+  template <> std::string toRuleString(const std::string& value)
   {
     return Utility::quoteEscapeString(value);
   }
@@ -279,9 +278,7 @@ namespace usbguard
 
   Rule::operator bool() const
   {
-    return !(getTarget() == Target::Unknown ||
-      getTarget() == Target::Invalid ||
-      getTarget() == Target::Empty);
+    return !(getTarget() == Target::Unknown || getTarget() == Target::Invalid || getTarget() == Target::Empty);
   }
 
   std::string Rule::toString(bool invalid, bool hide_serial) const
@@ -309,14 +306,12 @@ namespace usbguard
     return d_pointer;
   }
 
-  static const std::vector<std::pair<std::string, Rule::Target>> target_ttable = {
-    { "allow", Rule::Target::Allow },
+  static const std::vector<std::pair<std::string, Rule::Target>> target_ttable = { { "allow", Rule::Target::Allow },
     { "block", Rule::Target::Block },
     { "reject", Rule::Target::Reject },
     { "match", Rule::Target::Match },
     { "device", Rule::Target::Device },
-    { "", Rule::Target::Empty }
-  };
+    { "", Rule::Target::Empty } };
 
   const std::string Rule::targetToString(const Rule::Target target)
   {
@@ -362,15 +357,14 @@ namespace usbguard
     return static_cast<Rule::Target>(target_integer);
   }
 
-  static const std::vector<std::pair<std::string, Rule::SetOperator>> set_operator_ttable = {
-    { "all-of", Rule::SetOperator::AllOf },
+  static const std::vector<std::pair<std::string, Rule::SetOperator>> set_operator_ttable = { { "all-of",
+                                                                                                Rule::SetOperator::AllOf },
     { "one-of", Rule::SetOperator::OneOf },
     { "none-of", Rule::SetOperator::NoneOf },
     { "equals", Rule::SetOperator::Equals },
     { "equals-ordered", Rule::SetOperator::EqualsOrdered },
     { "match", Rule::SetOperator::Match },
-    { "match-all", Rule::SetOperator::MatchAll}
-  };
+    { "match-all", Rule::SetOperator::MatchAll } };
 
   const std::string Rule::setOperatorToString(const Rule::SetOperator& op)
   {

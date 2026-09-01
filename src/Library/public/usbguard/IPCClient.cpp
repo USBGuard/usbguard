@@ -39,7 +39,7 @@ namespace usbguard
 
   void IPCClient::disconnect()
   {
-    d_pointer->disconnect(/*do_wait*/true);
+    d_pointer->disconnect(/*do_wait*/ true);
   }
 
   bool IPCClient::isConnected() const
@@ -87,8 +87,8 @@ namespace usbguard
     return d_pointer->listDevices(query);
   }
 
-  bool IPCClient::checkIPCPermissions(const IPCServer::AccessControl::Section& section,
-    const IPCServer::AccessControl::Privilege& privilege)
+  bool IPCClient::checkIPCPermissions(
+    const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege)
   {
     return d_pointer->checkIPCPermissions(section, privilege);
   }

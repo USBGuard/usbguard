@@ -31,10 +31,8 @@ TEST_CASE("Regression: GitHub issue #247", "[regression]")
 {
   Rule target_rule;
   Rule source_rule;
-  const std::string source_rule_spec =
-    "allow with-interface equals-ordered { 03:00:00 03:01:01 }";
-  const std::string target_rule_spec =
-    "allow with-interface equals-ordered { 03:00:00 03:01:01 }";
+  const std::string source_rule_spec = "allow with-interface equals-ordered { 03:00:00 03:01:01 }";
+  const std::string target_rule_spec = "allow with-interface equals-ordered { 03:00:00 03:01:01 }";
   CHECK_NOTHROW(target_rule = Rule::fromString(target_rule_spec));
   CHECK_NOTHROW(source_rule = Rule::fromString(source_rule_spec));
   REQUIRE(source_rule.appliesTo(target_rule));

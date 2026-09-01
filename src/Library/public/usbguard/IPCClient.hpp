@@ -44,7 +44,6 @@ namespace usbguard
   class DLL_PUBLIC IPCClient : public Interface
   {
   public:
-
     /**
      * @brief Constructs IPC client.
      *
@@ -163,13 +162,15 @@ namespace usbguard
      * @return True if IPC client has enough permission
      * for (section, privilege), otherwise false.
      */
-    bool checkIPCPermissions(const IPCServer::AccessControl::Section& section,
-      const IPCServer::AccessControl::Privilege& privilege);
+    bool checkIPCPermissions(
+      const IPCServer::AccessControl::Section& section, const IPCServer::AccessControl::Privilege& privilege);
 
     /**
      * @brief Defines algorithm to perform in the case of IPC connection.
      */
-    virtual void IPCConnected() {}
+    virtual void IPCConnected()
+    {
+    }
 
     /**
      * @brief Defines algorithm to perform in the case of IPC disconnection.
@@ -192,10 +193,8 @@ namespace usbguard
      * @see \link Interface::DevicePresenceChanged()
      * DevicePresenceChanged()\endlink
      */
-    virtual void DevicePresenceChanged(uint32_t id,
-      DeviceManager::EventType event,
-      Rule::Target target,
-      const std::string& device_rule) override
+    virtual void DevicePresenceChanged(
+      uint32_t id, DeviceManager::EventType event, Rule::Target target, const std::string& device_rule) override
     {
       (void)id;
       (void)event;
@@ -210,11 +209,8 @@ namespace usbguard
      * @see \link Interface::DevicePolicyChanged()
      * DevicePolicyChanged()\endlink
      */
-    virtual void DevicePolicyChanged(uint32_t id,
-      Rule::Target target_old,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override
+    virtual void DevicePolicyChanged(
+      uint32_t id, Rule::Target target_old, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override
     {
       (void)id;
       (void)target_old;
@@ -230,10 +226,8 @@ namespace usbguard
      * @see \link Interface::DevicePolicyApplied()
      * DevicePolicyApplied()\endlink
      */
-    virtual void DevicePolicyApplied(uint32_t id,
-      Rule::Target target_new,
-      const std::string& device_rule,
-      uint32_t rule_id) override
+    virtual void DevicePolicyApplied(
+      uint32_t id, Rule::Target target_new, const std::string& device_rule, uint32_t rule_id) override
     {
       (void)id;
       (void)target_new;
@@ -248,9 +242,8 @@ namespace usbguard
      * @see \link Interface::PropertyParameterChanged()
      * PropertyParameterChanged()\endlink
      */
-    virtual void PropertyParameterChanged(const std::string& name,
-      const std::string& value_old,
-      const std::string& value_new) override
+    virtual void PropertyParameterChanged(
+      const std::string& name, const std::string& value_old, const std::string& value_new) override
     {
       (void)name;
       (void)value_old;
@@ -263,9 +256,7 @@ namespace usbguard
      *
      * @see \link Interface::ExceptionMessage() ExceptionMessage()\endlink
      */
-    virtual void ExceptionMessage(const std::string& context,
-      const std::string& object,
-      const std::string& reason) override
+    virtual void ExceptionMessage(const std::string& context, const std::string& object, const std::string& reason) override
     {
       (void)context;
       (void)object;

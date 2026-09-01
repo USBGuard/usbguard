@@ -31,13 +31,11 @@ namespace usbguard
 {
   static const char* options_short = "wohe:";
 
-  static const struct ::option options_long[] = {
-    { "wait", no_argument, nullptr, 'w' },
+  static const struct ::option options_long[] = { { "wait", no_argument, nullptr, 'w' },
     { "once", no_argument, nullptr, 'o' },
     { "help", no_argument, nullptr, 'h' },
     { "exec", required_argument, nullptr, 'e' },
-    { nullptr, 0, nullptr, 0 }
-  };
+    { nullptr, 0, nullptr, 0 } };
 
   static void showHelp(std::ostream& stream)
   {
@@ -104,8 +102,7 @@ namespace usbguard
         }
 
         watcher.wait();
-      }
-      catch (const Exception& ex) {
+      } catch (const Exception& ex) {
         /*
          * Re-throw if we won't be waiting for the connection
          * to become available.

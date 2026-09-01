@@ -22,19 +22,19 @@
 
 #ifdef HAVE_LDAP
 
-#include <algorithm>
+  #include <algorithm>
 
-#include "LDAPRuleSet.hpp"
-#include "LDAPHandler.hpp"
+  #include "LDAPRuleSet.hpp"
+  #include "LDAPHandler.hpp"
 
-#include "usbguard/Typedefs.hpp"
-#include "usbguard/RuleParser.hpp"
-#include "usbguard/Exception.hpp"
+  #include "usbguard/Typedefs.hpp"
+  #include "usbguard/RuleParser.hpp"
+  #include "usbguard/Exception.hpp"
 
-#include "Common/LDAPUtil.hpp"
+  #include "Common/LDAPUtil.hpp"
 
-#include <future>
-#include <unistd.h>
+  #include <future>
+  #include <unistd.h>
 
 
 namespace usbguard
@@ -59,7 +59,7 @@ namespace usbguard
 
   const LDAPRuleSet& LDAPRuleSet::operator=(const LDAPRuleSet& rhs)
   {
-    RuleSet::operator = (rhs);
+    RuleSet::operator=(rhs);
     return *this;
   }
 
@@ -71,13 +71,12 @@ namespace usbguard
   {
     std::shared_ptr<LDAPMessage> message = _LDAP->query(_LDAP->getRuleQuery());
     std::vector<std::pair<long, std::string>> v = _LDAP->ldapToRules(message);
-    std::sort(v.begin(), v.end(), [](std::pair<long, std::string> a, std::pair<long, std::string> b) {
-      return a.first < b.first;
-    });
+    std::sort(
+      v.begin(), v.end(), [](std::pair<long, std::string> a, std::pair<long, std::string> b) { return a.first < b.first; });
     size_t rule_number = 1;
 
-    for (auto _rule: v) {
-      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  RuleOrder: "<< _rule.first;
+    for (auto _rule : v) {
+      USBGUARD_LOG(Info) << "Parsing rule: " << rule_number << "  RuleOrder: " << _rule.first;
       USBGUARD_LOG(Info) << _rule.second;
       auto rule = parseRuleFromString(_rule.second, "", rule_number);
       appendRule(rule, Rule::LastID, /*lock=*/false);
@@ -88,7 +87,9 @@ namespace usbguard
     _last_update = std::time(nullptr);
   }
 
-  void LDAPRuleSet::save() {}
+  void LDAPRuleSet::save()
+  {
+  }
 
   void LDAPRuleSet::update()
   {
@@ -100,10 +101,10 @@ namespace usbguard
     }
 
     /*TODO:
-    *
-    * we should handle that LDAP server can be unreachable
-    *
-    */
+     *
+     * we should handle that LDAP server can be unreachable
+     *
+     */
     std::unique_lock<std::mutex> op_lock(_op_mutex);
     USBGUARD_LOG(Trace) << "Processing UPDATE!";
     _rules.clear();

@@ -22,8 +22,8 @@
 #endif
 
 #if defined(HAVE_UEVENT)
-#include "Common/Thread.hpp"
-#include "DeviceManagerBase.hpp"
+  #include "Common/Thread.hpp"
+  #include "DeviceManagerBase.hpp"
 
 namespace usbguard
 {
@@ -41,8 +41,8 @@ namespace usbguard
     void scan(const std::string& devpath) override;
 
   private:
-    static bool ueventEnumerateComparePath(const std::pair<std::string, std::string>& a,
-      const std::pair<std::string, std::string>& b);
+    static bool ueventEnumerateComparePath(
+      const std::pair<std::string, std::string>& a, const std::pair<std::string, std::string>& b);
 
     void thread();
     void ueventProcessRead();
