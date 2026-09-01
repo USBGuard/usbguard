@@ -27,12 +27,11 @@ EXTRA_DIST =\
 	usbguard.service.in \
 	VERSION \
 	CHANGELOG.md \
-	src/astylerc \
+	.clang-format \
 	src/test_filesystem.cpp \
 	scripts/usbguard-zsh-completion \
 	scripts/modeline.vim \
-	scripts/astyle.sh \
-	scripts/reformat-sources.sh \
+	scripts/clang-format-sources.sh \
 	scripts/usb-descriptor-collect.sh
 
 BUILT_SOURCES=\

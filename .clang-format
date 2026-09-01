@@ -1,0 +1,50 @@
+---
+Language: Cpp
+Standard: c++17
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel:         false
+  AfterClass:             true
+  AfterControlStatement:  Never
+  AfterEnum:              false
+  AfterFunction:          true
+  AfterNamespace:         true
+  AfterStruct:            true
+  AfterUnion:             true
+  AfterExternBlock:       true
+  BeforeCatch:            false
+  BeforeElse:             true
+  BeforeLambdaBody:       false
+  BeforeWhile:            false
+  IndentBraces:           false
+  SplitEmptyFunction:     true
+  SplitEmptyRecord:       false
+  SplitEmptyNamespace:    false
+
+IndentWidth:              2
+TabWidth:                 2
+UseTab:                   Never
+NamespaceIndentation:     All
+PointerAlignment:         Left
+ReferenceAlignment:       Left
+ColumnLimit:              128
+IndentCaseLabels:         false
+SpaceBeforeParens:        ControlStatements
+InsertBraces:             true
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine:        false
+AllowShortFunctionsOnASingleLine:    None
+KeepEmptyLinesAtTheStartOfBlocks:    false
+MaxEmptyLinesToKeep:      2
+IndentPPDirectives:       BeforeHash
+SortIncludes:             Never
+IncludeBlocks:            Preserve
+AlignAfterOpenBracket:    DontAlign
+ContinuationIndentWidth:  2
+BreakConstructorInitializers:        BeforeColon
+ConstructorInitializerIndentWidth:   2
+PackConstructorInitializers:         Never
+Cpp11BracedListStyle:     false
+SpacesInContainerLiterals: true
+BinPackArguments:         false
