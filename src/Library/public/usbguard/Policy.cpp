@@ -26,7 +26,7 @@
 
 namespace usbguard
 {
-  Policy::Policy()
+  Policy::Policy(): _defaultTarget(Rule::Target::Block)
   {
     _rulesets_ptr = std::vector<std::shared_ptr<RuleSet>>();
   }
