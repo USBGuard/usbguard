@@ -206,6 +206,11 @@ namespace usbguard
     return d_pointer->getDevice(id);
   }
 
+  std::mutex& DeviceManager::refDeviceMapMutex()
+  {
+    return d_pointer->refDeviceMapMutex();
+  }
+
   void DeviceManager::DeviceEvent(DeviceManager::EventType event, std::shared_ptr<Device> device)
   {
     d_pointer->DeviceEvent(event, device);
