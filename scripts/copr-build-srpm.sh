@@ -17,8 +17,8 @@
 #
 # Authors: Daniel Kopecek <dkopecek@redhat.com>
 #
-CURL=$(which curl)
-JQ=$(which jq)
+CURL=$(command -v curl)
+JQ=$(command -v jq)
 
 if [ -z "$CURL" ]; then
   echo "Required curl command missing. Aborting."
