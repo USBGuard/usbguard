@@ -89,7 +89,7 @@ sudo -n cat "$ldap_path"
 
 sudo -n cp "$ldap_path" /etc/usbguard/usbguard-ldap.conf
 
-PIDFILE="/var/run/usbguard.pid"
+PIDFILE="/var/run/usbguard/usbguard.pid"
 
 ${LDAP_UTIL} delete && true
 # ${LDAP_UTIL} setup

@@ -26,7 +26,7 @@ source "${USBGUARD_TESTLIB_BASH}" || exit 129
 export USBGUARD_TESTLIB_TMPDIR="$(mktemp -d --tmpdir usbguard-test.XXXXXX)"
 
 export config_path="${USBGUARD_TESTLIB_TMPDIR}/daemon.conf"
-export pidfile_path="${USBGUARD_TESTLIB_TMPDIR}/usbguard.pid"
+export pidfile_path="${USBGUARD_TESTLIB_TMPDIR}/usbguard/usbguard.pid"
 export logfile="${USBGUARD_TESTLIB_TMPDIR}/daemon.log"
 
 function test_cli_daemonize()
