@@ -119,6 +119,7 @@ test_unit_SOURCES=\
 	Unit/test_Rule.cpp \
 	Unit/test_RuleParser.cpp \
 	Unit/test_Base64.cpp \
+	Unit/test_Hash.cpp \
 	Unit/test_UEvent.cpp \
 	Unit/test_UEventParser.cpp \
 	Unit/test_Utility.cpp \

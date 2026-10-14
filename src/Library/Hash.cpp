@@ -70,7 +70,24 @@ namespace usbguard
     _state = rhs._state;
 #endif
 #if defined(USBGUARD_USE_OPENSSL)
-    _state = rhs._state;
+  #if OPENSSL_VERSION_NUMBER >= 0x10100000L
+
+    if ((_state = EVP_MD_CTX_new()) == nullptr) {
+      throw std::runtime_error("Dynamic memory allocation of message digest context failed.");
+    }
+
+  #else
+
+    if ((_state = EVP_MD_CTX_create()) == nullptr) {
+      throw std::runtime_error("Dynamic memory allocation of message digest context failed.");
+    }
+
+  #endif
+
+    if (!EVP_MD_CTX_copy_ex(_state, rhs._state)) {
+      throw std::runtime_error("Copying of message digest context failed.");
+    }
+
 #endif
 #if defined(USBGUARD_USE_LIBGCRYPT)
     gcry_md_copy(&_state, rhs._state);
