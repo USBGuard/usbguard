@@ -45,8 +45,6 @@ namespace usbguard
      * @brief Returns true if the source set is a superset of the
      * target set, false otherwise.
      *
-     * @todo Implement.
-     *
      * @param source Source set.
      * @param target Target set.
      * @return True if the source set is a superset of the
@@ -54,10 +52,8 @@ namespace usbguard
      */
     template <typename T> bool isSupersetOf(const T& source, const T& target)
     {
-      USBGUARD_LOG(Error) << "Not implemented";
-      (void)source;
-      (void)target;
-      return true;
+      USBGUARD_LOG(Trace) << "generic isSupersetOf";
+      return source == target;
     }
   } // namespace Predicates DLL_PUBLIC
 } /* namespace usbguard */
