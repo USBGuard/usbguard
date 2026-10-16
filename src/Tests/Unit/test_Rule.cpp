@@ -75,4 +75,21 @@ TEST_CASE("Target-only rule", "[RuleParser]")
   }
 }
 
+TEST_CASE("match-all set operator on string attributes", "[Rule]")
+{
+  const Rule device = Rule::fromString("allow name \"Keyboard\" serial \"1234\" via-port \"1-2\" hash \"abc\"");
+  SECTION("applies when the device value is listed") {
+    REQUIRE(Rule::fromString("allow name match-all { \"Keyboard\" \"Mouse\" }").appliesTo(device));
+    REQUIRE(Rule::fromString("allow serial match-all { \"1234\" \"5678\" }").appliesTo(device));
+    REQUIRE(Rule::fromString("allow via-port match-all { \"1-1\" \"1-2\" }").appliesTo(device));
+    REQUIRE(Rule::fromString("allow hash match-all { \"abc\" \"def\" }").appliesTo(device));
+  }
+  SECTION("does not apply when the device value is not listed") {
+    REQUIRE_FALSE(Rule::fromString("allow name match-all { \"Disk\" \"Mouse\" }").appliesTo(device));
+    REQUIRE_FALSE(Rule::fromString("allow serial match-all { \"0000\" \"5678\" }").appliesTo(device));
+    REQUIRE_FALSE(Rule::fromString("allow via-port match-all { \"1-1\" \"1-3\" }").appliesTo(device));
+    REQUIRE_FALSE(Rule::fromString("allow hash match-all { \"def\" \"ghi\" }").appliesTo(device));
+  }
+}
+
 /* vim: set ts=2 sw=2 et */
